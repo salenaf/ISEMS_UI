@@ -1,0 +1,14 @@
+{
+    "httpServer": {
+        "host": "127.0.0.1",
+        "port": "8888"
+    },
+    "mongoDB": {
+        "socket": false,
+        "host": "127.0.0.1",
+        "port": "37017",
+        "user": "user_ISEMS-UI",
+        "password": "jkdds7dfm0",
+        "UnixSocketPath": "../../../../tmp/mongodb.sock"
+    }
+}
