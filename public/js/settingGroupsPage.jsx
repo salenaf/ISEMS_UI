@@ -39,7 +39,7 @@ class ButtonAddGroup extends React.Component {
     }
 
     render() {
-        let disabledCreate = (this.props.access.create.status) ? 'disabled' : '';
+        let disabledCreate = (this.props.access.create.status) ? '' : 'disabled';
 
         return (
             <button type="button" className="btn btn-default btn-sm" id="buttonAddGroup" disabled={disabledCreate} >

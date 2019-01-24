@@ -23699,7 +23699,7 @@ function (_React$Component4) {
   _createClass(ButtonAddGroup, [{
     key: "render",
     value: function render() {
-      var disabledCreate = this.props.access.create.status ? 'disabled' : '';
+      var disabledCreate = this.props.access.create.status ? '' : 'disabled';
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         type: "button",
         className: "btn btn-default btn-sm",
