@@ -27,7 +27,7 @@ module.exports = function(cb) {
         'management_events'
     ];
 
-    mongodbQueryProcessor.querySelect(models.modelGroup, {}, (err, groups) => {
+    mongodbQueryProcessor.querySelect(models.modelGroup, { isMany: true }, (err, groups) => {
         if (err) return cb(err);
 
         let objGroup = {};
@@ -44,22 +44,4 @@ module.exports = function(cb) {
 
         cb(null, objGroup);
     });
-
-    /*models.modelGroup.find(function(err, groups) {
-        if (err) return func(err);
-
-        let objGroup = {};
-        for (let i = 0; i < groups.length; i++) {
-            objGroup[groups[i].group_name] = {};
-            objGroup[groups[i].group_name].dateRegister = groups[i].date_register;
-            objGroup[groups[i].group_name].elements = {};
-
-            arrayNameItems.forEach(function(item) {
-                objGroup[groups[i].group_name].elements[item] = {};
-                Object.assign(objGroup[groups[i].group_name].elements[item], groups[i][item]);
-            });
-        }
-
-        func(null, objGroup);
-    });*/
 };

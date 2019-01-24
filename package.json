@@ -4,8 +4,8 @@
     "private": true,
     "scripts": {
         "start": "node ./app",
-        "startWS": "webpack-dev-server --open",
-        "dev": "webpack --mode development --display-error-details",
+        "startWS": "webpack-dev-server --open --mode development",
+        "dev": "webpack --display-error-details --mode development --watch",
         "build": "webpack --mode production"
     },
     "dependencies": {

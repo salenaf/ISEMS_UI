@@ -33,7 +33,7 @@ module.exports = {
         mainPage: './mainPage.js',
         headerMenu: './headerMenu.jsx',
         settingUsersPage: './settingUsersPage.js',
-        settingGroupsPage: './settingGroupsPage.js',
+        settingGroupsPage: './settingGroupsPage.jsx',
         settingSourcesPage: './settingSourcesPage.js',
         settingIdsRulesPage: './settingIdsRulesPage.js',
         common: './common.js',
@@ -62,7 +62,7 @@ module.exports = {
     devtool: NODE_ENV === 'development' ? 'source-map' : null,
 
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
+        contentBase: path.join(__dirname, 'public/dist'),
     },
 
     resolve: {

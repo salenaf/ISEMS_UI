@@ -1,6 +1,6 @@
 <header>
-    <script type='text/javascript'>
-        var useFromServer =<%-JSON.stringify(header)%>
+    <script>
+        var resivedFromServer = <%- JSON.stringify(header) %>
     </script>
 
     <div class="navbar navbar-inverse set-radius-zero">
@@ -37,19 +37,3 @@
 
     <script src="/dist/headerMenu.js"></script>
 </header>
-
-<!--                            <li><a href="/" class="menu-top-active">ГЛАВНАЯ</a></li>
-                            <li><a href="/statistics">АНАЛИЗ ИПБ</a></li>
-                            <li><a href="/statistics">УПРАВЛЕНИЕ СОБЫТИЯМИ</a></li>
-                            <li><a href="/setting_events">СЕТЕВЫЕ ВЗАИМОДЕЙСТВИЯ</a></li>
-
-                            <li><a href="form.html">ИНСТРУМЕНТЫ</a></li>
-                            <li>
-                                <a href="#" class="dropdown-toggle" id="ddlmenuItem" data-toggle="dropdown">НАСТРОЙКИ <i class="fa fa-angle-down"></i></a>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="ddlmenuItem">
-                                    <% 
-                                    for(var item in header.menuSettings){ %>
-                                    <li><a href="<%= item %>"><%= header.menuSettings[item] %></a></li>
-                                    <% } %>
-                                </ul>
-                            </li> -->

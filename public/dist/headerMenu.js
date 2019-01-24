@@ -23687,7 +23687,7 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateHeaderMenu, {
-  header: useFromServer
+  header: resivedFromServer
 }), document.getElementById('menu-top'));
 
 /***/ })

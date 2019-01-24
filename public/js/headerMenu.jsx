@@ -4,11 +4,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 class CreateHeaderMenu extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
   }
 
-  render () {
+  render() {
     let createMenu = function (objMenuItem) {
       let tmpArr = []
       for (let key in objMenuItem) {
@@ -55,7 +55,7 @@ class CreateHeaderMenu extends React.Component {
       <li key='index'>
         <a href='/' className='menu-top-active'>
           ГЛАВНАЯ
-        </a>
+            </a>
       </li>
     )
 
@@ -64,6 +64,6 @@ class CreateHeaderMenu extends React.Component {
 }
 
 ReactDOM.render(
-  <CreateHeaderMenu header={useFromServer} />,
+  <CreateHeaderMenu header={resivedFromServer} />,
   document.getElementById('menu-top')
 )
