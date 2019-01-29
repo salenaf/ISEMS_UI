@@ -54,7 +54,7 @@ let groupSchema = new connection.Schema({
         element_settings: {
             management_tasks_filter: {
                 name: String,
-                settings: {
+                element_settings: {
                     read: { status: Boolean, description: String },
                     import: { status: Boolean, description: String },
                     delete: { status: Boolean, description: String }
@@ -62,7 +62,7 @@ let groupSchema = new connection.Schema({
             },
             management_tasks_import: {
                 name: String,
-                settings: {
+                element_settings: {
                     cancel: { status: Boolean, description: String },
                     stop: { status: Boolean, description: String },
                     resume: { status: Boolean, description: String }
@@ -70,7 +70,7 @@ let groupSchema = new connection.Schema({
             },
             management_uploaded_files: {
                 name: String,
-                settings: {
+                element_settings: {
                     status_change: { status: Boolean, description: String },
                     delete: { status: Boolean, description: String }
                 }

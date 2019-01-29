@@ -13,7 +13,7 @@ module.exports = function(cb) {
     let arrayNameItems = [
         'menu_items',
         'management_analysis_sip',
-        'management_event_management',
+        'management_security_event_management',
         'management_network_interaction',
         'management_search_tools',
         'management_decode_tools',
@@ -32,13 +32,13 @@ module.exports = function(cb) {
 
         let objGroup = {};
         for (let i = 0; i < groups.length; i++) {
-            objGroup[groups[i].group_name] = {};
-            objGroup[groups[i].group_name].dateRegister = groups[i].date_register;
-            objGroup[groups[i].group_name].elements = {};
+            objGroup[groups[i].group_name] = {
+                date_register: groups[i].date_register,
+                elements: {}
+            };
 
             arrayNameItems.forEach(item => {
-                objGroup[groups[i].group_name].elements[item] = {};
-                Object.assign(objGroup[groups[i].group_name].elements[item], groups[i][item]);
+                objGroup[groups[i].group_name].elements[item] = groups[i][item];
             });
         }
 

@@ -153,7 +153,7 @@ function createModelGroups(modelGroup, next) {
                 element_settings: {
                     management_tasks_filter: {
                         name: 'фильтрация файлов',
-                        settings: {
+                        element_settings: {
                             read: { status: true, description: 'просмотр' },
                             import: { status: true, description: 'импорт файлов' },
                             delete: { status: true, description: 'удаление' }
@@ -161,7 +161,7 @@ function createModelGroups(modelGroup, next) {
                     },
                     management_tasks_import: {
                         name: 'импорт файлов',
-                        settings: {
+                        element_settings: {
                             cancel: { status: true, description: 'отмена' },
                             stop: { status: true, description: 'остановка' },
                             resume: { status: true, description: 'возобновление' }
@@ -169,16 +169,22 @@ function createModelGroups(modelGroup, next) {
                     },
                     management_uploaded_files: {
                         name: 'информация о загруженных файлах',
-                        settings: {
+                        element_settings: {
                             status_change: { status: true, description: 'изменение статуса' },
                             delete: { status: true, description: 'удаление' }
                         }
                     },
                 }
             },
-            management_tools: {
-                name: 'инструменты',
-                element_tools: {
+            management_search_tools: {
+                name: 'поиск информации',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_decode_tools: {
+                name: 'декодирование',
+                element_settings: {
                     read: { status: true, description: 'просмотр' }
                 }
             },
@@ -200,7 +206,7 @@ function createModelGroups(modelGroup, next) {
                     delete: { status: true, description: 'удаление' }
                 }
             },
-            management_sources: {
+            management_objects_and_subjects: {
                 name: 'объекты и субъекты',
                 element_settings: {
                     create: { status: true, description: 'создание' },

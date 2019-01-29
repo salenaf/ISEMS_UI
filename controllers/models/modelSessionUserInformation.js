@@ -24,6 +24,8 @@ let sessionUserInformation = new connection.Schema({
         management_analysis_sip: {},
         management_security_event_management: {},
         management_network_interaction: {},
+        management_search_tools: {},
+        management_decode_tools: {},
         management_users: {},
         management_groups: {},
         management_objects_and_subjects: {},

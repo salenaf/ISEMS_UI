@@ -23586,6 +23586,33 @@ module.exports = g;
 
 /***/ }),
 
+/***/ "./common_helpers/getRandomInt.js":
+/*!****************************************!*\
+  !*** ./common_helpers/getRandomInt.js ***!
+  \****************************************/
+/*! exports provided: randomInteger */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "randomInteger", function() { return randomInteger; });
+/**
+ * Возвращает произвольное число из заданного диапазона
+ * 
+ * Версия 0.1, дата релиза 29.01.2019
+ */
+
+
+function randomInteger(min, max) {
+  var rand = min - 0.5 + Math.random() * (max - min + 1);
+  rand = Math.round(rand);
+  return rand;
+}
+
+
+
+/***/ }),
+
 /***/ "./settingGroupsPage.jsx":
 /*!*******************************!*\
   !*** ./settingGroupsPage.jsx ***!
@@ -23599,6 +23626,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
 
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -23621,74 +23649,114 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+ //создание списка разделов сайта
 
-var ItemRow =
+var CreateListCategory =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(ItemRow, _React$Component);
+  _inherits(CreateListCategory, _React$Component);
 
-  function ItemRow(props) {
-    _classCallCheck(this, ItemRow);
+  function CreateListCategory(props) {
+    _classCallCheck(this, CreateListCategory);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ItemRow).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListCategory).call(this, props));
   }
 
-  _createClass(ItemRow, [{
+  _createClass(CreateListCategory, [{
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null);
+      var list = this.props.list;
+      var itemName = typeof list.name !== 'undefined' ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, list.name) : '';
+      var liNoMarker = {
+        'listStyleType': 'none'
+      };
+
+      if (this.props.first) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+          className: "text-left"
+        }, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+          style: liNoMarker
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryItems, {
+          list: list,
+          countSend: this.props.countSend,
+          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
+        })));
+      }
+
+      if (this.props.countSend === 3) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+          style: liNoMarker
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryItems, {
+          list: list,
+          countSend: this.props.countSend,
+          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
+        })));
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryItems, {
+        list: list,
+        countSend: this.props.countSend,
+        key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
+      }));
     }
   }]);
 
-  return ItemRow;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+  return CreateListCategory;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление типов действий доступных для каждого раздела
 
-var CategoryRow =
+
+var CreateCategoryItems =
 /*#__PURE__*/
 function (_React$Component2) {
-  _inherits(CategoryRow, _React$Component2);
+  _inherits(CreateCategoryItems, _React$Component2);
 
-  function CategoryRow(props) {
-    _classCallCheck(this, CategoryRow);
+  function CreateCategoryItems(props) {
+    _classCallCheck(this, CreateCategoryItems);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CategoryRow).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateCategoryItems).call(this, props));
   }
 
-  _createClass(CategoryRow, [{
+  _createClass(CreateCategoryItems, [{
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null);
+      var arrItems = [];
+      var uniqID = this.props.uniqID;
+      var list = this.props.list;
+      var countSend = this.props.countSend;
+
+      for (var item in list) {
+        if (item === 'name') continue;
+
+        if (typeof list[item].description === 'undefined') {
+          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+            countSend: countSend + 1,
+            list: list[item],
+            first: false,
+            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
+          }));
+          continue;
+        }
+
+        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000) + uniqID);
+        arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+          className: "sub-menu",
+          key: keyID
+        }, list[item].description));
+        uniqID++;
+      }
+
+      return arrItems;
     }
   }]);
 
-  return CategoryRow;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+  return CreateCategoryItems;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка добавления новой группы
 
-var CreateLists =
-/*#__PURE__*/
-function (_React$Component3) {
-  _inherits(CreateLists, _React$Component3);
-
-  function CreateLists(props) {
-    _classCallCheck(this, CreateLists);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateLists).call(this, props));
-  }
-
-  _createClass(CreateLists, [{
-    key: "render",
-    value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null);
-    }
-  }]);
-
-  return CreateLists;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 var ButtonAddGroup =
 /*#__PURE__*/
-function (_React$Component4) {
-  _inherits(ButtonAddGroup, _React$Component4);
+function (_React$Component3) {
+  _inherits(ButtonAddGroup, _React$Component3);
 
   function ButtonAddGroup(props) {
     _classCallCheck(this, ButtonAddGroup);
@@ -23712,90 +23780,181 @@ function (_React$Component4) {
   }]);
 
   return ButtonAddGroup;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка сохранение параметров группы
 
-var ManagementGroup =
+
+var ButtonSave =
 /*#__PURE__*/
-function (_React$Component5) {
-  _inherits(ManagementGroup, _React$Component5);
+function (_React$Component4) {
+  _inherits(ButtonSave, _React$Component4);
 
-  function ManagementGroup(props) {
-    _classCallCheck(this, ManagementGroup);
+  function ButtonSave(props) {
+    _classCallCheck(this, ButtonSave);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ManagementGroup).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonSave).call(this, props));
   }
 
-  _createClass(ManagementGroup, [{
+  _createClass(ButtonSave, [{
     key: "render",
     value: function render() {
-      var newArr = [];
-      var disabledEdit = this.props.access.edit.status ? 'disabled' : '';
-      var disabledDelete = this.props.access.delete.status ? 'disabled' : '';
-      var divStileHidden = {
-        visibility: 'hidden'
-      };
-
-      for (var groupName in this.props.info) {
-        var buttons = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-          type: "button",
-          className: "btn btn-default btn-sm",
-          style: divStileHidden
-        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-          className: "glyphicon glyphicon-floppy-saved"
-        }));
-
-        if (groupName.toLowerCase() !== 'administrator') {
-          buttons = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-            type: "button",
-            className: "btn btn-default btn-sm",
-            name: "buttonDelGroup",
-            disabled: disabledDelete
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-            className: "glyphicon glyphicon-trash"
-          })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-            type: "button",
-            className: "btn btn-default btn-sm",
-            name: "buttonEditGroup",
-            disabled: disabledEdit
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-            className: "glyphicon glyphicon-floppy-saved"
-          })));
-        }
-
-        var element = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
-          className: "text-left",
-          key: groupName,
-          "data-group-name": groupName
-        }, groupName, buttons);
-        newArr.push(element);
-      }
-
-      return newArr;
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "button",
+        className: "btn btn-default btn-sm",
+        name: "buttonEditGroup",
+        disabled: this.props.disabledEdit
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        className: "glyphicon glyphicon-floppy-saved"
+      }));
     }
   }]);
 
-  return ManagementGroup;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+  return ButtonSave;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка удаления группы
+
+
+var ButtonDelete =
+/*#__PURE__*/
+function (_React$Component5) {
+  _inherits(ButtonDelete, _React$Component5);
+
+  function ButtonDelete(props) {
+    _classCallCheck(this, ButtonDelete);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonDelete).call(this, props));
+  }
+
+  _createClass(ButtonDelete, [{
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "button",
+        className: "btn btn-default btn-sm",
+        name: "buttonDelGroup",
+        disabled: this.props.disabledDelete
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        className: "glyphicon glyphicon-trash"
+      }));
+    }
+  }]);
+
+  return ButtonDelete;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //список установленных значений
+
+
+var CreateListValue =
+/*#__PURE__*/
+function (_React$Component6) {
+  _inherits(CreateListValue, _React$Component6);
+
+  function CreateListValue(props) {
+    _classCallCheck(this, CreateListValue);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListValue).call(this, props));
+  }
+
+  _createClass(CreateListValue, [{
+    key: "render",
+    value: function render() {
+      var arrRows = [];
+      return arrRows;
+    }
+  }]);
+
+  return CreateListValue;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление групп
+
+
+var AddGroupName =
+/*#__PURE__*/
+function (_React$Component7) {
+  _inherits(AddGroupName, _React$Component7);
+
+  function AddGroupName(props) {
+    _classCallCheck(this, AddGroupName);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(AddGroupName).call(this, props));
+  }
+
+  _createClass(AddGroupName, [{
+    key: "render",
+    value: function render() {
+      var styleGroupName = {
+        'paddingBottom': '13px'
+      };
+      var disabledEdit = !this.props.accessRights.edit.status ? 'disabled' : '';
+      var disabledDelete = !this.props.accessRights.delete.status ? 'disabled' : '';
+      var arrGroup = [];
+      var bD,
+          bS = '';
+
+      for (var group in this.props.info) {
+        if (group.toLowerCase() !== 'administrator') {
+          bD = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
+            disabledDelete: disabledDelete
+          });
+          bS = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonSave, {
+            disabledEdit: disabledEdit
+          });
+          styleGroupName.paddingBottom = '';
+        }
+
+        arrGroup.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
+          className: "text-left",
+          style: styleGroupName,
+          key: group
+        }, group, "\xA0", bD, "\xA0", bS, "\xA0"));
+      } //                        создана: {this.props.info[group].date_register}
+
+
+      return arrGroup;
+    }
+  }]);
+
+  return AddGroupName;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //создание основной таблицы
+
 
 var CreateTable =
 /*#__PURE__*/
-function (_React$Component6) {
-  _inherits(CreateTable, _React$Component6);
+function (_React$Component8) {
+  _inherits(CreateTable, _React$Component8);
 
   function CreateTable(props) {
+    var _this;
+
     _classCallCheck(this, CreateTable);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this.state = {};
+    return _this;
   }
 
   _createClass(CreateTable, [{
     key: "render",
     value: function render() {
-      console.log(this.props.accessRights);
       var divStyleWidth = {
-        width: '20%'
+        width: '35%'
       };
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Test element!!!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("table", {
+      var arrRows = [];
+      var list = this.props.mainInformation;
+      var uniqID = 0;
+
+      for (var item in list.administrator.elements) {
+        var keyID = "row_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000) + uniqID);
+        arrRows.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
+          key: keyID
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+          countSend: 0,
+          list: list.administrator.elements[item],
+          first: true,
+          key: uniqID
+        })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListValue, {
+          list: list
+        })));
+        uniqID++;
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("table", {
         className: "table table-striped table-hover table-sm"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("caption", {
         className: "h4 text-uppercase"
@@ -23804,10 +23963,10 @@ function (_React$Component6) {
         style: divStyleWidth
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
         access: this.props.accessRights
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ManagementGroup, {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AddGroupName, {
         info: this.props.mainInformation,
-        access: this.props.accessRights
-      })))));
+        accessRights: this.props.accessRights
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, arrRows)));
     }
   }]);
 
@@ -23820,32 +23979,6 @@ react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_
 }), document.getElementById('field_information'));
 
 (function () {})();
-/**
-
-                <CreateLists mainData={this.props.mainInformation} />
-
-<%
-                for(let groupName in mainContentAdministrator){
-                    let disabledEdit = (accessRights.edit[0] === false) ? 'disabled="disabled"' : '';
-                    let disabledDelete = (accessRights.delete[0] === false) ? 'disabled="disabled"' : '';
-                %>
-                <th class="text-left" data-group-name="<%= groupName %>">
-                    <%= groupName %>
-                    <% if(groupName.toLowerCase() !== 'administrator'){ %>
-                    <button type="button" class="btn btn-default btn-sm" name="buttonDelGroup" <%= disabledDelete %>>
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" name="buttonEditGroup"<%= disabledEdit %>>
-                        <span class="glyphicon glyphicon-floppy-saved"></span>
-                    </button>
-                    <% } else { %>
-                    <button type="button" class="btn btn-default btn-sm" style="visibility: hidden">
-                        <span class="glyphicon glyphicon-floppy-saved"></span>
-                    </button>
-                    <% } %>
-                </th>
-                <% } %>
- */
 
 /***/ })
 

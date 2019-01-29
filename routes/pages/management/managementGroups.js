@@ -48,7 +48,8 @@ module.exports = function(req, res, objHeader) {
             mainInformation: result.mainInformation
         };
 
-        debug(objResult);
+        debug(result.mainInformation.administrator);
+        debug(objResult.userGroupPermissions);
 
         res.render('menu/settings/setting_groups', objResult);
     });

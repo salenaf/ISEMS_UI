@@ -3,39 +3,88 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-class ItemRow extends React.Component {
+import { randomInteger } from './common_helpers/getRandomInt'
+
+//создание списка разделов сайта
+class CreateListCategory extends React.Component {
     constructor(props) {
         super(props)
     }
 
     render() {
-        return (<li></li>)
+        const list = this.props.list
+
+        let itemName = (typeof list.name !== 'undefined') ? <strong>{list.name}</strong> : ''
+        let liNoMarker = { 'listStyleType': 'none' }
+
+        if (this.props.first) {
+            return (
+                <ul className="text-left">
+                    {itemName}
+                    <ul style={liNoMarker}>
+                        <CreateCategoryItems list={list} countSend={this.props.countSend} key={randomInteger(1, 1000)} />
+                    </ul>
+                </ul>)
+        }
+
+        if (this.props.countSend === 3) {
+            return (
+                <div>
+                    {itemName}
+                    <ul style={liNoMarker}>
+                        <CreateCategoryItems list={list} countSend={this.props.countSend} key={randomInteger(1, 1000)} />
+                    </ul>
+                </div>)
+        }
+
+        return (
+            <div>
+                {itemName}
+                <CreateCategoryItems list={list} countSend={this.props.countSend} key={randomInteger(1, 1000)} />
+            </div>)
     }
 }
 
-class CategoryRow extends React.Component {
+//перечисление типов действий доступных для каждого раздела
+class CreateCategoryItems extends React.Component {
     constructor(props) {
         super(props)
     }
 
     render() {
-        return (<ul></ul>)
+        let arrItems = []
+        let uniqID = this.props.uniqID
+        let list = this.props.list
+
+        let countSend = this.props.countSend
+
+        for (let item in list) {
+            if (item === 'name') continue
+            if (typeof list[item].description === 'undefined') {
+                arrItems.push(
+                    <CreateListCategory countSend={countSend + 1} list={list[item]} first={false} key={randomInteger(1, 1000)} />)
+
+                continue
+            }
+
+            let keyID = `sub_menu_${item}_${randomInteger(1, 1000) + uniqID}`
+
+            arrItems.push(
+                <li className="sub-menu" key={keyID}>
+                    {list[item].description}
+                </li>)
+
+            uniqID++
+        }
+
+        return arrItems
     }
 }
 
-class CreateLists extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
-    render() {
-        return (<div></div>)
-    }
-}
-
+//кнопка добавления новой группы
 class ButtonAddGroup extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
     }
 
     render() {
@@ -49,65 +98,118 @@ class ButtonAddGroup extends React.Component {
     }
 }
 
-class ManagementGroup extends React.Component {
+//кнопка сохранение параметров группы
+class ButtonSave extends React.Component {
     constructor(props) {
         super(props)
     }
 
     render() {
-        let newArr = [];
-
-        let disabledEdit = (this.props.access.edit.status) ? 'disabled' : '';
-        let disabledDelete = (this.props.access.delete.status) ? 'disabled' : '';
-
-        let divStileHidden = {
-            visibility: 'hidden'
-        };
-
-        for (let groupName in this.props.info) {
-            let buttons = <button type="button" className="btn btn-default btn-sm" style={divStileHidden}>
+        return (
+            <button type="button" className="btn btn-default btn-sm" name="buttonEditGroup" disabled={this.props.disabledEdit}>
                 <span className="glyphicon glyphicon-floppy-saved"></span>
             </button>
-
-            if (groupName.toLowerCase() !== 'administrator') {
-                buttons = <div>
-                    <button type="button" className="btn btn-default btn-sm" name="buttonDelGroup" disabled={disabledDelete}>
-                        <span className="glyphicon glyphicon-trash"></span>
-                    </button>
-                    <button type="button" className="btn btn-default btn-sm" name="buttonEditGroup" disabled={disabledEdit}>
-                        <span className="glyphicon glyphicon-floppy-saved"></span>
-                    </button>
-                </div>
-            }
-
-            let element = <th className="text-left" key={groupName} data-group-name={groupName}>
-                {groupName}
-                {buttons}
-            </th>
-
-            newArr.push(element);
-        }
-
-        return newArr;
+        )
     }
 }
 
-class CreateTable extends React.Component {
+//кнопка удаления группы
+class ButtonDelete extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
     }
 
     render() {
+        return (
+            <button type="button" className="btn btn-default btn-sm" name="buttonDelGroup" disabled={this.props.disabledDelete}>
+                <span className="glyphicon glyphicon-trash"></span>
+            </button>
+        )
+    }
+}
 
-        console.log(this.props.accessRights);
+//список установленных значений
+class CreateListValue extends React.Component {
+    constructor(props) {
+        super(props)
+    }
 
+    render() {
+        let arrRows = []
+
+        return arrRows
+    }
+}
+
+//перечисление групп
+class AddGroupName extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        let styleGroupName = {
+            'paddingBottom': '13px'
+        }
+
+        let disabledEdit = (!this.props.accessRights.edit.status) ? 'disabled' : '';
+        let disabledDelete = (!this.props.accessRights.delete.status) ? 'disabled' : '';
+
+        let arrGroup = [];
+        let bD, bS = ''
+
+        for (let group in this.props.info) {
+            if (group.toLowerCase() !== 'administrator') {
+                bD = <ButtonDelete disabledDelete={disabledDelete} />
+                bS = <ButtonSave disabledEdit={disabledEdit} />
+                styleGroupName.paddingBottom = ''
+            }
+
+            arrGroup.push(
+                <th className="text-left" style={styleGroupName} key={group}>
+                    {group}&nbsp;
+                    {bD}&nbsp;
+                    {bS}&nbsp;
+                </th>)
+        }
+
+        //                        создана: {this.props.info[group].date_register}
+        return arrGroup
+    }
+}
+
+//создание основной таблицы
+class CreateTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {}
+    }
+
+    render() {
         let divStyleWidth = {
-            width: '20%'
+            width: '35%'
+        }
+
+        let arrRows = []
+        let list = this.props.mainInformation
+        let uniqID = 0
+
+        for (let item in list.administrator.elements) {
+            let keyID = `row_${item}_${randomInteger(1, 1000) + uniqID}`
+
+            arrRows.push(
+                <tr key={keyID}>
+                    <td>
+                        <CreateListCategory countSend={0} list={list.administrator.elements[item]} first={true} key={uniqID} />
+                    </td>
+                    <CreateListValue list={list} />
+                </tr>)
+
+            uniqID++
         }
 
         return (
             <div>
-                <p>Test element!!!</p>
                 <table className="table table-striped table-hover table-sm">
                     <caption className="h4 text-uppercase">управление группами</caption>
                     <thead>
@@ -115,9 +217,10 @@ class CreateTable extends React.Component {
                             <th className="text-right" style={divStyleWidth}>
                                 <ButtonAddGroup access={this.props.accessRights} />
                             </th>
-                            <ManagementGroup info={this.props.mainInformation} access={this.props.accessRights} />
+                            <AddGroupName info={this.props.mainInformation} accessRights={this.props.accessRights} />
                         </tr>
                     </thead>
+                    <tbody>{arrRows}</tbody>
                 </table>
             </div>
         );
@@ -128,30 +231,3 @@ ReactDOM.render(<CreateTable mainInformation={receivedFromServerMain} accessRigh
     document.getElementById('field_information'));
 
 (function () { })();
-
-/**
-
-                <CreateLists mainData={this.props.mainInformation} />
-
-<%
-                for(let groupName in mainContentAdministrator){
-                    let disabledEdit = (accessRights.edit[0] === false) ? 'disabled="disabled"' : '';
-                    let disabledDelete = (accessRights.delete[0] === false) ? 'disabled="disabled"' : '';
-                %>
-                <th class="text-left" data-group-name="<%= groupName %>">
-                    <%= groupName %>
-                    <% if(groupName.toLowerCase() !== 'administrator'){ %>
-                    <button type="button" class="btn btn-default btn-sm" name="buttonDelGroup" <%= disabledDelete %>>
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" name="buttonEditGroup"<%= disabledEdit %>>
-                        <span class="glyphicon glyphicon-floppy-saved"></span>
-                    </button>
-                    <% } else { %>
-                    <button type="button" class="btn btn-default btn-sm" style="visibility: hidden">
-                        <span class="glyphicon glyphicon-floppy-saved"></span>
-                    </button>
-                    <% } %>
-                </th>
-                <% } %>
- */
