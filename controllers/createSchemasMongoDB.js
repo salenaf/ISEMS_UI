@@ -108,6 +108,7 @@ function createModelGroups(modelGroup, next) {
 
         debug('add group "administrator"');
 
+        //группа администратора
         new modelGroup({
             group_name: 'administrator',
             date_register: +(new Date()),
@@ -257,6 +258,466 @@ function createModelGroups(modelGroup, next) {
                 }
             }
         }).save();
+
+        /**
+         * ТЕСТОВАЯ ГРУППА
+         */
+        new modelGroup({
+            group_name: 'all_users',
+            date_register: +(new Date()),
+            menu_items: {
+                name: 'пункты меню',
+                analysis_sip: { status: false, description: 'анализ ИПБ' },
+                security_event_management: { status: true, description: 'управление событиями' },
+                network_interaction: { status: true, description: 'сетевые взаимодействия' },
+                element_tools: {
+                    name: 'инструменты',
+                    search_tools: { status: true, description: 'поиск информации' },
+                    decode_tools: { status: true, description: 'декодирование' }
+                },
+                element_settings: {
+                    name: 'настройки',
+                    setting_groups: { status: true, description: 'группы пользователей' },
+                    setting_users: { status: true, description: 'пользователи' },
+                    setting_objects_and_subjects: { status: true, description: 'объекты и субъекты' },
+                    setting_ids_rules: { status: true, description: 'правила СОА' },
+                    setting_geoip: { status: true, description: 'геопозиционирование' },
+                    setting_reputational_lists: { status: true, description: 'репутационные списки' },
+                    setting_search_rules: { status: true, description: 'правила поиска' }
+                }
+            },
+            management_analysis_sip: {
+                name: 'анализ ИПБ',
+                element_settings: {
+                    read: { status: false, description: 'просмотр' }
+                }
+            },
+            management_security_event_management: {
+                name: 'управление событиями',
+                element_settings: {
+                    creat: { status: false, description: 'создание' },
+                    editingInformation: { status: true, description: 'редактирование информации' },
+                    statusChange: { status: false, description: 'изменение статуса события' },
+                    close: { status: true, description: 'закрытие события' },
+                    delete: { status: true, description: 'удаление события' }
+                }
+            },
+            management_network_interaction: {
+                name: 'сетевые взаимодействия',
+                element_settings: {
+                    management_tasks_filter: {
+                        name: 'фильтрация файлов',
+                        element_settings: {
+                            read: { status: true, description: 'просмотр' },
+                            import: { status: true, description: 'импорт файлов' },
+                            delete: { status: false, description: 'удаление' }
+                        }
+                    },
+                    management_tasks_import: {
+                        name: 'импорт файлов',
+                        element_settings: {
+                            cancel: { status: true, description: 'отмена' },
+                            stop: { status: false, description: 'остановка' },
+                            resume: { status: true, description: 'возобновление' }
+                        }
+                    },
+                    management_uploaded_files: {
+                        name: 'информация о загруженных файлах',
+                        element_settings: {
+                            status_change: { status: true, description: 'изменение статуса' },
+                            delete: { status: true, description: 'удаление' }
+                        }
+                    },
+                }
+            },
+            management_search_tools: {
+                name: 'поиск информации',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_decode_tools: {
+                name: 'декодирование',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_users: {
+                name: 'пользователи',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_groups: {
+                name: 'группы',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_objects_and_subjects: {
+                name: 'объекты и субъекты',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_ids_rules: {
+                name: 'правила СОА',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_geoip: {
+                name: 'геопозиционирование',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            },
+            management_reputational_lists: {
+                name: 'репутационные списки',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            },
+            management_search_rules: {
+                name: 'правила поиска',
+                element_settings: {
+                    create: { status: false, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: false, description: 'редактирование' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            },
+            management_events: {
+                name: 'события',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            }
+        }).save();
+
+        /**
+         * ТЕСТОВАЯ ГРУППА
+         */
+        new modelGroup({
+            group_name: 'deg_group',
+            date_register: +(new Date()),
+            menu_items: {
+                name: 'пункты меню',
+                analysis_sip: { status: false, description: 'анализ ИПБ' },
+                security_event_management: { status: true, description: 'управление событиями' },
+                network_interaction: { status: true, description: 'сетевые взаимодействия' },
+                element_tools: {
+                    name: 'инструменты',
+                    search_tools: { status: true, description: 'поиск информации' },
+                    decode_tools: { status: true, description: 'декодирование' }
+                },
+                element_settings: {
+                    name: 'настройки',
+                    setting_groups: { status: true, description: 'группы пользователей' },
+                    setting_users: { status: true, description: 'пользователи' },
+                    setting_objects_and_subjects: { status: true, description: 'объекты и субъекты' },
+                    setting_ids_rules: { status: true, description: 'правила СОА' },
+                    setting_geoip: { status: true, description: 'геопозиционирование' },
+                    setting_reputational_lists: { status: true, description: 'репутационные списки' },
+                    setting_search_rules: { status: true, description: 'правила поиска' }
+                }
+            },
+            management_analysis_sip: {
+                name: 'анализ ИПБ',
+                element_settings: {
+                    read: { status: false, description: 'просмотр' }
+                }
+            },
+            management_security_event_management: {
+                name: 'управление событиями',
+                element_settings: {
+                    creat: { status: false, description: 'создание' },
+                    editingInformation: { status: true, description: 'редактирование информации' },
+                    statusChange: { status: false, description: 'изменение статуса события' },
+                    close: { status: true, description: 'закрытие события' },
+                    delete: { status: true, description: 'удаление события' }
+                }
+            },
+            management_network_interaction: {
+                name: 'сетевые взаимодействия',
+                element_settings: {
+                    management_tasks_filter: {
+                        name: 'фильтрация файлов',
+                        element_settings: {
+                            read: { status: true, description: 'просмотр' },
+                            import: { status: false, description: 'импорт файлов' },
+                            delete: { status: true, description: 'удаление' }
+                        }
+                    },
+                    management_tasks_import: {
+                        name: 'импорт файлов',
+                        element_settings: {
+                            cancel: { status: true, description: 'отмена' },
+                            stop: { status: false, description: 'остановка' },
+                            resume: { status: false, description: 'возобновление' }
+                        }
+                    },
+                    management_uploaded_files: {
+                        name: 'информация о загруженных файлах',
+                        element_settings: {
+                            status_change: { status: true, description: 'изменение статуса' },
+                            delete: { status: true, description: 'удаление' }
+                        }
+                    },
+                }
+            },
+            management_search_tools: {
+                name: 'поиск информации',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_decode_tools: {
+                name: 'декодирование',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_users: {
+                name: 'пользователи',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_groups: {
+                name: 'группы',
+                element_settings: {
+                    create: { status: false, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_objects_and_subjects: {
+                name: 'объекты и субъекты',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_ids_rules: {
+                name: 'правила СОА',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_geoip: {
+                name: 'геопозиционирование',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            },
+            management_reputational_lists: {
+                name: 'репутационные списки',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_search_rules: {
+                name: 'правила поиска',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_events: {
+                name: 'события',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            }
+        }).save();
+
+        /**
+         * ТЕСТОВАЯ ГРУППА
+         */
+        new modelGroup({
+            group_name: 'test_group',
+            date_register: +(new Date()),
+            menu_items: {
+                name: 'пункты меню',
+                analysis_sip: { status: false, description: 'анализ ИПБ' },
+                security_event_management: { status: true, description: 'управление событиями' },
+                network_interaction: { status: true, description: 'сетевые взаимодействия' },
+                element_tools: {
+                    name: 'инструменты',
+                    search_tools: { status: true, description: 'поиск информации' },
+                    decode_tools: { status: true, description: 'декодирование' }
+                },
+                element_settings: {
+                    name: 'настройки',
+                    setting_groups: { status: true, description: 'группы пользователей' },
+                    setting_users: { status: true, description: 'пользователи' },
+                    setting_objects_and_subjects: { status: true, description: 'объекты и субъекты' },
+                    setting_ids_rules: { status: true, description: 'правила СОА' },
+                    setting_geoip: { status: true, description: 'геопозиционирование' },
+                    setting_reputational_lists: { status: true, description: 'репутационные списки' },
+                    setting_search_rules: { status: true, description: 'правила поиска' }
+                }
+            },
+            management_analysis_sip: {
+                name: 'анализ ИПБ',
+                element_settings: {
+                    read: { status: false, description: 'просмотр' }
+                }
+            },
+            management_security_event_management: {
+                name: 'управление событиями',
+                element_settings: {
+                    creat: { status: false, description: 'создание' },
+                    editingInformation: { status: true, description: 'редактирование информации' },
+                    statusChange: { status: false, description: 'изменение статуса события' },
+                    close: { status: true, description: 'закрытие события' },
+                    delete: { status: true, description: 'удаление события' }
+                }
+            },
+            management_network_interaction: {
+                name: 'сетевые взаимодействия',
+                element_settings: {
+                    management_tasks_filter: {
+                        name: 'фильтрация файлов',
+                        element_settings: {
+                            read: { status: true, description: 'просмотр' },
+                            import: { status: true, description: 'импорт файлов' },
+                            delete: { status: false, description: 'удаление' }
+                        }
+                    },
+                    management_tasks_import: {
+                        name: 'импорт файлов',
+                        element_settings: {
+                            cancel: { status: true, description: 'отмена' },
+                            stop: { status: false, description: 'остановка' },
+                            resume: { status: true, description: 'возобновление' }
+                        }
+                    },
+                    management_uploaded_files: {
+                        name: 'информация о загруженных файлах',
+                        element_settings: {
+                            status_change: { status: true, description: 'изменение статуса' },
+                            delete: { status: true, description: 'удаление' }
+                        }
+                    },
+                }
+            },
+            management_search_tools: {
+                name: 'поиск информации',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_decode_tools: {
+                name: 'декодирование',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' }
+                }
+            },
+            management_users: {
+                name: 'пользователи',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_groups: {
+                name: 'группы',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_objects_and_subjects: {
+                name: 'объекты и субъекты',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_ids_rules: {
+                name: 'правила СОА',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_geoip: {
+                name: 'геопозиционирование',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            },
+            management_reputational_lists: {
+                name: 'репутационные списки',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_search_rules: {
+                name: 'правила поиска',
+                element_settings: {
+                    create: { status: true, description: 'создание' },
+                    read: { status: true, description: 'просмотр' },
+                    edit: { status: true, description: 'редактирование' },
+                    delete: { status: true, description: 'удаление' }
+                }
+            },
+            management_events: {
+                name: 'события',
+                element_settings: {
+                    read: { status: true, description: 'просмотр' },
+                    delete: { status: false, description: 'удаление' }
+                }
+            }
+        }).save();
+
         next(null);
     });
 }

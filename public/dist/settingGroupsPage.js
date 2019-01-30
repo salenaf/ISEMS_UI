@@ -23613,6 +23613,138 @@ function randomInteger(min, max) {
 
 /***/ }),
 
+/***/ "./common_helpers/helpers.js":
+/*!***********************************!*\
+  !*** ./common_helpers/helpers.js ***!
+  \***********************************/
+/*! exports provided: helpers */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "helpers", function() { return helpers; });
+
+
+var helpers = {
+  //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
+  loadNetworkMarginTop: function loadNetworkMarginTop() {
+    var arrayLoadNetwork = document.getElementsByName('loadNetwork');
+    if (arrayLoadNetwork.hasOwnProperty('length')) return;
+
+    for (var key in arrayLoadNetwork) {
+      var countElements = 0;
+
+      for (var i in arrayLoadNetwork[key].children) {
+        countElements++;
+      }
+
+      var num = (countElements - 4) / 3;
+      var px = '0px';
+      if (3 <= num && num <= 5) px = '35px';
+      if (1 <= num && num <= 3) px = '40px';
+
+      if (arrayLoadNetwork[key].nodeType === 1) {
+        arrayLoadNetwork[key].style.marginTop = px;
+      }
+    }
+  },
+  //конвертирование даты и времени из формата Unix в стандартный формат
+  getDate: function getDate(dateUnix) {
+    var x = new Date().getTimezoneOffset() * 60000;
+    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+  },
+  //получить цвет значения
+  getColor: function getColor(number) {
+    if (0 <= number && number <= 35) return 'color: #83B4D7;';
+    if (36 <= number && number <= 65) return 'color: #9FD783;';
+    if (66 <= number && number <= 85) return 'color: #E1E691;';
+    if (86 <= number) return 'color: #C78888;';
+  },
+  //преобразование числа в строку с пробелами после каждой третьей цифры 
+  intConvert: function intConvert(nLoad) {
+    var newString = nLoad.toString();
+    var interimArray = [];
+    var countCycles = Math.ceil(newString.length / 3);
+    var num = 0;
+
+    for (var i = 1; i <= countCycles; i++) {
+      interimArray.push(newString.charAt(newString.length - 3 - num) + newString.charAt(newString.length - 2 - num) + newString.charAt(newString.length - 1 - num));
+      num += 3;
+    }
+
+    interimArray.reverse();
+    return interimArray.join(' ');
+  },
+  //пересчет в Кбайты, Мбайты и Гбайты
+  changeByteSize: function changeByteSize(byte) {
+    if (3 >= byte.length) return '<strong>' + byte + '</strong> байт';else if (3 < byte.length && byte.length <= 6) return '<strong>' + (byte / 1000).toFixed(2) + '</strong> Кбайт';else if (6 < byte.length && byte.length <= 9) return '<strong>' + (byte / 1000000).toFixed(2) + '</strong> Мбайт';else return '<strong>' + (byte / 1000000000).toFixed(2) + '</strong> Гбайт';
+  },
+  //конвертирование даты и вермени
+  dateTimeConvert: function dateTimeConvert(dateUnixFormat) {
+    var x = new Date().getTimezoneOffset() * 60000;
+    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+  },
+  //получить не повторяющиеся элементы двух массивов
+  getDifferenceArray: function getDifferenceArray(arrOne, arrTwo) {
+    if (arrOne.length === 0) return arrTwo;
+    if (arrTwo.length === 0) return arrOne;
+    var result = [];
+
+    if (arrOne.length === arrTwo.length) {
+      for (var i = 0; i < arrOne.length; i++) {
+        for (var j = 0; j < arrTwo.length; j++) {
+          if (arrOne[i] === arrTwo[j]) {
+            arrOne.splice(i, 1);
+            arrTwo.splice(j, 1);
+          }
+        }
+      }
+
+      result = arrOne.concat(arrTwo.join(','));
+    } else if (arrOne.length < arrTwo.length) {
+      var stringOne = arrOne.join(' ');
+      arrTwo.filter(function (item) {
+        return stringOne.indexOf(item.toString()) < 0;
+      });
+    } else {
+      var _stringOne = arrTwo.join(' ');
+
+      arrOne.filter(function (item) {
+        return _stringOne.indexOf(item.toString()) < 0;
+      });
+    }
+
+    return result;
+  },
+  //проверка данных полученных от пользователя
+  checkInputValidation: function checkInputValidation(elem) {
+    var objSettings = {
+      'hostId': new RegExp('^[0-9]{1,7}$'),
+      'shortNameHost': new RegExp('^[a-zA-Z0-9_№"\\-\\s]{3,15}$'),
+      'fullNameHost': new RegExp('^[a-zA-Zа-яА-Яё0-9_№"\\-\\s\\.,]{5,}$'),
+      'ipaddress': new RegExp('^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$'),
+      'port': new RegExp('^[0-9]{1,5}$'),
+      'countProcess': new RegExp('^[0-9]{1}$'),
+      'intervalTransmission': new RegExp('^[0-9]{1,}$')
+    };
+    var pattern = objSettings[elem.name];
+
+    if (elem.name === 'port') {
+      if (!(0 <= elem.value && elem.value < 65536)) return false;
+    }
+
+    if (elem.name === 'intervalTransmission' && elem.value < 10) return false;
+    return !pattern.test(elem.value) ? false : true;
+  },
+  //генератор токена
+  tokenRand: function tokenRand() {
+    return Math.random().toString(14).substr(2) + Math.random().toString(14).substr(2);
+  }
+};
+
+
+/***/ }),
+
 /***/ "./settingGroupsPage.jsx":
 /*!*******************************!*\
   !*** ./settingGroupsPage.jsx ***!
@@ -23626,8 +23758,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
+/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
+/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
 
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -23649,126 +23790,301 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+
  //создание списка разделов сайта
 
-var CreateListCategory =
+/*class CreateListCategory extends React.Component {
+    render() {
+        let itemName = (typeof this.props.parameters.list.name === 'undefined') ? ' ' : <strong>{this.props.parameters.list.name}</strong>
+        let liNoMarker = { 'listStyleType': 'none' }
+
+        if (this.props.parameters.first) {
+            return (
+                <ul className="text-left">
+                    {itemName}
+                    <ul style={liNoMarker}>
+                        <CreateCategoryItems parameters={this.props.parameters} key={randomInteger(1, 1000)} />
+                    </ul>
+                </ul>)
+        }
+
+        if ((this.props.parameters.typeItem === 'menu_items') || (this.props.parameters.countSend === 3)) {
+            return (
+                <div>
+                    {itemName}
+                    <ul style={liNoMarker}>
+                        <CreateCategoryItems parameters={this.props.parameters} key={randomInteger(1, 1000)} />
+                    </ul>
+                </div>)
+        }
+
+        return (
+            <div>
+                {itemName}
+                <CreateCategoryItems parameters={this.props.parameters} key={randomInteger(1, 1000)} />
+            </div>)
+    }
+}
+
+//перечисление типов действий доступных для каждого раздела
+class CreateCategoryItems extends React.Component {
+    render() {
+        let arrItems = []
+        let parameters = {
+            'typeItem': this.props.parameters.typeItem,
+            'first': false
+        }
+
+        for (let item in this.props.parameters.list) {
+            if (item === 'name') continue
+            if (typeof this.props.parameters.list[item].description === 'undefined') {
+                parameters.countSend = this.props.parameters.countSend + 1
+                parameters.list = this.props.parameters.list[item]
+
+                arrItems.push(
+                    <CreateListCategory parameters={parameters} key={randomInteger(1, 1000)} />)
+
+                continue
+            }
+
+            let keyID = `sub_menu_${item}_${randomInteger(1, 1000) + parameters.uniqID}`
+
+            arrItems.push(
+                <li className="sub-menu" key={keyID}>
+                    {this.props.parameters.list[item].description}
+                </li>)
+
+            parameters.uniqID = this.props.parameters.uniqID + 1
+        }
+
+        return arrItems
+    }
+}*/
+
+var CreateAdminCategory =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(CreateListCategory, _React$Component);
+  _inherits(CreateAdminCategory, _React$Component);
 
-  function CreateListCategory(props) {
-    _classCallCheck(this, CreateListCategory);
+  function CreateAdminCategory() {
+    _classCallCheck(this, CreateAdminCategory);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListCategory).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateAdminCategory).apply(this, arguments));
   }
 
-  _createClass(CreateListCategory, [{
+  _createClass(CreateAdminCategory, [{
     key: "render",
     value: function render() {
-      var list = this.props.list;
-      var itemName = typeof list.name !== 'undefined' ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, list.name) : '';
+      var itemName = typeof this.props.list.name === 'undefined' ? ' ' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.list.name);
       var liNoMarker = {
         'listStyleType': 'none'
       };
+      var isMenuItem = this.props.parameters.typeItem === 'menu_items';
+      var moreThanTree = this.props.parameters.countSend === 3;
 
-      if (this.props.first) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
-          className: "text-left"
-        }, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
-          style: liNoMarker
-        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryItems, {
-          list: list,
-          countSend: this.props.countSend,
-          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
-        })));
+      if (this.props.parameters.group === 'administrator') {
+        if (this.props.parameters.first) {
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+            className: "text-left"
+          }, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+            style: liNoMarker
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+            list: this.props.list,
+            parameters: this.props.parameters,
+            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+          })));
+        }
+
+        if (isMenuItem || moreThanTree) {
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+            style: liNoMarker
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+            list: this.props.list,
+            parameters: this.props.parameters,
+            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+          })));
+        }
+
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+          list: this.props.list,
+          parameters: this.props.parameters,
+          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+        }));
       }
 
-      if (this.props.countSend === 3) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
-          style: liNoMarker
-        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryItems, {
-          list: list,
-          countSend: this.props.countSend,
-          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
-        })));
+      if (this.props.parameters.first || isMenuItem || moreThanTree) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+          list: this.props.list,
+          parameters: this.props.parameters,
+          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+        }));
       }
 
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryItems, {
-        list: list,
-        countSend: this.props.countSend,
-        key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
-      }));
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+        list: this.props.list,
+        parameters: this.props.parameters,
+        key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+      });
     }
   }]);
 
-  return CreateListCategory;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление типов действий доступных для каждого раздела
+  return CreateAdminCategory;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление типов действий доступных для администратора
 
 
-var CreateCategoryItems =
+var CreateCategoryValue =
 /*#__PURE__*/
 function (_React$Component2) {
-  _inherits(CreateCategoryItems, _React$Component2);
+  _inherits(CreateCategoryValue, _React$Component2);
 
-  function CreateCategoryItems(props) {
-    _classCallCheck(this, CreateCategoryItems);
+  function CreateCategoryValue() {
+    _classCallCheck(this, CreateCategoryValue);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateCategoryItems).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateCategoryValue).apply(this, arguments));
   }
 
-  _createClass(CreateCategoryItems, [{
+  _createClass(CreateCategoryValue, [{
     key: "render",
     value: function render() {
       var arrItems = [];
-      var uniqID = this.props.uniqID;
-      var list = this.props.list;
-      var countSend = this.props.countSend;
+      var parameters = {
+        'group': this.props.parameters.group,
+        'typeItem': this.props.parameters.typeItem,
+        'first': false
+      };
 
-      for (var item in list) {
+      for (var item in this.props.list) {
         if (item === 'name') continue;
 
-        if (typeof list[item].description === 'undefined') {
-          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
-            countSend: countSend + 1,
-            list: list[item],
-            first: false,
-            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000)
+        if (typeof this.props.list[item].status === 'undefined') {
+          parameters.countSend = this.props.parameters.countSend + 1;
+          parameters.list = this.props.list[item];
+          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateAdminCategory, {
+            list: this.props.list[item],
+            parameters: parameters,
+            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
           }));
           continue;
         }
 
-        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000) + uniqID);
-        arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
-          className: "sub-menu",
+        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + parameters.uniqID);
+        var isDisabled = void 0,
+            description = '';
+
+        if (this.props.parameters.group === 'administrator') {
+          isDisabled = 'disabled';
+          description = this.props.list[item].description;
+        }
+
+        arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
           key: keyID
-        }, list[item].description));
-        uniqID++;
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+          type: "checkbox",
+          disabled: isDisabled,
+          defaultChecked: this.props.list[item].status,
+          name: "checkbox_administrator"
+        }), description));
+        parameters.uniqID = this.props.parameters.uniqID + 1;
       }
 
       return arrItems;
     }
   }]);
 
-  return CreateCategoryItems;
+  return CreateCategoryValue;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //вызов модального окна добавления новой группы
+
+
+var OpenModalWindowAddNewGroup =
+/*#__PURE__*/
+function (_React$Component3) {
+  _inherits(OpenModalWindowAddNewGroup, _React$Component3);
+
+  function OpenModalWindowAddNewGroup() {
+    _classCallCheck(this, OpenModalWindowAddNewGroup);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(OpenModalWindowAddNewGroup).apply(this, arguments));
+  }
+
+  _createClass(OpenModalWindowAddNewGroup, [{
+    key: "render",
+    value: function render() {
+      console.log('OPEN MODAL WINDOW ADD GROUP');
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null);
+    }
+  }]);
+
+  return OpenModalWindowAddNewGroup;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка добавления новой группы
 
 
 var ButtonAddGroup =
 /*#__PURE__*/
-function (_React$Component3) {
-  _inherits(ButtonAddGroup, _React$Component3);
+function (_React$Component4) {
+  _inherits(ButtonAddGroup, _React$Component4);
 
-  function ButtonAddGroup(props) {
+  function ButtonAddGroup() {
     _classCallCheck(this, ButtonAddGroup);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonAddGroup).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonAddGroup).apply(this, arguments));
   }
 
   _createClass(ButtonAddGroup, [{
+    key: "openModalWindowAddNewGroup",
+    value: function openModalWindowAddNewGroup() {
+      console.log('OPEN MODAL WINDOW ADD GROUP');
+      return this.createModalWindow();
+    }
+  }, {
+    key: "createModalWindow",
+    value: function createModalWindow() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "modal fade",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "myModalLabel",
+        "data-show": "data"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "modal-dialog",
+        role: "document"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "modal-content"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "modal-header"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "button",
+        className: "close",
+        "data-dismiss": "modal",
+        "aria-label": "Close"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        "aria-hidden": "true"
+      }, "\xD7")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
+        className: "modal-title"
+      }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0433\u0440\u0443\u043F\u043F\u0443")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "modal-body"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "container-fluid"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "row"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "col-md-12"
+      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "modal-footer"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "button",
+        className: "btn btn-default",
+        "data-dismiss": "modal"
+      }, "\u0417\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        type: "submit",
+        className: "btn btn-primary"
+      }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")))));
+    }
+  }, {
     key: "render",
     value: function render() {
       var disabledCreate = this.props.access.create.status ? '' : 'disabled';
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        onClick: this.openModalWindowAddNewGroup.bind(this),
         type: "button",
         className: "btn btn-default btn-sm",
         id: "buttonAddGroup",
@@ -23785,13 +24101,13 @@ function (_React$Component3) {
 
 var ButtonSave =
 /*#__PURE__*/
-function (_React$Component4) {
-  _inherits(ButtonSave, _React$Component4);
+function (_React$Component5) {
+  _inherits(ButtonSave, _React$Component5);
 
-  function ButtonSave(props) {
+  function ButtonSave() {
     _classCallCheck(this, ButtonSave);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonSave).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonSave).apply(this, arguments));
   }
 
   _createClass(ButtonSave, [{
@@ -23814,13 +24130,13 @@ function (_React$Component4) {
 
 var ButtonDelete =
 /*#__PURE__*/
-function (_React$Component5) {
-  _inherits(ButtonDelete, _React$Component5);
+function (_React$Component6) {
+  _inherits(ButtonDelete, _React$Component6);
 
-  function ButtonDelete(props) {
+  function ButtonDelete() {
     _classCallCheck(this, ButtonDelete);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonDelete).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonDelete).apply(this, arguments));
   }
 
   _createClass(ButtonDelete, [{
@@ -23838,44 +24154,21 @@ function (_React$Component5) {
   }]);
 
   return ButtonDelete;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //список установленных значений
-
-
-var CreateListValue =
-/*#__PURE__*/
-function (_React$Component6) {
-  _inherits(CreateListValue, _React$Component6);
-
-  function CreateListValue(props) {
-    _classCallCheck(this, CreateListValue);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListValue).call(this, props));
-  }
-
-  _createClass(CreateListValue, [{
-    key: "render",
-    value: function render() {
-      var arrRows = [];
-      return arrRows;
-    }
-  }]);
-
-  return CreateListValue;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление групп
 
 
-var AddGroupName =
+var EnumGroupName =
 /*#__PURE__*/
 function (_React$Component7) {
-  _inherits(AddGroupName, _React$Component7);
+  _inherits(EnumGroupName, _React$Component7);
 
-  function AddGroupName(props) {
-    _classCallCheck(this, AddGroupName);
+  function EnumGroupName() {
+    _classCallCheck(this, EnumGroupName);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(AddGroupName).call(this, props));
+    return _possibleConstructorReturn(this, _getPrototypeOf(EnumGroupName).apply(this, arguments));
   }
 
-  _createClass(AddGroupName, [{
+  _createClass(EnumGroupName, [{
     key: "render",
     value: function render() {
       var styleGroupName = {
@@ -23883,11 +24176,12 @@ function (_React$Component7) {
       };
       var disabledEdit = !this.props.accessRights.edit.status ? 'disabled' : '';
       var disabledDelete = !this.props.accessRights.delete.status ? 'disabled' : '';
-      var arrGroup = [];
       var bD,
           bS = '';
-
-      for (var group in this.props.info) {
+      var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
+        access: this.props.accessRights
+      });
+      var arrGroup = this.props.groupsName.map(function (group) {
         if (group.toLowerCase() !== 'administrator') {
           bD = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
             disabledDelete: disabledDelete
@@ -23896,77 +24190,141 @@ function (_React$Component7) {
             disabledEdit: disabledEdit
           });
           styleGroupName.paddingBottom = '';
+          butAddGroup = '';
         }
 
-        arrGroup.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
           className: "text-left",
           style: styleGroupName,
-          key: group
-        }, group, "\xA0", bD, "\xA0", bS, "\xA0"));
-      } //                        создана: {this.props.info[group].date_register}
-
+          key: "group_name_".concat(group)
+        }, group, "\xA0", butAddGroup, "\xA0", bD, "\xA0", bS, "\xA0");
+      }); //                        создана: {this.props.info[group].date_register}
 
       return arrGroup;
     }
   }]);
 
-  return AddGroupName;
+  return EnumGroupName;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //вывод даты создания группы
+
+
+var ShowDateCreateGroup =
+/*#__PURE__*/
+function (_React$Component8) {
+  _inherits(ShowDateCreateGroup, _React$Component8);
+
+  function ShowDateCreateGroup() {
+    _classCallCheck(this, ShowDateCreateGroup);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ShowDateCreateGroup).apply(this, arguments));
+  }
+
+  _createClass(ShowDateCreateGroup, [{
+    key: "render",
+    value: function render() {
+      var _this = this;
+
+      var dateCreate = this.props.groupsName.map(function (group) {
+        var text = '';
+        var textCenter = 'text-center';
+
+        if (group === 'administrator') {
+          text = 'группа создана: ';
+          textCenter = '';
+        }
+
+        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_2__["helpers"].getDate(_this.props.info[group].date_register).split(' '),
+            _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
+            dateString = _helpers$getDate$spli2[0];
+
+        var _dateString$split = dateString.split('-'),
+            _dateString$split2 = _slicedToArray(_dateString$split, 3),
+            year = _dateString$split2[0],
+            month = _dateString$split2[1],
+            day = _dateString$split2[2];
+
+        var dateCreate = "".concat(day, ".").concat(month, ".").concat(year);
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
+          className: textCenter,
+          key: "date_create_".concat(group)
+        }, "".concat(text, " ").concat(dateCreate));
+      });
+      return dateCreate;
+    }
+  }]);
+
+  return ShowDateCreateGroup;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //создание основной таблицы
 
 
 var CreateTable =
 /*#__PURE__*/
-function (_React$Component8) {
-  _inherits(CreateTable, _React$Component8);
+function (_React$Component9) {
+  _inherits(CreateTable, _React$Component9);
 
   function CreateTable(props) {
-    var _this;
+    var _this2;
 
     _classCallCheck(this, CreateTable);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this.state = {};
-    return _this;
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this2.state = {};
+    return _this2;
   }
 
   _createClass(CreateTable, [{
     key: "render",
     value: function render() {
-      var divStyleWidth = {
-        width: '35%'
-      };
-      var arrRows = [];
       var list = this.props.mainInformation;
       var uniqID = 0;
+      var groups = Object.keys(list);
+      groups.sort();
+      var newGroups = groups.filter(function (item) {
+        return item !== 'administrator';
+      });
+      var groupsName = ['administrator'].concat(newGroups);
+      var arrBody = [];
+
+      var _loop = function _loop(item) {
+        var arrTd = groupsName.map(function (group) {
+          var listCategoryParameters = {
+            'group': group,
+            'countSend': 0,
+            'typeItem': item,
+            'first': true,
+            'uniqID': uniqID
+          };
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+            key: "".concat(group, "_").concat(item, "_").concat(uniqID)
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateAdminCategory, {
+            list: list[group].elements[item],
+            parameters: listCategoryParameters,
+            key: "value_".concat(uniqID)
+          }));
+        });
+        var keyID = "row_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + uniqID);
+        arrBody.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
+          key: keyID
+        }, arrTd));
+        uniqID++;
+      };
 
       for (var item in list.administrator.elements) {
-        var keyID = "row_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_2__["randomInteger"])(1, 1000) + uniqID);
-        arrRows.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
-          key: keyID
-        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
-          countSend: 0,
-          list: list.administrator.elements[item],
-          first: true,
-          key: uniqID
-        })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListValue, {
-          list: list
-        })));
-        uniqID++;
+        _loop(item);
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("table", {
         className: "table table-striped table-hover table-sm"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("caption", {
         className: "h4 text-uppercase"
-      }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
-        className: "text-right",
-        style: divStyleWidth
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
-        access: this.props.accessRights
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AddGroupName, {
+      }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup, {
+        groupsName: groupsName,
+        info: this.props.mainInformation
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
+        groupsName: groupsName,
         info: this.props.mainInformation,
         accessRights: this.props.accessRights
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, arrRows)));
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, arrBody)));
     }
   }]);
 
