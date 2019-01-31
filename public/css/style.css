@@ -19,6 +19,11 @@ body {
     line-height: 28px;
 }
 
+
+/*.modal {
+    display: block;
+}*/
+
 .set-radius-zero {
     border-radius: 0px;
     -moz-border-radius: 0px;

@@ -1,10 +1,19 @@
+/**
+ * Модуль формирующий основную таблицу на странице
+ * 
+ * Версия 0.1, дата релиза 31.01.2019
+ */
+
 'use strict';
 
 import React from 'react'
+//import Button from 'react-bootstrap/Button'
 import ReactDOM from 'react-dom'
+import { Button, Table } from 'react-bootstrap'
 
 import { helpers } from './common_helpers/helpers'
 import { randomInteger } from './common_helpers/getRandomInt'
+import ModalWindowAddNewGroup from './setting_groups_page/modalWindowAddNewGroup.jsx'
 
 //создание списка разделов сайта
 /*class CreateListCategory extends React.Component {
@@ -75,6 +84,7 @@ class CreateCategoryItems extends React.Component {
     }
 }*/
 
+//перечисление типов действий доступных для администратора
 class CreateAdminCategory extends React.Component {
     render() {
         let itemName = (typeof this.props.list.name === 'undefined') ? ' ' : <strong>{this.props.list.name}</strong>
@@ -123,7 +133,7 @@ class CreateAdminCategory extends React.Component {
     }
 }
 
-//перечисление типов действий доступных для администратора
+//перечисление значений 
 class CreateCategoryValue extends React.Component {
     render() {
         let arrItems = []
@@ -165,26 +175,28 @@ class CreateCategoryValue extends React.Component {
     }
 }
 
-//вызов модального окна добавления новой группы
-class OpenModalWindowAddNewGroup extends React.Component {
-    render() {
-
-        console.log('OPEN MODAL WINDOW ADD GROUP')
-
-        return <div></div>
-    }
-}
-
-//кнопка добавления новой группы
+//кнопка 'добавить новую группу'
 class ButtonAddGroup extends React.Component {
+    constructor(props) {
+        super(props)
 
-    openModalWindowAddNewGroup() {
-        console.log('OPEN MODAL WINDOW ADD GROUP')
+        this.handleShow = this.handleShow.bind(this)
+        this.handleClose = this.handleClose.bind(this)
 
-        return this.createModalWindow()
+        this.state = {
+            modalShow: false,
+        }
     }
 
-    createModalWindow() {
+    handleShow() {
+        this.setState({ modalShow: true })
+    }
+
+    handleClose() {
+        this.setState({ modalShow: false })
+    }
+
+    /*createModalWindow() {
 
         return (
             <div className="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-show="data">
@@ -211,37 +223,42 @@ class ButtonAddGroup extends React.Component {
                 </div>
             </div>
         )
-    }
+                    
+    }*/
 
     render() {
         let disabledCreate = (this.props.access.create.status) ? '' : 'disabled';
 
         return (
-            <button onClick={this.openModalWindowAddNewGroup.bind(this)} type="button" className="btn btn-default btn-sm" id="buttonAddGroup" disabled={disabledCreate} >
-                <span className="glyphicon glyphicon-plus"></span> добавить
-            </button>
+            <>
+                <Button variant="outline-primary" size="sm" onClick={this.handleShow.bind(this)} disabled={disabledCreate} >
+                    добавить
+                </Button>
+
+                <ModalWindowAddNewGroup show={this.state.modalShow} onHide={this.handleClose.bind(this)} />
+            </>
         )
     }
 }
 
-//кнопка сохранение параметров группы
+//кнопка 'сохранить изменение параметров группы'
 class ButtonSave extends React.Component {
     render() {
         return (
-            <button type="button" className="btn btn-default btn-sm" name="buttonEditGroup" disabled={this.props.disabledEdit}>
-                <span className="glyphicon glyphicon-floppy-saved"></span>
-            </button>
+            <Button variant="outline-dark" size="sm" disabled={this.props.disabledEdit}>
+                сохранить
+            </Button>
         )
     }
 }
 
-//кнопка удаления группы
+//кнопка 'удалить группу'
 class ButtonDelete extends React.Component {
     render() {
         return (
-            <button type="button" className="btn btn-default btn-sm" name="buttonDelGroup" disabled={this.props.disabledDelete}>
-                <span className="glyphicon glyphicon-trash"></span>
-            </button>
+            <Button variant="outline-danger" size="sm" disabled={this.props.disabledEdit}>
+                удалить
+            </Button>
         )
     }
 }
@@ -256,27 +273,26 @@ class EnumGroupName extends React.Component {
         let disabledEdit = (!this.props.accessRights.edit.status) ? 'disabled' : '';
         let disabledDelete = (!this.props.accessRights.delete.status) ? 'disabled' : '';
 
-        let bD, bS = ''
+        let bD, bS 
+        let textCenter = 'text-left'
         let butAddGroup = <ButtonAddGroup access={this.props.accessRights} />
 
         let arrGroup = this.props.groupsName.map(group => {
             if (group.toLowerCase() !== 'administrator') {
                 bD = <ButtonDelete disabledDelete={disabledDelete} />
                 bS = <ButtonSave disabledEdit={disabledEdit} />
+                textCenter = "text-center"
                 styleGroupName.paddingBottom = ''
                 butAddGroup = ''
             }
 
             return (
-                <th className="text-left" style={styleGroupName} key={`group_name_${group}`}>
+                <th className={textCenter} style={styleGroupName} key={`group_name_${group}`}>
                     {group}&nbsp;
-                    {butAddGroup}&nbsp;
-                    {bD}&nbsp;
-                    {bS}&nbsp;
+                    <div>{butAddGroup}&nbsp;{bS}&nbsp;{bD}</div>
                 </th>)
         })
 
-        //                        создана: {this.props.info[group].date_register}
         return arrGroup
     }
 }
@@ -289,7 +305,7 @@ class ShowDateCreateGroup extends React.Component {
             let textCenter = 'text-center'
             if (group === 'administrator') {
                 text = 'группа создана: '
-                textCenter = ''
+                textCenter = 'text-left'
             }
 
             let [dateString,] = helpers.getDate(this.props.info[group].date_register).split(' ')
@@ -351,8 +367,8 @@ class CreateTable extends React.Component {
 
         return (
             <div>
-                <table className="table table-striped table-hover table-sm">
-                    <caption className="h4 text-uppercase">управление группами</caption>
+                <h4 className="text-left text-uppercase">управление группами</h4>
+                <Table striped hover>
                     <thead>
                         <tr>
                             <ShowDateCreateGroup groupsName={groupsName} info={this.props.mainInformation} />
@@ -362,7 +378,7 @@ class CreateTable extends React.Component {
                         </tr>
                     </thead>
                     <tbody>{arrBody}</tbody>
-                </table>
+                </Table>
             </div>
         );
     }

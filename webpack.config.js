@@ -17,6 +17,7 @@ module.exports = {
         vendors: [
             'react',
             'reactDom',
+            'reactBootstrap',
             'bootstrap',
             'bootstrapNotify',
             'bootstrapToggle',
@@ -74,6 +75,7 @@ module.exports = {
             amchartsExport: 'amcharts/dist/amcharts/plugins/export/export.min.js',*/
             react: 'react',
             reactDom: 'react-dom',
+            reactBootstrap: 'react-bootstrap/dist/react-bootstrap.min.js',
             bootstrap: 'bootstrap/dist/js/bootstrap.min.js',
             bootstrapNotify: 'bootstrap-notify/bootstrap-notify.min.js',
             bootstrapToggle: 'bootstrap-toggle/js/bootstrap-toggle.min.js',

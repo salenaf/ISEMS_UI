@@ -6,15 +6,36 @@
 
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import ReactDOM from 'react-dom'
+import Button from 'react-bootstrap/Button'
 
 class ModalWindowAddNewGroup extends React.Component {
-    constructor(props, context) {
-        super(props, context)
-    }
-
-    rander() {
-
+    render() {
+        return (
+            <Modal
+                {...this.props}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                /*animation={false}*/
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Modal heading
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h4>Centered Modal</h4>
+                    <p>
+                        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+                        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
+                        ac consectetur ac, vestibulum at eros.
+              </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={this.props.onHide}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        );
     }
 }
 
