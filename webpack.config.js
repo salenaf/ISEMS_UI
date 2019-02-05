@@ -66,6 +66,11 @@ module.exports = {
         contentBase: path.join(__dirname, 'public/dist'),
     },
 
+    watchOptions: {
+        poll: true,
+        ignored: /node_modules/
+    },
+
     resolve: {
         modules: ['node_modules', bootstrapPath],
         extensions: ['.js', 'jsx', '.css'],

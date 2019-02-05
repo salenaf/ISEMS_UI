@@ -135,7 +135,6 @@ module.exports = function(app, socketIo) {
 
     //УПРАВЛЕНИЕ ГРУППАМИ ПОЛЬЗОВАТЕЛЕЙ
     app.get('/setting_groups', isAuthenticated, (req, res) => {
-        //получаем заголовок страницы
         headerPage(req, (err, objHeader) => {
             if (err) {
                 writeLogFile('error', err.toString());
@@ -149,7 +148,7 @@ module.exports = function(app, socketIo) {
     });
 
     //УПРАВЛЕНИЕ ГРУППАМИ ПОЛЬЗОВАТЕЛЕЙ
-    app.post('/setting_groups', isAuthenticated, (req, res) => {
+    /*app.post('/setting_groups', isAuthenticated, (req, res) => {
         if (!req.body.actionType) return;
 
         checkAccessRightsExecute({
@@ -169,7 +168,7 @@ module.exports = function(app, socketIo) {
                 });
             }
         });
-    });
+    });*/
 
     //УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ
     app.get('/setting_users', isAuthenticated, (req, res) => {

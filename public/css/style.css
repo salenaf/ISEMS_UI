@@ -19,11 +19,6 @@ body {
     line-height: 28px;
 }
 
-
-/*.modal {
-    display: block;
-}*/
-
 .set-radius-zero {
     border-radius: 0px;
     -moz-border-radius: 0px;
@@ -58,11 +53,8 @@ body {
 }
 
 #menu-top a {
-    color: #000;
-    text-decoration: none;
     font-weight: 500;
-    padding: 25px 15px 25px 15px;
-    text-transform: uppercase;
+    padding: 10px 10px 10px 10px;
 }
 
 .menu-section {
@@ -71,10 +63,20 @@ body {
     width: 100%
 }
 
+
+/*
 .menu-top-active {
     background-color: #eeeeee;
 }
+*/
 
+.navbar {
+    min-height: 90px;
+    margin-bottom: 0px;
+}
+
+
+/*
 .navbar-inverse {
     background-color: #FFF;
     border-color: rgba(155, 153, 153, 0.23);
@@ -94,6 +96,7 @@ body {
     background-color: black;
     border: 1px solid black;
 }
+*/
 
 
 /* =============================================================

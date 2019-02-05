@@ -19,7 +19,7 @@ module.exports = function(req, cb) {
             for (let key in items) {
                 if (typeof items[key].name === 'undefined') {
                     if (items[key].status) {
-                        listMenu[key] = { name: items[key].description, submenu: {} };
+                        listMenu[key] = { name: items[key].description, status: items[key].status };
                     }
 
                     continue;

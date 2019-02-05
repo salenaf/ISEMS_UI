@@ -290,42 +290,6 @@ module.exports = _interopRequireDefault;
 
 /***/ }),
 
-/***/ "../../node_modules/@babel/runtime/helpers/interopRequireWildcard.js":
-/*!******************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/@babel/runtime/helpers/interopRequireWildcard.js ***!
-  \******************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _interopRequireWildcard(obj) {
-  if (obj && obj.__esModule) {
-    return obj;
-  } else {
-    var newObj = {};
-
-    if (obj != null) {
-      for (var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-
-          if (desc.get || desc.set) {
-            Object.defineProperty(newObj, key, desc);
-          } else {
-            newObj[key] = obj[key];
-          }
-        }
-      }
-    }
-
-    newObj.default = obj;
-    return newObj;
-  }
-}
-
-module.exports = _interopRequireWildcard;
-
-/***/ }),
-
 /***/ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js":
 /*!************************************************************************************************************!*\
   !*** /home/development/ISEMS/ISEMS-UI/node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js ***!
@@ -5289,1106 +5253,6 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/Button.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/Button.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var _SafeAnchor = _interopRequireDefault(__webpack_require__(/*! ./SafeAnchor */ "../../node_modules/react-bootstrap/SafeAnchor.js"));
-
-var Button =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(Button, _React$Component);
-
-  function Button() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = Button.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        bsPrefix = _this$props.bsPrefix,
-        variant = _this$props.variant,
-        size = _this$props.size,
-        active = _this$props.active,
-        className = _this$props.className,
-        block = _this$props.block,
-        type = _this$props.type,
-        as = _this$props.as,
-        innerRef = _this$props.innerRef,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["bsPrefix", "variant", "size", "active", "className", "block", "type", "as", "innerRef"]);
-    var classes = (0, _classnames.default)(className, bsPrefix, active && 'active', bsPrefix + "-" + variant, block && bsPrefix + "-block", size && bsPrefix + "-" + size);
-
-    if (props.href) {
-      return _react.default.createElement(_SafeAnchor.default, (0, _extends2.default)({}, props, {
-        as: as,
-        innerRef: innerRef,
-        className: (0, _classnames.default)(classes, props.disabled && 'disabled')
-      }));
-    }
-
-    var Component = as || 'button';
-    if (innerRef) props.ref = innerRef;
-    return _react.default.createElement(Component, (0, _extends2.default)({}, props, {
-      type: type,
-      className: classes
-    }));
-  };
-
-  return Button;
-}(_react.default.Component);
-
-Button.defaultProps = {
-  variant: 'primary',
-  active: false,
-  disabled: false,
-  type: 'button'
-};
-
-var _default = (0, _ThemeProvider.createBootstrapComponent)(Button, {
-  prefix: 'btn',
-  forwardRefAs: 'innerRef'
-});
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/CloseButton.js":
-/*!************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/CloseButton.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var defaultProps = {
-  label: 'Close'
-};
-
-var CloseButton =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(CloseButton, _React$Component);
-
-  function CloseButton() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = CloseButton.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        label = _this$props.label,
-        onClick = _this$props.onClick;
-    return _react.default.createElement("button", {
-      type: "button",
-      className: "close",
-      onClick: onClick
-    }, _react.default.createElement("span", {
-      "aria-hidden": "true"
-    }, "\xD7"), _react.default.createElement("span", {
-      className: "sr-only"
-    }, label));
-  };
-
-  return CloseButton;
-}(_react.default.Component);
-
-CloseButton.defaultProps = defaultProps;
-var _default = CloseButton;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/Fade.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/Fade.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-var _interopRequireWildcard = __webpack_require__(/*! @babel/runtime/helpers/interopRequireWildcard */ "../../node_modules/@babel/runtime/helpers/interopRequireWildcard.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _Transition = _interopRequireWildcard(__webpack_require__(/*! react-transition-group/Transition */ "../../node_modules/react-transition-group/Transition.js"));
-
-var _end = _interopRequireDefault(__webpack_require__(/*! dom-helpers/transition/end */ "../../node_modules/dom-helpers/transition/end.js"));
-
-var _triggerBrowserReflow = _interopRequireDefault(__webpack_require__(/*! ./utils/triggerBrowserReflow */ "../../node_modules/react-bootstrap/utils/triggerBrowserReflow.js"));
-
-var _fadeStyles;
-
-var defaultProps = {
-  in: false,
-  timeout: 300,
-  mountOnEnter: false,
-  unmountOnExit: false,
-  appear: false
-};
-var fadeStyles = (_fadeStyles = {}, _fadeStyles[_Transition.ENTERING] = 'show', _fadeStyles[_Transition.ENTERED] = 'show', _fadeStyles);
-
-var Fade =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(Fade, _React$Component);
-
-  function Fade() {
-    var _this;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-
-    _this.handleEnter = function (node) {
-      (0, _triggerBrowserReflow.default)(node);
-      if (_this.props.onEnter) _this.props.onEnter(node);
-    };
-
-    return _this;
-  }
-
-  var _proto = Fade.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        className = _this$props.className,
-        children = _this$props.children,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["className", "children"]);
-    return _react.default.createElement(_Transition.default, (0, _extends2.default)({
-      addEndListener: _end.default
-    }, props, {
-      onEnter: this.handleEnter
-    }), function (status, innerProps) {
-      return _react.default.cloneElement(children, (0, _extends2.default)({}, innerProps, {
-        className: (0, _classnames.default)('fade', className, children.props.className, fadeStyles[status])
-      }));
-    });
-  };
-
-  return Fade;
-}(_react.default.Component);
-
-Fade.defaultProps = defaultProps;
-var _default = Fade;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/Modal.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/Modal.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _events = _interopRequireDefault(__webpack_require__(/*! dom-helpers/events */ "../../node_modules/dom-helpers/events/index.js"));
-
-var _ownerDocument = _interopRequireDefault(__webpack_require__(/*! dom-helpers/ownerDocument */ "../../node_modules/dom-helpers/ownerDocument.js"));
-
-var _inDOM = _interopRequireDefault(__webpack_require__(/*! dom-helpers/util/inDOM */ "../../node_modules/dom-helpers/util/inDOM.js"));
-
-var _scrollbarSize = _interopRequireDefault(__webpack_require__(/*! dom-helpers/util/scrollbarSize */ "../../node_modules/dom-helpers/util/scrollbarSize.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _Modal = _interopRequireDefault(__webpack_require__(/*! react-overlays/Modal */ "../../node_modules/react-overlays/Modal.js"));
-
-var _Fade = _interopRequireDefault(__webpack_require__(/*! ./Fade */ "../../node_modules/react-bootstrap/Fade.js"));
-
-var _ModalBody = _interopRequireDefault(__webpack_require__(/*! ./ModalBody */ "../../node_modules/react-bootstrap/ModalBody.js"));
-
-var _ModalDialog = _interopRequireDefault(__webpack_require__(/*! ./ModalDialog */ "../../node_modules/react-bootstrap/ModalDialog.js"));
-
-var _ModalFooter = _interopRequireDefault(__webpack_require__(/*! ./ModalFooter */ "../../node_modules/react-bootstrap/ModalFooter.js"));
-
-var _ModalHeader = _interopRequireDefault(__webpack_require__(/*! ./ModalHeader */ "../../node_modules/react-bootstrap/ModalHeader.js"));
-
-var _ModalTitle = _interopRequireDefault(__webpack_require__(/*! ./ModalTitle */ "../../node_modules/react-bootstrap/ModalTitle.js"));
-
-var _BootstrapModalManager = _interopRequireDefault(__webpack_require__(/*! ./utils/BootstrapModalManager */ "../../node_modules/react-bootstrap/utils/BootstrapModalManager.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var _ModalContext = _interopRequireDefault(__webpack_require__(/*! ./ModalContext */ "../../node_modules/react-bootstrap/ModalContext.js"));
-
-var defaultProps = {
-  show: false,
-  backdrop: true,
-  keyboard: true,
-  autoFocus: true,
-  enforceFocus: true,
-  restoreFocus: true,
-  animation: true,
-  dialogAs: _ModalDialog.default,
-  manager: new _BootstrapModalManager.default()
-};
-/* eslint-disable no-use-before-define, react/no-multi-comp */
-
-function DialogTransition(props) {
-  return _react.default.createElement(_Fade.default, props);
-}
-
-function BackdropTransition(props) {
-  return _react.default.createElement(_Fade.default, props);
-}
-/* eslint-enable no-use-before-define */
-
-
-var Modal =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(Modal, _React$Component);
-
-  function Modal(_props, context) {
-    var _this;
-
-    _this = _React$Component.call(this, _props, context) || this;
-
-    _this.setModalRef = function (ref) {
-      _this._modal = ref;
-    };
-
-    _this.handleDialogMouseDown = function () {
-      _this._waitingForMouseUp = true;
-    };
-
-    _this.handleMouseUp = function (e) {
-      if (_this._waitingForMouseUp && e.target === _this._modal.dialog) {
-        _this._ignoreBackdropClick = true;
-      }
-
-      _this._waitingForMouseUp = false;
-    };
-
-    _this.handleClick = function (e) {
-      if (_this._ignoreBackdropClick || e.target !== e.currentTarget) {
-        _this._ignoreBackdropClick = false;
-        return;
-      }
-
-      _this.props.onHide();
-    };
-
-    _this.handleEnter = function (node) {
-      var _this$props;
-
-      if (node) {
-        node.style.display = 'block';
-
-        _this.updateDialogStyle(node);
-      }
-
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      if (_this.props.onEnter) (_this$props = _this.props).onEnter.apply(_this$props, [node].concat(args));
-    };
-
-    _this.handleEntering = function (node) {
-      var _this$props2;
-
-      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        args[_key2 - 1] = arguments[_key2];
-      }
-
-      if (_this.props.onEntering) (_this$props2 = _this.props).onEntering.apply(_this$props2, [node].concat(args)); // FIXME: This should work even when animation is disabled.
-
-      _events.default.on(window, 'resize', _this.handleWindowResize);
-    };
-
-    _this.handleExited = function (node) {
-      var _this$props3;
-
-      if (node) node.style.display = ''; // RHL removes it sometimes
-
-      for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        args[_key3 - 1] = arguments[_key3];
-      }
-
-      if (_this.props.onExited) (_this$props3 = _this.props).onExited.apply(_this$props3, args); // FIXME: This should work even when animation is disabled.
-
-      _events.default.off(window, 'resize', _this.handleWindowResize);
-    };
-
-    _this.handleWindowResize = function () {
-      _this.updateDialogStyle(_this._modal.dialog);
-    };
-
-    _this.renderBackdrop = function (props) {
-      var _this$props4 = _this.props,
-          bsPrefix = _this$props4.bsPrefix,
-          backdropClassName = _this$props4.backdropClassName;
-      return _react.default.createElement("div", (0, _extends2.default)({}, props, {
-        className: (0, _classnames.default)(bsPrefix + "-backdrop", backdropClassName)
-      }));
-    };
-
-    _this.state = {
-      style: {}
-    };
-    _this.modalContext = {
-      onHide: function onHide() {
-        return _this.props.onHide();
-      }
-    };
-    return _this;
-  }
-
-  var _proto = Modal.prototype;
-
-  _proto.componentWillUnmount = function componentWillUnmount() {
-    // Clean up the listener if we need to.
-    _events.default.off(window, 'resize', this.handleWindowResize);
-  };
-
-  _proto.updateDialogStyle = function updateDialogStyle(node) {
-    if (!_inDOM.default) return;
-    var manager = this.props.manager;
-    var containerIsOverflowing = manager.isContainerOverflowing(this._modal);
-    var modalIsOverflowing = node.scrollHeight > (0, _ownerDocument.default)(node).documentElement.clientHeight;
-    this.setState({
-      style: {
-        paddingRight: containerIsOverflowing && !modalIsOverflowing ? (0, _scrollbarSize.default)() : undefined,
-        paddingLeft: !containerIsOverflowing && modalIsOverflowing ? (0, _scrollbarSize.default)() : undefined
-      }
-    });
-  };
-
-  _proto.render = function render() {
-    var _this$props5 = this.props,
-        bsPrefix = _this$props5.bsPrefix,
-        className = _this$props5.className,
-        style = _this$props5.style,
-        dialogClassName = _this$props5.dialogClassName,
-        children = _this$props5.children,
-        Dialog = _this$props5.dialogAs,
-        show = _this$props5.show,
-        manager = _this$props5.manager,
-        animation = _this$props5.animation,
-        backdrop = _this$props5.backdrop,
-        keyboard = _this$props5.keyboard,
-        onEscapeKeyDown = _this$props5.onEscapeKeyDown,
-        onShow = _this$props5.onShow,
-        onHide = _this$props5.onHide,
-        container = _this$props5.container,
-        autoFocus = _this$props5.autoFocus,
-        enforceFocus = _this$props5.enforceFocus,
-        restoreFocus = _this$props5.restoreFocus,
-        onEntered = _this$props5.onEntered,
-        onExit = _this$props5.onExit,
-        onExiting = _this$props5.onExiting,
-        _ = _this$props5.onExited,
-        _1 = _this$props5.onEntering,
-        _6 = _this$props5.onEnter,
-        _4 = _this$props5.onEntering,
-        _2 = _this$props5.backdropClassName,
-        _3 = _this$props5.backdropStyle,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props5, ["bsPrefix", "className", "style", "dialogClassName", "children", "dialogAs", "show", "manager", "animation", "backdrop", "keyboard", "onEscapeKeyDown", "onShow", "onHide", "container", "autoFocus", "enforceFocus", "restoreFocus", "onEntered", "onExit", "onExiting", "onExited", "onEntering", "onEnter", "onEntering", "backdropClassName", "backdropStyle"]);
-    var clickHandler = backdrop === true ? this.handleClick : null;
-    return _react.default.createElement(_ModalContext.default.Provider, {
-      value: this.modalContext
-    }, _react.default.createElement(_Modal.default, {
-      show: show,
-      backdrop: backdrop,
-      container: container,
-      keyboard: keyboard,
-      autoFocus: autoFocus,
-      enforceFocus: enforceFocus,
-      restoreFocus: restoreFocus,
-      onEscapeKeyDown: onEscapeKeyDown,
-      onShow: onShow,
-      onHide: onHide,
-      onEntered: onEntered,
-      onExit: onExit,
-      onExiting: onExiting,
-      manager: manager,
-      ref: this.setModalRef,
-      style: (0, _extends2.default)({}, style, this.state.style),
-      className: (0, _classnames.default)(className, bsPrefix),
-      containerClassName: bsPrefix + "-open",
-      transition: animation ? DialogTransition : undefined,
-      backdropTransition: animation ? BackdropTransition : undefined,
-      renderBackdrop: this.renderBackdrop,
-      onClick: clickHandler,
-      onMouseUp: this.handleMouseUp,
-      onEnter: this.handleEnter,
-      onEntering: this.handleEntering,
-      onExited: this.handleExited
-    }, _react.default.createElement(Dialog, (0, _extends2.default)({}, props, {
-      onMouseDown: this.handleDialogMouseDown,
-      className: dialogClassName
-    }), children)));
-  };
-
-  return Modal;
-}(_react.default.Component);
-
-Modal.defaultProps = defaultProps;
-var DecoratedModal = (0, _ThemeProvider.createBootstrapComponent)(Modal, 'modal');
-DecoratedModal.Body = _ModalBody.default;
-DecoratedModal.Header = _ModalHeader.default;
-DecoratedModal.Title = _ModalTitle.default;
-DecoratedModal.Footer = _ModalFooter.default;
-DecoratedModal.Dialog = _ModalDialog.default;
-DecoratedModal.TRANSITION_DURATION = 300;
-DecoratedModal.BACKDROP_TRANSITION_DURATION = 150;
-var _default = DecoratedModal;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ModalBody.js":
-/*!**********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ModalBody.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var ModalBody =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(ModalBody, _React$Component);
-
-  function ModalBody() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = ModalBody.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        Component = _this$props.as,
-        bsPrefix = _this$props.bsPrefix,
-        className = _this$props.className,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["as", "bsPrefix", "className"]);
-    return _react.default.createElement(Component, (0, _extends2.default)({}, props, {
-      className: (0, _classnames.default)(className, bsPrefix)
-    }));
-  };
-
-  return ModalBody;
-}(_react.default.Component);
-
-ModalBody.defaultProps = {
-  as: 'div'
-};
-
-var _default = (0, _ThemeProvider.createBootstrapComponent)(ModalBody, 'modal-body');
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ModalContext.js":
-/*!*************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ModalContext.js ***!
-  \*************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var ModalContext = _react.default.createContext({
-  onHide: function onHide() {}
-});
-
-var _default = ModalContext;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ModalDialog.js":
-/*!************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ModalDialog.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var ModalDialog =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(ModalDialog, _React$Component);
-
-  function ModalDialog() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = ModalDialog.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        bsPrefix = _this$props.bsPrefix,
-        className = _this$props.className,
-        centered = _this$props.centered,
-        size = _this$props.size,
-        children = _this$props.children,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["bsPrefix", "className", "centered", "size", "children"]);
-    var bsClass = bsPrefix + "-dialog";
-    return _react.default.createElement("div", (0, _extends2.default)({}, props, {
-      className: (0, _classnames.default)(bsClass, className, size && bsPrefix + "-" + size, centered && bsClass + "-centered")
-    }), _react.default.createElement("div", {
-      className: (0, _classnames.default)(bsPrefix + "-content")
-    }, children));
-  };
-
-  return ModalDialog;
-}(_react.default.Component);
-
-var _default = (0, _ThemeProvider.createBootstrapComponent)(ModalDialog, 'modal');
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ModalFooter.js":
-/*!************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ModalFooter.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var ModalFooter =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(ModalFooter, _React$Component);
-
-  function ModalFooter() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = ModalFooter.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        Component = _this$props.as,
-        bsPrefix = _this$props.bsPrefix,
-        className = _this$props.className,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["as", "bsPrefix", "className"]);
-    return _react.default.createElement(Component, (0, _extends2.default)({}, props, {
-      className: (0, _classnames.default)(className, bsPrefix)
-    }));
-  };
-
-  return ModalFooter;
-}(_react.default.Component);
-
-ModalFooter.defaultProps = {
-  as: 'div'
-};
-
-var _default = (0, _ThemeProvider.createBootstrapComponent)(ModalFooter, 'modal-footer');
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ModalHeader.js":
-/*!************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ModalHeader.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var _createChainedFunction = _interopRequireDefault(__webpack_require__(/*! ./utils/createChainedFunction */ "../../node_modules/react-bootstrap/utils/createChainedFunction.js"));
-
-var _CloseButton = _interopRequireDefault(__webpack_require__(/*! ./CloseButton */ "../../node_modules/react-bootstrap/CloseButton.js"));
-
-var _ModalContext = _interopRequireDefault(__webpack_require__(/*! ./ModalContext */ "../../node_modules/react-bootstrap/ModalContext.js"));
-
-var defaultProps = {
-  closeLabel: 'Close',
-  closeButton: false
-};
-
-var ModalHeader =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(ModalHeader, _React$Component);
-
-  function ModalHeader() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = ModalHeader.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        bsPrefix = _this$props.bsPrefix,
-        closeLabel = _this$props.closeLabel,
-        closeButton = _this$props.closeButton,
-        onHide = _this$props.onHide,
-        className = _this$props.className,
-        children = _this$props.children,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["bsPrefix", "closeLabel", "closeButton", "onHide", "className", "children"]);
-    return _react.default.createElement(_ModalContext.default.Consumer, null, function (context) {
-      return _react.default.createElement("div", (0, _extends2.default)({}, props, {
-        className: (0, _classnames.default)(className, bsPrefix)
-      }), children, closeButton && _react.default.createElement(_CloseButton.default, {
-        label: closeLabel,
-        onClick: (0, _createChainedFunction.default)(context && context.onHide, onHide)
-      }));
-    });
-  };
-
-  return ModalHeader;
-}(_react.default.Component);
-
-ModalHeader.defaultProps = defaultProps;
-
-var _default = (0, _ThemeProvider.createBootstrapComponent)(ModalHeader, 'modal-header');
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ModalTitle.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ModalTitle.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _divWithClassName = _interopRequireDefault(__webpack_require__(/*! ./utils/divWithClassName */ "../../node_modules/react-bootstrap/utils/divWithClassName.js"));
-
-var _ThemeProvider = __webpack_require__(/*! ./ThemeProvider */ "../../node_modules/react-bootstrap/ThemeProvider.js");
-
-var DivStyledAsH4 = (0, _divWithClassName.default)('h4');
-
-var ModalTitle =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(ModalTitle, _React$Component);
-
-  function ModalTitle() {
-    return _React$Component.apply(this, arguments) || this;
-  }
-
-  var _proto = ModalTitle.prototype;
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        Component = _this$props.as,
-        bsPrefix = _this$props.bsPrefix,
-        className = _this$props.className,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props, ["as", "bsPrefix", "className"]);
-    return _react.default.createElement(Component, (0, _extends2.default)({}, props, {
-      className: (0, _classnames.default)(className, bsPrefix)
-    }));
-  };
-
-  return ModalTitle;
-}(_react.default.Component);
-
-ModalTitle.defaultProps = {
-  as: DivStyledAsH4
-};
-
-var _default = (0, _ThemeProvider.createBootstrapComponent)(ModalTitle, 'modal-title');
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/SafeAnchor.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/SafeAnchor.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _objectWithoutPropertiesLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/objectWithoutPropertiesLoose */ "../../node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _assertThisInitialized2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ "../../node_modules/@babel/runtime/helpers/assertThisInitialized.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _createChainedFunction = _interopRequireDefault(__webpack_require__(/*! ./utils/createChainedFunction */ "../../node_modules/react-bootstrap/utils/createChainedFunction.js"));
-
-var defaultProps = {
-  as: 'a'
-};
-
-function isTrivialHref(href) {
-  return !href || href.trim() === '#';
-}
-/**
- * There are situations due to browser quirks or Bootstrap CSS where
- * an anchor tag is needed, when semantically a button tag is the
- * better choice. SafeAnchor ensures that when an anchor is used like a
- * button its accessible. It also emulates input `disabled` behavior for
- * links, which is usually desirable for Buttons, NavItems, DropdownItems, etc.
- */
-
-
-var SafeAnchor =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(SafeAnchor, _React$Component);
-
-  function SafeAnchor(props, context) {
-    var _this;
-
-    _this = _React$Component.call(this, props, context) || this;
-    _this.handleClick = _this.handleClick.bind((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)));
-    _this.handleKeyDown = _this.handleKeyDown.bind((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)));
-    return _this;
-  }
-
-  var _proto = SafeAnchor.prototype;
-
-  _proto.handleClick = function handleClick(event) {
-    var _this$props = this.props,
-        disabled = _this$props.disabled,
-        href = _this$props.href,
-        onClick = _this$props.onClick;
-
-    if (disabled || isTrivialHref(href)) {
-      event.preventDefault();
-    }
-
-    if (disabled) {
-      event.stopPropagation();
-      return;
-    }
-
-    if (onClick) {
-      onClick(event);
-    }
-  };
-
-  _proto.handleKeyDown = function handleKeyDown(event) {
-    if (event.key === ' ') {
-      event.preventDefault();
-      this.handleClick(event);
-    }
-  };
-
-  _proto.render = function render() {
-    var _this$props2 = this.props,
-        Component = _this$props2.as,
-        disabled = _this$props2.disabled,
-        onKeyDown = _this$props2.onKeyDown,
-        innerRef = _this$props2.innerRef,
-        props = (0, _objectWithoutPropertiesLoose2.default)(_this$props2, ["as", "disabled", "onKeyDown", "innerRef"]);
-
-    if (isTrivialHref(props.href)) {
-      props.role = props.role || 'button'; // we want to make sure there is a href attribute on the node
-      // otherwise, the cursor incorrectly styled (except with role='button')
-
-      props.href = props.href || '#';
-    }
-
-    if (disabled) {
-      props.tabIndex = -1;
-      props['aria-disabled'] = true;
-    }
-
-    if (innerRef) props.ref = innerRef;
-    return _react.default.createElement(Component, (0, _extends2.default)({}, props, {
-      onClick: this.handleClick,
-      onKeyDown: (0, _createChainedFunction.default)(this.handleKeyDown, onKeyDown)
-    }));
-  };
-
-  return SafeAnchor;
-}(_react.default.Component);
-
-SafeAnchor.defaultProps = defaultProps;
-var _default = SafeAnchor;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/ThemeProvider.js":
-/*!**************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/ThemeProvider.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.createBootstrapComponent = createBootstrapComponent;
-exports.default = exports.ThemeConsumer = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _forwardRef = _interopRequireDefault(__webpack_require__(/*! react-context-toolbox/forwardRef */ "../../node_modules/react-context-toolbox/forwardRef.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _React$createContext = _react.default.createContext(new Map()),
-    Provider = _React$createContext.Provider,
-    Consumer = _React$createContext.Consumer;
-
-exports.ThemeConsumer = Consumer;
-
-var ThemeProvider =
-/*#__PURE__*/
-function (_React$Component) {
-  (0, _inheritsLoose2.default)(ThemeProvider, _React$Component);
-
-  function ThemeProvider() {
-    var _this;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-    _this.prefixes = new Map();
-    Object.keys(_this.props.prefixes).forEach(function (key) {
-      _this.prefixes.set(key, _this.props.prefixes[key]);
-    });
-    return _this;
-  }
-
-  var _proto = ThemeProvider.prototype;
-
-  _proto.render = function render() {
-    return _react.default.createElement(Provider, {
-      value: this.prefixes
-    }, this.props.children);
-  };
-
-  return ThemeProvider;
-}(_react.default.Component);
-
-function createBootstrapComponent(Component, opts) {
-  if (typeof opts === 'string') opts = {
-    prefix: opts
-  };
-  var isClassy = Component.prototype && Component.prototype.isReactComponent; // If it's a functional component make sure we don't break it with a ref
-
-  var _opts = opts,
-      prefix = _opts.prefix,
-      _opts$forwardRefAs = _opts.forwardRefAs,
-      forwardRefAs = _opts$forwardRefAs === void 0 ? isClassy ? 'ref' : 'innerRef' : _opts$forwardRefAs;
-  return (0, _forwardRef.default)(function (_ref, ref) {
-    var props = (0, _extends2.default)({}, _ref);
-    props[forwardRefAs] = ref;
-    return _react.default.createElement(Consumer, null, function (prefixes) {
-      return _react.default.createElement(Component, (0, _extends2.default)({}, props, {
-        bsPrefix: props.bsPrefix || prefixes.get(prefix) || prefix
-      }));
-    });
-  }, {
-    displayName: "Bootstrap(" + (Component.displayName || Component.name) + ")"
-  });
-}
-
-var _default = ThemeProvider;
-exports.default = _default;
 
 /***/ }),
 
@@ -14101,223 +12965,6 @@ __webpack_require__.r(__webpack_exports__);
 function triggerBrowserReflow(node) {
   node.offsetHeight; // eslint-disable-line no-unused-expressions
 }
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/utils/BootstrapModalManager.js":
-/*!****************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/utils/BootstrapModalManager.js ***!
-  \****************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _inheritsLoose2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inheritsLoose */ "../../node_modules/@babel/runtime/helpers/inheritsLoose.js"));
-
-var _querySelectorAll = _interopRequireDefault(__webpack_require__(/*! dom-helpers/query/querySelectorAll */ "../../node_modules/dom-helpers/query/querySelectorAll.js"));
-
-var _style = _interopRequireDefault(__webpack_require__(/*! dom-helpers/style */ "../../node_modules/dom-helpers/style/index.js"));
-
-var _scrollbarSize = _interopRequireDefault(__webpack_require__(/*! dom-helpers/util/scrollbarSize */ "../../node_modules/dom-helpers/util/scrollbarSize.js"));
-
-var _ModalManager2 = _interopRequireDefault(__webpack_require__(/*! react-overlays/ModalManager */ "../../node_modules/react-overlays/ModalManager.js"));
-
-var Selector = {
-  FIXED_CONTENT: '.fixed-top, .fixed-bottom, .is-fixed, .sticky-top',
-  STICKY_CONTENT: '.sticky-top',
-  NAVBAR_TOGGLER: '.navbar-toggler'
-};
-
-var BootstrapModalManager =
-/*#__PURE__*/
-function (_ModalManager) {
-  (0, _inheritsLoose2.default)(BootstrapModalManager, _ModalManager);
-
-  function BootstrapModalManager() {
-    var _this;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _ModalManager.call.apply(_ModalManager, [this].concat(args)) || this;
-
-    _this.adjustAndStore = function (prop, element, adjust) {
-      var actual = element.style[prop];
-      element.dataset[prop] = actual;
-      (0, _style.default)(element, prop, parseFloat((0, _style.default)(element, prop)) + adjust + "px");
-    };
-
-    _this.restore = function (prop, element) {
-      var value = element.dataset[prop];
-
-      if (value !== undefined) {
-        delete element.dataset[prop];
-        (0, _style.default)(element, prop, value);
-      }
-    };
-
-    return _this;
-  }
-
-  var _proto = BootstrapModalManager.prototype;
-
-  _proto.setContainerStyle = function setContainerStyle(containerState, container) {
-    var _this2 = this;
-
-    _ModalManager.prototype.setContainerStyle.call(this, containerState, container);
-
-    if (!containerState.overflowing) return;
-    var size = (0, _scrollbarSize.default)();
-    (0, _querySelectorAll.default)(container, Selector.FIXED_CONTENT).forEach(function (el) {
-      return _this2.adjustAndStore('paddingRight', el, size);
-    });
-    (0, _querySelectorAll.default)(container, Selector.STICKY_CONTENT).forEach(function (el) {
-      return _this2.adjustAndStore('margingRight', el, -size);
-    });
-    (0, _querySelectorAll.default)(container, Selector.NAVBAR_TOGGLER).forEach(function (el) {
-      return _this2.adjustAndStore('margingRight', el, size);
-    });
-  };
-
-  _proto.removeContainerStyle = function removeContainerStyle(containerState, container) {
-    var _this3 = this;
-
-    _ModalManager.prototype.removeContainerStyle.call(this, containerState, container);
-
-    (0, _querySelectorAll.default)(container, Selector.FIXED_CONTENT).forEach(function (el) {
-      return _this3.restore('paddingRight', el);
-    });
-    (0, _querySelectorAll.default)(container, Selector.STICKY_CONTENT).forEach(function (el) {
-      return _this3.restore('margingRight', el);
-    });
-    (0, _querySelectorAll.default)(container, Selector.NAVBAR_TOGGLER).forEach(function (el) {
-      return _this3.restore('margingRight', el);
-    });
-  };
-
-  return BootstrapModalManager;
-}(_ModalManager2.default);
-
-exports.default = BootstrapModalManager;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/utils/createChainedFunction.js":
-/*!****************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/utils/createChainedFunction.js ***!
-  \****************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.default = void 0;
-
-/**
- * Safe chained function
- *
- * Will only create a new function if needed,
- * otherwise will pass back existing functions or null.
- *
- * @param {function} functions to chain
- * @returns {function|null}
- */
-function createChainedFunction() {
-  for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
-    funcs[_key] = arguments[_key];
-  }
-
-  return funcs.filter(function (f) {
-    return f != null;
-  }).reduce(function (acc, f) {
-    if (typeof f !== 'function') {
-      throw new Error('Invalid Argument Type, must only provide functions, undefined, or null.');
-    }
-
-    if (acc === null) return f;
-    return function chainedFunction() {
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
-
-      acc.apply(this, args);
-      f.apply(this, args);
-    };
-  }, null);
-}
-
-var _default = createChainedFunction;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/utils/divWithClassName.js":
-/*!***********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/utils/divWithClassName.js ***!
-  \***********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/extends */ "../../node_modules/@babel/runtime/helpers/extends.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../../node_modules/classnames/index.js"));
-
-var _default = function _default(className) {
-  return _react.default.forwardRef(function (p, ref) {
-    return _react.default.createElement("div", (0, _extends2.default)({}, p, {
-      ref: ref,
-      className: (0, _classnames.default)(p.className, className)
-    }));
-  });
-};
-
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-bootstrap/utils/triggerBrowserReflow.js":
-/*!***************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bootstrap/utils/triggerBrowserReflow.js ***!
-  \***************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.default = triggerBrowserReflow;
-
-// reading a dimension prop will cause the browser to recalculate,
-// which will let our animations work
-function triggerBrowserReflow(node) {
-  node.offsetHeight; // eslint-disable-line no-unused-expressions
-}
-
-module.exports = exports["default"];
 
 /***/ }),
 
@@ -42229,9 +40876,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
-/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
+/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
+/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
 /**
  * Модуль формирующий основную таблицу на странице
  * 
@@ -42265,95 +40914,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
- //import Button from 'react-bootstrap/Button'
 
 
 
 
 
- //создание списка разделов сайта
 
-/*class CreateListCategory extends React.Component {
-    render() {
-        let itemName = (typeof this.props.parameters.list.name === 'undefined') ? ' ' : <strong>{this.props.parameters.list.name}</strong>
-        let liNoMarker = { 'listStyleType': 'none' }
+ //перечисление типов действий доступных для администратора
 
-        if (this.props.parameters.first) {
-            return (
-                <ul className="text-left">
-                    {itemName}
-                    <ul style={liNoMarker}>
-                        <CreateCategoryItems parameters={this.props.parameters} key={randomInteger(1, 1000)} />
-                    </ul>
-                </ul>)
-        }
-
-        if ((this.props.parameters.typeItem === 'menu_items') || (this.props.parameters.countSend === 3)) {
-            return (
-                <div>
-                    {itemName}
-                    <ul style={liNoMarker}>
-                        <CreateCategoryItems parameters={this.props.parameters} key={randomInteger(1, 1000)} />
-                    </ul>
-                </div>)
-        }
-
-        return (
-            <div>
-                {itemName}
-                <CreateCategoryItems parameters={this.props.parameters} key={randomInteger(1, 1000)} />
-            </div>)
-    }
-}
-
-//перечисление типов действий доступных для каждого раздела
-class CreateCategoryItems extends React.Component {
-    render() {
-        let arrItems = []
-        let parameters = {
-            'typeItem': this.props.parameters.typeItem,
-            'first': false
-        }
-
-        for (let item in this.props.parameters.list) {
-            if (item === 'name') continue
-            if (typeof this.props.parameters.list[item].description === 'undefined') {
-                parameters.countSend = this.props.parameters.countSend + 1
-                parameters.list = this.props.parameters.list[item]
-
-                arrItems.push(
-                    <CreateListCategory parameters={parameters} key={randomInteger(1, 1000)} />)
-
-                continue
-            }
-
-            let keyID = `sub_menu_${item}_${randomInteger(1, 1000) + parameters.uniqID}`
-
-            arrItems.push(
-                <li className="sub-menu" key={keyID}>
-                    {this.props.parameters.list[item].description}
-                </li>)
-
-            parameters.uniqID = this.props.parameters.uniqID + 1
-        }
-
-        return arrItems
-    }
-}*/
-//перечисление типов действий доступных для администратора
-
-var CreateAdminCategory =
+var CreateListCategory =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(CreateAdminCategory, _React$Component);
+  _inherits(CreateListCategory, _React$Component);
 
-  function CreateAdminCategory() {
-    _classCallCheck(this, CreateAdminCategory);
+  function CreateListCategory() {
+    _classCallCheck(this, CreateListCategory);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateAdminCategory).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListCategory).apply(this, arguments));
   }
 
-  _createClass(CreateAdminCategory, [{
+  _createClass(CreateListCategory, [{
     key: "render",
     value: function render() {
       var itemName = typeof this.props.list.name === 'undefined' ? ' ' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.list.name);
@@ -42362,6 +40942,11 @@ function (_React$Component) {
       };
       var isMenuItem = this.props.parameters.typeItem === 'menu_items';
       var moreThanTree = this.props.parameters.countSend === 3;
+      var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+        list: this.props.list,
+        parameters: this.props.parameters,
+        key: "".concat(this.props.parameters.group, "_ul_key_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + this.props.parameters.uniqID)
+      });
 
       if (this.props.parameters.group === 'administrator') {
         if (this.props.parameters.first) {
@@ -42369,49 +40954,34 @@ function (_React$Component) {
             className: "text-left"
           }, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
             style: liNoMarker
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
-            list: this.props.list,
-            parameters: this.props.parameters,
-            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000)
-          })));
+          }, createCategoryValue));
         }
 
         if (isMenuItem || moreThanTree) {
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
             style: liNoMarker
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
-            list: this.props.list,
-            parameters: this.props.parameters,
-            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000)
-          })));
+          }, createCategoryValue));
         }
 
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
-          list: this.props.list,
-          parameters: this.props.parameters,
-          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000)
-        }));
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, createCategoryValue);
       }
 
       if (this.props.parameters.first || isMenuItem || moreThanTree) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
-          list: this.props.list,
-          parameters: this.props.parameters,
-          key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000)
-        }));
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "\xA0", createCategoryValue);
       }
 
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
-        list: this.props.list,
-        parameters: this.props.parameters,
-        key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000)
-      });
+      return createCategoryValue;
     }
   }]);
 
-  return CreateAdminCategory;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление значений 
+  return CreateListCategory;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+CreateListCategory.propTypes = {
+  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //перечисление значений 
+
+};
 
 var CreateCategoryValue =
 /*#__PURE__*/
@@ -42429,6 +40999,7 @@ function (_React$Component2) {
     value: function render() {
       var arrItems = [];
       var parameters = {
+        'uniqID': this.props.parameters.uniqID + 1,
         'group': this.props.parameters.group,
         'typeItem': this.props.parameters.typeItem,
         'first': false
@@ -42439,16 +41010,15 @@ function (_React$Component2) {
 
         if (typeof this.props.list[item].status === 'undefined') {
           parameters.countSend = this.props.parameters.countSend + 1;
-          parameters.list = this.props.list[item];
-          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateAdminCategory, {
+          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             list: this.props.list[item],
             parameters: parameters,
-            key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000)
+            key: "".concat(this.props.parameters.group, "_value_").concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + parameters.uniqID)
           }));
           continue;
         }
 
-        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000) + parameters.uniqID);
+        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + parameters.uniqID);
         var isDisabled = void 0,
             description = '';
 
@@ -42458,14 +41028,14 @@ function (_React$Component2) {
         }
 
         arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-          key: keyID
+          key: "".concat(item, "_").concat(keyID)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
           type: "checkbox",
           disabled: isDisabled,
           defaultChecked: this.props.list[item].status,
           name: "checkbox_administrator"
         }), description));
-        parameters.uniqID = this.props.parameters.uniqID + 1;
+        parameters.uniqID += parameters.uniqID;
       }
 
       return arrItems;
@@ -42473,8 +41043,13 @@ function (_React$Component2) {
   }]);
 
   return CreateCategoryValue;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка 'добавить новую группу'
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+CreateCategoryValue.propTypes = {
+  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //кнопка 'добавить новую группу'
+
+};
 
 var ButtonAddGroup =
 /*#__PURE__*/
@@ -42509,34 +41084,6 @@ function (_React$Component3) {
         modalShow: false
       });
     }
-    /*createModalWindow() {
-         return (
-            <div className="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-show="data">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 className="modal-title">Добавить группу</h4>
-                        </div>
-                        <div className="modal-body">
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-md-12">
-                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-default" data-dismiss="modal">Закрыть</button>
-                            <button type="submit" className="btn btn-primary">Сохранить</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-                    
-    }*/
-
   }, {
     key: "render",
     value: function render() {
@@ -42546,29 +41093,35 @@ function (_React$Component3) {
         size: "sm",
         onClick: this.handleShow.bind(this),
         disabled: disabledCreate
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
         show: this.state.modalShow,
-        onHide: this.handleClose.bind(this)
+        onHide: this.handleClose.bind(this),
+        listelement: this.props.groupListElement
       }));
     }
   }]);
 
   return ButtonAddGroup;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка 'сохранить изменение параметров группы'
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+ButtonAddGroup.propTypes = {
+  access: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //кнопка 'сохранить изменение параметров группы'
 
-var ButtonSave =
+};
+
+var ButtonEdit =
 /*#__PURE__*/
 function (_React$Component4) {
-  _inherits(ButtonSave, _React$Component4);
+  _inherits(ButtonEdit, _React$Component4);
 
-  function ButtonSave() {
-    _classCallCheck(this, ButtonSave);
+  function ButtonEdit() {
+    _classCallCheck(this, ButtonEdit);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonSave).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonEdit).apply(this, arguments));
   }
 
-  _createClass(ButtonSave, [{
+  _createClass(ButtonEdit, [{
     key: "render",
     value: function render() {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
@@ -42579,9 +41132,13 @@ function (_React$Component4) {
     }
   }]);
 
-  return ButtonSave;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //кнопка 'удалить группу'
+  return ButtonEdit;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+ButtonEdit.propTypes = {
+  disabledEdit: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired //кнопка 'удалить группу'
+
+};
 
 var ButtonDelete =
 /*#__PURE__*/
@@ -42600,14 +41157,18 @@ function (_React$Component5) {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
         variant: "outline-danger",
         size: "sm",
-        disabled: this.props.disabledEdit
+        disabled: this.props.disabledDelete
       }, "\u0443\u0434\u0430\u043B\u0438\u0442\u044C");
     }
   }]);
 
   return ButtonDelete;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //перечисление групп
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+ButtonDelete.propTypes = {
+  disabledDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired //перечисление групп
+
+};
 
 var EnumGroupName =
 /*#__PURE__*/
@@ -42631,14 +41192,15 @@ function (_React$Component6) {
       var bD, bS;
       var textCenter = 'text-left';
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
-        access: this.props.accessRights
+        access: this.props.accessRights,
+        groupListElement: this.props.info.administrator.elements
       });
       var arrGroup = this.props.groupsName.map(function (group) {
         if (group.toLowerCase() !== 'administrator') {
           bD = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
             disabledDelete: disabledDelete
           });
-          bS = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonSave, {
+          bS = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
             disabledEdit: disabledEdit
           });
           textCenter = "text-center";
@@ -42657,8 +41219,14 @@ function (_React$Component6) {
   }]);
 
   return EnumGroupName;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //вывод даты создания группы
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+EnumGroupName.propTypes = {
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
+  info: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //вывод даты создания группы
+
+};
 
 var ShowDateCreateGroup =
 /*#__PURE__*/
@@ -42685,7 +41253,7 @@ function (_React$Component7) {
           textCenter = 'text-left';
         }
 
-        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__["helpers"].getDate(_this2.props.info[group].date_register).split(' '),
+        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.info[group].date_register).split(' '),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
             dateString = _helpers$getDate$spli2[0];
 
@@ -42706,8 +41274,13 @@ function (_React$Component7) {
   }]);
 
   return ShowDateCreateGroup;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component); //создание основной таблицы
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+ShowDateCreateGroup.propTypes = {
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
+  info: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //создание основной таблицы
+
+};
 
 var CreateTable =
 /*#__PURE__*/
@@ -42748,15 +41321,15 @@ function (_React$Component8) {
           };
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
             key: "".concat(group, "_").concat(item, "_").concat(uniqID)
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateAdminCategory, {
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             list: list[group].elements[item],
             parameters: listCategoryParameters,
-            key: "value_".concat(uniqID)
+            key: "".concat(group, "_value_").concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + uniqID)
           }));
         });
-        var keyID = "row_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_4__["randomInteger"])(1, 1000) + uniqID);
+        var keyID = "row_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + uniqID);
         arrBody.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
-          key: keyID
+          key: "".concat(item, "_").concat(keyID)
         }, arrTd));
         uniqID++;
       };
@@ -42784,12 +41357,14 @@ function (_React$Component8) {
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+CreateTable.propTypes = {
+  mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+};
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
   mainInformation: receivedFromServerMain,
   accessRights: receivedFromServerAccess
 }), document.getElementById('field_information'));
-
-(function () {})();
 
 /***/ }),
 
@@ -42804,13 +41379,13 @@ react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap/Modal */ "../../node_modules/react-bootstrap/Modal.js");
-/* harmony import */ var react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap/Button */ "../../node_modules/react-bootstrap/Button.js");
-/* harmony import */ var react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_2__);
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -42836,34 +41411,271 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+ //список доступных действий
+
+var CreateListCategory =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(CreateListCategory, _React$Component);
+
+  function CreateListCategory() {
+    _classCallCheck(this, CreateListCategory);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListCategory).apply(this, arguments));
+  }
+
+  _createClass(CreateListCategory, [{
+    key: "render",
+    value: function render() {
+      var itemName = typeof this.props.listelement.name === 'undefined' ? ' ' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.listelement.name);
+      var liNoMarker = {
+        'listStyleType': 'none'
+      };
+      var isMenuItem = this.props.itemName === 'menu_items';
+      var moreThanTree = this.props.countSend === 3;
+      var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
+        listelement: this.props.listelement,
+        itemName: this.props.itemName,
+        countSend: this.props.countSend,
+        isListName: this.props.isListName,
+        key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+      });
+
+      if (!this.props.isListName) {
+        if (isMenuItem || this.props.isFirstItem || moreThanTree) {
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "\xA0", createCategoryValue);
+        }
+
+        return createCategoryValue;
+      }
+
+      if (this.props.countSend === 1) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+          className: "text-left"
+        }, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+          style: liNoMarker
+        }, createCategoryValue));
+      }
+
+      if (isMenuItem || moreThanTree) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+          style: liNoMarker
+        }, createCategoryValue));
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, createCategoryValue);
+    }
+  }]);
+
+  return CreateListCategory;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+CreateListCategory.propTypes = {
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  itemName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  countSend: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.number.isRequired,
+  isListName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired
+};
+CreateListCategory.defaultProps = {
+  isFirstItem: true //создание элементов для выбора действий
+
+};
+
+var CreateCategoryValue =
+/*#__PURE__*/
+function (_React$Component2) {
+  _inherits(CreateCategoryValue, _React$Component2);
+
+  function CreateCategoryValue() {
+    _classCallCheck(this, CreateCategoryValue);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateCategoryValue).apply(this, arguments));
+  }
+
+  _createClass(CreateCategoryValue, [{
+    key: "render",
+    value: function render() {
+      var arrItems = [];
+
+      for (var item in this.props.listelement) {
+        if (item === 'name') continue;
+
+        if (typeof this.props.listelement[item].status === 'undefined') {
+          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+            listelement: this.props.listelement[item],
+            itemName: this.props.itemName,
+            countSend: this.props.countSend + 1,
+            isListName: this.props.isListName,
+            isFirstItem: false,
+            key: "".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000))
+          }));
+          continue;
+        }
+
+        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000));
+        arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+          key: keyID
+        }, this.props.isListName ? this.props.listelement[item].description : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+          name: item,
+          type: "checkbox",
+          key: "check_box_".concat(keyID)
+        })));
+      }
+
+      return arrItems;
+    }
+  }]);
+
+  return CreateCategoryValue;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+CreateCategoryValue.propTypes = {
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  itemName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  countSend: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.number.isRequired,
+  isListName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired //создание списка доступных действий
+
+};
+
+var CreateTable =
+/*#__PURE__*/
+function (_React$Component3) {
+  _inherits(CreateTable, _React$Component3);
+
+  function CreateTable() {
+    _classCallCheck(this, CreateTable);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).apply(this, arguments));
+  }
+
+  _createClass(CreateTable, [{
+    key: "handleChangeGroupName",
+    value: function handleChangeGroupName(event) {
+      this.props.onUserInput(event.target.value);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var num = 0;
+      var tableBody = [];
+
+      for (var item in this.props.listelement) {
+        num++;
+        var arrTD = [];
+
+        for (var i = 1; i <= 2; i++) {
+          arrTD.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+            className: i % 2 ? '' : 'text-center',
+            key: "colum_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + num)
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+            listelement: this.props.listelement[item],
+            itemName: item,
+            countSend: 1,
+            isListName: i % 2 ? true : false,
+            key: "colum_".concat(i, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + i)
+          })));
+        }
+
+        tableBody.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
+          key: "line_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + num)
+        }, arrTD));
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Table"], {
+        striped: true,
+        hover: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
+        key: "header_line"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
+        className: "text-right"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        className: "has-success",
+        id: "new_group_name",
+        placeholder: "\u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u044B",
+        defaultValue: this.props.groupName,
+        onChange: this.handleChangeGroupName.bind(this)
+      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, tableBody));
+    }
+  }]);
+
+  return CreateTable;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+CreateTable.propTypes = {
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  groupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string
+};
 
 var ModalWindowAddNewGroup =
 /*#__PURE__*/
-function (_React$Component) {
-  _inherits(ModalWindowAddNewGroup, _React$Component);
+function (_React$Component4) {
+  _inherits(ModalWindowAddNewGroup, _React$Component4);
 
   function ModalWindowAddNewGroup() {
+    var _this;
+
     _classCallCheck(this, ModalWindowAddNewGroup);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).apply(this, arguments));
+    _this.state = {
+      groupName: '',
+      groupNameValide: false
+    };
+    return _this;
   }
 
   _createClass(ModalWindowAddNewGroup, [{
+    key: "handleUserInput",
+    value: function handleUserInput(newGroup) {
+      console.log("new group name = ".concat(newGroup));
+      console.log(newGroup.length);
+
+      if (newGroup.length > 4) {
+        this.setState({
+          groupName: newGroup,
+          groupNameValide: true
+        });
+      }
+    }
+  }, {
+    key: "handleClose",
+    value: function handleClose() {
+      this.props.onHide();
+    }
+  }, {
+    key: "handleSave",
+    value: function handleSave() {
+      if (this.state.groupNameValide) {
+        console.log('GROUP VALIDE');
+        this.handleClose();
+      } else {
+        console.log('WARNING: GROUP INVALIDE!!!!');
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1___default.a, _extends({}, this.props, {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], _extends({}, this.props, {
         size: "lg",
-        "aria-labelledby": "contained-modal-title-vcenter"
-        /*animation={false}*/
-        ,
+        "aria-labelledby": "contained-modal-title-vcenter",
         centered: true
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1___default.a.Header, {
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
         closeButton: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1___default.a.Title, {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, {
         id: "contained-modal-title-vcenter"
-      }, "Modal heading")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1___default.a.Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Centered Modal"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_1___default.a.Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_2___default.a, {
-        onClick: this.props.onHide
-      }, "Close")));
+      }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0433\u0440\u0443\u043F\u043F\u0443")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
+        listelement: this.props.listelement,
+        groupName: this.state.groupName,
+        onUserInput: this.handleUserInput.bind(this)
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-secondary",
+        size: "sm",
+        onClick: this.handleClose.bind(this)
+      }, "\u0417\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-primary",
+        size: "sm",
+        onClick: this.handleSave.bind(this)
+      }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
     }
   }]);
 

@@ -33,6 +33,7 @@ const md5js = require('md5js');
         if (!/^\w+$/.test(divLogin)) {
             let divAlert = document.getElementById('divAlert');
             divAlert.style.display = '';
+
             return false;
         }
 

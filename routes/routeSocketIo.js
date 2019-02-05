@@ -1,10 +1,12 @@
 /*
- * Маршруты для данных передаваемых через socket.io
+ * Маршруты для обработки информации передаваемой через протокол socket.io
  *
- * Версия 0.1, дата релиза 24.04.2017
+ * Версия 0.1, дата релиза 04.01.2019
  * */
 
 'use strict';
+
+const debug = require('debug')('routeSocketIo')
 
 const fs = require('fs');
 const path = require('path');
@@ -134,69 +136,23 @@ exports.eventEmitter = function(socketIo, object) {
     handling[object.type]();
 };
 
-//обработчик событий поступающих от пользователей
+/** 
+ * ОБРАБОТЧИК СОБЫТИЙ ПОСТУПАЮЩИХ С User Interface 
+ * 
+ **/
 exports.eventHandling = function(socketIo) {
-    /* получаем данные об источнике для дачборда главной страницы все кроме КА */
-    socketIo.on('get source information for dashboard', function(data) {
-        require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
-            if (err) {
-                writeLogFile('error', err.toString());
-                showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
-                return;
-            }
+    /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
 
-            if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
-            //проверяем на привышение количества запросов выполненных одним пользоваталем по одному типу запросов
-            if (!checkLimitNumberRequestsSocketIo(socketIo, 'get source information for dashboard')) {
-                showNotify(socketIo, 'danger', 'Для пользователя превышен лимит запросов, попробуйте выполнить запрос позже');
-                return;
-            }
+    // добавление новой группы
+    socketIo.on('add new group', (data) => {
+        /* 
+            СДЕЛАТЬ ПРОВЕРКУ возможности добавления данным пользователем
+            новой группы 
+        */
 
-            //добавляем в коллекцию 'session.user.informations' новый источник
-            require('../libs/processing/changeUserSettings').addNewDashboardSource(socketIo, data);
+        debug('ADDITION NEW GROUP')
+        debug(data)
 
-            //добавляем в коллекцию 'users' новый источник
-            require('../libs/processing/changeUserSettings').changeCollectionUsersUserSettings('add', socketIo, data);
-
-        });
-    });
-
-    /* получаем данные для дачборда по КА */
-    socketIo.on('get source information for dashboard attack', function(data) {
-        require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
-            if (err) {
-                writeLogFile('error', err.toString());
-                showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
-                return;
-            }
-
-            if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
-            //проверяем на привышение количества запросов выполненных одним пользоваталем по одному типу запросов
-            if (!checkLimitNumberRequestsSocketIo(socketIo, 'get source information for dashboard')) {
-                showNotify(socketIo, 'danger', 'Для пользователя превышен лимит запросов, попробуйте выполнить запрос позже');
-                return;
-            }
-        });
-    });
-
-    /* удаление источника с панели дачборда главной страницы */
-    socketIo.on('delete source id dashboard', function(data) {
-        require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
-            if (err) {
-                writeLogFile('error', err.toString());
-                showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
-                return;
-            }
-
-            if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
-
-            //удаляем источник из настроек пользователя
-            require('../libs/processing/changeUserSettings').deleteDashboardSource(socketIo, data);
-
-            //удаляем из коллекцию users выбранный источник
-            require('../libs/processing/changeUserSettings').changeCollectionUsersUserSettings('delete', socketIo, data);
-
-        });
     });
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
@@ -379,6 +335,70 @@ exports.eventHandling = function(socketIo) {
             });
         });
     });
+
+
+    // получаем данные об источнике для дачборда главной страницы все кроме КА 
+    /*    socketIo.on('get source information for dashboard', function(data) {
+            require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+                if (err) {
+                    writeLogFile('error', err.toString());
+                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                    return;
+                }
+
+                if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+                //проверяем на привышение количества запросов выполненных одним пользоваталем по одному типу запросов
+                if (!checkLimitNumberRequestsSocketIo(socketIo, 'get source information for dashboard')) {
+                    showNotify(socketIo, 'danger', 'Для пользователя превышен лимит запросов, попробуйте выполнить запрос позже');
+                    return;
+                }
+
+                //добавляем в коллекцию 'session.user.informations' новый источник
+                require('../libs/processing/changeUserSettings').addNewDashboardSource(socketIo, data);
+
+                //добавляем в коллекцию 'users' новый источник
+                require('../libs/processing/changeUserSettings').changeCollectionUsersUserSettings('add', socketIo, data);
+
+            });
+        });
+
+        // получаем данные для дачборда по КА 
+        socketIo.on('get source information for dashboard attack', function(data) {
+            require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+                if (err) {
+                    writeLogFile('error', err.toString());
+                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                    return;
+                }
+
+                if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+                //проверяем на привышение количества запросов выполненных одним пользоваталем по одному типу запросов
+                if (!checkLimitNumberRequestsSocketIo(socketIo, 'get source information for dashboard')) {
+                    showNotify(socketIo, 'danger', 'Для пользователя превышен лимит запросов, попробуйте выполнить запрос позже');
+                    return;
+                }
+            });
+        });
+
+        // удаление источника с панели дачборда главной страницы
+        socketIo.on('delete source id dashboard', function(data) {
+            require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+                if (err) {
+                    writeLogFile('error', err.toString());
+                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                    return;
+                }
+
+                if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+
+                //удаляем источник из настроек пользователя
+                require('../libs/processing/changeUserSettings').deleteDashboardSource(socketIo, data);
+
+                //удаляем из коллекцию users выбранный источник
+                require('../libs/processing/changeUserSettings').changeCollectionUsersUserSettings('delete', socketIo, data);
+
+            });
+        });*/
 };
 
 /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ --- */

@@ -2,40 +2,44 @@
 <html lang="ru">
 <head>
     <% include head.ejs %>
-    <style>
-        .well {
-            margin-top: 150px;
-        }
-    </style>
     <script src='/dist/authPage.js'></script>
 </head>
 <body>
-<div class="container">
+<div class="container py-5">
     <div class="row">
-        <div class="well col-lg-5 col-lg-offset-4">
-            <div class="text-center">
-                <legend style="color: #8c8c8c">ISEMS-UI</legend>
+        <div class="col-md-12">
+            <h2 class="text-center mb-4">ISEMS-UI</h2>
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <div class="card rounded-0">
+                        <div class="card-header">
+                            <h3 class="mb-0">Аутентификация</h3>
+                        </div>
+                        <div class="alert alert-danger alert-dismissible fade show" style="display: none" id="divAlert">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Ошибка!</strong> Некорректный логин или пароль.
+                        </div>
+                        <div class="alert alert-danger text-center" style="display: none" id="divAlert">
+                            <a href="#" class="close" data-dismiss="alert">x</a>некорректный логин или пароль
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="auth" class="form" role="form" autocomplete="off" id="formLogin" novalidate="">
+                                <div class="form-group">
+                                    <label for="uname1">Имя пользователя</label>
+                                    <input type="text" class="form-control form-control-lg rounded-0" name="login" id="inputLogin" required="">
+                                    <div class="invalid-feedback">Oops, you missed this one.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Пароль</label>
+                                    <input type="password" class="form-control form-control-lg rounded-0" name="password" id="inputPassword" required="" autocomplete="new-password">
+                                    <div class="invalid-feedback">Enter your password too!</div>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin">вход</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="alert alert-danger text-center" style="display: none" id="divAlert">
-                <a href="#" class="close" data-dismiss="alert">x</a>некорректный логин или пароль
-            </div>
-            <form method="POST" action="auth" accept-charset="UTF-8" class="form-horizontal" role="form">
-                <div class="form-group">
-                    <div class="col-sm-6 col-sm-offset-3">
-                        <input type="text" class="form-control" id="inputLogin" name="login" placeholder="Логин">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-6 col-sm-offset-3">
-                        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Пароль">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-6 col-sm-offset-3 text-center">
-                        <button type="submit" class="btn btn-primary btn-success" value="entering">вход</button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 </div>
