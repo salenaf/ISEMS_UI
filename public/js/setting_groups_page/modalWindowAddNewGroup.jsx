@@ -1,14 +1,12 @@
 /**
  * Модуль формирования модального окна добавления нового пользователя
  * 
- * Версия 0.1, дата релиза 31.01.2019
+ * Версия 0.11, дата релиза 11.02.2019
  */
 
 import React from 'react'
 import { Button, Modal, Table } from 'react-bootstrap'
 import PropTypes from 'prop-types'
-
-import { randomInteger } from '../common_helpers/getRandomInt'
 
 //список доступных действий
 class CreateListCategory extends React.Component {
@@ -24,17 +22,11 @@ class CreateListCategory extends React.Component {
                 listelement={this.props.listelement}
                 itemName={this.props.itemName}
                 countSend={this.props.countSend}
-                isListName={this.props.isListName}
-                key={randomInteger(1, 1000)} />
+                isListName={this.props.isListName} />
 
         if (!this.props.isListName) {
             if (isMenuItem || this.props.isFirstItem || moreThanTree) {
-                return (
-                    <div>
-                        &nbsp;
-                        {createCategoryValue}
-                    </div>
-                )
+                return <div>&nbsp;{createCategoryValue}</div>
             }
 
             return createCategoryValue
@@ -85,7 +77,7 @@ class CreateCategoryValue extends React.Component {
         let arrItems = []
 
         for (let item in this.props.listelement) {
-            if (item === 'name') continue
+            if (item === 'name' || item === 'id') continue
             if (typeof this.props.listelement[item].status === 'undefined') {
 
                 arrItems.push(
@@ -95,20 +87,17 @@ class CreateCategoryValue extends React.Component {
                         countSend={this.props.countSend + 1}
                         isListName={this.props.isListName}
                         isFirstItem={false}
-                        key={`${item}_${randomInteger(1, 1000)}`} />)
+                        key={`return_${this.props.listelement[item].id}`} />)
 
                 continue
             }
 
-            let keyID = `sub_menu_${item}_${randomInteger(1, 1000)}`
-
             arrItems.push(
-                <div key={keyID}>
+                <div key={`div_${this.props.listelement[item].id}`}>
                     {(this.props.isListName) ? this.props.listelement[item].description :
                         <input
                             name={item}
-                            type="checkbox"
-                            key={`check_box_${keyID}`} />}
+                            type="checkbox" />}
                 </div>)
         }
 
@@ -129,33 +118,35 @@ class CreateTable extends React.Component {
         this.props.onUserInput(event.target.value)
     }
 
-    render() {
-        let num = 0
+    createTableBody() {
         let tableBody = []
         for (let item in this.props.listelement) {
-            num++
             let arrTD = []
 
             for (let i = 1; i <= 2; i++) {
                 arrTD.push(
                     <td
-                        className={(i % 2) ? '' : 'text-center'}
-                        key={`colum_${item}_${randomInteger(1, 1000) + num}`}>
+                        key={`td_${this.props.listelement[item].id}_${i}`}
+                        className={(i % 2) ? '' : 'text-center'}>
                         <CreateListCategory
                             listelement={this.props.listelement[item]}
                             itemName={item}
                             countSend={1}
                             isListName={(i % 2) ? true : false}
-                            key={`colum_${i}_${randomInteger(1, 1000) + i}`} />
+                            key={`${this.props.listelement[item].id}_${i}`} />
                     </td>)
             }
 
             tableBody.push(
-                <tr key={`line_${item}_${randomInteger(1, 1000) + num}`}>
+                <tr key={`tr_${this.props.listelement[item].id}`}>
                     {arrTD}
                 </tr>)
         }
 
+        return <tbody>{tableBody}</tbody>
+    }
+
+    render() {
         return (
             <Table striped hover>
                 <thead>
@@ -163,15 +154,15 @@ class CreateTable extends React.Component {
                         <th></th>
                         <th className="text-right">
                             <input
-                                className="has-success"
+                                className={this.props.classGroupNameValide}
                                 id="new_group_name"
-                                placeholder="название группы"
+                                placeholder="новая группа"
                                 defaultValue={this.props.groupName}
                                 onChange={this.handleChangeGroupName.bind(this)} />
                         </th>
                     </tr>
                 </thead>
-                <tbody>{tableBody}</tbody>
+                {this.createTableBody.call(this)}
             </Table>
         )
     }
@@ -188,24 +179,41 @@ class ModalWindowAddNewGroup extends React.Component {
 
         this.state = {
             groupName: '',
-            groupNameValide: false
+            groupNameValide: false,
+            classGroupName: 'form-control'
         }
     }
 
-    handleUserInput(newGroup) {
-        console.log(`new group name = ${newGroup}`)
-        console.log(newGroup.length)
+    handleUserInput(groupName) {
+        console.log(`new group name = ${groupName}`)
+        console.log(groupName.length)
 
-        if (newGroup.length > 4) {
+        if (/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
             this.setState({
-                groupName: newGroup,
-                groupNameValide: true
+                groupName: groupName,
+                groupNameValide: true,
+                classGroupName: 'form-control is-valid'
+            })
+        } else {
+            this.setState({
+                groupNameValide: false,
+                classGroupName: 'form-control is-invalid'
             })
         }
     }
 
     handleClose() {
+
+        console.log(11111)
+
         this.props.onHide()
+        this.setState({
+            groupName: '',
+            groupNameValide: false,
+            classGroupName: 'form-control'
+        })
+
+        console.log('CLOSE')
     }
 
     handleSave() {
@@ -236,6 +244,7 @@ class ModalWindowAddNewGroup extends React.Component {
                     <CreateTable
                         listelement={this.props.listelement}
                         groupName={this.state.groupName}
+                        classGroupNameValide={this.state.classGroupName}
                         onUserInput={this.handleUserInput.bind(this)} />
 
                 </Modal.Body>

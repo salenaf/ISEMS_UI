@@ -40703,33 +40703,6 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "./common_helpers/getRandomInt.js":
-/*!****************************************!*\
-  !*** ./common_helpers/getRandomInt.js ***!
-  \****************************************/
-/*! exports provided: randomInteger */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "randomInteger", function() { return randomInteger; });
-/**
- * Возвращает произвольное число из заданного диапазона
- * 
- * Версия 0.1, дата релиза 29.01.2019
- */
-
-
-function randomInteger(min, max) {
-  var rand = min - 0.5 + Math.random() * (max - min + 1);
-  rand = Math.round(rand);
-  return rand;
-}
-
-
-
-/***/ }),
-
 /***/ "./common_helpers/helpers.js":
 /*!***********************************!*\
   !*** ./common_helpers/helpers.js ***!
@@ -40879,8 +40852,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
-/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
+/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
 /**
  * Модуль формирующий основную таблицу на странице
  * 
@@ -40919,7 +40891,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-
  //перечисление типов действий доступных для администратора
 
 var CreateListCategory =
@@ -40944,8 +40915,7 @@ function (_React$Component) {
       var moreThanTree = this.props.parameters.countSend === 3;
       var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
         list: this.props.list,
-        parameters: this.props.parameters,
-        key: "".concat(this.props.parameters.group, "_ul_key_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + this.props.parameters.uniqID)
+        parameters: this.props.parameters
       });
 
       if (this.props.parameters.group === 'administrator') {
@@ -40999,26 +40969,24 @@ function (_React$Component2) {
     value: function render() {
       var arrItems = [];
       var parameters = {
-        'uniqID': this.props.parameters.uniqID + 1,
         'group': this.props.parameters.group,
         'typeItem': this.props.parameters.typeItem,
         'first': false
       };
 
       for (var item in this.props.list) {
-        if (item === 'name') continue;
+        if (item === 'name' || item === 'id') continue;
 
         if (typeof this.props.list[item].status === 'undefined') {
           parameters.countSend = this.props.parameters.countSend + 1;
           arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             list: this.props.list[item],
             parameters: parameters,
-            key: "".concat(this.props.parameters.group, "_value_").concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + parameters.uniqID)
+            key: "return_".concat(this.props.list[item].id)
           }));
           continue;
         }
 
-        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + parameters.uniqID);
         var isDisabled = void 0,
             description = '';
 
@@ -41028,14 +40996,13 @@ function (_React$Component2) {
         }
 
         arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-          key: "".concat(item, "_").concat(keyID)
+          key: "div_".concat(this.props.list[item].id)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
           type: "checkbox",
           disabled: isDisabled,
           defaultChecked: this.props.list[item].status,
           name: "checkbox_administrator"
         }), description));
-        parameters.uniqID += parameters.uniqID;
       }
 
       return arrItems;
@@ -41079,9 +41046,11 @@ function (_React$Component3) {
     }
   }, {
     key: "handleClose",
-    value: function handleClose() {
+    value: function handleClose(e) {
+      console.log('ddddddddddddddd');
       this.setState({
-        modalShow: false
+        modalShow: false,
+        clear: 1
       });
     }
   }, {
@@ -41093,7 +41062,7 @@ function (_React$Component3) {
         size: "sm",
         onClick: this.handleShow.bind(this),
         disabled: disabledCreate
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
         show: this.state.modalShow,
         onHide: this.handleClose.bind(this),
         listelement: this.props.groupListElement
@@ -41193,7 +41162,7 @@ function (_React$Component6) {
       var textCenter = 'text-left';
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
         access: this.props.accessRights,
-        groupListElement: this.props.info.administrator.elements
+        groupListElement: this.props.list.administrator.elements
       });
       var arrGroup = this.props.groupsName.map(function (group) {
         if (group.toLowerCase() !== 'administrator') {
@@ -41223,7 +41192,7 @@ function (_React$Component6) {
 
 EnumGroupName.propTypes = {
   groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
-  info: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //вывод даты создания группы
 
 };
@@ -41253,7 +41222,7 @@ function (_React$Component7) {
           textCenter = 'text-left';
         }
 
-        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.info[group].date_register).split(' '),
+        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(' '),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
             dateString = _helpers$getDate$spli2[0];
 
@@ -41278,37 +41247,27 @@ function (_React$Component7) {
 
 ShowDateCreateGroup.propTypes = {
   groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
-  info: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //создание основной таблицы
-
+  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 };
 
-var CreateTable =
+var CreateBodyElement =
 /*#__PURE__*/
 function (_React$Component8) {
-  _inherits(CreateTable, _React$Component8);
+  _inherits(CreateBodyElement, _React$Component8);
 
-  function CreateTable(props) {
-    var _this3;
+  function CreateBodyElement() {
+    _classCallCheck(this, CreateBodyElement);
 
-    _classCallCheck(this, CreateTable);
-
-    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this3.state = {};
-    return _this3;
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateBodyElement).apply(this, arguments));
   }
 
-  _createClass(CreateTable, [{
-    key: "render",
-    value: function render() {
-      var list = this.props.mainInformation;
-      var uniqID = 0;
-      var groups = Object.keys(list);
-      groups.sort();
-      var newGroups = groups.filter(function (item) {
-        return item !== 'administrator';
-      });
-      var groupsName = ['administrator'].concat(newGroups);
-      var arrBody = [];
+  _createClass(CreateBodyElement, [{
+    key: "createElement",
+    value: function createElement() {
+      var _this$props = this.props,
+          groupsName = _this$props.groupsName,
+          list = _this$props.list;
+      var arrTmp = [];
 
       var _loop = function _loop(item) {
         var arrTd = groupsName.map(function (group) {
@@ -41316,41 +41275,89 @@ function (_React$Component8) {
             'group': group,
             'countSend': 0,
             'typeItem': item,
-            'first': true,
-            'uniqID': uniqID
+            'first': true
           };
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-            key: "".concat(group, "_").concat(item, "_").concat(uniqID)
+            key: "td_".concat(list[group].elements[item].id)
           }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             list: list[group].elements[item],
             parameters: listCategoryParameters,
-            key: "".concat(group, "_value_").concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + uniqID)
+            key: list[group].elements[item].id
           }));
         });
-        var keyID = "row_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_5__["randomInteger"])(1, 1000) + uniqID);
-        arrBody.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
-          key: "".concat(item, "_").concat(keyID)
+        arrTmp.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
+          key: "tr_".concat(list.administrator.elements[item].id)
         }, arrTd));
-        uniqID++;
       };
 
       for (var item in list.administrator.elements) {
         _loop(item);
       }
 
+      return arrTmp;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var arrBody = this.createElement.call(this);
+      return arrBody;
+    }
+  }]);
+
+  return CreateBodyElement;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+CreateBodyElement.propTypes = {
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
+  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //создание основной таблицы
+
+};
+
+var CreateTable =
+/*#__PURE__*/
+function (_React$Component9) {
+  _inherits(CreateTable, _React$Component9);
+
+  function CreateTable(props) {
+    var _this3;
+
+    _classCallCheck(this, CreateTable);
+
+    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this3.groupsName = _this3.getGroupsName.call(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.state = {};
+    return _this3;
+  }
+
+  _createClass(CreateTable, [{
+    key: "getGroupsName",
+    value: function getGroupsName() {
+      var groups = Object.keys(this.props.mainInformation);
+      groups.sort();
+      var newGroups = groups.filter(function (item) {
+        return item !== 'administrator';
+      });
+      return ['administrator'].concat(newGroups);
+    }
+  }, {
+    key: "render",
+    value: function render() {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left text-uppercase"
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup, {
-        groupsName: groupsName,
-        info: this.props.mainInformation
+        groupsName: this.groupsName,
+        list: this.props.mainInformation
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
-        groupsName: groupsName,
-        info: this.props.mainInformation,
+        groupsName: this.groupsName,
+        list: this.props.mainInformation,
         accessRights: this.props.accessRights
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, arrBody)));
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement, {
+        groupsName: this.groupsName,
+        list: this.props.mainInformation
+      }))));
     }
   }]);
 
@@ -41382,7 +41389,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../common_helpers/getRandomInt */ "./common_helpers/getRandomInt.js");
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -41406,9 +41412,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 /**
  * Модуль формирования модального окна добавления нового пользователя
  * 
- * Версия 0.1, дата релиза 31.01.2019
+ * Версия 0.11, дата релиза 11.02.2019
  */
-
 
 
  //список доступных действий
@@ -41437,8 +41442,7 @@ function (_React$Component) {
         listelement: this.props.listelement,
         itemName: this.props.itemName,
         countSend: this.props.countSend,
-        isListName: this.props.isListName,
-        key: Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000)
+        isListName: this.props.isListName
       });
 
       if (!this.props.isListName) {
@@ -41498,7 +41502,7 @@ function (_React$Component2) {
       var arrItems = [];
 
       for (var item in this.props.listelement) {
-        if (item === 'name') continue;
+        if (item === 'name' || item === 'id') continue;
 
         if (typeof this.props.listelement[item].status === 'undefined') {
           arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
@@ -41507,18 +41511,16 @@ function (_React$Component2) {
             countSend: this.props.countSend + 1,
             isListName: this.props.isListName,
             isFirstItem: false,
-            key: "".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000))
+            key: "return_".concat(this.props.listelement[item].id)
           }));
           continue;
         }
 
-        var keyID = "sub_menu_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000));
         arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-          key: keyID
+          key: "div_".concat(this.props.listelement[item].id)
         }, this.props.isListName ? this.props.listelement[item].description : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
           name: item,
-          type: "checkbox",
-          key: "check_box_".concat(keyID)
+          type: "checkbox"
         })));
       }
 
@@ -41554,33 +41556,36 @@ function (_React$Component3) {
       this.props.onUserInput(event.target.value);
     }
   }, {
-    key: "render",
-    value: function render() {
-      var num = 0;
+    key: "createTableBody",
+    value: function createTableBody() {
       var tableBody = [];
 
       for (var item in this.props.listelement) {
-        num++;
         var arrTD = [];
 
         for (var i = 1; i <= 2; i++) {
           arrTD.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-            className: i % 2 ? '' : 'text-center',
-            key: "colum_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + num)
+            key: "td_".concat(this.props.listelement[item].id, "_").concat(i),
+            className: i % 2 ? '' : 'text-center'
           }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             listelement: this.props.listelement[item],
             itemName: item,
             countSend: 1,
             isListName: i % 2 ? true : false,
-            key: "colum_".concat(i, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + i)
+            key: "".concat(this.props.listelement[item].id, "_").concat(i)
           })));
         }
 
         tableBody.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
-          key: "line_".concat(item, "_").concat(Object(_common_helpers_getRandomInt__WEBPACK_IMPORTED_MODULE_3__["randomInteger"])(1, 1000) + num)
+          key: "tr_".concat(this.props.listelement[item].id)
         }, arrTD));
       }
 
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, tableBody);
+    }
+  }, {
+    key: "render",
+    value: function render() {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Table"], {
         striped: true,
         hover: true
@@ -41589,12 +41594,12 @@ function (_React$Component3) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
         className: "text-right"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-        className: "has-success",
+        className: this.props.classGroupNameValide,
         id: "new_group_name",
-        placeholder: "\u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u044B",
+        placeholder: "\u043D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
         defaultValue: this.props.groupName,
         onChange: this.handleChangeGroupName.bind(this)
-      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, tableBody));
+      })))), this.createTableBody.call(this));
     }
   }]);
 
@@ -41619,28 +41624,42 @@ function (_React$Component4) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).apply(this, arguments));
     _this.state = {
       groupName: '',
-      groupNameValide: false
+      groupNameValide: false,
+      classGroupName: 'form-control'
     };
     return _this;
   }
 
   _createClass(ModalWindowAddNewGroup, [{
     key: "handleUserInput",
-    value: function handleUserInput(newGroup) {
-      console.log("new group name = ".concat(newGroup));
-      console.log(newGroup.length);
+    value: function handleUserInput(groupName) {
+      console.log("new group name = ".concat(groupName));
+      console.log(groupName.length);
 
-      if (newGroup.length > 4) {
+      if (/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
         this.setState({
-          groupName: newGroup,
-          groupNameValide: true
+          groupName: groupName,
+          groupNameValide: true,
+          classGroupName: 'form-control is-valid'
+        });
+      } else {
+        this.setState({
+          groupNameValide: false,
+          classGroupName: 'form-control is-invalid'
         });
       }
     }
   }, {
     key: "handleClose",
     value: function handleClose() {
+      console.log(11111);
       this.props.onHide();
+      this.setState({
+        groupName: '',
+        groupNameValide: false,
+        classGroupName: 'form-control'
+      });
+      console.log('CLOSE');
     }
   }, {
     key: "handleSave",
@@ -41666,6 +41685,7 @@ function (_React$Component4) {
       }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0433\u0440\u0443\u043F\u043F\u0443")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
         listelement: this.props.listelement,
         groupName: this.state.groupName,
+        classGroupNameValide: this.state.classGroupName,
         onUserInput: this.handleUserInput.bind(this)
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-secondary",

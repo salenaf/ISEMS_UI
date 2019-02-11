@@ -12,7 +12,6 @@ import { Button, Table } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 import { helpers } from './common_helpers/helpers'
-import { randomInteger } from './common_helpers/getRandomInt'
 import ModalWindowAddNewGroup from './setting_groups_page/modalWindowAddNewGroup.jsx'
 
 //перечисление типов действий доступных для администратора
@@ -26,8 +25,7 @@ class CreateListCategory extends React.Component {
 
         let createCategoryValue = <CreateCategoryValue
             list={this.props.list}
-            parameters={this.props.parameters}
-            key={`${this.props.parameters.group}_ul_key_${randomInteger(1, 1000) + this.props.parameters.uniqID}`} />
+            parameters={this.props.parameters} />
 
         if (this.props.parameters.group === 'administrator') {
             if (this.props.parameters.first) {
@@ -58,11 +56,7 @@ class CreateListCategory extends React.Component {
         }
 
         if ((this.props.parameters.first) || isMenuItem || moreThanTree) {
-            return (
-                <div>
-                    &nbsp;
-                    {createCategoryValue}
-                </div>)
+            return <div>&nbsp;{createCategoryValue}</div>
         }
 
         return createCategoryValue
@@ -79,14 +73,14 @@ class CreateCategoryValue extends React.Component {
     render() {
         let arrItems = []
         let parameters = {
-            'uniqID': this.props.parameters.uniqID + 1,
             'group': this.props.parameters.group,
             'typeItem': this.props.parameters.typeItem,
             'first': false
         }
 
         for (let item in this.props.list) {
-            if (item === 'name') continue
+            if (item === 'name' || item === 'id') continue
+
             if (typeof this.props.list[item].status === 'undefined') {
                 parameters.countSend = this.props.parameters.countSend + 1
 
@@ -94,12 +88,11 @@ class CreateCategoryValue extends React.Component {
                     <CreateListCategory
                         list={this.props.list[item]}
                         parameters={parameters}
-                        key={`${this.props.parameters.group}_value_${item}_${randomInteger(1, 1000) + parameters.uniqID}`} />)
+                        key={`return_${this.props.list[item].id}`} />)
 
                 continue
             }
 
-            let keyID = `sub_menu_${item}_${randomInteger(1, 1000) + parameters.uniqID}`
             let isDisabled, description = ''
             if (this.props.parameters.group === 'administrator') {
                 isDisabled = 'disabled'
@@ -107,7 +100,7 @@ class CreateCategoryValue extends React.Component {
             }
 
             arrItems.push(
-                <div key={`${item}_${keyID}`}>
+                <div key={`div_${this.props.list[item].id}`}>
                     <input
                         type="checkbox"
                         disabled={isDisabled}
@@ -115,8 +108,6 @@ class CreateCategoryValue extends React.Component {
                         name="checkbox_administrator" />
                     {description}
                 </div>)
-
-            parameters.uniqID += parameters.uniqID
         }
 
         return arrItems
@@ -137,16 +128,21 @@ class ButtonAddGroup extends React.Component {
         this.handleClose = this.handleClose.bind(this)
 
         this.state = {
-            modalShow: false,
+            modalShow: false
         }
     }
 
     handleShow() {
-        this.setState({ modalShow: true })
+        this.setState({
+            modalShow: true
+        })
     }
 
-    handleClose() {
-        this.setState({ modalShow: false })
+    handleClose(e) {
+
+        console.log('ddddddddddddddd')
+
+        this.setState({ modalShow: false, clear: 1 })
     }
 
     render() {
@@ -222,7 +218,7 @@ class EnumGroupName extends React.Component {
         let textCenter = 'text-left'
         let butAddGroup = <ButtonAddGroup
             access={this.props.accessRights}
-            groupListElement={this.props.info.administrator.elements} />
+            groupListElement={this.props.list.administrator.elements} />
 
         let arrGroup = this.props.groupsName.map(group => {
             if (group.toLowerCase() !== 'administrator') {
@@ -246,7 +242,7 @@ class EnumGroupName extends React.Component {
 
 EnumGroupName.propTypes = {
     groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
-    info: PropTypes.object.isRequired,
+    list: PropTypes.object.isRequired,
     accessRights: PropTypes.object.isRequired
 }
 
@@ -262,7 +258,7 @@ class ShowDateCreateGroup extends React.Component {
                 textCenter = 'text-left'
             }
 
-            let [dateString,] = helpers.getDate(this.props.info[group].date_register).split(' ')
+            let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(' ')
             let [year, month, day] = dateString.split('-')
             let dateCreate = `${day}.${month}.${year}`
 
@@ -277,56 +273,71 @@ class ShowDateCreateGroup extends React.Component {
 
 ShowDateCreateGroup.propTypes = {
     groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
-    info: PropTypes.object.isRequired,
+    list: PropTypes.object.isRequired,
 }
 
-//создание основной таблицы
-class CreateTable extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
+class CreateBodyElement extends React.Component {
+    createElement() {
+        let { groupsName, list } = this.props
 
-    render() {
-        let list = this.props.mainInformation
-        let uniqID = 0
-
-        let groups = Object.keys(list)
-        groups.sort()
-
-        let newGroups = groups.filter(item => item !== 'administrator')
-        let groupsName = ['administrator'].concat(newGroups)
-
-        let arrBody = []
+        let arrTmp = []
         for (let item in list.administrator.elements) {
             let arrTd = groupsName.map(group => {
                 let listCategoryParameters = {
                     'group': group,
                     'countSend': 0,
                     'typeItem': item,
-                    'first': true,
-                    'uniqID': uniqID
+                    'first': true
                 }
 
                 return (
-                    <td key={`${group}_${item}_${uniqID}`}>
+                    <td key={`td_${list[group].elements[item].id}`}>
                         <CreateListCategory
                             list={list[group].elements[item]}
                             parameters={listCategoryParameters}
-                            key={`${group}_value_${item}_${randomInteger(1, 1000) + uniqID}`} />
+                            key={list[group].elements[item].id} />
                     </td>)
             })
 
-            let keyID = `row_${item}_${randomInteger(1, 1000) + uniqID}`
-
-            arrBody.push(
-                <tr key={`${item}_${keyID}`}>
+            arrTmp.push(
+                <tr key={`tr_${list.administrator.elements[item].id}`}>
                     {arrTd}
                 </tr>)
-
-            uniqID++
         }
 
+        return arrTmp
+    }
+
+    render() {
+        let arrBody = this.createElement.call(this)
+
+        return arrBody
+    }
+}
+
+CreateBodyElement.propTypes = {
+    groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
+    list: PropTypes.object.isRequired,
+}
+
+//создание основной таблицы
+class CreateTable extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.groupsName = this.getGroupsName.call(this)
+        this.state = {}
+    }
+
+    getGroupsName() {
+        let groups = Object.keys(this.props.mainInformation)
+        groups.sort()
+        let newGroups = groups.filter(item => item !== 'administrator')
+
+        return ['administrator'].concat(newGroups)
+    }
+
+    render() {
         return (
             <div>
                 <h4 className="text-left text-uppercase">управление группами</h4>
@@ -334,17 +345,21 @@ class CreateTable extends React.Component {
                     <thead>
                         <tr>
                             <ShowDateCreateGroup
-                                groupsName={groupsName}
-                                info={this.props.mainInformation} />
+                                groupsName={this.groupsName}
+                                list={this.props.mainInformation} />
                         </tr>
                         <tr>
                             <EnumGroupName
-                                groupsName={groupsName}
-                                info={this.props.mainInformation}
+                                groupsName={this.groupsName}
+                                list={this.props.mainInformation}
                                 accessRights={this.props.accessRights} />
                         </tr>
                     </thead>
-                    <tbody>{arrBody}</tbody>
+                    <tbody>
+                        <CreateBodyElement
+                            groupsName={this.groupsName}
+                            list={this.props.mainInformation} />
+                    </tbody>
                 </Table>
             </div>
         );

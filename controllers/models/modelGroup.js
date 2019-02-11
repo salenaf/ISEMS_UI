@@ -13,148 +13,167 @@ let groupSchema = new connection.Schema({
     group_name: String,
     date_register: Number,
     menu_items: {
+        id: String,
         name: String,
-        analysis_sip: { status: Boolean, description: String },
-        security_event_management: { status: Boolean, description: String },
-        network_interaction: { status: Boolean, description: String },
+        analysis_sip: { id: String, status: Boolean, description: String },
+        security_event_management: { id: String, status: Boolean, description: String },
+        network_interaction: { id: String, status: Boolean, description: String },
         element_tools: {
+            id: String,
             name: String,
-            search_tools: { status: Boolean, description: String },
-            decode_tools: { status: Boolean, description: String }
+            search_tools: { id: String, status: Boolean, description: String },
+            decode_tools: { id: String, status: Boolean, description: String }
         },
         element_settings: {
+            id: String,
             name: String,
-            setting_groups: { status: Boolean, description: String },
-            setting_users: { status: Boolean, description: String },
-            setting_objects_and_subjects: { status: Boolean, description: String },
-            setting_ids_rules: { status: Boolean, description: String },
-            setting_geoip: { status: Boolean, description: String },
-            setting_search_rules: { status: Boolean, description: String },
-            setting_reputational_lists: { status: Boolean, description: String }
+            setting_groups: { id: String, status: Boolean, description: String },
+            setting_users: { id: String, status: Boolean, description: String },
+            setting_objects_and_subjects: { id: String, status: Boolean, description: String },
+            setting_ids_rules: { id: String, status: Boolean, description: String },
+            setting_geoip: { id: String, status: Boolean, description: String },
+            setting_search_rules: { id: String, status: Boolean, description: String },
+            setting_reputational_lists: { id: String, status: Boolean, description: String }
         }
     },
     management_analysis_sip: {
+        id: String,
         name: String,
         element_settings: {
-            read: { status: Boolean, description: String }
+            read: { id: String, status: Boolean, description: String }
         }
     },
     management_security_event_management: {
+        id: String,
         name: String,
         element_settings: {
-            creat: { status: Boolean, description: String },
-            editingInformation: { status: Boolean, description: String },
-            statusChange: { status: Boolean, description: String },
-            close: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            editingInformation: { id: String, status: Boolean, description: String },
+            statusChange: { id: String, status: Boolean, description: String },
+            close: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_network_interaction: {
+        id: String,
         name: String,
         element_settings: {
             management_tasks_filter: {
+                id: String,
                 name: String,
                 element_settings: {
-                    read: { status: Boolean, description: String },
-                    import: { status: Boolean, description: String },
-                    delete: { status: Boolean, description: String }
+                    read: { id: String, status: Boolean, description: String },
+                    import: { id: String, status: Boolean, description: String },
+                    delete: { id: String, status: Boolean, description: String }
                 }
             },
             management_tasks_import: {
+                id: String,
                 name: String,
                 element_settings: {
-                    cancel: { status: Boolean, description: String },
-                    stop: { status: Boolean, description: String },
-                    resume: { status: Boolean, description: String }
+                    cancel: { id: String, status: Boolean, description: String },
+                    stop: { id: String, status: Boolean, description: String },
+                    resume: { id: String, status: Boolean, description: String }
                 }
             },
             management_uploaded_files: {
+                id: String,
                 name: String,
                 element_settings: {
-                    status_change: { status: Boolean, description: String },
-                    delete: { status: Boolean, description: String }
+                    status_change: { id: String, status: Boolean, description: String },
+                    delete: { id: String, status: Boolean, description: String }
                 }
             },
         }
     },
     management_search_tools: {
+        id: String,
         name: String,
         element_settings: {
-            read: { status: Boolean, description: String }
+            read: { id: String, status: Boolean, description: String }
         }
     },
     management_decode_tools: {
+        id: String,
         name: String,
         element_settings: {
-            read: { status: Boolean, description: String }
+            read: { id: String, status: Boolean, description: String }
         }
     },
     management_users: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            edit: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            edit: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_groups: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            edit: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            edit: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_objects_and_subjects: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            edit: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            edit: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_ids_rules: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_geoip: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_search_rules: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            edit: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            edit: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_reputational_lists: {
+        id: String,
         name: String,
         element_settings: {
-            create: { status: Boolean, description: String },
-            read: { status: Boolean, description: String },
-            edit: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            create: { id: String, status: Boolean, description: String },
+            read: { id: String, status: Boolean, description: String },
+            edit: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     },
     management_events: {
+        id: String,
         name: String,
         element_settings: {
-            read: { status: Boolean, description: String },
-            delete: { status: Boolean, description: String }
+            read: { id: String, status: Boolean, description: String },
+            delete: { id: String, status: Boolean, description: String }
         }
     }
 });
