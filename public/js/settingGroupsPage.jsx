@@ -119,7 +119,7 @@ CreateCategoryValue.propTypes = {
     parameters: PropTypes.object.isRequired
 }
 
-//кнопка 'добавить новую группу'
+//кнопка 'добавить' новую группу
 class ButtonAddGroup extends React.Component {
     constructor(props) {
         super(props)

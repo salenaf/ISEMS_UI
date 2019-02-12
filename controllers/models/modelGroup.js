@@ -167,14 +167,6 @@ let groupSchema = new connection.Schema({
             edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
-    },
-    management_events: {
-        id: String,
-        name: String,
-        element_settings: {
-            read: { id: String, status: Boolean, description: String },
-            delete: { id: String, status: Boolean, description: String }
-        }
     }
 });
 

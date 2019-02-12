@@ -484,22 +484,6 @@ function createModelGroups(modelGroup, next) {
                         description: 'удаление'
                     }
                 }
-            },
-            management_events: {
-                id: createUniqID.getMD5('administrator_management_events'),
-                name: 'события',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_events_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
-                    delete: {
-                        id: createUniqID.getMD5('administrator_management_events_delete'),
-                        status: true,
-                        description: 'удаление'
-                    }
-                }
             }
         }).save();
 
@@ -880,22 +864,6 @@ function createModelGroups(modelGroup, next) {
                         description: 'удаление'
                     }
                 }
-            },
-            management_events: {
-                id: createUniqID.getMD5('all_users_management_events'),
-                name: 'события',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_events_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
-                    delete: {
-                        id: createUniqID.getMD5('all_users_management_events_delete'),
-                        status: true,
-                        description: 'удаление'
-                    }
-                }
             }
         }).save();
 
@@ -1272,22 +1240,6 @@ function createModelGroups(modelGroup, next) {
                     },
                     delete: {
                         id: createUniqID.getMD5('deg_group_management_search_rules_delete'),
-                        status: true,
-                        description: 'удаление'
-                    }
-                }
-            },
-            management_events: {
-                id: createUniqID.getMD5('deg_group_management_events'),
-                name: 'события',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_events_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
-                    delete: {
-                        id: createUniqID.getMD5('deg_group_management_events_delete'),
                         status: true,
                         description: 'удаление'
                     }
