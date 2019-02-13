@@ -14,8 +14,23 @@ const informationItemGroups = require('../../../libs/management_settings/informa
 const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
 const informationForPageManagementUsers = require('../../../libs/management_settings/informationForPageManagementUsers');
 
-module.exports = function(req, res, objHeader, socketIo) {
+module.exports = function(req, res, objHeader) {
+
+    console.log('START FUNC RELOAD USERS PAGE')
+
     async.parallel({
+        test: function(callback) {
+            callback(null, {});
+        }
+    }, function(err) {
+        if (err) {
+            writeLogFile('error', err.toString());
+            res.render('menu/settings/setting_users', {});
+        } else {
+            res.render('menu/settings/setting_users', {});
+        }
+    });
+    /*async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
         userGroupPermissions: function(callback) {
             informationUserGroupPermissions(req, function(err, result) {
@@ -53,5 +68,5 @@ module.exports = function(req, res, objHeader, socketIo) {
                 mainInformation: result.mainInformation
             });
         }
-    });
+    });*/
 };

@@ -24,16 +24,13 @@ let sessionUserInformation = new connection.Schema({
         management_analysis_sip: {},
         management_security_event_management: {},
         management_network_interaction: {},
-        management_search_tools: {},
-        management_decode_tools: {},
         management_users: {},
         management_groups: {},
         management_objects_and_subjects: {},
         management_ids_rules: {},
         management_search_rules: {},
         management_geoip: {},
-        management_reputational_lists: {},
-        management_events: {}
+        management_reputational_lists: {}
     },
     isPasswordDefaultAdministrator: { type: Boolean, default: false },
     dateCreate: Number

@@ -40,7 +40,7 @@ let groupSchema = new connection.Schema({
         id: String,
         name: String,
         element_settings: {
-            read: { id: String, status: Boolean, description: String }
+            save: { id: String, status: Boolean, description: String }
         }
     },
     management_security_event_management: {
@@ -62,7 +62,8 @@ let groupSchema = new connection.Schema({
                 id: String,
                 name: String,
                 element_settings: {
-                    read: { id: String, status: Boolean, description: String },
+                    create: { id: String, status: Boolean, description: String },
+                    stop: { id: String, status: Boolean, description: String },
                     import: { id: String, status: Boolean, description: String },
                     delete: { id: String, status: Boolean, description: String }
                 }
@@ -86,26 +87,11 @@ let groupSchema = new connection.Schema({
             },
         }
     },
-    management_search_tools: {
-        id: String,
-        name: String,
-        element_settings: {
-            read: { id: String, status: Boolean, description: String }
-        }
-    },
-    management_decode_tools: {
-        id: String,
-        name: String,
-        element_settings: {
-            read: { id: String, status: Boolean, description: String }
-        }
-    },
     management_users: {
         id: String,
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
@@ -115,7 +101,6 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
@@ -125,7 +110,6 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
@@ -135,7 +119,6 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
     },
@@ -144,7 +127,6 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
     },
@@ -153,7 +135,6 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
@@ -163,7 +144,6 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            read: { id: String, status: Boolean, description: String },
             edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }

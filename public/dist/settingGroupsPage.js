@@ -1443,70 +1443,6 @@ module.exports = emptyFunction;
 
 /***/ }),
 
-/***/ "../../node_modules/fbjs/lib/invariant.js":
-/*!***************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/fbjs/lib/invariant.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (true) {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-
-/***/ }),
-
 /***/ "../../node_modules/fbjs/lib/warning.js":
 /*!*************************************************************************!*\
   !*** /home/development/ISEMS/ISEMS-UI/node_modules/fbjs/lib/warning.js ***!
@@ -5316,182 +5252,6 @@ if (true) {
 var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
-
-
-/***/ }),
-
-/***/ "../../node_modules/react-addons-update/index.js":
-/*!**********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-addons-update/index.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-var _assign = __webpack_require__(/*! object-assign */ "../../node_modules/object-assign/index.js");
-var invariant = __webpack_require__(/*! fbjs/lib/invariant */ "../../node_modules/fbjs/lib/invariant.js");
-var hasOwnProperty = {}.hasOwnProperty;
-
-function shallowCopy(x) {
-  if (Array.isArray(x)) {
-    return x.concat();
-  } else if (x && typeof x === 'object') {
-    return _assign(new x.constructor(), x);
-  } else {
-    return x;
-  }
-}
-
-var COMMAND_PUSH = '$push';
-var COMMAND_UNSHIFT = '$unshift';
-var COMMAND_SPLICE = '$splice';
-var COMMAND_SET = '$set';
-var COMMAND_MERGE = '$merge';
-var COMMAND_APPLY = '$apply';
-
-var ALL_COMMANDS_LIST = [
-  COMMAND_PUSH,
-  COMMAND_UNSHIFT,
-  COMMAND_SPLICE,
-  COMMAND_SET,
-  COMMAND_MERGE,
-  COMMAND_APPLY
-];
-
-var ALL_COMMANDS_SET = {};
-
-ALL_COMMANDS_LIST.forEach(function(command) {
-  ALL_COMMANDS_SET[command] = true;
-});
-
-function invariantArrayCase(value, spec, command) {
-  invariant(
-    Array.isArray(value),
-    'update(): expected target of %s to be an array; got %s.',
-    command,
-    value
-  );
-  var specValue = spec[command];
-  invariant(
-    Array.isArray(specValue),
-    'update(): expected spec of %s to be an array; got %s. ' +
-      'Did you forget to wrap your parameter in an array?',
-    command,
-    specValue
-  );
-}
-
-/**
- * Returns a updated shallow copy of an object without mutating the original.
- * See https://facebook.github.io/react/docs/update.html for details.
- */
-function update(value, spec) {
-  invariant(
-    typeof spec === 'object',
-    'update(): You provided a key path to update() that did not contain one ' +
-      'of %s. Did you forget to include {%s: ...}?',
-    ALL_COMMANDS_LIST.join(', '),
-    COMMAND_SET
-  );
-
-  if (hasOwnProperty.call(spec, COMMAND_SET)) {
-    invariant(
-      Object.keys(spec).length === 1,
-      'Cannot have more than one key in an object with %s',
-      COMMAND_SET
-    );
-
-    return spec[COMMAND_SET];
-  }
-
-  var nextValue = shallowCopy(value);
-
-  if (hasOwnProperty.call(spec, COMMAND_MERGE)) {
-    var mergeObj = spec[COMMAND_MERGE];
-    invariant(
-      mergeObj && typeof mergeObj === 'object',
-      "update(): %s expects a spec of type 'object'; got %s",
-      COMMAND_MERGE,
-      mergeObj
-    );
-    invariant(
-      nextValue && typeof nextValue === 'object',
-      "update(): %s expects a target of type 'object'; got %s",
-      COMMAND_MERGE,
-      nextValue
-    );
-    _assign(nextValue, spec[COMMAND_MERGE]);
-  }
-
-  if (hasOwnProperty.call(spec, COMMAND_PUSH)) {
-    invariantArrayCase(value, spec, COMMAND_PUSH);
-    spec[COMMAND_PUSH].forEach(function(item) {
-      nextValue.push(item);
-    });
-  }
-
-  if (hasOwnProperty.call(spec, COMMAND_UNSHIFT)) {
-    invariantArrayCase(value, spec, COMMAND_UNSHIFT);
-    spec[COMMAND_UNSHIFT].forEach(function(item) {
-      nextValue.unshift(item);
-    });
-  }
-
-  if (hasOwnProperty.call(spec, COMMAND_SPLICE)) {
-    invariant(
-      Array.isArray(value),
-      'Expected %s target to be an array; got %s',
-      COMMAND_SPLICE,
-      value
-    );
-    invariant(
-      Array.isArray(spec[COMMAND_SPLICE]),
-      'update(): expected spec of %s to be an array of arrays; got %s. ' +
-        'Did you forget to wrap your parameters in an array?',
-      COMMAND_SPLICE,
-      spec[COMMAND_SPLICE]
-    );
-    spec[COMMAND_SPLICE].forEach(function(args) {
-      invariant(
-        Array.isArray(args),
-        'update(): expected spec of %s to be an array of arrays; got %s. ' +
-          'Did you forget to wrap your parameters in an array?',
-        COMMAND_SPLICE,
-        spec[COMMAND_SPLICE]
-      );
-      nextValue.splice.apply(nextValue, args);
-    });
-  }
-
-  if (hasOwnProperty.call(spec, COMMAND_APPLY)) {
-    invariant(
-      typeof spec[COMMAND_APPLY] === 'function',
-      'update(): expected spec of %s to be a function; got %s.',
-      COMMAND_APPLY,
-      spec[COMMAND_APPLY]
-    );
-    nextValue = spec[COMMAND_APPLY](nextValue);
-  }
-
-  for (var k in spec) {
-    if (!(ALL_COMMANDS_SET.hasOwnProperty(k) && ALL_COMMANDS_SET[k])) {
-      nextValue[k] = update(value[k], spec[k]);
-    }
-  }
-
-  return nextValue;
-}
-
-module.exports = update;
 
 
 /***/ }),
@@ -41271,6 +41031,7 @@ function (_React$Component3) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ButtonAddGroup).call(this, props));
     _this.handleShow = _this.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleClose = _this.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleAddNewGroup = _this.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.state = {
       modalShow: false
     };
@@ -41286,12 +41047,15 @@ function (_React$Component3) {
     }
   }, {
     key: "handleClose",
-    value: function handleClose(e) {
-      console.log('ddddddddddddddd');
+    value: function handleClose() {
       this.setState({
-        modalShow: false,
-        clear: 1
+        modalShow: false
       });
+    }
+  }, {
+    key: "handleAddNewGroup",
+    value: function handleAddNewGroup(data) {
+      socket.emit('add new group', data);
     }
   }, {
     key: "render",
@@ -41304,8 +41068,9 @@ function (_React$Component3) {
         disabled: disabledCreate
       }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
         show: this.state.modalShow,
-        onHide: this.handleClose.bind(this),
-        listelement: this.props.groupListElement
+        onHide: this.handleClose,
+        listelement: this.props.groupListElement,
+        handleAddNewGroup: this.handleAddNewGroup
       }));
     }
   }]);
@@ -41398,7 +41163,7 @@ function (_React$Component6) {
       };
       var disabledEdit = !this.props.accessRights.edit.status ? 'disabled' : '';
       var disabledDelete = !this.props.accessRights.delete.status ? 'disabled' : '';
-      var bD, bS;
+      var bEdit, bDel;
       var textCenter = 'text-left';
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
         access: this.props.accessRights,
@@ -41406,10 +41171,10 @@ function (_React$Component6) {
       });
       var arrGroup = this.props.groupsName.map(function (group) {
         if (group.toLowerCase() !== 'administrator') {
-          bD = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
+          bDel = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
             disabledDelete: disabledDelete
           });
-          bS = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
+          bEdit = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
             disabledEdit: disabledEdit
           });
           textCenter = "text-center";
@@ -41421,7 +41186,7 @@ function (_React$Component6) {
           className: textCenter,
           style: styleGroupName,
           key: "group_name_".concat(group)
-        }, group, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, butAddGroup, "\xA0", bS, "\xA0", bD));
+        }, group, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, butAddGroup, "\xA0", bEdit, "\xA0", bDel));
       });
       return arrGroup;
     }
@@ -41564,8 +41329,8 @@ function (_React$Component9) {
     _classCallCheck(this, CreateTable);
 
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this3.groupsName = _this3.getGroupsName.call(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.state = {};
+    _this3.groupsName = _this3.getGroupsName.call(_assertThisInitialized(_assertThisInitialized(_this3)));
     return _this3;
   }
 
@@ -41627,20 +41392,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var react_addons_update__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-addons-update */ "../../node_modules/react-addons-update/index.js");
-/* harmony import */ var react_addons_update__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_addons_update__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41664,7 +41417,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
  * 
  * Версия 0.11, дата релиза 11.02.2019
  */
-
 
 
  //список доступных действий
@@ -41728,12 +41480,12 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateListCategory.propTypes = {
-  listelement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  itemName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  countSend: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.number.isRequired,
-  isListName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.bool.isRequired,
-  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  itemName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  countSend: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.number.isRequired,
+  isListName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
 CreateListCategory.defaultProps = {
   isFirstItem: true //создание элементов для выбора действий
@@ -41778,8 +41530,8 @@ function (_React$Component2) {
         }, this.props.isListName ? this.props.listelement[item].description : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
           name: item,
           type: "checkbox",
-          id: "id_".concat(this.props.listelement[item].id),
-          defaultChecked: this.props.checkboxMarked["id_".concat(this.props.listelement[item].id)],
+          id: this.props.listelement[item].id,
+          defaultChecked: this.props.checkboxMarked[this.props.listelement[item].id],
           onChange: this.props.onChangeUserInput
         })));
       }
@@ -41792,12 +41544,12 @@ function (_React$Component2) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateCategoryValue.propTypes = {
-  listelement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  itemName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  countSend: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.number.isRequired,
-  isListName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.bool.isRequired,
-  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired //создание списка доступных действий
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  itemName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  countSend: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.number.isRequired,
+  isListName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired //создание списка доступных действий
 
 };
 
@@ -41871,18 +41623,49 @@ function (_React$Component3) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateTable.propTypes = {
-  listelement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  onUserInput: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
-  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
-  groupName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  classGroupNameValide: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
+  onUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  groupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  classGroupNameValide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string
+};
+
+var AlertMessage =
+/*#__PURE__*/
+function (_React$Component4) {
+  _inherits(AlertMessage, _React$Component4);
+
+  function AlertMessage() {
+    _classCallCheck(this, AlertMessage);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(AlertMessage).apply(this, arguments));
+  }
+
+  _createClass(AlertMessage, [{
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
+        dismissible: true,
+        variant: "danger",
+        show: this.props.show,
+        onClose: this.props.onCloseHandle
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, null, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u0412\u0435\u0440\u043E\u044F\u0442\u043D\u043E \u0432\u044B \u0437\u0430\u0431\u044B\u043B\u0438 \u043D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u044B \u0438\u043B\u0438 \u043D\u0435 \u0432\u044B\u0431\u0440\u0430\u043B\u0438 \u043D\u0438 \u043E\u0434\u043D\u043E\u0433\u043E \u0438\u0437 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432 \u043F\u0435\u0440\u0435\u0447\u0438\u0441\u043B\u0435\u043D\u043D\u044B\u0445 \u0432\u044B\u0448\u0435.")));
+    }
+  }]);
+
+  return AlertMessage;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+AlertMessage.propTypes = {
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onCloseHandle: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
 
 var ModalWindowAddNewGroup =
 /*#__PURE__*/
-function (_React$Component4) {
-  _inherits(ModalWindowAddNewGroup, _React$Component4);
+function (_React$Component5) {
+  _inherits(ModalWindowAddNewGroup, _React$Component5);
 
   function ModalWindowAddNewGroup() {
     var _this;
@@ -41891,55 +41674,56 @@ function (_React$Component4) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).apply(this, arguments));
     _this.state = {
+      showAlert: false,
       groupName: '',
       groupNameValide: false,
       classGroupName: 'form-control',
       checkboxMarked: {}
     };
-    _this.correlationRules = [];
+    _this.handleSave = _this.handleSave.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleClose = _this.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.clearElements = _this.clearElements.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.onCloseHandle = _this.onCloseHandle.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleUserInput = _this.handleUserInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.setCheckboxMarked = _this.setCheckboxMarked.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleAddNewGroup = _this.props.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.changeCheckboxMarked = _this.changeCheckboxMarked.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.createCorrelationRules = _this.createCorrelationRules.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;
   }
 
   _createClass(ModalWindowAddNewGroup, [{
-    key: "createCorrelationRules",
-    value: function createCorrelationRules() {
-      var _this2 = this;
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      this.setCheckboxMarked();
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProp) {
+      if (!prevProp.show) {
+        this.clearElements();
+      }
+    }
+  }, {
+    key: "clearElements",
+    value: function clearElements() {
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.showAlert = false;
+      stateCopy.groupName = '';
+      stateCopy.groupNameValide = false;
+      stateCopy.classGroupName = 'form-control';
 
-      var searchReadValue = function searchReadValue(list, id, count) {
-        if (count > 10) return;
+      for (var id in stateCopy.checkboxMarked) {
+        stateCopy.checkboxMarked[id] = false;
+      }
 
-        for (var key in list) {
-          if (key === 'id' || key === 'name' || key === 'description') continue;
-
-          if (key === 'read') {
-            _this2.correlationRules.push(["id_".concat(id), "id_".concat(list[key].id)]);
-
-            return;
-          }
-
-          searchReadValue(list[key], id, ++count);
-        }
-      };
-
-      var createCorrelationRules = function createCorrelationRules(menuElement) {
-        for (var name in menuElement) {
-          if (name === 'id' || name === 'name') continue;
-
-          if (name === 'element_tools' || name === 'element_settings') {
-            createCorrelationRules(menuElement[name]);
-            continue;
-          }
-
-          var nameManagement = ~name.indexOf('setting') ? name.replace('setting', 'management') : "management_".concat(name);
-          searchReadValue(_this2.props.listelement[nameManagement], menuElement[name].id, 0);
-        }
-      };
-
-      createCorrelationRules(this.props.listelement.menu_items);
-      console.log(this.correlationRules);
+      this.setState(stateCopy);
+    }
+  }, {
+    key: "onCloseHandle",
+    value: function onCloseHandle() {
+      this.setState({
+        showAlert: false
+      });
     }
   }, {
     key: "setCheckboxMarked",
@@ -41951,7 +41735,7 @@ function (_React$Component4) {
           if (typeof listElement[key] === 'string') continue;
 
           if ('status' in listElement[key]) {
-            obj["id_".concat(listElement[key].id)] = false;
+            obj[listElement[key].id] = false;
             continue;
           }
 
@@ -41967,89 +41751,16 @@ function (_React$Component4) {
   }, {
     key: "changeCheckboxMarked",
     value: function changeCheckboxMarked(event) {
-      var _this3 = this;
-
-      var _event$currentTarget = event.currentTarget,
-          id = _event$currentTarget.id,
-          value = _event$currentTarget.value;
-      console.log("ID: ".concat(id));
-      console.log("VALUE: ".concat(value));
-      console.log(event.target.checked);
-      console.log("--- ".concat(this.state.checkboxMarked[id], " ---"));
-      /*ReactUpdate(this.state, {
-          checkboxMarked: {
-              [id]: { $set: event.target.checked }
-          }
-      })*/
-
-      /*this.setState({
-          checkboxMarked: {
-              ...this.state.checkboxMarked,
-              [id]: !this.state.checkboxMarked[id]
-          }
-      })*/
-
+      var id = event.currentTarget.id;
       var stateCopy = Object.assign({}, this.state);
-      stateCopy.checkboxMarked[id] = event.target.checked;
+      stateCopy.checkboxMarked[id] = !this.state.checkboxMarked[id];
       this.setState({
         stateCopy: stateCopy
       });
-      this.correlationRules.forEach(function (arr) {
-        console.log(id);
-        console.log(arr.some(function (idSearch) {
-          return id === idSearch;
-        }));
-
-        if (arr.some(function (idSearch) {
-          return id === idSearch;
-        })) {
-          console.log('-=-=-=-==-=-==-=-');
-
-          var _arr2 = _slicedToArray(arr, 2),
-              one = _arr2[0],
-              two = _arr2[1];
-
-          var idChange = one === id ? two : one;
-
-          var _stateCopy = Object.assign({}, _this3.state);
-
-          _stateCopy.checkboxMarked[idChange] = !_this3.state.checkboxMarked[idChange];
-
-          _this3.setState({
-            stateCopy: _stateCopy
-          });
-        }
-      });
-      /*
-              let stateCopy = Object.assign({}, this.state)
-              stateCopy.checkboxMarked[id] = event.target.checked
-              this.setState({ stateCopy })
-      
-              console.log(`****** ${stateCopy.checkboxMarked[id]} *****`)
-      */
-
-      console.log('STATE AFTER UPDATE');
-      console.log(id);
-      console.log(this.state.checkboxMarked);
-    }
-  }, {
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      console.log('componentWillMount');
-      this.setCheckboxMarked();
-      this.createCorrelationRules();
-    }
-  }, {
-    key: "componentWillUpdate",
-    value: function componentWillUpdate() {
-      console.log('componentWillUpdate');
     }
   }, {
     key: "handleUserInput",
     value: function handleUserInput(groupName) {
-      console.log("new group name = ".concat(groupName));
-      console.log(groupName.length);
-
       if (/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
         this.setState({
           groupName: groupName,
@@ -42066,33 +41777,39 @@ function (_React$Component4) {
   }, {
     key: "handleClose",
     value: function handleClose() {
-      console.log(11111);
       this.props.onHide();
-      this.setState({
-        groupName: '',
-        groupNameValide: false,
-        classGroupName: 'form-control'
-      });
-      console.log('CLOSE');
+      this.clearElements();
     }
   }, {
     key: "handleSave",
     value: function handleSave() {
-      if (this.state.groupNameValide) {
-        console.log('GROUP VALIDE');
+      var listActions = Object.assign({}, this.state.checkboxMarked);
+      var isChecked = Object.keys(listActions).some(function (item) {
+        return listActions[item];
+      });
+
+      if (this.state.groupNameValide && isChecked) {
+        this.handleAddNewGroup({
+          groupName: this.state.groupName,
+          listPossibleActions: listActions
+        });
         this.handleClose();
       } else {
-        console.log('WARNING: GROUP INVALIDE!!!!');
+        this.setState({
+          showAlert: true
+        });
       }
     }
   }, {
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], _extends({}, this.props, {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
+        show: this.props.show,
+        onHide: this.props.onHide,
         size: "lg",
         "aria-labelledby": "contained-modal-title-vcenter",
         centered: true
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
         closeButton: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, {
         id: "contained-modal-title-vcenter"
@@ -42102,15 +41819,18 @@ function (_React$Component4) {
         groupName: this.state.groupName,
         classGroupNameValide: this.state.classGroupName,
         onChangeUserInput: this.changeCheckboxMarked,
-        onUserInput: this.handleUserInput.bind(this)
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        onUserInput: this.handleUserInput
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AlertMessage, {
+        show: this.state.showAlert,
+        onCloseHandle: this.onCloseHandle
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-secondary",
         size: "sm",
-        onClick: this.handleClose.bind(this)
+        onClick: this.handleClose
       }, "\u0417\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-primary",
         size: "sm",
-        onClick: this.handleSave.bind(this)
+        onClick: this.handleSave
       }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
     }
   }]);

@@ -1,21 +1,28 @@
 /*
  * Проверка авторизации пользователя
  *
- * Версия 0.1, дата релиза 11.05.2017
+ * Версия 0.1, дата релиза 13.02.2019
  * */
 
 'use strict';
 
 const models = require('../../controllers/models');
 const getSessionId = require('../helpers/getSessionId');
+const mongodbQueryProcessor = require('../../middleware/mongodbQueryProcessor');
 
-module.exports = function(socketIo, callback) {
-    getSessionId('socketIo', socketIo, (err, sessionId) => {
-        models.modelSessionUserInformation.findOne({ session_id: sessionId }, { _id: 1 }, function(err, document) {
-            if (err) return callback(err);
+module.exports = function(socketIo) {
+    return new Promise((resolve, reject) => {
+        getSessionId('socketIo', socketIo, (err, sessionId) => {
+            if (err) reject(err);
 
-            if (document === null) callback(null, false);
-            else callback(null, true);
+            mongodbQueryProcessor.querySelect(
+                models.modelSessionUserInformation, { query: { session_id: sessionId } },
+                (err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
         });
+    }).then(result => {
+        return result === null;
     });
 };

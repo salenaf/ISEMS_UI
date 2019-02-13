@@ -5,8 +5,7 @@
  */
 
 import React from 'react'
-import { Button, Modal, Table } from 'react-bootstrap'
-import ReactUpdate from 'react-addons-update'
+import { Alert, Button, Modal, Table } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 //список доступных действий
@@ -105,8 +104,8 @@ class CreateCategoryValue extends React.Component {
                         <input
                             name={item}
                             type="checkbox"
-                            id={`id_${this.props.listelement[item].id}`}
-                            defaultChecked={this.props.checkboxMarked[`id_${this.props.listelement[item].id}`]}
+                            id={this.props.listelement[item].id}
+                            defaultChecked={this.props.checkboxMarked[this.props.listelement[item].id]}
                             onChange={this.props.onChangeUserInput} />}
                 </div>)
         }
@@ -192,56 +191,71 @@ CreateTable.propTypes = {
     classGroupNameValide: PropTypes.string
 }
 
+class AlertMessage extends React.Component {
+    render() {
+        return (<>
+            <Alert dismissible variant="danger" show={this.props.show} onClose={this.props.onCloseHandle}>
+                <Alert.Heading>Ошибка при сохранении!</Alert.Heading>
+                <p>Вероятно вы забыли написать название группы или не выбрали ни одного из элементов перечисленных выше.</p>
+            </Alert>
+        </>)
+    }
+}
+
+AlertMessage.propTypes = {
+    show: PropTypes.bool.isRequired,
+    onCloseHandle: PropTypes.func.isRequired
+}
+
 class ModalWindowAddNewGroup extends React.Component {
     constructor() {
         super(...arguments)
 
         this.state = {
+            showAlert: false,
             groupName: '',
             groupNameValide: false,
             classGroupName: 'form-control',
             checkboxMarked: {}
         }
 
-        this.correlationRules = []
-
+        this.handleSave = this.handleSave.bind(this)
+        this.handleClose = this.handleClose.bind(this)
+        this.clearElements = this.clearElements.bind(this)
+        this.onCloseHandle = this.onCloseHandle.bind(this)
+        this.handleUserInput = this.handleUserInput.bind(this)
         this.setCheckboxMarked = this.setCheckboxMarked.bind(this)
+        this.handleAddNewGroup = this.props.handleAddNewGroup.bind(this)
         this.changeCheckboxMarked = this.changeCheckboxMarked.bind(this)
-        this.createCorrelationRules = this.createCorrelationRules.bind(this)
     }
 
-    createCorrelationRules() {
-        let searchReadValue = (list, id, count) => {
-            if (count > 10) return
-            for (let key in list) {
-                if (key === 'id' || key === 'name' || key === 'description') continue
-                if (key === 'read') {
-                    this.correlationRules.push([`id_${id}`, `id_${list[key].id}`])
+    componentWillMount() {
+        this.setCheckboxMarked()
+    }
 
-                    return
-                }
+    componentDidUpdate(prevProp) {
+        if (!prevProp.show) {
+            this.clearElements()
+        }
+    }
 
-                searchReadValue(list[key], id, ++count)
-            }
+    clearElements() {
+        let stateCopy = Object.assign({}, this.state)
+
+        stateCopy.showAlert = false
+        stateCopy.groupName = ''
+        stateCopy.groupNameValide = false
+        stateCopy.classGroupName = 'form-control'
+
+        for (let id in stateCopy.checkboxMarked) {
+            stateCopy.checkboxMarked[id] = false
         }
 
-        let createCorrelationRules = (menuElement) => {
-            for (let name in menuElement) {
-                if (name === 'id' || name === 'name') continue
-                if (name === 'element_tools' || name === 'element_settings') {
-                    createCorrelationRules(menuElement[name])
-                    continue
-                }
+        this.setState(stateCopy)
+    }
 
-                let nameManagement = (~name.indexOf('setting')) ? name.replace('setting', 'management') : `management_${name}`
-
-                searchReadValue(this.props.listelement[nameManagement], menuElement[name].id, 0)
-            }
-        }
-
-        createCorrelationRules(this.props.listelement.menu_items)
-
-        console.log(this.correlationRules)
+    onCloseHandle() {
+        this.setState({ showAlert: false })
     }
 
     setCheckboxMarked() {
@@ -250,7 +264,7 @@ class ModalWindowAddNewGroup extends React.Component {
             for (let key in listElement) {
                 if ((typeof listElement[key] === 'string')) continue
                 if ('status' in listElement[key]) {
-                    obj[`id_${listElement[key].id}`] = false
+                    obj[listElement[key].id] = false
                     continue
                 }
 
@@ -264,76 +278,14 @@ class ModalWindowAddNewGroup extends React.Component {
     }
 
     changeCheckboxMarked(event) {
-        let { id, value } = event.currentTarget
-
-        console.log(`ID: ${id}`)
-        console.log(`VALUE: ${value}`)
-        console.log(event.target.checked)
-        console.log(`--- ${this.state.checkboxMarked[id]} ---`)
-
-        /*ReactUpdate(this.state, {
-            checkboxMarked: {
-                [id]: { $set: event.target.checked }
-            }
-        })*/
-
-        /*this.setState({
-            checkboxMarked: {
-                ...this.state.checkboxMarked,
-                [id]: !this.state.checkboxMarked[id]
-            }
-        })*/
+        let id = event.currentTarget.id
 
         let stateCopy = Object.assign({}, this.state)
-        stateCopy.checkboxMarked[id] = event.target.checked
+        stateCopy.checkboxMarked[id] = !this.state.checkboxMarked[id]
         this.setState({ stateCopy })
-
-        this.correlationRules.forEach(arr => {
-            
-            console.log(id)
-            console.log(arr.some(idSearch => id === idSearch))
-
-            if(arr.some(idSearch => id === idSearch)){
-
-console.log('-=-=-=-==-=-==-=-')
-
-                let [ one, two] = arr
-                let idChange = (one === id) ? two: one
-
-                let stateCopy = Object.assign({}, this.state)
-                stateCopy.checkboxMarked[idChange] = !this.state.checkboxMarked[idChange]
-                this.setState({ stateCopy })
-            }
-        })
-
-        /*
-                let stateCopy = Object.assign({}, this.state)
-                stateCopy.checkboxMarked[id] = event.target.checked
-                this.setState({ stateCopy })
-        
-                console.log(`****** ${stateCopy.checkboxMarked[id]} *****`)
-        */
-        console.log('STATE AFTER UPDATE')
-        console.log(id)
-        console.log(this.state.checkboxMarked)
-
-    }
-
-    componentWillMount() {
-        console.log('componentWillMount')
-
-        this.setCheckboxMarked()
-        this.createCorrelationRules()
-    }
-
-    componentWillUpdate() {
-        console.log('componentWillUpdate')
     }
 
     handleUserInput(groupName) {
-        console.log(`new group name = ${groupName}`)
-        console.log(groupName.length)
-
         if (/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
             this.setState({
                 groupName: groupName,
@@ -349,33 +301,36 @@ console.log('-=-=-=-==-=-==-=-')
     }
 
     handleClose() {
-
-        console.log(11111)
-
         this.props.onHide()
-        this.setState({
-            groupName: '',
-            groupNameValide: false,
-            classGroupName: 'form-control'
-        })
 
-        console.log('CLOSE')
+        this.clearElements()
     }
 
     handleSave() {
-        if (this.state.groupNameValide) {
-            console.log('GROUP VALIDE')
+        let listActions = Object.assign({}, this.state.checkboxMarked)
+
+        let isChecked = Object.keys(listActions).some(item => {
+            return listActions[item]
+        })
+
+        if (this.state.groupNameValide && isChecked) {
+
+            this.handleAddNewGroup({
+                groupName: this.state.groupName,
+                listPossibleActions: listActions
+            })
 
             this.handleClose()
         } else {
-            console.log('WARNING: GROUP INVALIDE!!!!')
+            this.setState({ showAlert: true })
         }
     }
 
     render() {
         return (
             <Modal
-                {...this.props}
+                show={this.props.show}
+                onHide={this.props.onHide}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
@@ -393,14 +348,15 @@ console.log('-=-=-=-==-=-==-=-')
                         groupName={this.state.groupName}
                         classGroupNameValide={this.state.classGroupName}
                         onChangeUserInput={this.changeCheckboxMarked}
-                        onUserInput={this.handleUserInput.bind(this)} />
+                        onUserInput={this.handleUserInput} />
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-secondary" size="sm" onClick={this.handleClose.bind(this)}>
+                    <AlertMessage show={this.state.showAlert} onCloseHandle={this.onCloseHandle} />
+                    <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>
                         Закрыть
                     </Button>
-                    <Button variant="outline-primary" size="sm" onClick={this.handleSave.bind(this)}>
+                    <Button variant="outline-primary" size="sm" onClick={this.handleSave}>
                         Сохранить
                     </Button>
                 </Modal.Footer>

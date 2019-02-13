@@ -126,6 +126,7 @@ class ButtonAddGroup extends React.Component {
 
         this.handleShow = this.handleShow.bind(this)
         this.handleClose = this.handleClose.bind(this)
+        this.handleAddNewGroup = this.handleAddNewGroup.bind(this)
 
         this.state = {
             modalShow: false
@@ -133,37 +134,35 @@ class ButtonAddGroup extends React.Component {
     }
 
     handleShow() {
-        this.setState({
-            modalShow: true
-        })
+        this.setState({ modalShow: true })
     }
 
-    handleClose(e) {
+    handleClose() {
+        this.setState({ modalShow: false })
+    }
 
-        console.log('ddddddddddddddd')
-
-        this.setState({ modalShow: false, clear: 1 })
+    handleAddNewGroup(data) {
+        socket.emit('add new group', data)
     }
 
     render() {
         let disabledCreate = (this.props.access.create.status) ? '' : 'disabled';
 
-        return (
-            <>
-                <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={this.handleShow.bind(this)}
-                    disabled={disabledCreate} >
-                    добавить
+        return (<>
+            <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={this.handleShow.bind(this)}
+                disabled={disabledCreate} >
+                добавить
                 </Button>
 
-                <ModalWindowAddNewGroup
-                    show={this.state.modalShow}
-                    onHide={this.handleClose.bind(this)}
-                    listelement={this.props.groupListElement} />
-            </>
-        )
+            <ModalWindowAddNewGroup
+                show={this.state.modalShow}
+                onHide={this.handleClose}
+                listelement={this.props.groupListElement}
+                handleAddNewGroup={this.handleAddNewGroup} />
+        </>)
     }
 }
 
@@ -214,7 +213,7 @@ class EnumGroupName extends React.Component {
         let disabledEdit = (!this.props.accessRights.edit.status) ? 'disabled' : '';
         let disabledDelete = (!this.props.accessRights.delete.status) ? 'disabled' : '';
 
-        let bD, bS
+        let bEdit, bDel
         let textCenter = 'text-left'
         let butAddGroup = <ButtonAddGroup
             access={this.props.accessRights}
@@ -222,8 +221,8 @@ class EnumGroupName extends React.Component {
 
         let arrGroup = this.props.groupsName.map(group => {
             if (group.toLowerCase() !== 'administrator') {
-                bD = <ButtonDelete disabledDelete={disabledDelete} />
-                bS = <ButtonEdit disabledEdit={disabledEdit} />
+                bDel = <ButtonDelete disabledDelete={disabledDelete} />
+                bEdit = <ButtonEdit disabledEdit={disabledEdit} />
                 textCenter = "text-center"
                 styleGroupName.paddingBottom = ''
                 butAddGroup = ''
@@ -232,7 +231,7 @@ class EnumGroupName extends React.Component {
             return (
                 <th className={textCenter} style={styleGroupName} key={`group_name_${group}`}>
                     {group}&nbsp;
-                    <div>{butAddGroup}&nbsp;{bS}&nbsp;{bD}</div>
+                    <div>{butAddGroup}&nbsp;{bEdit}&nbsp;{bDel}</div>
                 </th>)
         })
 
@@ -262,9 +261,11 @@ class ShowDateCreateGroup extends React.Component {
             let [year, month, day] = dateString.split('-')
             let dateCreate = `${day}.${month}.${year}`
 
-            return (
-                <th className={textCenter} key={`date_create_${group}`}>{`${text} ${dateCreate}`}</th>
-            )
+            return <th
+                className={textCenter}
+                key={`date_create_${group}`}>
+                {`${text} ${dateCreate}`}
+            </th>
         })
 
         return dateCreate
@@ -325,13 +326,15 @@ class CreateTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.groupsName = this.getGroupsName.call(this)
         this.state = {}
+
+        this.groupsName = this.getGroupsName.call(this)
     }
 
     getGroupsName() {
         let groups = Object.keys(this.props.mainInformation)
         groups.sort()
+
         let newGroups = groups.filter(item => item !== 'administrator')
 
         return ['administrator'].concat(newGroups)

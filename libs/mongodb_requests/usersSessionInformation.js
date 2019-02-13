@@ -49,16 +49,13 @@ module.exports.create = function(login, passportID, isDefault, cb) {
                         management_analysis_sip: objData.groupData.management_analysis_sip,
                         management_security_event_management: objData.groupData.management_security_event_management,
                         management_network_interaction: objData.groupData.management_network_interaction,
-                        management_search_tools: objData.groupData.management_search_tools,
-                        management_decode_tools: objData.groupData.management_decode_tools,
                         management_users: objData.groupData.management_users,
                         management_groups: objData.groupData.management_groups,
                         management_objects_and_subjects: objData.groupData.management_objects_and_subjects,
                         management_ids_rules: objData.groupData.management_ids_rules,
                         management_geoip: objData.groupData.management_geoip,
                         management_search_rules: objData.groupData.management_search_rules,
-                        management_reputational_lists: objData.groupData.management_reputational_lists,
-                        management_events: objData.groupData.management_events
+                        management_reputational_lists: objData.groupData.management_reputational_lists
                     },
                     isPasswordDefaultAdministrator: isDefault,
                     dateCreate: +(new Date())

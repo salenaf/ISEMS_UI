@@ -16,6 +16,7 @@ const objGlobals = require('../configure/globalObject');
 const writeLogFile = require('../libs/writeLogFile');
 const getSessionId = require('../libs/helpers/getSessionId');
 const checkStatusSource = require('../libs/processing/status_source/checkStatusSource');
+const checkUserAuthorization = require('../libs/check/checkUserAuthorization');
 const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
 
 //генератор событий (обрабатывает события от внешних источников, например API)
@@ -144,15 +145,23 @@ exports.eventHandling = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
 
     // добавление новой группы
-    socketIo.on('add new group', (data) => {
-        /* 
-            СДЕЛАТЬ ПРОВЕРКУ возможности добавления данным пользователем
-            новой группы 
-        */
+    socketIo.on('add new group', data => {
 
         debug('ADDITION NEW GROUP')
         debug(data)
 
+        checkUserAuthorization(socketIo)
+            .then(isAuthorization => {
+                if (isAuthorization) {
+                    debug('ПОЛЬЗОВАТЕЛЬ НЕ АВТОРИЗОВАН');
+
+                    return;
+                }
+
+                debug('ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН, обработка запроса');
+            }).catch(err => {
+                return writeLogFile('err', err.toString());
+            });
     });
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */

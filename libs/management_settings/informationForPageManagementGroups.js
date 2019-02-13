@@ -1,7 +1,7 @@
 /*
  * Подготовка информации для вывода на странице settings_groups
  *
- * Версия 0.1, дата релиза 03.04.2017
+ * Версия 0.1, дата релиза 13.02.2019
  * */
 
 'use strict';
@@ -15,16 +15,13 @@ module.exports = function(cb) {
         'management_analysis_sip',
         'management_security_event_management',
         'management_network_interaction',
-        'management_search_tools',
-        'management_decode_tools',
         'management_users',
         'management_groups',
         'management_objects_and_subjects',
         'management_ids_rules',
         'management_geoip',
         'management_search_rules',
-        'management_reputational_lists',
-        'management_events'
+        'management_reputational_lists'
     ];
 
     mongodbQueryProcessor.querySelect(models.modelGroup, { isMany: true }, (err, groups) => {

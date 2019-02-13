@@ -189,10 +189,10 @@ function createModelGroups(modelGroup, next) {
                 id: createUniqID.getMD5('administrator_management_analysis_sip'),
                 name: 'анализ ИПБ',
                 element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_analysis_sip_read'),
+                    save: {
+                        id: createUniqID.getMD5('administrator_management_analysis_sip_save'),
                         status: true,
-                        description: 'просмотр'
+                        description: 'сохранение шаблонов'
                     }
                 }
             },
@@ -235,10 +235,15 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter'),
                         name: 'фильтрация файлов',
                         element_settings: {
-                            read: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_read'),
+                            create: {
+                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_create'),
                                 status: true,
-                                description: 'просмотр'
+                                description: 'создание типового шаблона'
+                            },
+                            stop: {
+                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_stop'),
+                                status: true,
+                                description: 'останов фильтрации'
                             },
                             import: {
                                 id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_import'),
@@ -264,7 +269,7 @@ function createModelGroups(modelGroup, next) {
                             stop: {
                                 id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_import_stop'),
                                 status: true,
-                                description: 'остановка'
+                                description: 'останов импорта'
                             },
                             resume: {
                                 id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_import_resume'),
@@ -291,28 +296,6 @@ function createModelGroups(modelGroup, next) {
                     },
                 }
             },
-            management_search_tools: {
-                id: createUniqID.getMD5('administrator_management_search_tools'),
-                name: 'поиск информации',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_search_tools_read'),
-                        status: true,
-                        description: 'просмотр'
-                    }
-                }
-            },
-            management_decode_tools: {
-                id: createUniqID.getMD5('administrator_management_decode_tools'),
-                name: 'декодирование',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_decode_tools_read'),
-                        status: true,
-                        description: 'просмотр'
-                    }
-                }
-            },
             management_users: {
                 id: createUniqID.getMD5('administrator_management_users'),
                 name: 'пользователи',
@@ -321,11 +304,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('administrator_management_users_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_users_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('administrator_management_users_edit'),
@@ -348,11 +326,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_groups_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     edit: {
                         id: createUniqID.getMD5('administrator_management_groups_edit'),
                         status: true,
@@ -373,11 +346,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('administrator_management_objects_and_subjects_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_objects_and_subjects_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('administrator_management_objects_and_subjects_edit'),
@@ -400,11 +368,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_ids_rules_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     delete: {
                         id: createUniqID.getMD5('administrator_management_ids_rules_delete'),
                         status: true,
@@ -421,11 +384,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_geoip_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     delete: {
                         id: createUniqID.getMD5('administrator_management_geoip_delete'),
                         status: true,
@@ -441,11 +399,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('administrator_management_reputational_lists_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_reputational_lists_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('administrator_management_reputational_lists_edit'),
@@ -467,11 +420,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('administrator_management_search_rules_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('administrator_management_search_rules_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('administrator_management_search_rules_edit'),
@@ -569,10 +517,10 @@ function createModelGroups(modelGroup, next) {
                 id: createUniqID.getMD5('all_users_management_analysis_sip'),
                 name: 'анализ ИПБ',
                 element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_analysis_sip_read'),
+                    save: {
+                        id: createUniqID.getMD5('all_users_management_analysis_sip_save'),
                         status: true,
-                        description: 'просмотр'
+                        description: 'сохранение шаблонов'
                     }
                 }
             },
@@ -615,10 +563,15 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter'),
                         name: 'фильтрация файлов',
                         element_settings: {
-                            read: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_read'),
+                            create: {
+                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_create'),
                                 status: true,
-                                description: 'просмотр'
+                                description: 'создание шаблонов'
+                            },
+                            stop: {
+                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_stop'),
+                                status: true,
+                                description: 'останов'
                             },
                             import: {
                                 id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_import'),
@@ -671,28 +624,6 @@ function createModelGroups(modelGroup, next) {
                     },
                 }
             },
-            management_search_tools: {
-                id: createUniqID.getMD5('all_users_management_search_tools'),
-                name: 'поиск информации',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_search_tools_read'),
-                        status: true,
-                        description: 'просмотр'
-                    }
-                }
-            },
-            management_decode_tools: {
-                id: createUniqID.getMD5('all_users_management_decode_tools'),
-                name: 'декодирование',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_decode_tools_read'),
-                        status: true,
-                        description: 'просмотр'
-                    }
-                }
-            },
             management_users: {
                 id: createUniqID.getMD5('all_users_management_users'),
                 name: 'пользователи',
@@ -701,11 +632,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('all_users_management_users_create'),
                         status: false,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_users_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('all_users_management_users_edit'),
@@ -728,11 +654,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_groups_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     edit: {
                         id: createUniqID.getMD5('all_users_management_groups_edit'),
                         status: false,
@@ -753,11 +674,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('all_users_management_objects_and_subjects_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_objects_and_subjects_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('all_users_management_objects_and_subjects_edit'),
@@ -780,11 +696,6 @@ function createModelGroups(modelGroup, next) {
                         status: false,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_ids_rules_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     delete: {
                         id: createUniqID.getMD5('all_users_management_ids_rules_delete'),
                         status: true,
@@ -801,11 +712,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_geoip_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     delete: {
                         id: createUniqID.getMD5('all_users_management_geoip_delete'),
                         status: true,
@@ -821,11 +727,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('all_users_management_reputational_lists_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_reputational_lists_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('all_users_management_reputational_lists_edit'),
@@ -847,11 +748,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('all_users_management_search_rules_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('all_users_management_search_rules_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('all_users_management_search_rules_edit'),
@@ -949,10 +845,10 @@ function createModelGroups(modelGroup, next) {
                 id: createUniqID.getMD5('deg_group_management_analysis_sip'),
                 name: 'анализ ИПБ',
                 element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_analysis_sip_read'),
+                    save: {
+                        id: createUniqID.getMD5('deg_group_management_analysis_sip_save'),
                         status: true,
-                        description: 'просмотр'
+                        description: 'сохранение типового шаблона'
                     }
                 }
             },
@@ -995,10 +891,15 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter'),
                         name: 'фильтрация файлов',
                         element_settings: {
-                            read: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_read'),
+                            create: {
+                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_create'),
                                 status: true,
-                                description: 'просмотр'
+                                description: 'создание типового шаблона'
+                            },
+                            stop: {
+                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_stop'),
+                                status: true,
+                                description: 'останов фильтрации'
                             },
                             import: {
                                 id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_import'),
@@ -1051,28 +952,6 @@ function createModelGroups(modelGroup, next) {
                     },
                 }
             },
-            management_search_tools: {
-                id: createUniqID.getMD5('deg_group_management_search_tools'),
-                name: 'поиск информации',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_search_tools_read'),
-                        status: true,
-                        description: 'просмотр'
-                    }
-                }
-            },
-            management_decode_tools: {
-                id: createUniqID.getMD5('deg_group_management_decode_tools'),
-                name: 'декодирование',
-                element_settings: {
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_decode_tools_read'),
-                        status: true,
-                        description: 'просмотр'
-                    }
-                }
-            },
             management_users: {
                 id: createUniqID.getMD5('deg_group_management_users'),
                 name: 'пользователи',
@@ -1081,11 +960,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('deg_group_management_users_create'),
                         status: false,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_users_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('deg_group_management_users_edit'),
@@ -1108,11 +982,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_groups_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     edit: {
                         id: createUniqID.getMD5('deg_group_management_groups_edit'),
                         status: true,
@@ -1133,11 +1002,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('deg_group_management_objects_and_subjects_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_objects_and_subjects_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('deg_group_management_objects_and_subjects_edit'),
@@ -1160,11 +1024,6 @@ function createModelGroups(modelGroup, next) {
                         status: false,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_ids_rules_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     delete: {
                         id: createUniqID.getMD5('deg_group_management_ids_rules_delete'),
                         status: true,
@@ -1181,11 +1040,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: 'создание'
                     },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_geoip_read'),
-                        status: true,
-                        description: 'просмотр'
-                    },
                     delete: {
                         id: createUniqID.getMD5('deg_group_management_geoip_delete'),
                         status: true,
@@ -1201,11 +1055,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('deg_group_management_reputational_lists_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_reputational_lists_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('deg_group_management_reputational_lists_edit'),
@@ -1227,11 +1076,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5('deg_group_management_search_rules_create'),
                         status: true,
                         description: 'создание'
-                    },
-                    read: {
-                        id: createUniqID.getMD5('deg_group_management_search_rules_read'),
-                        status: true,
-                        description: 'просмотр'
                     },
                     edit: {
                         id: createUniqID.getMD5('deg_group_management_search_rules_edit'),

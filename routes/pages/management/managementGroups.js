@@ -11,20 +11,20 @@ const debug = require('debug')('managementGroups');
 const async = require('async');
 
 const writeLogFile = require('../../../libs/writeLogFile');
-const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
+const checkAccessRightsPage = require('../../../libs/check/checkAccessRightsPage');
 const informationForPageManagementGroups = require('../../../libs/management_settings/informationForPageManagementGroups');
 
 module.exports = function(req, res, objHeader) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
-        userGroupPermissions: (callback) => {
-            informationUserGroupPermissions(req, (err, result) => {
+        userGroupPermissions: callback => {
+            checkAccessRightsPage(req, (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
             });
         },
         //получаем информацию по группам
-        mainInformation: (callback) => {
+        mainInformation: callback => {
             informationForPageManagementGroups((err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
@@ -38,8 +38,8 @@ module.exports = function(req, res, objHeader) {
             return;
         }
 
-        //проверяем права на доступ к указанной директории
-        let readStatus = result.userGroupPermissions.group_settings.management_groups.element_settings.read.status;
+        //проверяем права на доступ к странице
+        let readStatus = result.userGroupPermissions.group_settings.menu_items.element_settings.setting_groups.status;
         if (readStatus === false) return res.render('403');
 
         let objResult = {
