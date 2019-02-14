@@ -118,10 +118,10 @@ class QueryProcessor {
     queryUpdate(mongooseModel, settingsQuery, callback) {
         let {
             id = null,
-            select = '',
-            query = {},
-            update = {},
-            isMany = false
+                select = '',
+                query = {},
+                update = {},
+                isMany = false
         } = settingsQuery;
 
         debug('--- function "querySelect"');

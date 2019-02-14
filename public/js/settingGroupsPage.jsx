@@ -8,10 +8,11 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Button, Table } from 'react-bootstrap'
+import { Alert, Button, Table } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 import { helpers } from './common_helpers/helpers'
+import showNotifyMessage from './common_helpers/showNotifyMessage'
 import ModalWindowAddNewGroup from './setting_groups_page/modalWindowAddNewGroup.jsx'
 
 //перечисление типов действий доступных для администратора
@@ -142,7 +143,12 @@ class ButtonAddGroup extends React.Component {
     }
 
     handleAddNewGroup(data) {
-        socket.emit('add new group', data)
+        socket.emit('add new group', {
+            actionType: 'create',
+            arguments: data
+        })
+
+        this.props.changeGroup(data)
     }
 
     render() {
@@ -216,6 +222,7 @@ class EnumGroupName extends React.Component {
         let bEdit, bDel
         let textCenter = 'text-left'
         let butAddGroup = <ButtonAddGroup
+            changeGroup={this.props.changeGroup}
             access={this.props.accessRights}
             groupListElement={this.props.list.administrator.elements} />
 
@@ -256,6 +263,9 @@ class ShowDateCreateGroup extends React.Component {
                 text = 'группа создана: '
                 textCenter = 'text-left'
             }
+
+            console.log(this.props.list[group])
+            if (typeof this.props.list[group] === 'undefinde') return <th></th>
 
             let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(' ')
             let [year, month, day] = dateString.split('-')
@@ -326,9 +336,23 @@ class CreateTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {}
+        this.state = {
+            listGroups: []
+        }
 
-        this.groupsName = this.getGroupsName.call(this)
+        this.groupsName
+        //        this.groupsName = this.getGroupsName.call(this)
+        this.changeGroup = this.changeGroup.bind(this)
+        this.getGroupsName = this.getGroupsName.bind(this)
+    }
+
+    componentWillMount() {
+
+        console.log('dddddd')
+
+        this.getGroupsName()
+
+        console.log(this.groupsName)
     }
 
     getGroupsName() {
@@ -336,36 +360,58 @@ class CreateTable extends React.Component {
         groups.sort()
 
         let newGroups = groups.filter(item => item !== 'administrator')
+        let finalList = ['administrator'].concat(newGroups)
 
-        return ['administrator'].concat(newGroups)
+        this.setState({ listGroups: finalList })
+        this.groupsName = finalList
+    }
+
+    showAlerts() {
+        return <Alert variant='danger'>Message</Alert>
+    }
+
+    changeGroup(data) {
+
+        console.log(data);
+
+        /*let oldListGroups = this.state.listGroups
+        oldListGroups.push(data.groupsName)
+
+        this.setState({ listGroups: oldListGroups })*/
     }
 
     render() {
-        return (
-            <div>
-                <h4 className="text-left text-uppercase">управление группами</h4>
-                <Table striped hover>
-                    <thead>
-                        <tr>
-                            <ShowDateCreateGroup
-                                groupsName={this.groupsName}
-                                list={this.props.mainInformation} />
-                        </tr>
-                        <tr>
-                            <EnumGroupName
-                                groupsName={this.groupsName}
-                                list={this.props.mainInformation}
-                                accessRights={this.props.accessRights} />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <CreateBodyElement
+        socket.on('notify information', data => {
+            showNotifyMessage(data)
+        });
+
+        return <div>
+            <h4 className="text-left text-uppercase">управление группами</h4>
+            <Table striped hover>
+                <thead>
+                    <tr>
+                        <ShowDateCreateGroup
+                            /*groupsName={this.state.listGroups}*/
                             groupsName={this.groupsName}
                             list={this.props.mainInformation} />
-                    </tbody>
-                </Table>
-            </div>
-        );
+                    </tr>
+                    <tr>
+                        <EnumGroupName
+                            changeGroup={this.changeGroup}
+                            /*groupsName={this.state.listGroups}*/
+                            groupsName={this.groupsName}
+                            list={this.props.mainInformation}
+                            accessRights={this.props.accessRights} />
+                    </tr>
+                </thead>
+                <tbody>
+                    <CreateBodyElement
+                        /*groupsName={this.state.listGroups}*/
+                        groupsName={this.groupsName}
+                        list={this.props.mainInformation} />
+                </tbody>
+            </Table>
+        </div>
     }
 }
 

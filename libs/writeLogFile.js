@@ -37,48 +37,48 @@ class WriteLog {
 
     //пишем информационные сообщения
     write(nameFile, message, cb) {
-        let self = this;
-        let fileNameCurrentDate = self.currentDate().split(' ');
-        let newFileName = `${fileNameCurrentDate[0]}_${fileNameCurrentDate[1]}_${nameFile}`;
+            let self = this;
+            let fileNameCurrentDate = self.currentDate().split(' ');
+            let newFileName = `${fileNameCurrentDate[0]}_${fileNameCurrentDate[1]}_${nameFile}`;
 
-        new Promise((resolve, reject) => {
-            fs.appendFile(`${self.pathLogFiles}/${nameFile}`, message, err => {
-                if (err) reject(err);
-                else resolve();
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-                fs.lstat(`${self.pathLogFiles}/${nameFile}`, (err, stats) => {
+            new Promise((resolve, reject) => {
+                fs.appendFile(`${self.pathLogFiles}/${nameFile}`, message, err => {
                     if (err) reject(err);
-                    else resolve(stats);
+                    else resolve();
                 });
-            });
-        }).then(stats => {
-            if (stats.size < 10000000) return cb(null);
-
-            return new Promise((resolve, reject) => {
-                fs.rename(
-                    `${self.pathLogFiles}/${nameFile}`,
-                    `${self.pathLogFiles}/${newFileName}`,
-                    err => {
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    fs.lstat(`${self.pathLogFiles}/${nameFile}`, (err, stats) => {
                         if (err) reject(err);
-                        else resolve();
+                        else resolve(stats);
                     });
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-                fs.appendFile(`${self.pathLogFiles}/${nameFile}`, '', { 'encoding': 'utf8' }, err => {
-                    if (err) resolve(err);
-                    else reject();
                 });
+            }).then(stats => {
+                if (stats.size < 10000000) return cb(null);
+
+                return new Promise((resolve, reject) => {
+                    fs.rename(
+                        `${self.pathLogFiles}/${nameFile}`,
+                        `${self.pathLogFiles}/${newFileName}`,
+                        err => {
+                            if (err) reject(err);
+                            else resolve();
+                        });
+                });
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    fs.appendFile(`${self.pathLogFiles}/${nameFile}`, '', { 'encoding': 'utf8' }, err => {
+                        if (err) resolve(err);
+                        else reject();
+                    });
+                });
+            }).then(() => {
+                cb(null);
+            }).catch(err => {
+                return cb(err);
             });
-        }).then(() => {
-            cb(null);
-        }).catch(err => {
-            return cb(err);
-        });
-    }
-    /*       fs.appendFile(self.rootDirectory + nameFile, message, err => {
+        }
+        /*       fs.appendFile(self.rootDirectory + nameFile, message, err => {
             if(err) return cb(err);
 
             fs.lstat(self.rootDirectory + nameFile, function(err, stats) {
@@ -158,6 +158,12 @@ module.exports = function(type, message) {
         'info': 'messageInfo',
         'error': 'messageError'
     };
+
+    if (typeof writeLog[objTypeMessage[type]] === 'undefined') {
+        console.log('Error writing to log file message type not defined');
+
+        return;
+    }
 
     writeLog[objTypeMessage[type]](err => {
         if (err) console.log(`Error: ${err.toString()}`);

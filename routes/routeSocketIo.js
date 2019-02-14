@@ -1,7 +1,7 @@
 /*
  * Маршруты для обработки информации передаваемой через протокол socket.io
  *
- * Версия 0.1, дата релиза 04.01.2019
+ * Версия 0.1, дата релиза 14.02.2019
  * */
 
 'use strict';
@@ -16,8 +16,10 @@ const objGlobals = require('../configure/globalObject');
 const writeLogFile = require('../libs/writeLogFile');
 const getSessionId = require('../libs/helpers/getSessionId');
 const checkStatusSource = require('../libs/processing/status_source/checkStatusSource');
-const checkUserAuthorization = require('../libs/check/checkUserAuthorization');
+const checkUserAuthentication = require('../libs/check/checkUserAuthentication');
 const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
+
+const managemetGroups = require('./pages/processing_socketio_request/element_settings/managementGroup');
 
 //генератор событий (обрабатывает события от внешних источников, например API)
 exports.eventGenerator = function(socketIo, object) {
@@ -150,17 +152,41 @@ exports.eventHandling = function(socketIo) {
         debug('ADDITION NEW GROUP')
         debug(data)
 
-        checkUserAuthorization(socketIo)
-            .then(isAuthorization => {
-                if (isAuthorization) {
-                    debug('ПОЛЬЗОВАТЕЛЬ НЕ АВТОРИЗОВАН');
+        //проверка авторизован ли пользователь
+        checkUserAuthentication(socketIo)
+            .then(authenticationData => {
+                if (authenticationData.isAuthorization) {
+                    return false;
+                }
+
+                if (!authenticationData.document.group_settings.management_groups.element_settings.create.status) {
+                    return false;
+                }
+
+                return true;
+            }).then(isSuccess => {
+                if (!isSuccess) {
+                    showNotify(socketIo, 'danger', 'Невозможно добавить группу, недостаточно прав на выполнение данного действия.');
 
                     return;
                 }
 
-                debug('ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН, обработка запроса');
+                managemetGroups(data, (err, processingResult) => {
+                    if (err) throw (err);
+
+                    if (processingResult.isProcessed) {
+                        showNotify(socketIo, 'success', 'Группа успешно добавлена.');
+                    } else {
+                        showNotify(socketIo, 'danger', processingResult.messageError);
+                    }
+                });
             }).catch(err => {
-                return writeLogFile('err', err.toString());
+
+                debug(err);
+
+                showNotify(socketIo, 'danger', 'Ошибка сервера, выполнение действия невозможно.');
+
+                return writeLogFile('error', err.toString());
             });
     });
 
@@ -170,7 +196,7 @@ exports.eventHandling = function(socketIo) {
         //только выбранных правил
         if (data.processingType === 'drop change class') {
             //проверяем авторизован ли пользователь
-            require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+            require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
                 if (err) {
                     writeLogFile('error', err.toString());
                     showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
@@ -220,7 +246,7 @@ exports.eventHandling = function(socketIo) {
         //всех решающих правил
         if (data.processingType === 'drop data base') {
             //проверяем авторизован ли пользователь
-            require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+            require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
                 if (err) {
                     writeLogFile('error', err.toString());
                     showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
@@ -272,7 +298,7 @@ exports.eventHandling = function(socketIo) {
     //поиск решающих правил по выбранным идентификаторам
     socketIo.on('search rules sid', function(data) {
         //проверяем авторизован ли пользователь
-        require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+        require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
             if (err) {
                 writeLogFile('error', err.toString());
                 showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
@@ -323,7 +349,7 @@ exports.eventHandling = function(socketIo) {
     //получить дополнительную информацию по массиву идентификаторов решающих правил СОА
     socketIo.on('get additional information for sid', function(data) {
         //проверяем авторизован ли пользователь
-        require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+        require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
             if (err) {
                 writeLogFile('error', err.toString());
                 showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
@@ -413,7 +439,7 @@ exports.eventHandling = function(socketIo) {
 /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ --- */
 exports.uploadFiles = function(socketIo, ss) {
     //проверяем авторизован ли пользователь
-    require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+    require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
         if (err) {
             writeLogFile('error', err.toString());
             showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
@@ -452,7 +478,7 @@ exports.uploadFiles = function(socketIo, ss) {
                         stream.pipe(tempFile);
 
                         tempFile.on('close', function() {
-                            require('../libs/check/checkUserAuthorization')(socketIo, function(err, isAuthorization) {
+                            require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
                                 if (err) {
                                     writeLogFile('error', err.toString());
                                     showNotify(socketIo, 'danger', 'Ошибка обработки запроса');

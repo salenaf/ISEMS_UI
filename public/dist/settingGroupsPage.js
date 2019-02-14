@@ -40835,6 +40835,37 @@ var helpers = {
 
 /***/ }),
 
+/***/ "./common_helpers/showNotifyMessage.js":
+/*!*********************************************!*\
+  !*** ./common_helpers/showNotifyMessage.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/** Вывод информационного сообщения */
+var showNotifyMessage = function showNotifyMessage(data) {
+  var notify = JSON.parse(data.notify);
+  $.notify({
+    message: notify.message
+  }, {
+    type: notify.type,
+    placement: {
+      from: 'top',
+      align: 'right'
+    },
+    offset: {
+      x: 10,
+      y: 10
+    }
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (showNotifyMessage);
+
+/***/ }),
+
 /***/ "./settingGroupsPage.jsx":
 /*!*******************************!*\
   !*** ./settingGroupsPage.jsx ***!
@@ -40852,7 +40883,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
+/* harmony import */ var _common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/showNotifyMessage */ "./common_helpers/showNotifyMessage.js");
+/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
 /**
  * Модуль формирующий основную таблицу на странице
  * 
@@ -40885,6 +40917,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 
 
 
@@ -41055,7 +41088,11 @@ function (_React$Component3) {
   }, {
     key: "handleAddNewGroup",
     value: function handleAddNewGroup(data) {
-      socket.emit('add new group', data);
+      socket.emit('add new group', {
+        actionType: 'create',
+        arguments: data
+      });
+      this.props.changeGroup(data);
     }
   }, {
     key: "render",
@@ -41066,7 +41103,7 @@ function (_React$Component3) {
         size: "sm",
         onClick: this.handleShow.bind(this),
         disabled: disabledCreate
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
         show: this.state.modalShow,
         onHide: this.handleClose,
         listelement: this.props.groupListElement,
@@ -41166,6 +41203,7 @@ function (_React$Component6) {
       var bEdit, bDel;
       var textCenter = 'text-left';
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
+        changeGroup: this.props.changeGroup,
         access: this.props.accessRights,
         groupListElement: this.props.list.administrator.elements
       });
@@ -41226,6 +41264,9 @@ function (_React$Component7) {
           text = 'группа создана: ';
           textCenter = 'text-left';
         }
+
+        console.log(_this2.props.list[group]);
+        if (typeof _this2.props.list[group] === 'undefinde') return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
 
         var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(' '),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
@@ -41329,12 +41370,24 @@ function (_React$Component9) {
     _classCallCheck(this, CreateTable);
 
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this3.state = {};
-    _this3.groupsName = _this3.getGroupsName.call(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.state = {
+      listGroups: []
+    };
+    _this3.groupsName; //        this.groupsName = this.getGroupsName.call(this)
+
+    _this3.changeGroup = _this3.changeGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.getGroupsName = _this3.getGroupsName.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     return _this3;
   }
 
   _createClass(CreateTable, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      console.log('dddddd');
+      this.getGroupsName();
+      console.log(this.groupsName);
+    }
+  }, {
     key: "getGroupsName",
     value: function getGroupsName() {
       var groups = Object.keys(this.props.mainInformation);
@@ -41342,24 +41395,53 @@ function (_React$Component9) {
       var newGroups = groups.filter(function (item) {
         return item !== 'administrator';
       });
-      return ['administrator'].concat(newGroups);
+      var finalList = ['administrator'].concat(newGroups);
+      this.setState({
+        listGroups: finalList
+      });
+      this.groupsName = finalList;
+    }
+  }, {
+    key: "showAlerts",
+    value: function showAlerts() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Alert"], {
+        variant: "danger"
+      }, "Message");
+    }
+  }, {
+    key: "changeGroup",
+    value: function changeGroup(data) {
+      console.log(data);
+      /*let oldListGroups = this.state.listGroups
+      oldListGroups.push(data.groupsName)
+       this.setState({ listGroups: oldListGroups })*/
     }
   }, {
     key: "render",
     value: function render() {
+      socket.on('notify information', function (data) {
+        Object(_common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__["default"])(data);
+      });
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left text-uppercase"
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup, {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup
+      /*groupsName={this.state.listGroups}*/
+      , {
         groupsName: this.groupsName,
         list: this.props.mainInformation
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
+        changeGroup: this.changeGroup
+        /*groupsName={this.state.listGroups}*/
+        ,
         groupsName: this.groupsName,
         list: this.props.mainInformation,
         accessRights: this.props.accessRights
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement, {
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement
+      /*groupsName={this.state.listGroups}*/
+      , {
         groupsName: this.groupsName,
         list: this.props.mainInformation
       }))));

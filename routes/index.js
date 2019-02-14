@@ -16,7 +16,6 @@ const checkAccessRightsExecute = require('../libs/check/checkAccessRightsExecute
 const changeAdministratorPassword = require('../libs/changeAdministratorPassword');
 
 const processingManagementUsers = require('./pages/processing_http_request/processingManagementUsers');
-const processingManagementGroups = require('./pages/processing_http_request/processingManagementGroups');
 const processingManagementSources = require('./pages/processing_http_request/processingManagementSources');
 const processingDownloadFileSourceSetting = require('../libs/processing/processing_downloaded_files/processingDownloadFileSourceSetting');
 
@@ -211,29 +210,6 @@ module.exports = function(app, socketIo) {
                 res.render('500', {})
             });
     });
-
-    //УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ
-    /*app.post('/setting_users', isAuthenticated, (req, res) => {
-         if (!req.body.actionType) return;
-
-         checkAccessRightsExecute({
-             management: 'management_users',
-             actionType: req.body.actionType,
-             sessionId: req.sessionID
-         }, (err, successfully) => {
-             if (err) writeLogFile('error', err.toString());
-
-             if (!successfully) {
-                 writeLogFile('error', `not enough rights to perform the action (session ID: ${req.sessionID})`);
-
-                 res.json({ type: 'danger', message: 'недостаточно прав для выполнения действия', action: '' }).end();
-             } else {
-                 processingManagementUsers(req, res, jsonObj => {
-                     res.json(jsonObj).end();
-                 });
-             }
-         });
-     });*/
 
     //УПРАВЛЕНИЕ ИСТОЧНИКАМИ
     app.get('/setting_objects_and_subjects', isAuthenticated, (req, res) => {
