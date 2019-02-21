@@ -40966,7 +40966,7 @@ function (_React$Component) {
           }, createCategoryValue));
         }
 
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, itemName, createCategoryValue);
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, itemName, createCategoryValue);
       }
 
       if (this.props.parameters.first || isMenuItem || moreThanTree) {
@@ -41206,7 +41206,12 @@ function (_React$Component6) {
         changeGroup: this.props.changeGroup,
         access: this.props.accessRights,
         groupListElement: this.props.list.administrator.elements
-      });
+      }); //let testListGroups = this.props.testListGroups.map(group => group)
+
+      console.log('class EnumGroupName');
+      console.log(this.props.testListGroups);
+      console.log('/-/-/-/-/-//-/--');
+      console.log(this.props.groupsName);
       var arrGroup = this.props.groupsName.map(function (group) {
         if (group.toLowerCase() !== 'administrator') {
           bDel = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
@@ -41265,7 +41270,6 @@ function (_React$Component7) {
           textCenter = 'text-left';
         }
 
-        console.log(_this2.props.list[group]);
         if (typeof _this2.props.list[group] === 'undefinde') return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
 
         var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(' '),
@@ -41371,7 +41375,8 @@ function (_React$Component9) {
 
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
     _this3.state = {
-      listGroups: []
+      listGroups: [],
+      groupsInformation: {}
     };
     _this3.groupsName; //        this.groupsName = this.getGroupsName.call(this)
 
@@ -41383,7 +41388,19 @@ function (_React$Component9) {
   _createClass(CreateTable, [{
     key: "componentWillMount",
     value: function componentWillMount() {
-      console.log('dddddd');
+      console.log('function componentWillMount'); //        console.log(this.props.mainInformation)
+
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.groupsInformation = Object.assign(stateCopy.groupsInformation, this.props.mainInformation);
+      this.setState(stateCopy);
+      /**  
+       * 
+       * ТЕПЕРЬ ИЗ СОСТОЯНИЯ groupsInformation МОЖНО БРАТЬ ВСЕ ДАННЫЕ В МЕСТО this.props.mainInformation
+       * 
+       */
+
+      console.log('---- В состоянии храним ВСЮ информацию о группах ----');
+      console.log(this.state);
       this.getGroupsName();
       console.log(this.groupsName);
     }
@@ -41392,6 +41409,8 @@ function (_React$Component9) {
     value: function getGroupsName() {
       var groups = Object.keys(this.props.mainInformation);
       groups.sort();
+      console.log('function getGroupName');
+      console.log(groups);
       var newGroups = groups.filter(function (item) {
         return item !== 'administrator';
       });
@@ -41411,9 +41430,10 @@ function (_React$Component9) {
   }, {
     key: "changeGroup",
     value: function changeGroup(data) {
+      console.log('*-*-*-*-*-*-*-*-*-*-');
       console.log(data);
       /*let oldListGroups = this.state.listGroups
-      oldListGroups.push(data.groupsName)
+      oldListGroups.push(data.groupName)
        this.setState({ listGroups: oldListGroups })*/
     }
   }, {
@@ -41428,12 +41448,13 @@ function (_React$Component9) {
         striped: true,
         hover: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup
-      /*groupsName={this.state.listGroups}*/
+      /*testListGroups={this.state.listGroups}*/
       , {
         groupsName: this.groupsName,
         list: this.props.mainInformation
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
-        changeGroup: this.changeGroup
+        changeGroup: this.changeGroup,
+        testListGroups: this.state.listGroups
         /*groupsName={this.state.listGroups}*/
         ,
         groupsName: this.groupsName,

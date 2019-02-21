@@ -50,10 +50,10 @@ class CreateListCategory extends React.Component {
             }
 
             return (
-                <div>
+                <React.Fragment>
                     {itemName}
                     {createCategoryValue}
-                </div>)
+                </React.Fragment>)
         }
 
         if ((this.props.parameters.first) || isMenuItem || moreThanTree) {
@@ -226,6 +226,14 @@ class EnumGroupName extends React.Component {
             access={this.props.accessRights}
             groupListElement={this.props.list.administrator.elements} />
 
+        //let testListGroups = this.props.testListGroups.map(group => group)
+
+        console.log('class EnumGroupName')
+        console.log(this.props.testListGroups)
+        console.log('/-/-/-/-/-//-/--')
+        console.log(this.props.groupsName)
+
+
         let arrGroup = this.props.groupsName.map(group => {
             if (group.toLowerCase() !== 'administrator') {
                 bDel = <ButtonDelete disabledDelete={disabledDelete} />
@@ -264,7 +272,6 @@ class ShowDateCreateGroup extends React.Component {
                 textCenter = 'text-left'
             }
 
-            console.log(this.props.list[group])
             if (typeof this.props.list[group] === 'undefinde') return <th></th>
 
             let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(' ')
@@ -337,7 +344,8 @@ class CreateTable extends React.Component {
         super(props);
 
         this.state = {
-            listGroups: []
+            listGroups: [],
+            groupsInformation: {}
         }
 
         this.groupsName
@@ -348,7 +356,24 @@ class CreateTable extends React.Component {
 
     componentWillMount() {
 
-        console.log('dddddd')
+        console.log('function componentWillMount')
+
+        //        console.log(this.props.mainInformation)
+
+        let stateCopy = Object.assign({}, this.state)
+        stateCopy.groupsInformation = Object.assign(stateCopy.groupsInformation, this.props.mainInformation)
+
+        this.setState(stateCopy)
+
+/**  
+ * 
+ * ТЕПЕРЬ ИЗ СОСТОЯНИЯ groupsInformation МОЖНО БРАТЬ ВСЕ ДАННЫЕ В МЕСТО this.props.mainInformation
+ * 
+ */
+
+        console.log('---- В состоянии храним ВСЮ информацию о группах ----')
+        console.log(this.state)
+
 
         this.getGroupsName()
 
@@ -358,6 +383,9 @@ class CreateTable extends React.Component {
     getGroupsName() {
         let groups = Object.keys(this.props.mainInformation)
         groups.sort()
+
+        console.log('function getGroupName')
+        console.log(groups)
 
         let newGroups = groups.filter(item => item !== 'administrator')
         let finalList = ['administrator'].concat(newGroups)
@@ -372,10 +400,11 @@ class CreateTable extends React.Component {
 
     changeGroup(data) {
 
+        console.log('*-*-*-*-*-*-*-*-*-*-')
         console.log(data);
 
         /*let oldListGroups = this.state.listGroups
-        oldListGroups.push(data.groupsName)
+        oldListGroups.push(data.groupName)
 
         this.setState({ listGroups: oldListGroups })*/
     }
@@ -391,13 +420,14 @@ class CreateTable extends React.Component {
                 <thead>
                     <tr>
                         <ShowDateCreateGroup
-                            /*groupsName={this.state.listGroups}*/
+                            /*testListGroups={this.state.listGroups}*/
                             groupsName={this.groupsName}
                             list={this.props.mainInformation} />
                     </tr>
                     <tr>
                         <EnumGroupName
                             changeGroup={this.changeGroup}
+                            testListGroups={this.state.listGroups}
                             /*groupsName={this.state.listGroups}*/
                             groupsName={this.groupsName}
                             list={this.props.mainInformation}
