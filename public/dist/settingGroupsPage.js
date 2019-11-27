@@ -40940,18 +40940,18 @@ function (_React$Component) {
   _createClass(CreateListCategory, [{
     key: "render",
     value: function render() {
-      var itemName = typeof this.props.list.name === 'undefined' ? ' ' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.list.name);
+      var itemName = typeof this.props.list.name === "undefined" ? " " : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.list.name);
       var liNoMarker = {
-        'listStyleType': 'none'
+        "listStyleType": "none"
       };
-      var isMenuItem = this.props.parameters.typeItem === 'menu_items';
+      var isMenuItem = this.props.parameters.typeItem === "menu_items";
       var moreThanTree = this.props.parameters.countSend === 3;
       var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
         list: this.props.list,
         parameters: this.props.parameters
       });
 
-      if (this.props.parameters.group === 'administrator') {
+      if (this.props.parameters.group === "administrator") {
         if (this.props.parameters.first) {
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
             className: "text-left"
@@ -40982,9 +40982,8 @@ function (_React$Component) {
 
 CreateListCategory.propTypes = {
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //перечисление значений 
-
-};
+  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+}; //перечисление значений 
 
 var CreateCategoryValue =
 /*#__PURE__*/
@@ -41002,15 +41001,15 @@ function (_React$Component2) {
     value: function render() {
       var arrItems = [];
       var parameters = {
-        'group': this.props.parameters.group,
-        'typeItem': this.props.parameters.typeItem,
-        'first': false
+        "group": this.props.parameters.group,
+        "typeItem": this.props.parameters.typeItem,
+        "first": false
       };
 
       for (var item in this.props.list) {
-        if (item === 'name' || item === 'id') continue;
+        if (item === "name" || item === "id") continue;
 
-        if (typeof this.props.list[item].status === 'undefined') {
+        if (typeof this.props.list[item].status === "undefined") {
           parameters.countSend = this.props.parameters.countSend + 1;
           arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             list: this.props.list[item],
@@ -41021,10 +41020,10 @@ function (_React$Component2) {
         }
 
         var isDisabled = void 0,
-            description = '';
+            description = "";
 
-        if (this.props.parameters.group === 'administrator') {
-          isDisabled = 'disabled';
+        if (this.props.parameters.group === "administrator") {
+          isDisabled = "disabled";
           description = this.props.list[item].description;
         }
 
@@ -41047,9 +41046,8 @@ function (_React$Component2) {
 
 CreateCategoryValue.propTypes = {
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //кнопка 'добавить' новую группу
-
-};
+  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+}; //кнопка 'добавить' новую группу
 
 var ButtonAddGroup =
 /*#__PURE__*/
@@ -41088,8 +41086,8 @@ function (_React$Component3) {
   }, {
     key: "handleAddNewGroup",
     value: function handleAddNewGroup(data) {
-      socket.emit('add new group', {
-        actionType: 'create',
+      socket.emit("add new group", {
+        actionType: "create",
         arguments: data
       });
       this.props.changeGroup(data);
@@ -41097,7 +41095,7 @@ function (_React$Component3) {
   }, {
     key: "render",
     value: function render() {
-      var disabledCreate = this.props.access.create.status ? '' : 'disabled';
+      var disabledCreate = this.props.access.create.status ? "" : "disabled";
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
         variant: "outline-primary",
         size: "sm",
@@ -41117,9 +41115,8 @@ function (_React$Component3) {
 
 ButtonAddGroup.propTypes = {
   access: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //кнопка 'сохранить изменение параметров группы'
-
-};
+  groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+}; //кнопка 'сохранить изменение параметров группы'
 
 var ButtonEdit =
 /*#__PURE__*/
@@ -41147,9 +41144,8 @@ function (_React$Component4) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonEdit.propTypes = {
-  disabledEdit: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired //кнопка 'удалить группу'
-
-};
+  disabledEdit: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired
+}; //кнопка 'удалить группу'
 
 var ButtonDelete =
 /*#__PURE__*/
@@ -41177,9 +41173,8 @@ function (_React$Component5) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonDelete.propTypes = {
-  disabledDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired //перечисление групп
-
-};
+  disabledDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired
+}; //перечисление групп
 
 var EnumGroupName =
 /*#__PURE__*/
@@ -41196,24 +41191,19 @@ function (_React$Component6) {
     key: "render",
     value: function render() {
       var styleGroupName = {
-        'paddingBottom': '13px'
+        "paddingBottom": "13px"
       };
-      var disabledEdit = !this.props.accessRights.edit.status ? 'disabled' : '';
-      var disabledDelete = !this.props.accessRights.delete.status ? 'disabled' : '';
+      var disabledEdit = !this.props.accessRights.edit.status ? "disabled" : "";
+      var disabledDelete = !this.props.accessRights.delete.status ? "disabled" : "";
       var bEdit, bDel;
-      var textCenter = 'text-left';
+      var textCenter = "text-left";
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
         changeGroup: this.props.changeGroup,
         access: this.props.accessRights,
         groupListElement: this.props.list.administrator.elements
-      }); //let testListGroups = this.props.testListGroups.map(group => group)
-
-      console.log('class EnumGroupName');
-      console.log(this.props.testListGroups);
-      console.log('/-/-/-/-/-//-/--');
-      console.log(this.props.groupsName);
+      });
       var arrGroup = this.props.groupsName.map(function (group) {
-        if (group.toLowerCase() !== 'administrator') {
+        if (group.toLowerCase() !== "administrator") {
           bDel = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
             disabledDelete: disabledDelete
           });
@@ -41221,8 +41211,8 @@ function (_React$Component6) {
             disabledEdit: disabledEdit
           });
           textCenter = "text-center";
-          styleGroupName.paddingBottom = '';
-          butAddGroup = '';
+          styleGroupName.paddingBottom = "";
+          butAddGroup = "";
         }
 
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
@@ -41241,9 +41231,8 @@ function (_React$Component6) {
 EnumGroupName.propTypes = {
   groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //вывод даты создания группы
-
-};
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+}; //вывод даты создания группы
 
 var ShowDateCreateGroup =
 /*#__PURE__*/
@@ -41262,21 +41251,21 @@ function (_React$Component7) {
       var _this2 = this;
 
       var dateCreate = this.props.groupsName.map(function (group) {
-        var text = '';
-        var textCenter = 'text-center';
+        var text = "";
+        var textCenter = "text-center";
 
-        if (group === 'administrator') {
-          text = 'группа создана: ';
-          textCenter = 'text-left';
+        if (group === "administrator") {
+          text = "группа создана: ";
+          textCenter = "text-left";
         }
 
-        if (typeof _this2.props.list[group] === 'undefinde') return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
+        if (typeof _this2.props.list[group] === "undefinde") return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
 
-        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(' '),
+        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(" "),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
             dateString = _helpers$getDate$spli2[0];
 
-        var _dateString$split = dateString.split('-'),
+        var _dateString$split = dateString.split("-"),
             _dateString$split2 = _slicedToArray(_dateString$split, 3),
             year = _dateString$split2[0],
             month = _dateString$split2[1],
@@ -41322,10 +41311,10 @@ function (_React$Component8) {
       var _loop = function _loop(item) {
         var arrTd = groupsName.map(function (group) {
           var listCategoryParameters = {
-            'group': group,
-            'countSend': 0,
-            'typeItem': item,
-            'first': true
+            "group": group,
+            "countSend": 0,
+            "typeItem": item,
+            "first": true
           };
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
             key: "td_".concat(list[group].elements[item].id)
@@ -41359,9 +41348,8 @@ function (_React$Component8) {
 
 CreateBodyElement.propTypes = {
   groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
-  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired //создание основной таблицы
-
-};
+  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+}; //создание основной таблицы
 
 var CreateTable =
 /*#__PURE__*/
@@ -41375,8 +41363,10 @@ function (_React$Component9) {
 
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
     _this3.state = {
-      listGroups: [],
-      groupsInformation: {}
+      groupsName: [],
+      groupsInformation: {},
+      oldGroupsName: [],
+      oldGroupsInformation: {}
     };
     _this3.groupsName; //        this.groupsName = this.getGroupsName.call(this)
 
@@ -41388,36 +41378,35 @@ function (_React$Component9) {
   _createClass(CreateTable, [{
     key: "componentWillMount",
     value: function componentWillMount() {
-      console.log('function componentWillMount'); //        console.log(this.props.mainInformation)
+      console.log("function componentWillMount"); //        console.log(this.props.mainInformation)
 
       var stateCopy = Object.assign({}, this.state);
       stateCopy.groupsInformation = Object.assign(stateCopy.groupsInformation, this.props.mainInformation);
       this.setState(stateCopy);
+      this.getGroupsName();
       /**  
        * 
        * ТЕПЕРЬ ИЗ СОСТОЯНИЯ groupsInformation МОЖНО БРАТЬ ВСЕ ДАННЫЕ В МЕСТО this.props.mainInformation
        * 
        */
 
-      console.log('---- В состоянии храним ВСЮ информацию о группах ----');
+      console.log("---- В состоянии храним ВСЮ информацию о группах ----");
       console.log(this.state);
-      this.getGroupsName();
-      console.log(this.groupsName);
     }
   }, {
     key: "getGroupsName",
     value: function getGroupsName() {
       var groups = Object.keys(this.props.mainInformation);
       groups.sort();
-      console.log('function getGroupName');
+      console.log("function getGroupName");
       console.log(groups);
       var newGroups = groups.filter(function (item) {
-        return item !== 'administrator';
+        return item !== "administrator";
       });
-      var finalList = ['administrator'].concat(newGroups);
-      this.setState({
-        listGroups: finalList
-      });
+      var finalList = ["administrator"].concat(newGroups);
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.groupsName = Object.assign(stateCopy.groupsName, finalList);
+      this.setState(stateCopy);
       this.groupsName = finalList;
     }
   }, {
@@ -41430,16 +41419,55 @@ function (_React$Component9) {
   }, {
     key: "changeGroup",
     value: function changeGroup(data) {
-      console.log('*-*-*-*-*-*-*-*-*-*-');
+      console.log("*-*-*-*-*-*-*-*-*-*-");
       console.log(data);
-      /*let oldListGroups = this.state.listGroups
-      oldListGroups.push(data.groupName)
-       this.setState({ listGroups: oldListGroups })*/
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.oldGroupsName = Object.assign(stateCopy.oldGroupsName, stateCopy.groupsName);
+      stateCopy.oldGroupsInformation = Object.assign(stateCopy.oldGroupsInformation, stateCopy.groupsInformation);
+      var newGroups = stateCopy.groupsName.filter(function (item) {
+        return item !== "administrator";
+      }).concat(data.groupName);
+      newGroups.sort();
+      stateCopy.groupsName = ["administrator"].concat(newGroups);
+      console.log(stateCopy.groupsInformation.administrator);
+      var newInfo = {};
+      newInfo[data.groupName] = {};
+      newInfo = Object.assign(newInfo[data.groupName], stateCopy.groupsInformation.administrator);
+      /*
+      
+      НЕДОДЕЛАЛ
+      необходимо пройтись по объекту, найти объект со свойством state,
+      поичкать в альтернативном объекте 'data' совпадающий id и изменить 
+      state на значение в объекте data
+      
+      let changeStatus = listElement => {
+          for (let key in listElement) {
+              if ((typeof listElement[key] === 'string')) continue
+              if ('status' in listElement[key]) {
+                    obj[listElement[key].id] = false
+                  continue
+              }
+               changeStatus(listElement[key])
+          }
+      }
+       changeStatus(newInfo)*/
+
+      console.log(newInfo);
     }
   }, {
     key: "render",
     value: function render() {
-      socket.on('notify information', function (data) {
+      socket.on("notify information", function (data) {
+        console.log("resived MSG ---");
+        console.log(data);
+        var notify = JSON.parse(data.notify);
+
+        if (notify.type === "success") {
+          console.log("ADD GROUP SUCCESS!!!!");
+        } else {
+          console.log("ADD GROUP ___FAILURE___!!!!");
+        }
+
         Object(_common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__["default"])(data);
       });
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
@@ -41447,24 +41475,21 @@ function (_React$Component9) {
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup
-      /*testListGroups={this.state.listGroups}*/
-      , {
-        groupsName: this.groupsName,
-        list: this.props.mainInformation
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup, {
+        groupsName: this.state.groupsName
+        /*list={this.props.mainInformation}*/
+        ,
+        list: this.state.groupsInformation
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
         changeGroup: this.changeGroup,
-        testListGroups: this.state.listGroups
-        /*groupsName={this.state.listGroups}*/
-        ,
-        groupsName: this.groupsName,
-        list: this.props.mainInformation,
+        groupsName: this.state.groupsName,
+        list: this.state.groupsInformation,
         accessRights: this.props.accessRights
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement
       /*groupsName={this.state.listGroups}*/
       , {
-        groupsName: this.groupsName,
-        list: this.props.mainInformation
+        groupsName: this.state.groupsName,
+        list: this.state.groupsInformation
       }))));
     }
   }]);
@@ -41479,7 +41504,7 @@ CreateTable.propTypes = {
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
   mainInformation: receivedFromServerMain,
   accessRights: receivedFromServerAccess
-}), document.getElementById('field_information'));
+}), document.getElementById("field_information"));
 
 /***/ }),
 

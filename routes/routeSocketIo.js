@@ -4,75 +4,75 @@
  * Версия 0.1, дата релиза 14.02.2019
  * */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('routeSocketIo')
+const debug = require("debug")("routeSocketIo");
 
-const fs = require('fs');
-const path = require('path');
-const validate = require('validate.js');
+const fs = require("fs");
+const path = require("path");
+const validate = require("validate.js");
 
-const objGlobals = require('../configure/globalObject');
-const writeLogFile = require('../libs/writeLogFile');
-const getSessionId = require('../libs/helpers/getSessionId');
-const checkStatusSource = require('../libs/processing/status_source/checkStatusSource');
-const checkUserAuthentication = require('../libs/check/checkUserAuthentication');
-const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
+const objGlobals = require("../configure/globalObject");
+const writeLogFile = require("../libs/writeLogFile");
+const getSessionId = require("../libs/helpers/getSessionId");
+const checkStatusSource = require("../libs/processing/status_source/checkStatusSource");
+const checkUserAuthentication = require("../libs/check/checkUserAuthentication");
+//const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
 
-const managemetGroups = require('./pages/processing_socketio_request/element_settings/managementGroup');
+const managemetGroups = require("./pages/processing_socketio_request/element_settings/managementGroup");
 
 //генератор событий (обрабатывает события от внешних источников, например API)
 exports.eventGenerator = function(socketIo, object) {
     let actionsObject = {
-        'waterfall-broker': {
-            'API': {
-                'connect': function() {
+        "waterfall-broker": {
+            "API": {
+                "connect": function() {
                     //отправляем информационное сообщение
-                    showNotify(socketIo, 'success', 'Установлено соединение с API waterfall-broker');
+                    showNotify(socketIo, "success", "Установлено соединение с API waterfall-broker");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
-                    socketIo.emit('change of status', {
-                        source: 'waterfall-broker',
-                        type: 'API',
-                        currentStatus: 'connect'
+                    socketIo.emit("change of status", {
+                        source: "waterfall-broker",
+                        type: "API",
+                        currentStatus: "connect"
                     });
                 },
-                'connect error': function() {
+                "connect error": function() {
                     //устанавливаем статус соединения для всех источников в 'не подключен'
                     setDisconnectSourceAll();
 
                     //генерируем событие об изменении статусов соединения
                     checkStatusSource(socketIo);
-                    showNotify(socketIo, 'danger', 'Невозможно установить соединение с API waterfall-broker');
+                    showNotify(socketIo, "danger", "Невозможно установить соединение с API waterfall-broker");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
-                    socketIo.emit('change of status', {
-                        source: 'waterfall-broker',
-                        type: 'API',
-                        currentStatus: 'error'
+                    socketIo.emit("change of status", {
+                        source: "waterfall-broker",
+                        type: "API",
+                        currentStatus: "error"
                     });
                 },
-                'disconnect': function() {
+                "disconnect": function() {
                     //устанавливаем статус соединения для всех источников в 'не подключен'
                     setDisconnectSourceAll();
 
                     //генерируем событие об изменении статусов соединения
                     checkStatusSource(socketIo);
-                    showNotify(socketIo, 'warning', 'Соединение с API waterfall-broker было разорвано');
+                    showNotify(socketIo, "warning", "Соединение с API waterfall-broker было разорвано");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
-                    socketIo.emit('change of status', {
-                        source: 'waterfall-broker',
-                        type: 'API',
-                        currentStatus: 'disconnect'
+                    socketIo.emit("change of status", {
+                        source: "waterfall-broker",
+                        type: "API",
+                        currentStatus: "disconnect"
                     });
                 },
-                'new message': function() {
-                    if (object.info.message.type === 'status message') {
+                "new message": function() {
+                    if (object.info.message.type === "status message") {
                         let sourceId = +object.info.message.information.sourceId;
 
                         if (!validate.isNumber(sourceId)) return;
-                        if (object.info.message.information.statusProcess !== 'successfully') return;
+                        if (object.info.message.information.statusProcess !== "successfully") return;
 
-                        if (typeof objGlobals.sources.sourceAvailability[sourceId] === 'undefined') {
-                            return writeLogFile('info', 'the source has not been added to database');
+                        if (typeof objGlobals.sources.sourceAvailability[sourceId] === "undefined") {
+                            return writeLogFile("info", "the source has not been added to database");
                         }
                         objGlobals.sources.sourceAvailability[sourceId].dateLastUpdate = +new Date();
                         objGlobals.sources.sourceAvailability[sourceId].statusNew = true;
@@ -80,48 +80,46 @@ exports.eventGenerator = function(socketIo, object) {
                 }
             }
         },
-        'waterfall-worker': {
-            'API': {
-                'connect': function() {
+        "waterfall-worker": {
+            "API": {
+                "connect": function() {
                     //отправляем информационное сообщение
-                    showNotify(socketIo, 'success', 'Установлено соединение с API waterfall-worker');
+                    showNotify(socketIo, "success", "Установлено соединение с API waterfall-worker");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
-                    socketIo.emit('change of status', {
-                        source: 'waterfall-worker',
-                        type: 'API',
-                        currentStatus: 'connect'
+                    socketIo.emit("change of status", {
+                        source: "waterfall-worker",
+                        type: "API",
+                        currentStatus: "connect"
                     });
                 },
-                'connect error': function() {
-                    showNotify(socketIo, 'danger', 'Невозможно установить соединение с API waterfall-worker');
+                "connect error": function() {
+                    showNotify(socketIo, "danger", "Невозможно установить соединение с API waterfall-worker");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
-                    socketIo.emit('change of status', {
-                        source: 'waterfall-worker',
-                        type: 'API',
-                        currentStatus: 'error'
+                    socketIo.emit("change of status", {
+                        source: "waterfall-worker",
+                        type: "API",
+                        currentStatus: "error"
                     });
                 },
-                'disconnect': function() {
-                    showNotify(socketIo, 'warning', 'Соединение с API waterfall-worker было разорвано');
+                "disconnect": function() {
+                    showNotify(socketIo, "warning", "Соединение с API waterfall-worker было разорвано");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
-                    socketIo.emit('change of status', {
-                        source: 'waterfall-worker',
-                        type: 'API',
-                        currentStatus: 'disconnect'
+                    socketIo.emit("change of status", {
+                        source: "waterfall-worker",
+                        type: "API",
+                        currentStatus: "disconnect"
                     });
                 },
-                'new message': function() {
-                    if (object.info.message.type === 'status message') {
-
-                    }
+                "new message": function() {
+                    //if (object.info.message.type === "status message") {}
                 }
             }
         }
     };
 
-    let nameIsExist = (typeof actionsObject[object.name] === 'undefined');
-    let typeIsExist = (typeof actionsObject[object.name][object.type] === 'undefined');
-    let infoIsExist = (typeof actionsObject[object.name][object.type][object.info.action] === 'undefined');
+    let nameIsExist = (typeof actionsObject[object.name] === "undefined");
+    let typeIsExist = (typeof actionsObject[object.name][object.type] === "undefined");
+    let infoIsExist = (typeof actionsObject[object.name][object.type][object.info.action] === "undefined");
 
     if (nameIsExist || typeIsExist || infoIsExist) return;
 
@@ -131,10 +129,10 @@ exports.eventGenerator = function(socketIo, object) {
 //генератор событий
 exports.eventEmitter = function(socketIo, object) {
     let handling = {
-        'changingStatusSource': checkStatusSource.bind(null, socketIo)
+        "changingStatusSource": checkStatusSource.bind(null, socketIo)
     };
 
-    console.log('--- script:routeSocketIo, Event Emitter ---');
+    console.log("--- script:routeSocketIo, Event Emitter ---");
 
     handling[object.type]();
 };
@@ -147,10 +145,10 @@ exports.eventHandling = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
 
     // добавление новой группы
-    socketIo.on('add new group', data => {
+    socketIo.on("add new group", data => {
 
-        debug('ADDITION NEW GROUP')
-        debug(data)
+        debug("ADDITION NEW GROUP");
+        debug(data);
 
         //проверка авторизован ли пользователь
         checkUserAuthentication(socketIo)
@@ -166,7 +164,7 @@ exports.eventHandling = function(socketIo) {
                 return true;
             }).then(isSuccess => {
                 if (!isSuccess) {
-                    showNotify(socketIo, 'danger', 'Невозможно добавить группу, недостаточно прав на выполнение данного действия.');
+                    showNotify(socketIo, "danger", "Невозможно добавить группу, недостаточно прав на выполнение данного действия.");
 
                     return;
                 }
@@ -175,66 +173,66 @@ exports.eventHandling = function(socketIo) {
                     if (err) throw (err);
 
                     if (processingResult.isProcessed) {
-                        showNotify(socketIo, 'success', 'Группа успешно добавлена.');
+                        showNotify(socketIo, "success", "Группа успешно добавлена.");
                     } else {
-                        showNotify(socketIo, 'danger', processingResult.messageError);
+                        showNotify(socketIo, "danger", processingResult.messageError);
                     }
                 });
             }).catch(err => {
 
                 debug(err);
 
-                showNotify(socketIo, 'danger', 'Ошибка сервера, выполнение действия невозможно.');
+                showNotify(socketIo, "danger", "Ошибка сервера, выполнение действия невозможно.");
 
-                return writeLogFile('error', err.toString());
+                return writeLogFile("error", err.toString());
             });
     });
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
-    socketIo.on('delete rules ids', function(data) {
+    socketIo.on("delete rules ids", function(data) {
         //только выбранных правил
-        if (data.processingType === 'drop change class') {
+        if (data.processingType === "drop change class") {
             //проверяем авторизован ли пользователь
-            require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
+            require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
                 if (err) {
-                    writeLogFile('error', err.toString());
-                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                    writeLogFile("error", err.toString());
+                    showNotify(socketIo, "danger", "Ошибка обработки запроса");
                     return;
                 }
 
-                if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+                if (!isAuthorization) return writeLogFile("error", "the user is not authorized");
 
-                getSessionId('socketIo', socketIo, (err, sessionId) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
                     if (err) {
-                        writeLogFile('error', err.toString());
-                        showNotify(socketIo, 'danger', 'Некорректный идентификатор сессии');
+                        writeLogFile("error", err.toString());
+                        showNotify(socketIo, "danger", "Некорректный идентификатор сессии");
                         return;
                     }
                     //проверяем имеет ли пользователь права на загрузку файлов
-                    require('../libs/check/checkAccessRightsExecute')({
-                        management: 'management_ids_rules',
-                        actionType: 'delete',
+                    require("../libs/check/checkAccessRightsExecute")({
+                        management: "management_ids_rules",
+                        actionType: "delete",
                         sessionId: sessionId
                     }, function(err, successfully) {
                         if (err) {
-                            writeLogFile('error', err.toString());
-                            showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                            writeLogFile("error", err.toString());
+                            showNotify(socketIo, "danger", "Ошибка обработки запроса");
                             return;
                         }
 
                         if (!successfully) {
-                            writeLogFile('error', 'not enough rights to perform the action (session ID: ' + socketIo.sessionID + ')');
-                            showNotify(socketIo, 'danger', 'Недостаточно прав для выполнения действия');
+                            writeLogFile("error", "not enough rights to perform the action (session ID: " + socketIo.sessionID + ")");
+                            showNotify(socketIo, "danger", "Недостаточно прав для выполнения действия");
                         } else {
-                            require('../libs/processing/routeSocketIo/deleteIdsRules')('drop change class', data.options, socketIo, (err, message) => {
+                            require("../libs/processing/routeSocketIo/deleteIdsRules")("drop change class", data.options, socketIo, (err, message) => {
                                 if (err) {
-                                    writeLogFile('error', err.toString());
-                                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                                    writeLogFile("error", err.toString());
+                                    showNotify(socketIo, "danger", "Ошибка обработки запроса");
                                 } else {
-                                    socketIo.emit('uploaded files', {
-                                        processing: 'delete',
-                                        typeFile: 'ids rules'
+                                    socketIo.emit("uploaded files", {
+                                        processing: "delete",
+                                        typeFile: "ids rules"
                                     });
                                 }
                             });
@@ -244,47 +242,47 @@ exports.eventHandling = function(socketIo) {
             });
         }
         //всех решающих правил
-        if (data.processingType === 'drop data base') {
+        if (data.processingType === "drop data base") {
             //проверяем авторизован ли пользователь
-            require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
+            require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
                 if (err) {
-                    writeLogFile('error', err.toString());
-                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                    writeLogFile("error", err.toString());
+                    showNotify(socketIo, "danger", "Ошибка обработки запроса");
                     return;
                 }
 
-                if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+                if (!isAuthorization) return writeLogFile("error", "the user is not authorized");
 
-                getSessionId('socketIo', socketIo, (err, sessionId) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
                     if (err) {
-                        writeLogFile('error', err.toString());
-                        showNotify(socketIo, 'danger', 'Некорректный идентификатор сессии');
+                        writeLogFile("error", err.toString());
+                        showNotify(socketIo, "danger", "Некорректный идентификатор сессии");
                         return;
                     }
                     //проверяем имеет ли пользователь права на загрузку файлов
-                    require('../libs/check/checkAccessRightsExecute')({
-                        management: 'management_ids_rules',
-                        actionType: 'delete',
+                    require("../libs/check/checkAccessRightsExecute")({
+                        management: "management_ids_rules",
+                        actionType: "delete",
                         sessionId: sessionId
                     }, function(err, successfully) {
                         if (err) {
-                            writeLogFile('error', err.toString());
-                            showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                            writeLogFile("error", err.toString());
+                            showNotify(socketIo, "danger", "Ошибка обработки запроса");
                             return;
                         }
 
                         if (!successfully) {
-                            writeLogFile('error', 'not enough rights to perform the action (session ID: ' + socketIo.sessionID + ')');
-                            showNotify(socketIo, 'danger', 'Недостаточно прав для выполнения действия');
+                            writeLogFile("error", "not enough rights to perform the action (session ID: " + socketIo.sessionID + ")");
+                            showNotify(socketIo, "danger", "Недостаточно прав для выполнения действия");
                         } else {
-                            require('../libs/processing/routeSocketIo/deleteIdsRules')('drop data base', {}, socketIo, (err) => {
+                            require("../libs/processing/routeSocketIo/deleteIdsRules")("drop data base", {}, socketIo, (err) => {
                                 if (err) {
-                                    writeLogFile('error', err.toString());
-                                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                                    writeLogFile("error", err.toString());
+                                    showNotify(socketIo, "danger", "Ошибка обработки запроса");
                                 } else {
-                                    socketIo.emit('uploaded files', {
-                                        processing: 'delete',
-                                        typeFile: 'ids rules'
+                                    socketIo.emit("uploaded files", {
+                                        processing: "delete",
+                                        typeFile: "ids rules"
                                     });
                                 }
                             });
@@ -296,46 +294,46 @@ exports.eventHandling = function(socketIo) {
     });
 
     //поиск решающих правил по выбранным идентификаторам
-    socketIo.on('search rules sid', function(data) {
+    socketIo.on("search rules sid", function(data) {
         //проверяем авторизован ли пользователь
-        require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
+        require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
             if (err) {
-                writeLogFile('error', err.toString());
-                showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                writeLogFile("error", err.toString());
+                showNotify(socketIo, "danger", "Ошибка обработки запроса");
                 return;
             }
 
-            if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+            if (!isAuthorization) return writeLogFile("error", "the user is not authorized");
 
-            getSessionId('socketIo', socketIo, (err, sessionId) => {
+            getSessionId("socketIo", socketIo, (err, sessionId) => {
                 if (err) {
-                    writeLogFile('error', err.toString());
-                    showNotify(socketIo, 'danger', 'Некорректный идентификатор сессии');
+                    writeLogFile("error", err.toString());
+                    showNotify(socketIo, "danger", "Некорректный идентификатор сессии");
                     return;
                 }
                 //проверяем имеет ли пользователь права на загрузку файлов
-                require('../libs/check/checkAccessRightsExecute')({
-                    management: 'management_ids_rules',
-                    actionType: 'read',
+                require("../libs/check/checkAccessRightsExecute")({
+                    management: "management_ids_rules",
+                    actionType: "read",
                     sessionId: sessionId
                 }, function(err, successfully) {
                     if (err) {
-                        writeLogFile('error', err.toString());
-                        showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                        writeLogFile("error", err.toString());
+                        showNotify(socketIo, "danger", "Ошибка обработки запроса");
                         return;
                     }
 
                     if (!successfully) {
-                        writeLogFile('error', 'not enough rights to perform the action (session ID: ' + socketIo.sessionID + ')');
-                        showNotify(socketIo, 'danger', 'Недостаточно прав для выполнения действия');
+                        writeLogFile("error", "not enough rights to perform the action (session ID: " + socketIo.sessionID + ")");
+                        showNotify(socketIo, "danger", "Недостаточно прав для выполнения действия");
                     } else {
-                        require('../libs/processing/routeSocketIo/searchAdditionalInformationSidIdsRules')(data, (err, result) => {
+                        require("../libs/processing/routeSocketIo/searchAdditionalInformationSidIdsRules")(data, (err, result) => {
                             if (err) {
-                                writeLogFile('error', err.toString());
-                                showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                                writeLogFile("error", err.toString());
+                                showNotify(socketIo, "danger", "Ошибка обработки запроса");
                             } else {
-                                socketIo.emit('search for sid ids', {
-                                    processing: 'completed',
+                                socketIo.emit("search for sid ids", {
+                                    processing: "completed",
                                     information: result
                                 });
                             }
@@ -347,23 +345,23 @@ exports.eventHandling = function(socketIo) {
     });
 
     //получить дополнительную информацию по массиву идентификаторов решающих правил СОА
-    socketIo.on('get additional information for sid', function(data) {
+    socketIo.on("get additional information for sid", function(data) {
         //проверяем авторизован ли пользователь
-        require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
+        require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
             if (err) {
-                writeLogFile('error', err.toString());
-                showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                writeLogFile("error", err.toString());
+                showNotify(socketIo, "danger", "Ошибка обработки запроса");
                 return;
             }
 
-            if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+            if (!isAuthorization) return writeLogFile("error", "the user is not authorized");
 
-            require('../libs/processing/routeSocketIo/searchAdditionalInformationSidIdsRules')(data, function(err, document) {
+            require("../libs/processing/routeSocketIo/searchAdditionalInformationSidIdsRules")(data, function(err, document) {
                 if (err) {
-                    writeLogFile('error', err.toString());
-                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                    writeLogFile("error", err.toString());
+                    showNotify(socketIo, "danger", "Ошибка обработки запроса");
                 } else {
-                    socketIo.emit('additional information for sid', {
+                    socketIo.emit("additional information for sid", {
                         information: document
                     });
                 }
@@ -439,62 +437,62 @@ exports.eventHandling = function(socketIo) {
 /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ --- */
 exports.uploadFiles = function(socketIo, ss) {
     //проверяем авторизован ли пользователь
-    require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
+    require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
         if (err) {
-            writeLogFile('error', err.toString());
-            showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+            writeLogFile("error", err.toString());
+            showNotify(socketIo, "danger", "Ошибка обработки запроса");
             return;
         }
 
-        if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+        if (!isAuthorization) return writeLogFile("error", "the user is not authorized");
 
-        getSessionId('socketIo', socketIo, (err, sessionId) => {
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
             if (err) {
-                writeLogFile('error', err.toString());
-                showNotify(socketIo, 'danger', 'Некорректный идентификатор сессии');
+                writeLogFile("error", err.toString());
+                showNotify(socketIo, "danger", "Некорректный идентификатор сессии");
                 return;
             }
 
             /* загрузка файла с решающими правилами СОА */
-            ss(socketIo).on('upload file rules IDS', function(stream, data) {
+            ss(socketIo).on("upload file rules IDS", function(stream, data) {
                 //проверяем имеет ли пользователь права на загрузку файлов
-                require('../libs/check/checkAccessRightsExecute')({
-                    management: 'management_ids_rules',
-                    actionType: 'create',
+                require("../libs/check/checkAccessRightsExecute")({
+                    management: "management_ids_rules",
+                    actionType: "create",
                     sessionId: sessionId
                 }, function(err, successfully) {
                     if (err) {
-                        writeLogFile('error', err.toString());
-                        showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                        writeLogFile("error", err.toString());
+                        showNotify(socketIo, "danger", "Ошибка обработки запроса");
                         return;
                     }
 
                     if (!successfully) {
-                        writeLogFile('error', 'not enough rights to perform the action (session ID: ' + socketIo.sessionID + ')');
-                        showNotify(socketIo, 'danger', 'Недостаточно прав для выполнения действия');
+                        writeLogFile("error", "not enough rights to perform the action (session ID: " + socketIo.sessionID + ")");
+                        showNotify(socketIo, "danger", "Недостаточно прав для выполнения действия");
                     } else {
-                        let fileName = (__dirname.substr(0, (__dirname.length - 6)) + 'uploads/') + path.basename(data.name);
-                        let tempFile = fs.createWriteStream(fileName, { flags: 'w', defaultEncoding: 'utf8', autoClose: true });
+                        let fileName = (__dirname.substr(0, (__dirname.length - 6)) + "uploads/") + path.basename(data.name);
+                        let tempFile = fs.createWriteStream(fileName, { flags: "w", defaultEncoding: "utf8", autoClose: true });
                         stream.pipe(tempFile);
 
-                        tempFile.on('close', function() {
-                            require('../libs/check/checkUserAuthentication')(socketIo, function(err, isAuthorization) {
+                        tempFile.on("close", function() {
+                            require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
                                 if (err) {
-                                    writeLogFile('error', err.toString());
-                                    showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                                    writeLogFile("error", err.toString());
+                                    showNotify(socketIo, "danger", "Ошибка обработки запроса");
                                     return;
                                 }
 
-                                if (!isAuthorization) return writeLogFile('error', 'the user is not authorized');
+                                if (!isAuthorization) return writeLogFile("error", "the user is not authorized");
 
-                                showNotify(socketIo, 'success', 'Файл \'' + data.name + '\' успешно загружен');
+                                showNotify(socketIo, "success", "Файл '" + data.name + "' успешно загружен");
 
-                                let pathFolder = (__dirname.substr(0, (__dirname.length - 6)) + 'uploads/');
-                                require('../libs/processing/processing_uploaded_files/processingUploadRuleFileIDS')(socketIo, data.name, pathFolder, function(err, countRules) {
-                                    if (err) return showNotify(socketIo, 'danger', 'Получен некорректный файл');
+                                let pathFolder = (__dirname.substr(0, (__dirname.length - 6)) + "uploads/");
+                                require("../libs/processing/processing_uploaded_files/processingUploadRuleFileIDS")(socketIo, data.name, pathFolder, function(err, countRules) {
+                                    if (err) return showNotify(socketIo, "danger", "Получен некорректный файл");
 
-                                    writeLogFile('info', 'file \'' + data.name + '\' was successfully processed');
-                                    showNotify(socketIo, 'success', 'Обновление решающих правил СОА выполнено успешно, добавлено ' + countRules + ' правил');
+                                    writeLogFile("info", "file '" + data.name + "' was successfully processed");
+                                    showNotify(socketIo, "success", "Обновление решающих правил СОА выполнено успешно, добавлено " + countRules + " правил");
                                 });
                             });
                         });
@@ -503,42 +501,42 @@ exports.uploadFiles = function(socketIo, ss) {
             });
 
             /* загрузка информации о настройках источников (файл в формате XML) */
-            ss(socketIo).on('upload file sources setting', function(stream, data) {
+            ss(socketIo).on("upload file sources setting", function(stream, data) {
                 //проверяем имеет ли пользователь права на загрузку файлов
-                require('../libs/check/checkAccessRightsExecute')({
-                    management: 'management_sources',
-                    actionType: 'create',
+                require("../libs/check/checkAccessRightsExecute")({
+                    management: "management_sources",
+                    actionType: "create",
                     sessionId: sessionId
                 }, function(err, successfully) {
                     if (err) {
-                        writeLogFile('error', err.toString());
-                        showNotify(socketIo, 'danger', 'Ошибка обработки запроса');
+                        writeLogFile("error", err.toString());
+                        showNotify(socketIo, "danger", "Ошибка обработки запроса");
                         return;
                     }
 
                     if (!successfully) {
-                        writeLogFile('error', 'not enough rights to perform the action (session ID: ' + socketIo.sessionID + ')');
-                        showNotify(socketIo, 'danger', 'Недостаточно прав для выполнения действия');
+                        writeLogFile("error", "not enough rights to perform the action (session ID: " + socketIo.sessionID + ")");
+                        showNotify(socketIo, "danger", "Недостаточно прав для выполнения действия");
                     } else {
-                        let fileName = (__dirname.substr(0, (__dirname.length - 6)) + 'uploads/') + path.basename(data.name);
-                        let tempFile = fs.createWriteStream(fileName, { flags: 'w', defaultEncoding: 'utf8', autoClose: true });
+                        let fileName = (__dirname.substr(0, (__dirname.length - 6)) + "uploads/") + path.basename(data.name);
+                        let tempFile = fs.createWriteStream(fileName, { flags: "w", defaultEncoding: "utf8", autoClose: true });
                         stream.pipe(tempFile);
 
-                        tempFile.on('close', function() {
-                            require('../libs/processing/processing_uploaded_files/processingUploadFileSourceSetting')(fileName, function(err, objCountUploaded) {
+                        tempFile.on("close", function() {
+                            require("../libs/processing/processing_uploaded_files/processingUploadFileSourceSetting")(fileName, function(err, objCountUploaded) {
                                 if (err) {
-                                    writeLogFile('error', err.toString());
-                                    showNotify(socketIo, 'danger', 'Ошибка обработки загруженного файла');
+                                    writeLogFile("error", err.toString());
+                                    showNotify(socketIo, "danger", "Ошибка обработки загруженного файла");
                                 } else {
-                                    let messageLog = 'the information update performed by the user with a username of administrator,';
-                                    messageLog += ' a number of processed data is updated / not updated ' + objCountUploaded.countUpdate + '/' + objCountUploaded.countOverlap;
-                                    writeLogFile('info', messageLog);
+                                    let messageLog = "the information update performed by the user with a username of administrator,";
+                                    messageLog += " a number of processed data is updated / not updated " + objCountUploaded.countUpdate + "/" + objCountUploaded.countOverlap;
+                                    writeLogFile("info", messageLog);
 
-                                    let message = 'Импорт информации по источникам успешно выполнен, всего обработано ';
-                                    message += (objCountUploaded.countUpdate + objCountUploaded.countOverlap) + ' из них добавлено ' + objCountUploaded.countUpdate;
+                                    let message = "Импорт информации по источникам успешно выполнен, всего обработано ";
+                                    message += (objCountUploaded.countUpdate + objCountUploaded.countOverlap) + " из них добавлено " + objCountUploaded.countUpdate;
 
-                                    showNotify(socketIo, 'success', message);
-                                    socketIo.emit('action page', { reload: true });
+                                    showNotify(socketIo, "success", message);
+                                    socketIo.emit("action page", { reload: true });
                                 }
                             });
                         });
@@ -551,7 +549,7 @@ exports.uploadFiles = function(socketIo, ss) {
 
 //отправляет сообщение notify
 function showNotify(socketIo, type, message) {
-    socketIo.emit('notify information', { notify: JSON.stringify({ type: type, message: message }) });
+    socketIo.emit("notify information", { notify: JSON.stringify({ type: type, message: message }) });
 }
 
 //изменение статуса на 'не подключен' для всех источников

@@ -4,12 +4,12 @@
  * Версия 0.1, дата релиза 24.03.2017
  * */
 
-'use strict';
+"use strict";
 
-let nconf = require('nconf');
+let nconf = require("nconf");
 
 nconf.argv()
     .env()
-    .file({ file: './configure/config.json' });
+    .file({ file: "./configure/config.json" });
 
 module.exports = nconf;

@@ -12,27 +12,27 @@
  * Весрия 0.1, дата релиза 10.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const EventEmitter = require('events');
+const EventEmitter = require("events");
 
 class SocketioEventResponse extends EventEmitter {}
 
 class GlobalObject {
     constructor() {
         this.obj = {
-            'users': {},
-            'sources': {},
-            'commonSettings': {},
-            'descriptionDB': {},
-            'descriptionAPI': {},
-            'socketioEventResponse': new SocketioEventResponse()
+            "users": {},
+            "sources": {},
+            "commonSettings": {},
+            "descriptionDB": {},
+            "descriptionAPI": {},
+            "socketioEventResponse": new SocketioEventResponse()
         };
     }
 
     _checkKeys(type) {
         if (type === null) return true;
-        if (typeof this.obj[type] === 'undefined') return true;
+        if (typeof this.obj[type] === "undefined") return true;
 
         return false;
     }
@@ -60,15 +60,17 @@ class GlobalObject {
      */
     setData(type, group, key = null, value = null) {
         if (this._checkKeys(type)) return false;
-        if (typeof group === 'undefined') return false;
+        if (typeof group === "undefined") return false;
         if (key === null) return false;
 
-        if ((value === null) && (typeof key === 'object')) {
+        if ((value === null) && (typeof key === "object")) {
             this.obj[type][group] = key;
+
             return true;
         }
 
         this.obj[type][group][key] = value;
+
         return true;
     }
 
@@ -82,10 +84,10 @@ class GlobalObject {
     getData(type, group = null, key = null) {
         if (this._checkKeys(type)) return null;
         if (group === null) return this.obj[type];
-        if (typeof this.obj[type][group] === 'undefined') return null;
+        if (typeof this.obj[type][group] === "undefined") return null;
         if (key === null) return this.obj[type][group];
 
-        return (typeof this.obj[type][group][key] === 'undefined') ? null : this.obj[type][group][key];
+        return (typeof this.obj[type][group][key] === "undefined") ? null : this.obj[type][group][key];
     }
 
     /**
@@ -102,11 +104,11 @@ class GlobalObject {
      */
     modifyData(type, group, arrayData) {
         if (this._checkKeys(type)) return false;
-        if (typeof group === 'undefined') return false;
+        if (typeof group === "undefined") return false;
 
         arrayData.forEach(element => {
             if (Array.isArray(element) && (element.length === 2)) {
-                if ((typeof this.obj[type][group] === 'undefined') || (typeof this.obj[type][group][element[0]] === 'undefined')) return;
+                if ((typeof this.obj[type][group] === "undefined") || (typeof this.obj[type][group][element[0]] === "undefined")) return;
 
                 this.obj[type][group][element[0]] = element[1];
             }
@@ -120,6 +122,7 @@ class GlobalObject {
         if (this._checkKeys(type)) return false;
 
         delete this.obj[type][group];
+
         return true;
     }
 }
@@ -132,5 +135,6 @@ function createObject() {
     if (globalObject instanceof GlobalObject) return globalObject;
 
     globalObject = new GlobalObject();
+
     return globalObject;
 }

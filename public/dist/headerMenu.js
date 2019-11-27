@@ -23635,17 +23635,17 @@ function (_React$Component) {
     key: "render",
     value: function render() {
       var createMenu = function createMenu(objMenuItem, isDropDown) {
-        var linkIsDisabled = 'false';
-        var classLi = isDropDown ? 'nav-item dropdown' : 'nav-item';
-        var classA = isDropDown ? 'dropdown-item' : 'nav-link';
+        var linkIsDisabled = "false";
+        var classLi = isDropDown ? "nav-item dropdown" : "nav-item";
+        var classA = isDropDown ? "dropdown-item" : "nav-link";
         var tmpArr = [];
 
         for (var key in objMenuItem) {
-          var submenuIsExist = typeof objMenuItem[key].submenu === 'undefined';
+          var submenuIsExist = typeof objMenuItem[key].submenu === "undefined";
 
-          if (typeof objMenuItem[key].status !== 'undefined' && !objMenuItem[key].status) {
-            classA += ' disabled';
-            linkIsDisabled = 'true';
+          if (typeof objMenuItem[key].status !== "undefined" && !objMenuItem[key].status) {
+            classA += " disabled";
+            linkIsDisabled = "true";
           }
 
           if (submenuIsExist) {
@@ -23715,7 +23715,7 @@ function (_React$Component) {
 
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateHeaderMenu, {
   header: resivedFromServer
-}), document.getElementById('menu-top'));
+}), document.getElementById("menu-top"));
 
 /***/ })
 

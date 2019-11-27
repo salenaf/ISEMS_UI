@@ -4,15 +4,15 @@
  * Версия 0.1, дата релиза 14.02.2019
  * */
 
-'use strict';
+"use strict";
 
-const models = require('../../controllers/models');
-const getSessionId = require('../helpers/getSessionId');
-const mongodbQueryProcessor = require('../../middleware/mongodbQueryProcessor');
+const models = require("../../controllers/models");
+const getSessionId = require("../helpers/getSessionId");
+const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
 module.exports = function(socketIo) {
     return new Promise((resolve, reject) => {
-        getSessionId('socketIo', socketIo, (err, sessionId) => {
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
             if (err) reject(err);
 
             mongodbQueryProcessor.querySelect(
@@ -27,5 +27,7 @@ module.exports = function(socketIo) {
             isAuthentication: result === null,
             document: result
         };
+    }).catch(err => {
+        console.log(err);
     });
 };

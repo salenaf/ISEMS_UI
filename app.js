@@ -4,22 +4,22 @@
  * Версия 0.2, дата релиза 10.01.2019
  */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('app');
+const debug = require("debug")("app");
 
-const fs = require('fs');
-const async = require('async');
-const https = require('https');
-const figlet = require('figlet');
-const express = require('express');
+const fs = require("fs");
+const async = require("async");
+const https = require("https");
+const figlet = require("figlet");
+const express = require("express");
 
 const app = express();
-const config = require('./configure');
-const globalObject = require('./configure/globalObject');
-const writeLogFile = require('./libs/writeLogFile');
-const connectMongoDB = require('./controllers/connectMongoDB');
-const createSchemasMongoDB = require('./controllers/createSchemasMongoDB');
+const config = require("./configure");
+const globalObject = require("./configure/globalObject");
+const writeLogFile = require("./libs/writeLogFile");
+const connectMongoDB = require("./controllers/connectMongoDB");
+const createSchemasMongoDB = require("./controllers/createSchemasMongoDB");
 
 /*
 const checkConnectClickhouse = require('./libs/check/checkConnectClickhouse');
@@ -31,12 +31,12 @@ const websocketClientWorkerAPI = require('./middleware/websocketClientWorkerAPI'
 const options = {};
 
 const credentials = {
-    key: fs.readFileSync('keys/isems_ui_private_key.pem'),
-    cert: fs.readFileSync('keys/isems_ui_cert.pem')
+    key: fs.readFileSync("keys/isems_ui_private_key.pem"),
+    cert: fs.readFileSync("keys/isems_ui_cert.pem")
 };
 
 const server = https.createServer(credentials, app);
-const io = require('socket.io').listen(server, options);
+const io = require("socket.io").listen(server, options);
 
 //частично наполняем объект globalObject
 async.parallel([
@@ -45,21 +45,21 @@ async.parallel([
      */
     callback => {
 
-        debug('create connect for MongoDB ');
+        debug("create connect for MongoDB ");
 
         connectMongoDB()
             .then(description => {
                 return new Promise((resolve, reject) => {
                     process.nextTick(() => {
-                        globalObject.setData('descriptionDB', 'MongoDB', {
-                            'connection': description,
-                            'connectionTimestamp': +new Date(),
-                            'userName': config.get('mongoDB:user')
+                        globalObject.setData("descriptionDB", "MongoDB", {
+                            "connection": description,
+                            "connectionTimestamp": +new Date(),
+                            "userName": config.get("mongoDB:user")
                         });
 
-                        let connectDB = globalObject.getData('descriptionDB', 'MongoDB', 'connection');
+                        let connectDB = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
-                        if (connectDB === null) reject(new Error('the database connection is not established'));
+                        if (connectDB === null) reject(new Error("the database connection is not established"));
                         else resolve(null);
                     });
                 });
@@ -67,7 +67,7 @@ async.parallel([
                 return new Promise((resolve, reject) => {
 
                     //проверяем наличие и при необходимости создаем схемы MongoDB
-                    debug('create MongoDB schemes');
+                    debug("create MongoDB schemes");
 
                     createSchemasMongoDB(err => {
                         if (err) reject(err);
@@ -78,9 +78,9 @@ async.parallel([
                 callback(null);
             }).catch(err => {
 
-                debug('-------------');
+                debug("-------------");
                 debug(err);
-                debug('-------------');
+                debug("-------------");
 
                 callback(err);
             });
@@ -96,12 +96,12 @@ async.parallel([
          * 
          */
 
-        debug('create connection API ISEMS-SMM (no executed)');
+        debug("create connection API ISEMS-SMM (no executed)");
 
-        globalObject.setData('descriptionAPI', 'ISEMS-SMM', {
-            'connection': null,
-            'connectionStatus': false,
-            'connectionTimestamp': null
+        globalObject.setData("descriptionAPI", "ISEMS-SMM", {
+            "connection": null,
+            "connectionStatus": false,
+            "connectionTimestamp": null
         });
 
         callback(null);
@@ -117,12 +117,12 @@ async.parallel([
          * 
          */
 
-        debug('create connection API ISEMS-R (no executed)');
+        debug("create connection API ISEMS-R (no executed)");
 
-        globalObject.setData('descriptionAPI', 'ISEMS-R', {
-            'connection': null,
-            'connectionStatus': false,
-            'connectionTimestamp': null
+        globalObject.setData("descriptionAPI", "ISEMS-R", {
+            "connection": null,
+            "connectionStatus": false,
+            "connectionTimestamp": null
         });
 
         callback(null);
@@ -132,27 +132,27 @@ async.parallel([
 
         debug(err);
 
-        console.log('\x1b[31m%s\x1b[0m', 'ERROR: the server cannot start, there is an error in the configuration, details in the log file');
-        writeLogFile('error', err.toString());
+        console.log("\x1b[31m%s\x1b[0m", "ERROR: the server cannot start, there is an error in the configuration, details in the log file");
+        writeLogFile("error", err.toString());
 
         process.exit(1);
     }
 
     //запуск сервера
     server.listen({
-        port: config.get('httpServer:port'),
-        host: config.get('httpServer:host')
+        port: config.get("httpServer:port"),
+        host: config.get("httpServer:host")
     }, () => {
-        figlet.text('ISEMS-UI', (err, data) => {
+        figlet.text("ISEMS-UI", (err, title) => {
             if (err) return console.log(err);
 
-            console.log(data);
-            console.log('\x1b[32m%s\x1b[0m', 'Debug:', `start ISEMS-UI app, server listening on port ${config.get('httpServer:port')}, host ${config.get('httpServer:host')}`);
+            console.log(title);
+            console.log("\x1b[32m%s\x1b[0m", "Debug:", `start ISEMS-UI app, server listening on port ${config.get("httpServer:port")}, host ${config.get("httpServer:host")}`);
 
-            writeLogFile('info', `start ISEMS-UI app, server listening on port ${config.get('httpServer:port')}, host ${config.get('httpServer:host')}`);
+            writeLogFile("info", `start ISEMS-UI app, server listening on port ${config.get("httpServer:port")}, host ${config.get("httpServer:host")}`);
         });
 
         //настраиваем сервер
-        require('./middleware')(app, express, io);
+        require("./middleware")(app, express, io);
     });
 });

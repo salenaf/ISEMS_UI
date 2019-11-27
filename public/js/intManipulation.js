@@ -1,4 +1,6 @@
-'use strict';
+"use strict";
+
+export { intManipulation };
 
 //преобразование чисел к строкам
 let intManipulation = {
@@ -14,7 +16,7 @@ let intManipulation = {
             num += 3;
         }
         interimArray.reverse();
-        return interimArray.join(' ');
+        return interimArray.join(" ");
     },
     //строка с точкой
     intGetChunk: function(nLoad) {
@@ -31,30 +33,28 @@ let intManipulation = {
         }
         interimArray.reverse();
 
-        return interimArray[0] + '.' + interimArray[1][0] + interimArray[1][1];
+        return interimArray[0] + "." + interimArray[1][0] + interimArray[1][1];
     },
 
     changeInt: function(type, value) {
         let array = [
-            ['', ' байт', ' бит'],
-            [' тыс.', ' Кб', ' Кбит'],
-            [' млн.', ' Мб', ' Мбит'],
-            [' млрд.', ' Гб', ' Гбит'],
-            ['', ' Тб', '']
+            ["", " байт", " бит"],
+            [" тыс.", " Кб", " Кбит"],
+            [" млн.", " Мб", " Мбит"],
+            [" млрд.", " Гб", " Гбит"],
+            ["", " Тб", ""]
         ];
 
-        let stringName = '';
-        if (type === 'pkt') stringName = 0;
-        else if (type === 'bytes') stringName = 1;
-        else if (type === 'bite') stringName = 2;
+        let stringName = "";
+        if (type === "pkt") stringName = 0;
+        else if (type === "bytes") stringName = 1;
+        else if (type === "bite") stringName = 2;
 
         if (value < 1000) return value + array[0][stringName];
         else if (1000 <= value && value < 1000000) return this.intGetChunk(value) + array[1][stringName];
         else if (1000000 <= value && value < 1000000000) return this.intGetChunk(value) + array[2][stringName];
         else if (1000000000 <= value && value < 1000000000000) return this.intGetChunk(value) + array[3][stringName];
-        else if (value > 1000000000000 && type === 'bytes') return this.intGetChunk(value) + array[4][stringName];
+        else if (value > 1000000000000 && type === "bytes") return this.intGetChunk(value) + array[4][stringName];
         else return value;
     }
 };
-
-export { intManipulation };
