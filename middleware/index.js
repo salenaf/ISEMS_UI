@@ -92,7 +92,7 @@ module.exports = function(app, express, io) {
         routeSocketIo.eventHandling(socket);
 
         /* upload file */
-        routeSocketIo.uploadFiles(socket, ss);
+        //routeSocketIo.uploadFiles(socket, ss);
     });
 
     /*

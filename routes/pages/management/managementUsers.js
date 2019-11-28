@@ -1,72 +1,70 @@
 /*
  * Страница управления пользователями
  *
- * Верися 0.1, дата релиза 28.03.2017
+ * Верися 0.1, дата релиза 28.11.2019
  * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const debug = require("debug")("managementUsers");
 
-const writeLogFile = require('../../../libs/writeLogFile');
+const async = require("async");
 
-const informationItemGroups = require('../../../libs/management_settings/informationItemGroups');
-const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
-const informationForPageManagementUsers = require('../../../libs/management_settings/informationForPageManagementUsers');
+const writeLogFile = require("../../../libs/writeLogFile");
+const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
+const informationForPageManagementUsers = require("../../../libs/management_settings/informationForPageManagementUsers");
+
+//const informationItemGroups = require("../../../libs/management_settings/informationItemGroups");
+//const informationUserGroupPermissions = require("../../../libs/informationUserGroupPermissions");
+
 
 module.exports = function(req, res, objHeader) {
 
-    console.log('START FUNC RELOAD USERS PAGE')
+    debug("func 'managementUsers' START");
 
     async.parallel({
-        test: function(callback) {
-            callback(null, {});
-        }
-    }, function(err) {
-        if (err) {
-            writeLogFile('error', err.toString());
-            res.render('menu/settings/setting_users', {});
-        } else {
-            res.render('menu/settings/setting_users', {});
-        }
-    });
-    /*async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
-        userGroupPermissions: function(callback) {
-            informationUserGroupPermissions(req, function(err, result) {
-                if (err) callback(err);
-                else callback(null, result);
-            });
-        },
-        //получаем список групп
-        getItemGroups: function(callback) {
-            informationItemGroups(function(err, result) {
+        userGroupPermissions: callback => {
+            checkAccessRightsPage(req, (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
             });
         },
         //получаем информацию по пользователям
-        mainInformation: function(callback) {
-            informationForPageManagementUsers(function(err, result) {
+        mainInformation: callback => {
+            informationForPageManagementUsers((err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
             });
         }
-    }, function(err, result) {
+    }, (err, result) => {
         if (err) {
-            writeLogFile('error', err.toString());
-            res.render('menu/settings/setting_users', {});
-        } else {
-            //проверяем права на доступ к указанной директории
-            let readStatus = result.userGroupPermissions.group_settings.management_users.element_settings.read.status;
-            if (readStatus === false) return res.render('403');
 
-            res.render('menu/settings/setting_users', {
-                header: objHeader,
-                userGroupPermissions: result.userGroupPermissions.group_settings.management_users.element_settings,
-                itemGroups: result.getItemGroups,
-                mainInformation: result.mainInformation
-            });
+            debug(`ERROR: ${err}`);
+
+            writeLogFile("error", err.toString());
+            res.render("menu/settings/setting_users", {});
+
+            return;
         }
-    });*/
+
+        debug(`RESULT: ${result}`);
+
+        //проверяем права на доступ к странице
+        let readStatus = result.userGroupPermissions.group_settings.menu_items.element_settings.setting_users.status;
+        if (readStatus === false) return res.render("403");
+
+        debug("Page rendering is access!!!");
+
+        let objResult = {
+            header: objHeader,
+            userGroupPermissions: result.userGroupPermissions.group_settings.management_groups.element_settings,
+            mainInformation: result.mainInformation
+        };
+
+        debug(result.mainInformation.administrator);
+        debug(objResult.userGroupPermissions);
+
+        res.render("menu/settings/setting_users", objResult);
+    });
 };

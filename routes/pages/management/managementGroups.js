@@ -4,15 +4,15 @@
  * Верися 0.1, дата релиза 28.03.2017
  * */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('managementGroups');
+const debug = require("debug")("managementGroups");
 
-const async = require('async');
+const async = require("async");
 
-const writeLogFile = require('../../../libs/writeLogFile');
-const checkAccessRightsPage = require('../../../libs/check/checkAccessRightsPage');
-const informationForPageManagementGroups = require('../../../libs/management_settings/informationForPageManagementGroups');
+const writeLogFile = require("../../../libs/writeLogFile");
+const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
+const informationForPageManagementGroups = require("../../../libs/management_settings/informationForPageManagementGroups");
 
 module.exports = function(req, res, objHeader) {
     async.parallel({
@@ -32,15 +32,15 @@ module.exports = function(req, res, objHeader) {
         }
     }, (err, result) => {
         if (err) {
-            writeLogFile('error', err.toString());
-            res.render('menu/settings/setting_groups', {});
+            writeLogFile("error", err.toString());
+            res.render("menu/settings/setting_groups", {});
 
             return;
         }
 
         //проверяем права на доступ к странице
         let readStatus = result.userGroupPermissions.group_settings.menu_items.element_settings.setting_groups.status;
-        if (readStatus === false) return res.render('403');
+        if (readStatus === false) return res.render("403");
 
         let objResult = {
             header: objHeader,
@@ -51,6 +51,6 @@ module.exports = function(req, res, objHeader) {
         debug(result.mainInformation.administrator);
         debug(objResult.userGroupPermissions);
 
-        res.render('menu/settings/setting_groups', objResult);
+        res.render("menu/settings/setting_groups", objResult);
     });
 };

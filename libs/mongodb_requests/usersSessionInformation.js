@@ -4,18 +4,18 @@
  * Версия 0.1, дата релиза 16.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('usersSessionInformation');
+const debug = require("debug")("usersSessionInformation");
 
-const models = require('../../controllers/models');
-const globalObject = require('../../configure/globalObject');
-const mongodbQueryProcessor = require('../../middleware/mongodbQueryProcessor');
+const models = require("../../controllers/models");
+const globalObject = require("../../configure/globalObject");
+const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
 //создаем новую запись о сессии
 module.exports.create = function(login, passportID, isDefault, cb) {
 
-    debug('!!!! создаем новую запись о сессии !!!!');
+    debug("!!!! создаем новую запись о сессии !!!!");
 
     new Promise((resolve, reject) => {
         mongodbQueryProcessor.querySelect(models.modelUser, {
@@ -75,7 +75,7 @@ module.exports.create = function(login, passportID, isDefault, cb) {
 //изменить параметр group_settings
 module.exports.changeGroupSettings = function(groupName, obj, cb) {
 
-    debug('изменить параметр group_settings');
+    debug("изменить параметр group_settings");
 
     mongodbQueryProcessor.queryUpdate(
         models.modelSessionUserInformation, {
@@ -91,11 +91,11 @@ module.exports.changeGroupSettings = function(groupName, obj, cb) {
 //устанавливаем идетификатор сессии
 module.exports.setSessionID = function(passportID, sessionID, cb) {
 
-    debug('устанавливаем идетификатор сессии');
+    debug("устанавливаем идетификатор сессии");
     debug(`passportID: ${passportID}`);
     debug(`sessionID: ${sessionID}`);
 
-    globalObject.setData('users', sessionID, {});
+    globalObject.setData("users", sessionID, {});
 
     mongodbQueryProcessor.queryUpdate(
         models.modelSessionUserInformation, {
@@ -111,19 +111,19 @@ module.exports.setSessionID = function(passportID, sessionID, cb) {
 //получить всю информацию о пользователе по идентификаторам passportId или sessionId 
 module.exports.getInformation = function(objID, cb) {
 
-    debug('получить всю информацию о пользователе по идентификаторам passportId или sessionId');
+    debug("получить всю информацию о пользователе по идентификаторам passportId или sessionId");
     debug(objID);
 
-    if (Object.keys(objID).length === 0) return cb(new Error('objId is empty'));
+    if (Object.keys(objID).length === 0) return cb(new Error("objId is empty"));
 
-    let isExistPassportId = (typeof objID.passportId === 'undefined');
-    let isExistSessionId = (typeof objID.sessionId === 'undefined');
+    let isExistPassportId = (typeof objID.passportId === "undefined");
+    let isExistSessionId = (typeof objID.sessionId === "undefined");
 
-    if (isExistPassportId && isExistSessionId) return cb(new Error('ID missing passportId or sessionID'));
+    if (isExistPassportId && isExistSessionId) return cb(new Error("ID missing passportId or sessionID"));
 
     let obj = {
-        'passportId': 'passport_id',
-        'sessionId': 'session_id'
+        "passportId": "passport_id",
+        "sessionId": "session_id"
     };
 
     let objQuery = {};
@@ -140,7 +140,7 @@ module.exports.getInformation = function(objID, cb) {
 //удаление всей информации о пользователе
 module.exports.delete = function(sessionID, cb) {
 
-    debug('удаление всей информации о пользователе');
+    debug("удаление всей информации о пользователе");
 
     mongodbQueryProcessor.queryDelete(models.modelSessionUserInformation, {
         query: {

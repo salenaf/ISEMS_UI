@@ -4,24 +4,24 @@
  * Версия 0.1, дата релиза 13.02.2019
  * */
 
-'use strict';
+"use strict";
 
-const models = require('../../controllers/models');
-const mongodbQueryProcessor = require('../../middleware/mongodbQueryProcessor');
+const models = require("../../controllers/models");
+const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
 module.exports = function(cb) {
     let arrayNameItems = [
-        'menu_items',
-        'management_analysis_sip',
-        'management_security_event_management',
-        'management_network_interaction',
-        'management_users',
-        'management_groups',
-        'management_objects_and_subjects',
-        'management_ids_rules',
-        'management_geoip',
-        'management_search_rules',
-        'management_reputational_lists'
+        "menu_items",
+        "management_analysis_sip",
+        "management_security_event_management",
+        "management_network_interaction",
+        "management_users",
+        "management_groups",
+        "management_objects_and_subjects",
+        "management_ids_rules",
+        "management_geoip",
+        "management_search_rules",
+        "management_reputational_lists"
     ];
 
     mongodbQueryProcessor.querySelect(models.modelGroup, { isMany: true }, (err, groups) => {

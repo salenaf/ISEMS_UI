@@ -437,7 +437,7 @@ exports.eventHandling = function(socketIo) {
 /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ --- */
 exports.uploadFiles = function(socketIo, ss) {
     //проверяем авторизован ли пользователь
-    require("../libs/check/checkUserAuthentication")(socketIo, function(err, isAuthorization) {
+    checkUserAuthentication(socketIo, function(err, isAuthorization) {
         if (err) {
             writeLogFile("error", err.toString());
             showNotify(socketIo, "danger", "Ошибка обработки запроса");

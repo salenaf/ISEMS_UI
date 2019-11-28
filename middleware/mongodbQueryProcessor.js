@@ -6,15 +6,15 @@
  * Версия 0.1, дата релиза 10.01.2019
  */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('mongodbQueryProcessor');
+const debug = require("debug")("mongodbQueryProcessor");
 
-const globalObject = require('../configure/globalObject');
+const globalObject = require("../configure/globalObject");
 
 class QueryProcessor {
     constructor() {
-        this.connect = globalObject.getData('descriptionDB', 'MongoDB', 'connection');
+        this.connect = globalObject.getData("descriptionDB", "MongoDB", "connection");
     }
 
     /**
@@ -38,17 +38,17 @@ class QueryProcessor {
      *      Model.findOne()
      */
     querySelect(mongooseModel, settingsQuery, callback) {
-        let { id = null, select = '', options = {}, query = {}, isMany = false } = settingsQuery;
+        let { id = null, select = "", options = {}, query = {}, isMany = false } = settingsQuery;
 
-        debug('--- function "querySelect"');
-        debug('settingsQuery');
+        debug("--- function \"querySelect\"");
+        debug("settingsQuery");
         debug(settingsQuery);
 
         debug(`id = ${id}`);
-        debug('query:');
+        debug("query:");
         debug(query);
         debug(`select: ${select}`);
-        debug('options');
+        debug("options");
         debug(options);
 
         if (id !== null) {
@@ -57,7 +57,7 @@ class QueryProcessor {
                 else callback(null, doc);
             });
         } else {
-            let commandFind = (isMany) ? 'find' : 'findOne';
+            let commandFind = (isMany) ? "find" : "findOne";
 
             debug(`commandFind "${commandFind}"`);
 
@@ -118,18 +118,18 @@ class QueryProcessor {
     queryUpdate(mongooseModel, settingsQuery, callback) {
         let {
             id = null,
-                select = '',
-                query = {},
-                update = {},
-                isMany = false
+            select = "",
+            query = {},
+            update = {},
+            isMany = false
         } = settingsQuery;
 
-        debug('--- function "querySelect"');
-        debug('settingsQuery');
+        debug("--- function \"querySelect\"");
+        debug("settingsQuery");
         debug(settingsQuery);
 
         debug(`id = ${id}`);
-        debug('query:');
+        debug("query:");
         debug(query);
         debug(`select: ${select}`);
 
@@ -139,7 +139,7 @@ class QueryProcessor {
                 else callback(null);
             });
         } else {
-            let commandFind = (isMany) ? 'updateMany' : 'findOneAndUpdate';
+            let commandFind = (isMany) ? "updateMany" : "findOneAndUpdate";
 
             mongooseModel[commandFind](query, update, select, err => {
                 if (err) callback(err);
@@ -165,14 +165,14 @@ class QueryProcessor {
      *      Model.findOneAndRemove() удаляет элемент И ВОЗВРАЩАЕТ ЕГО
      */
     queryDelete(mongooseModel, settingsQuery, callback) {
-        if (typeof settingsQuery !== 'object') return callback(new Error('parameter "settingsQuery" is not an object'));
+        if (typeof settingsQuery !== "object") return callback(new Error("parameter \"settingsQuery\" is not an object"));
 
-        let queryIsExist = typeof settingsQuery.query === 'undefined';
-        let idIsExist = typeof settingsQuery.id === 'undefined';
-        let manyOrOneIsExist = typeof settingsQuery.isMany === 'undefined';
+        let queryIsExist = typeof settingsQuery.query === "undefined";
+        let idIsExist = typeof settingsQuery.id === "undefined";
+        let manyOrOneIsExist = typeof settingsQuery.isMany === "undefined";
 
         //проверяем наличие необходимых параметров
-        if (queryIsExist && idIsExist && manyOrOneIsExist) return callback(new Error('error in database query, missing one or more key parameters'));
+        if (queryIsExist && idIsExist && manyOrOneIsExist) return callback(new Error("error in database query, missing one or more key parameters"));
 
         //поиск по ID, удаление и возврат найденного элемента
         if (!idIsExist) {
@@ -182,7 +182,7 @@ class QueryProcessor {
         }
 
         //проверяем наличие параметров поиска
-        if (queryIsExist || (typeof settingsQuery.query !== 'object')) return callback(new Error('error in database query, missing parameter query'));
+        if (queryIsExist || (typeof settingsQuery.query !== "object")) return callback(new Error("error in database query, missing parameter query"));
 
         //поиск по элементу, его удаление и его возврат
         if (manyOrOneIsExist) {
@@ -191,7 +191,7 @@ class QueryProcessor {
             return;
         }
 
-        let typeDelete = (manyOrOneIsExist) ? 'deleteMany' : 'deleteOne';
+        let typeDelete = (manyOrOneIsExist) ? "deleteMany" : "deleteOne";
 
         mongooseModel[typeDelete](settingsQuery.query, callback);
     }

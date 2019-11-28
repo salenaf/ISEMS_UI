@@ -27,7 +27,5 @@ module.exports = function(socketIo) {
             isAuthentication: result === null,
             document: result
         };
-    }).catch(err => {
-        console.log(err);
     });
 };

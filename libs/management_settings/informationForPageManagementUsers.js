@@ -1,35 +1,34 @@
 /*
  * Подготовка информации для вывода на странице settings_users
  *
- * Версия 0.1, дата релиза 07.04.2017
+ * Версия 0.1, дата релиза 28.11.2019
  * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const models = require("../../controllers/models");
+const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
-const models = require('../../controllers/models');
-
-module.exports = function (func) {
+module.exports = function(cb) {
     let objNameItems = {
-        'date_register': 'dateRegister',
-        'date_change': 'dateChange',
-        'group': 'group',
-        'user_name': 'userName',
-        'login': 'login'
+        "date_register": "dateRegister",
+        "date_change": "dateChange",
+        "group": "group",
+        "user_name": "userName",
+        "login": "login"
     };
 
-    models.modelUser.find(function (err, users) {
-        if(err) return func(err);
+    mongodbQueryProcessor.querySelect(models.modelUser, { isMany: true }, (err, users) => {
+        if (err) return cb(err);
 
-        let objUser = {};
-        for(let i = 0; i < users.length; i++){
-            objUser[users[i].login] = {};
-            for(let item in objNameItems){
-                objUser[users[i].login][objNameItems[item]] = users[i][item];
+        let objUsers = {};
+        users.forEach(user => {
+            objUsers[user.login] = {};
+            for (let item in objNameItems) {
+                objUsers[user.login][objNameItems[item]] = user[item];
             }
-        }
+        });
 
-        func(null, objUser);
+        cb(null, objUsers);
     });
 };

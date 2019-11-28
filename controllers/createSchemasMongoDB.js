@@ -1,29 +1,29 @@
 /*
  * Создание схем для БД MongoDB
  *
- * создание дефолтных учетных данных пользователя admin (при отсутствие таковых)
+ * создание учетных данных пользователя admininstrator (при отсутствие таковых)
  *
  * Версия 0.1, дата релиза 05.12.2018
  * */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('createSchemasMongoDB');
+const debug = require("debug")("createSchemasMongoDB");
 
-const async = require('async');
-const crypto = require('crypto');
+const async = require("async");
+const crypto = require("crypto");
 
-const createUniqID = require('../libs/helpers/createUniqID');
-const hashPassword = require('../libs/hashPassword');
+const createUniqID = require("../libs/helpers/createUniqID");
+const hashPassword = require("../libs/hashPassword");
 
 module.exports = function(cb) {
 
     //подключаем модели данных
-    let modelUser = require('./models').modelUser;
-    let modelGroup = require('./models').modelGroup;
-    let modelSource = require('./models').modelSource;
-    let modelIdsRules = require('./models').modelRulesIDS;
-    let modelAdditionalInformation = require('./models').modelAdditionalInformation;
+    let modelUser = require("./models").modelUser;
+    let modelGroup = require("./models").modelGroup;
+    let modelSource = require("./models").modelSource;
+    let modelIdsRules = require("./models").modelRulesIDS;
+    let modelAdditionalInformation = require("./models").modelAdditionalInformation;
 
     async.parallel([
         //дефолтные значения для пользователя administrator
@@ -69,27 +69,27 @@ module.exports = function(cb) {
 
 //создание модели пользователей
 function createModelUsers(modelUser, next) {
-    let md5string = crypto.createHash('md5')
-        .update('administrator')
-        .digest('hex');
+    let md5string = crypto.createHash("md5")
+        .update("administrator")
+        .digest("hex");
 
-    let password = hashPassword.getHashPassword(md5string, 'isems-ui');
+    let password = hashPassword.getHashPassword(md5string, "isems-ui");
 
-    debug('find schema "user"');
+    debug("find schema \"user\"");
 
-    modelUser.find({ login: 'administrator' }, (err, userAdministrator) => {
+    modelUser.find({ login: "administrator" }, (err, userAdministrator) => {
         if (err) return next(err);
         if (userAdministrator.length) return next(null);
 
-        debug('add user "administrator"');
+        debug("add user \"administrator\"");
 
         new modelUser({
             date_register: +(new Date()),
             date_change: +(new Date()),
-            login: 'administrator',
+            login: "administrator",
             password: password,
-            group: 'administrator',
-            user_name: 'Администратор',
+            group: "administrator",
+            user_name: "Администратор",
             settings: {
                 sourceMainPage: []
             }
@@ -101,335 +101,335 @@ function createModelUsers(modelUser, next) {
 //создание модели групп
 function createModelGroups(modelGroup, next) {
 
-    debug('find schema "group"');
+    debug("find schema \"group\"");
 
-    modelGroup.find({ group_name: 'administrator' }, (err, groupAdministrator) => {
+    modelGroup.find({ group_name: "administrator" }, (err, groupAdministrator) => {
         if (err) return next(err);
         if (groupAdministrator.length) return next(null);
 
-        debug('add group "administrator"');
+        debug("add group \"administrator\"");
 
         //группа администратора
         new modelGroup({
-            group_name: 'administrator',
+            group_name: "administrator",
             date_register: +(new Date()),
             menu_items: {
-                id: createUniqID.getMD5('administrator_menu_items'),
-                name: 'пункты меню',
+                id: createUniqID.getMD5("administrator_menu_items"),
+                name: "пункты меню",
                 analysis_sip: {
-                    id: createUniqID.getMD5('administrator_menu_items_analysis_sip'),
+                    id: createUniqID.getMD5("administrator_menu_items_analysis_sip"),
                     status: true,
-                    description: 'анализ ИПБ'
+                    description: "анализ ИПБ"
                 },
                 security_event_management: {
-                    id: createUniqID.getMD5('administrator_menu_items_security_event_management'),
+                    id: createUniqID.getMD5("administrator_menu_items_security_event_management"),
                     status: true,
-                    description: 'управление событиями'
+                    description: "управление событиями"
                 },
                 network_interaction: {
-                    id: createUniqID.getMD5('administrator_menu_items_network_interaction'),
+                    id: createUniqID.getMD5("administrator_menu_items_network_interaction"),
                     status: true,
-                    description: 'сетевые взаимодействия'
+                    description: "сетевые взаимодействия"
                 },
                 element_tools: {
-                    id: createUniqID.getMD5('administrator_menu_items_element_tools'),
-                    name: 'инструменты',
+                    id: createUniqID.getMD5("administrator_menu_items_element_tools"),
+                    name: "инструменты",
                     search_tools: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_tools_search_tools'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_tools_search_tools"),
                         status: true,
-                        description: 'поиск информации'
+                        description: "поиск информации"
                     },
                     decode_tools: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_tools_decode_tools'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_tools_decode_tools"),
                         status: true,
-                        description: 'декодирование'
+                        description: "декодирование"
                     }
                 },
                 element_settings: {
-                    id: createUniqID.getMD5('administrator_menu_items_element_settings'),
-                    name: 'настройки',
+                    id: createUniqID.getMD5("administrator_menu_items_element_settings"),
+                    name: "настройки",
                     setting_groups: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_groups'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_groups"),
                         status: true,
-                        description: 'группы пользователей'
+                        description: "группы пользователей"
                     },
                     setting_users: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_users'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_users"),
                         status: true,
-                        description: 'пользователи'
+                        description: "пользователи"
                     },
                     setting_objects_and_subjects: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_objects_and_subjects'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_objects_and_subjects"),
                         status: true,
-                        description: 'объекты и субъекты'
+                        description: "объекты и субъекты"
                     },
                     setting_ids_rules: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_setting_ids_rules'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_setting_ids_rules"),
                         status: true,
-                        description: 'правила СОА'
+                        description: "правила СОА"
                     },
                     setting_geoip: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_setting_geoip'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_setting_geoip"),
                         status: true,
-                        description: 'геопозиционирование'
+                        description: "геопозиционирование"
                     },
                     setting_reputational_lists: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_reputational_lists'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_reputational_lists"),
                         status: true,
-                        description: 'репутационные списки'
+                        description: "репутационные списки"
                     },
                     setting_search_rules: {
-                        id: createUniqID.getMD5('administrator_menu_items_element_settings_setting_setting_search_rules'),
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_setting_search_rules"),
                         status: true,
-                        description: 'правила поиска'
+                        description: "правила поиска"
                     }
                 }
             },
             management_analysis_sip: {
-                id: createUniqID.getMD5('administrator_management_analysis_sip'),
-                name: 'анализ ИПБ',
+                id: createUniqID.getMD5("administrator_management_analysis_sip"),
+                name: "анализ ИПБ",
                 element_settings: {
                     save: {
-                        id: createUniqID.getMD5('administrator_management_analysis_sip_save'),
+                        id: createUniqID.getMD5("administrator_management_analysis_sip_save"),
                         status: true,
-                        description: 'сохранение шаблонов'
+                        description: "сохранение шаблонов"
                     }
                 }
             },
             management_security_event_management: {
-                id: createUniqID.getMD5('administrator_management_security_event_management'),
-                name: 'управление событиями',
+                id: createUniqID.getMD5("administrator_management_security_event_management"),
+                name: "управление событиями",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_security_event_management_create'),
+                        id: createUniqID.getMD5("administrator_management_security_event_management_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     editingInformation: {
-                        id: createUniqID.getMD5('administrator_management_security_event_management_editingInformation'),
+                        id: createUniqID.getMD5("administrator_management_security_event_management_editingInformation"),
                         status: true,
-                        description: 'редактирование информации'
+                        description: "редактирование информации"
                     },
                     statusChange: {
-                        id: createUniqID.getMD5('administrator_management_security_event_management_statusChange'),
+                        id: createUniqID.getMD5("administrator_management_security_event_management_statusChange"),
                         status: true,
-                        description: 'изменение статуса события'
+                        description: "изменение статуса события"
                     },
                     close: {
-                        id: createUniqID.getMD5('administrator_management_security_event_management_close'),
+                        id: createUniqID.getMD5("administrator_management_security_event_management_close"),
                         status: true,
-                        description: 'закрытие события'
+                        description: "закрытие события"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_security_event_management_delete'),
+                        id: createUniqID.getMD5("administrator_management_security_event_management_delete"),
                         status: true,
-                        description: 'удаление события'
+                        description: "удаление события"
                     }
                 }
             },
             management_network_interaction: {
-                id: createUniqID.getMD5('administrator_management_network_interaction'),
-                name: 'сетевые взаимодействия',
+                id: createUniqID.getMD5("administrator_management_network_interaction"),
+                name: "сетевые взаимодействия",
                 element_settings: {
                     management_tasks_filter: {
-                        id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter'),
-                        name: 'фильтрация файлов',
+                        id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter"),
+                        name: "фильтрация файлов",
                         element_settings: {
                             create: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_create'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter_create"),
                                 status: true,
-                                description: 'создание типового шаблона'
+                                description: "создание типового шаблона"
                             },
                             stop: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_stop'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter_stop"),
                                 status: true,
-                                description: 'останов фильтрации'
+                                description: "останов фильтрации"
                             },
                             import: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_import'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter_import"),
                                 status: true,
-                                description: 'импорт файлов'
+                                description: "импорт файлов"
                             },
                             delete: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_filter_delete'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter_delete"),
                                 status: true,
-                                description: 'удаление'
+                                description: "удаление"
                             }
                         }
                     },
                     management_tasks_import: {
-                        id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_import'),
-                        name: 'импорт файлов',
+                        id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import"),
+                        name: "импорт файлов",
                         element_settings: {
                             cancel: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_import_cancel'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import_cancel"),
                                 status: true,
-                                description: 'отмена'
+                                description: "отмена"
                             },
                             stop: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_import_stop'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import_stop"),
                                 status: true,
-                                description: 'останов импорта'
+                                description: "останов импорта"
                             },
                             resume: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_tasks_import_resume'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import_resume"),
                                 status: true,
-                                description: 'возобновление'
+                                description: "возобновление"
                             }
                         }
                     },
                     management_uploaded_files: {
-                        id: createUniqID.getMD5('administrator_management_network_interaction_management_uploaded_files'),
-                        name: 'информация о загруженных файлах',
+                        id: createUniqID.getMD5("administrator_management_network_interaction_management_uploaded_files"),
+                        name: "информация о загруженных файлах",
                         element_settings: {
                             status_change: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_uploaded_files_status_change'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_uploaded_files_status_change"),
                                 status: true,
-                                description: 'изменение статуса'
+                                description: "изменение статуса"
                             },
                             delete: {
-                                id: createUniqID.getMD5('administrator_management_network_interaction_management_uploaded_files_delete'),
+                                id: createUniqID.getMD5("administrator_management_network_interaction_management_uploaded_files_delete"),
                                 status: true,
-                                description: 'удаление'
+                                description: "удаление"
                             }
                         }
                     },
                 }
             },
             management_users: {
-                id: createUniqID.getMD5('administrator_management_users'),
-                name: 'пользователи',
+                id: createUniqID.getMD5("administrator_management_users"),
+                name: "пользователи",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_users_create'),
+                        id: createUniqID.getMD5("administrator_management_users_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('administrator_management_users_edit'),
+                        id: createUniqID.getMD5("administrator_management_users_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_users_delete'),
+                        id: createUniqID.getMD5("administrator_management_users_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_groups: {
-                id: createUniqID.getMD5('administrator_management_groups'),
-                name: 'группы',
+                id: createUniqID.getMD5("administrator_management_groups"),
+                name: "группы",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_groups_create'),
+                        id: createUniqID.getMD5("administrator_management_groups_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('administrator_management_groups_edit'),
+                        id: createUniqID.getMD5("administrator_management_groups_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_groups_delete'),
+                        id: createUniqID.getMD5("administrator_management_groups_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_objects_and_subjects: {
-                id: createUniqID.getMD5('administrator_management_objects_and_subjects'),
-                name: 'объекты и субъекты',
+                id: createUniqID.getMD5("administrator_management_objects_and_subjects"),
+                name: "объекты и субъекты",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_objects_and_subjects_create'),
+                        id: createUniqID.getMD5("administrator_management_objects_and_subjects_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('administrator_management_objects_and_subjects_edit'),
+                        id: createUniqID.getMD5("administrator_management_objects_and_subjects_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_objects_and_subjects_delete'),
+                        id: createUniqID.getMD5("administrator_management_objects_and_subjects_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_ids_rules: {
-                id: createUniqID.getMD5('administrator_management_ids_rules'),
-                name: 'правила СОА',
+                id: createUniqID.getMD5("administrator_management_ids_rules"),
+                name: "правила СОА",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_ids_rules_create'),
+                        id: createUniqID.getMD5("administrator_management_ids_rules_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_ids_rules_delete'),
+                        id: createUniqID.getMD5("administrator_management_ids_rules_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_geoip: {
-                id: createUniqID.getMD5('administrator_management_geoip'),
-                name: 'геопозиционирование',
+                id: createUniqID.getMD5("administrator_management_geoip"),
+                name: "геопозиционирование",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_geoip_create'),
+                        id: createUniqID.getMD5("administrator_management_geoip_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_geoip_delete'),
+                        id: createUniqID.getMD5("administrator_management_geoip_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_reputational_lists: {
-                id: createUniqID.getMD5('administrator_management_reputational_lists'),
-                name: 'репутационные списки',
+                id: createUniqID.getMD5("administrator_management_reputational_lists"),
+                name: "репутационные списки",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_reputational_lists_create'),
+                        id: createUniqID.getMD5("administrator_management_reputational_lists_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('administrator_management_reputational_lists_edit'),
+                        id: createUniqID.getMD5("administrator_management_reputational_lists_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_reputational_lists_delete'),
+                        id: createUniqID.getMD5("administrator_management_reputational_lists_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_search_rules: {
-                id: createUniqID.getMD5('administrator_management_search_rules'),
-                name: 'правила поиска',
+                id: createUniqID.getMD5("administrator_management_search_rules"),
+                name: "правила поиска",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('administrator_management_search_rules_create'),
+                        id: createUniqID.getMD5("administrator_management_search_rules_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('administrator_management_search_rules_edit'),
+                        id: createUniqID.getMD5("administrator_management_search_rules_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('administrator_management_search_rules_delete'),
+                        id: createUniqID.getMD5("administrator_management_search_rules_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             }
@@ -439,325 +439,325 @@ function createModelGroups(modelGroup, next) {
          * ТЕСТОВАЯ ГРУППА
          */
         new modelGroup({
-            group_name: 'all_users',
+            group_name: "all_users",
             date_register: +(new Date()),
             menu_items: {
-                id: createUniqID.getMD5('all_users_menu_items'),
-                name: 'пункты меню',
+                id: createUniqID.getMD5("all_users_menu_items"),
+                name: "пункты меню",
                 analysis_sip: {
-                    id: createUniqID.getMD5('all_users_menu_items_analysis_sip'),
+                    id: createUniqID.getMD5("all_users_menu_items_analysis_sip"),
                     status: true,
-                    description: 'анализ ИПБ'
+                    description: "анализ ИПБ"
                 },
                 security_event_management: {
-                    id: createUniqID.getMD5('all_users_menu_items_security_event_management'),
+                    id: createUniqID.getMD5("all_users_menu_items_security_event_management"),
                     status: true,
-                    description: 'управление событиями'
+                    description: "управление событиями"
                 },
                 network_interaction: {
-                    id: createUniqID.getMD5('all_users_menu_items_network_interaction'),
+                    id: createUniqID.getMD5("all_users_menu_items_network_interaction"),
                     status: true,
-                    description: 'сетевые взаимодействия'
+                    description: "сетевые взаимодействия"
                 },
                 element_tools: {
-                    id: createUniqID.getMD5('all_users_menu_items_element_tools'),
-                    name: 'инструменты',
+                    id: createUniqID.getMD5("all_users_menu_items_element_tools"),
+                    name: "инструменты",
                     search_tools: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_tools_search_tools'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_tools_search_tools"),
                         status: true,
-                        description: 'поиск информации'
+                        description: "поиск информации"
                     },
                     decode_tools: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_tools_decode_tools'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_tools_decode_tools"),
                         status: true,
-                        description: 'декодирование'
+                        description: "декодирование"
                     }
                 },
                 element_settings: {
-                    id: createUniqID.getMD5('all_users_menu_items_element_settings'),
-                    name: 'настройки',
+                    id: createUniqID.getMD5("all_users_menu_items_element_settings"),
+                    name: "настройки",
                     setting_groups: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_groups'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_groups"),
                         status: true,
-                        description: 'группы пользователей'
+                        description: "группы пользователей"
                     },
                     setting_users: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_users'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_users"),
                         status: true,
-                        description: 'пользователи'
+                        description: "пользователи"
                     },
                     setting_objects_and_subjects: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_objects_and_subjects'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_objects_and_subjects"),
                         status: true,
-                        description: 'объекты и субъекты'
+                        description: "объекты и субъекты"
                     },
                     setting_ids_rules: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_setting_ids_rules'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_setting_ids_rules"),
                         status: true,
-                        description: 'правила СОА'
+                        description: "правила СОА"
                     },
                     setting_geoip: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_setting_geoip'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_setting_geoip"),
                         status: true,
-                        description: 'геопозиционирование'
+                        description: "геопозиционирование"
                     },
                     setting_reputational_lists: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_reputational_lists'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_reputational_lists"),
                         status: true,
-                        description: 'репутационные списки'
+                        description: "репутационные списки"
                     },
                     setting_search_rules: {
-                        id: createUniqID.getMD5('all_users_menu_items_element_settings_setting_setting_search_rules'),
+                        id: createUniqID.getMD5("all_users_menu_items_element_settings_setting_setting_search_rules"),
                         status: true,
-                        description: 'правила поиска'
+                        description: "правила поиска"
                     }
                 }
             },
             management_analysis_sip: {
-                id: createUniqID.getMD5('all_users_management_analysis_sip'),
-                name: 'анализ ИПБ',
+                id: createUniqID.getMD5("all_users_management_analysis_sip"),
+                name: "анализ ИПБ",
                 element_settings: {
                     save: {
-                        id: createUniqID.getMD5('all_users_management_analysis_sip_save'),
+                        id: createUniqID.getMD5("all_users_management_analysis_sip_save"),
                         status: true,
-                        description: 'сохранение шаблонов'
+                        description: "сохранение шаблонов"
                     }
                 }
             },
             management_security_event_management: {
-                id: createUniqID.getMD5('all_users_management_security_event_management'),
-                name: 'управление событиями',
+                id: createUniqID.getMD5("all_users_management_security_event_management"),
+                name: "управление событиями",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_security_event_management_create'),
+                        id: createUniqID.getMD5("all_users_management_security_event_management_create"),
                         status: false,
-                        description: 'создание'
+                        description: "создание"
                     },
                     editingInformation: {
-                        id: createUniqID.getMD5('all_users_management_security_event_management_editingInformation'),
+                        id: createUniqID.getMD5("all_users_management_security_event_management_editingInformation"),
                         status: true,
-                        description: 'редактирование информации'
+                        description: "редактирование информации"
                     },
                     statusChange: {
-                        id: createUniqID.getMD5('all_users_management_security_event_management_statusChange'),
+                        id: createUniqID.getMD5("all_users_management_security_event_management_statusChange"),
                         status: false,
-                        description: 'изменение статуса события'
+                        description: "изменение статуса события"
                     },
                     close: {
-                        id: createUniqID.getMD5('all_users_management_security_event_management_sip_close'),
+                        id: createUniqID.getMD5("all_users_management_security_event_management_sip_close"),
                         status: true,
-                        description: 'закрытие события'
+                        description: "закрытие события"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_security_event_management_sip_delete'),
+                        id: createUniqID.getMD5("all_users_management_security_event_management_sip_delete"),
                         status: false,
-                        description: 'удаление события'
+                        description: "удаление события"
                     }
                 }
             },
             management_network_interaction: {
-                id: createUniqID.getMD5('all_users_management_network_interaction'),
-                name: 'сетевые взаимодействия',
+                id: createUniqID.getMD5("all_users_management_network_interaction"),
+                name: "сетевые взаимодействия",
                 element_settings: {
                     management_tasks_filter: {
-                        id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter'),
-                        name: 'фильтрация файлов',
+                        id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_filter"),
+                        name: "фильтрация файлов",
                         element_settings: {
                             create: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_create'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_filter_create"),
                                 status: true,
-                                description: 'создание шаблонов'
+                                description: "создание шаблонов"
                             },
                             stop: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_stop'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_filter_stop"),
                                 status: true,
-                                description: 'останов'
+                                description: "останов"
                             },
                             import: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_import'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_filter_import"),
                                 status: false,
-                                description: 'импорт файлов'
+                                description: "импорт файлов"
                             },
                             delete: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_filter_delete'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_filter_delete"),
                                 status: true,
-                                description: 'удаление'
+                                description: "удаление"
                             }
                         }
                     },
                     management_tasks_import: {
-                        id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_import'),
-                        name: 'импорт файлов',
+                        id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_import"),
+                        name: "импорт файлов",
                         element_settings: {
                             cancel: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_import_cancel'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_import_cancel"),
                                 status: true,
-                                description: 'отмена'
+                                description: "отмена"
                             },
                             stop: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_import_stop'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_import_stop"),
                                 status: false,
-                                description: 'остановка'
+                                description: "остановка"
                             },
                             resume: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_tasks_import_resume'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_tasks_import_resume"),
                                 status: false,
-                                description: 'возобновление'
+                                description: "возобновление"
                             }
                         }
                     },
                     management_uploaded_files: {
-                        id: createUniqID.getMD5('all_users_management_network_interaction_management_uploaded_files'),
-                        name: 'информация о загруженных файлах',
+                        id: createUniqID.getMD5("all_users_management_network_interaction_management_uploaded_files"),
+                        name: "информация о загруженных файлах",
                         element_settings: {
                             status_change: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_uploaded_files_status_change'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_uploaded_files_status_change"),
                                 status: true,
-                                description: 'изменение статуса'
+                                description: "изменение статуса"
                             },
                             delete: {
-                                id: createUniqID.getMD5('all_users_management_network_interaction_management_uploaded_files_delete'),
+                                id: createUniqID.getMD5("all_users_management_network_interaction_management_uploaded_files_delete"),
                                 status: true,
-                                description: 'удаление'
+                                description: "удаление"
                             }
                         }
                     },
                 }
             },
             management_users: {
-                id: createUniqID.getMD5('all_users_management_users'),
-                name: 'пользователи',
+                id: createUniqID.getMD5("all_users_management_users"),
+                name: "пользователи",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_users_create'),
+                        id: createUniqID.getMD5("all_users_management_users_create"),
                         status: false,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('all_users_management_users_edit'),
+                        id: createUniqID.getMD5("all_users_management_users_edit"),
                         status: false,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_users_delete'),
+                        id: createUniqID.getMD5("all_users_management_users_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_groups: {
-                id: createUniqID.getMD5('all_users_management_groups'),
-                name: 'группы',
+                id: createUniqID.getMD5("all_users_management_groups"),
+                name: "группы",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_groups_create'),
+                        id: createUniqID.getMD5("all_users_management_groups_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('all_users_management_groups_edit'),
+                        id: createUniqID.getMD5("all_users_management_groups_edit"),
                         status: false,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_groups_delete'),
+                        id: createUniqID.getMD5("all_users_management_groups_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_objects_and_subjects: {
-                id: createUniqID.getMD5('all_users_management_objects_and_subjects'),
-                name: 'объекты и субъекты',
+                id: createUniqID.getMD5("all_users_management_objects_and_subjects"),
+                name: "объекты и субъекты",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_objects_and_subjects_create'),
+                        id: createUniqID.getMD5("all_users_management_objects_and_subjects_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('all_users_management_objects_and_subjects_edit'),
+                        id: createUniqID.getMD5("all_users_management_objects_and_subjects_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_objects_and_subjects_delete'),
+                        id: createUniqID.getMD5("all_users_management_objects_and_subjects_delete"),
                         status: false,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_ids_rules: {
-                id: createUniqID.getMD5('all_users_management_ids_rules'),
-                name: 'правила СОА',
+                id: createUniqID.getMD5("all_users_management_ids_rules"),
+                name: "правила СОА",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_ids_rules_create'),
+                        id: createUniqID.getMD5("all_users_management_ids_rules_create"),
                         status: false,
-                        description: 'создание'
+                        description: "создание"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_ids_rules_delete'),
+                        id: createUniqID.getMD5("all_users_management_ids_rules_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_geoip: {
-                id: createUniqID.getMD5('all_users_management_geoip'),
-                name: 'геопозиционирование',
+                id: createUniqID.getMD5("all_users_management_geoip"),
+                name: "геопозиционирование",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_geoip_create'),
+                        id: createUniqID.getMD5("all_users_management_geoip_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_geoip_delete'),
+                        id: createUniqID.getMD5("all_users_management_geoip_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_reputational_lists: {
-                id: createUniqID.getMD5('all_users_management_reputational_lists'),
-                name: 'репутационные списки',
+                id: createUniqID.getMD5("all_users_management_reputational_lists"),
+                name: "репутационные списки",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_reputational_lists_create'),
+                        id: createUniqID.getMD5("all_users_management_reputational_lists_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('all_users_management_reputational_lists_edit'),
+                        id: createUniqID.getMD5("all_users_management_reputational_lists_edit"),
                         status: false,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_reputational_lists_delete'),
+                        id: createUniqID.getMD5("all_users_management_reputational_lists_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_search_rules: {
-                id: createUniqID.getMD5('all_users_management_search_rules'),
-                name: 'правила поиска',
+                id: createUniqID.getMD5("all_users_management_search_rules"),
+                name: "правила поиска",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('all_users_management_search_rules_create'),
+                        id: createUniqID.getMD5("all_users_management_search_rules_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('all_users_management_search_rules_edit'),
+                        id: createUniqID.getMD5("all_users_management_search_rules_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('all_users_management_search_rules_delete'),
+                        id: createUniqID.getMD5("all_users_management_search_rules_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             }
@@ -767,325 +767,325 @@ function createModelGroups(modelGroup, next) {
          * ТЕСТОВАЯ ГРУППА
          */
         new modelGroup({
-            group_name: 'deg_group',
+            group_name: "deg_group",
             date_register: +(new Date()),
             menu_items: {
-                id: createUniqID.getMD5('deg_group_menu_items'),
-                name: 'пункты меню',
+                id: createUniqID.getMD5("deg_group_menu_items"),
+                name: "пункты меню",
                 analysis_sip: {
-                    id: createUniqID.getMD5('deg_group_menu_items_analysis_sip'),
+                    id: createUniqID.getMD5("deg_group_menu_items_analysis_sip"),
                     status: true,
-                    description: 'анализ ИПБ'
+                    description: "анализ ИПБ"
                 },
                 security_event_management: {
-                    id: createUniqID.getMD5('deg_group_menu_items_security_event_management'),
+                    id: createUniqID.getMD5("deg_group_menu_items_security_event_management"),
                     status: true,
-                    description: 'управление событиями'
+                    description: "управление событиями"
                 },
                 network_interaction: {
-                    id: createUniqID.getMD5('deg_group_menu_items_network_interaction'),
+                    id: createUniqID.getMD5("deg_group_menu_items_network_interaction"),
                     status: true,
-                    description: 'сетевые взаимодействия'
+                    description: "сетевые взаимодействия"
                 },
                 element_tools: {
-                    id: createUniqID.getMD5('deg_group_menu_items_element_tools'),
-                    name: 'инструменты',
+                    id: createUniqID.getMD5("deg_group_menu_items_element_tools"),
+                    name: "инструменты",
                     search_tools: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_tools_search_tools'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_tools_search_tools"),
                         status: true,
-                        description: 'поиск информации'
+                        description: "поиск информации"
                     },
                     decode_tools: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_tools_decode_tools'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_tools_decode_tools"),
                         status: true,
-                        description: 'декодирование'
+                        description: "декодирование"
                     }
                 },
                 element_settings: {
-                    id: createUniqID.getMD5('deg_group_menu_items_element_settings'),
-                    name: 'настройки',
+                    id: createUniqID.getMD5("deg_group_menu_items_element_settings"),
+                    name: "настройки",
                     setting_groups: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_groups'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_groups"),
                         status: true,
-                        description: 'группы пользователей'
+                        description: "группы пользователей"
                     },
                     setting_users: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_users'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_users"),
                         status: true,
-                        description: 'пользователи'
+                        description: "пользователи"
                     },
                     setting_objects_and_subjects: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_objects_and_subjects'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_objects_and_subjects"),
                         status: true,
-                        description: 'объекты и субъекты'
+                        description: "объекты и субъекты"
                     },
                     setting_ids_rules: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_setting_ids_rules'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_setting_ids_rules"),
                         status: true,
-                        description: 'правила СОА'
+                        description: "правила СОА"
                     },
                     setting_geoip: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_setting_geoip'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_setting_geoip"),
                         status: true,
-                        description: 'геопозиционирование'
+                        description: "геопозиционирование"
                     },
                     setting_reputational_lists: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_reputational_lists'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_reputational_lists"),
                         status: true,
-                        description: 'репутационные списки'
+                        description: "репутационные списки"
                     },
                     setting_search_rules: {
-                        id: createUniqID.getMD5('deg_group_menu_items_element_settings_setting_setting_search_rules'),
+                        id: createUniqID.getMD5("deg_group_menu_items_element_settings_setting_setting_search_rules"),
                         status: true,
-                        description: 'правила поиска'
+                        description: "правила поиска"
                     }
                 }
             },
             management_analysis_sip: {
-                id: createUniqID.getMD5('deg_group_management_analysis_sip'),
-                name: 'анализ ИПБ',
+                id: createUniqID.getMD5("deg_group_management_analysis_sip"),
+                name: "анализ ИПБ",
                 element_settings: {
                     save: {
-                        id: createUniqID.getMD5('deg_group_management_analysis_sip_save'),
+                        id: createUniqID.getMD5("deg_group_management_analysis_sip_save"),
                         status: true,
-                        description: 'сохранение типового шаблона'
+                        description: "сохранение типового шаблона"
                     }
                 }
             },
             management_security_event_management: {
-                id: createUniqID.getMD5('deg_group_management_security_event_management'),
-                name: 'управление событиями',
+                id: createUniqID.getMD5("deg_group_management_security_event_management"),
+                name: "управление событиями",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_security_event_management_sip_create'),
+                        id: createUniqID.getMD5("deg_group_management_security_event_management_sip_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     editingInformation: {
-                        id: createUniqID.getMD5('deg_group_management_security_event_management_editingInformation'),
+                        id: createUniqID.getMD5("deg_group_management_security_event_management_editingInformation"),
                         status: true,
-                        description: 'редактирование информации'
+                        description: "редактирование информации"
                     },
                     statusChange: {
-                        id: createUniqID.getMD5('deg_group_management_security_event_management_statusChange'),
+                        id: createUniqID.getMD5("deg_group_management_security_event_management_statusChange"),
                         status: true,
-                        description: 'изменение статуса события'
+                        description: "изменение статуса события"
                     },
                     close: {
-                        id: createUniqID.getMD5('deg_group_management_security_event_management_close'),
+                        id: createUniqID.getMD5("deg_group_management_security_event_management_close"),
                         status: true,
-                        description: 'закрытие события'
+                        description: "закрытие события"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_security_event_management_delete'),
+                        id: createUniqID.getMD5("deg_group_management_security_event_management_delete"),
                         status: true,
-                        description: 'удаление события'
+                        description: "удаление события"
                     }
                 }
             },
             management_network_interaction: {
-                id: createUniqID.getMD5('deg_group_management_network_interaction'),
-                name: 'сетевые взаимодействия',
+                id: createUniqID.getMD5("deg_group_management_network_interaction"),
+                name: "сетевые взаимодействия",
                 element_settings: {
                     management_tasks_filter: {
-                        id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter'),
-                        name: 'фильтрация файлов',
+                        id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_filter"),
+                        name: "фильтрация файлов",
                         element_settings: {
                             create: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_create'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_filter_create"),
                                 status: true,
-                                description: 'создание типового шаблона'
+                                description: "создание типового шаблона"
                             },
                             stop: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_stop'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_filter_stop"),
                                 status: true,
-                                description: 'останов фильтрации'
+                                description: "останов фильтрации"
                             },
                             import: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_import'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_filter_import"),
                                 status: true,
-                                description: 'импорт файлов'
+                                description: "импорт файлов"
                             },
                             delete: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_filter_delete'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_filter_delete"),
                                 status: true,
-                                description: 'удаление'
+                                description: "удаление"
                             }
                         }
                     },
                     management_tasks_import: {
-                        id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_import'),
-                        name: 'импорт файлов',
+                        id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_import"),
+                        name: "импорт файлов",
                         element_settings: {
                             cancel: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_import_cancel'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_import_cancel"),
                                 status: true,
-                                description: 'отмена'
+                                description: "отмена"
                             },
                             stop: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_import_stop'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_import_stop"),
                                 status: true,
-                                description: 'остановка'
+                                description: "остановка"
                             },
                             resume: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_tasks_import_resume'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_tasks_import_resume"),
                                 status: true,
-                                description: 'возобновление'
+                                description: "возобновление"
                             }
                         }
                     },
                     management_uploaded_files: {
-                        id: createUniqID.getMD5('deg_group_management_network_interaction_management_uploaded_files'),
-                        name: 'информация о загруженных файлах',
+                        id: createUniqID.getMD5("deg_group_management_network_interaction_management_uploaded_files"),
+                        name: "информация о загруженных файлах",
                         element_settings: {
                             status_change: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_uploaded_files_status_change'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_uploaded_files_status_change"),
                                 status: true,
-                                description: 'изменение статуса'
+                                description: "изменение статуса"
                             },
                             delete: {
-                                id: createUniqID.getMD5('deg_group_management_network_interaction_management_uploaded_files_delete'),
+                                id: createUniqID.getMD5("deg_group_management_network_interaction_management_uploaded_files_delete"),
                                 status: false,
-                                description: 'удаление'
+                                description: "удаление"
                             }
                         }
                     },
                 }
             },
             management_users: {
-                id: createUniqID.getMD5('deg_group_management_users'),
-                name: 'пользователи',
+                id: createUniqID.getMD5("deg_group_management_users"),
+                name: "пользователи",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_users_create'),
+                        id: createUniqID.getMD5("deg_group_management_users_create"),
                         status: false,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('deg_group_management_users_edit'),
+                        id: createUniqID.getMD5("deg_group_management_users_edit"),
                         status: false,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_users_delete'),
+                        id: createUniqID.getMD5("deg_group_management_users_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_groups: {
-                id: createUniqID.getMD5('deg_group_management_groups'),
-                name: 'группы',
+                id: createUniqID.getMD5("deg_group_management_groups"),
+                name: "группы",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_groups_create'),
+                        id: createUniqID.getMD5("deg_group_management_groups_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('deg_group_management_groups_edit'),
+                        id: createUniqID.getMD5("deg_group_management_groups_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_groups_delete'),
+                        id: createUniqID.getMD5("deg_group_management_groups_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_objects_and_subjects: {
-                id: createUniqID.getMD5('deg_group_management_objects_and_subjects'),
-                name: 'объекты и субъекты',
+                id: createUniqID.getMD5("deg_group_management_objects_and_subjects"),
+                name: "объекты и субъекты",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_objects_and_subjects_create'),
+                        id: createUniqID.getMD5("deg_group_management_objects_and_subjects_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('deg_group_management_objects_and_subjects_edit'),
+                        id: createUniqID.getMD5("deg_group_management_objects_and_subjects_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_objects_and_subjects_delete'),
+                        id: createUniqID.getMD5("deg_group_management_objects_and_subjects_delete"),
                         status: false,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_ids_rules: {
-                id: createUniqID.getMD5('deg_group_management_ids_rules'),
-                name: 'правила СОА',
+                id: createUniqID.getMD5("deg_group_management_ids_rules"),
+                name: "правила СОА",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_ids_rules_create'),
+                        id: createUniqID.getMD5("deg_group_management_ids_rules_create"),
                         status: false,
-                        description: 'создание'
+                        description: "создание"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_ids_rules_delete'),
+                        id: createUniqID.getMD5("deg_group_management_ids_rules_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_geoip: {
-                id: createUniqID.getMD5('deg_group_management_geoip'),
-                name: 'геопозиционирование',
+                id: createUniqID.getMD5("deg_group_management_geoip"),
+                name: "геопозиционирование",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_geoip_create'),
+                        id: createUniqID.getMD5("deg_group_management_geoip_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_geoip_delete'),
+                        id: createUniqID.getMD5("deg_group_management_geoip_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_reputational_lists: {
-                id: createUniqID.getMD5('deg_group_management_reputational_lists'),
-                name: 'репутационные списки',
+                id: createUniqID.getMD5("deg_group_management_reputational_lists"),
+                name: "репутационные списки",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_reputational_lists_create'),
+                        id: createUniqID.getMD5("deg_group_management_reputational_lists_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('deg_group_management_reputational_lists_edit'),
+                        id: createUniqID.getMD5("deg_group_management_reputational_lists_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_reputational_lists_delete'),
+                        id: createUniqID.getMD5("deg_group_management_reputational_lists_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             },
             management_search_rules: {
-                id: createUniqID.getMD5('deg_group_management_search_rules'),
-                name: 'правила поиска',
+                id: createUniqID.getMD5("deg_group_management_search_rules"),
+                name: "правила поиска",
                 element_settings: {
                     create: {
-                        id: createUniqID.getMD5('deg_group_management_search_rules_create'),
+                        id: createUniqID.getMD5("deg_group_management_search_rules_create"),
                         status: true,
-                        description: 'создание'
+                        description: "создание"
                     },
                     edit: {
-                        id: createUniqID.getMD5('deg_group_management_search_rules_edit'),
+                        id: createUniqID.getMD5("deg_group_management_search_rules_edit"),
                         status: true,
-                        description: 'редактирование'
+                        description: "редактирование"
                     },
                     delete: {
-                        id: createUniqID.getMD5('deg_group_management_search_rules_delete'),
+                        id: createUniqID.getMD5("deg_group_management_search_rules_delete"),
                         status: true,
-                        description: 'удаление'
+                        description: "удаление"
                     }
                 }
             }
@@ -1098,7 +1098,7 @@ function createModelGroups(modelGroup, next) {
 //создание модели хранения данных об источнике
 function createModelSource(modelSource, next) {
 
-    debug('find source model');
+    debug("find source model");
 
     modelSource.find(err => {
         if (err) next(err);
@@ -1109,7 +1109,7 @@ function createModelSource(modelSource, next) {
 //создание модели хранения правил СОА
 function createModelRulesIDS(modelIdsRules, next) {
 
-    debug('find IDS rules model');
+    debug("find IDS rules model");
 
     modelIdsRules.find({}, { _id: 1 }, err => {
         if (err) next(err);
@@ -1120,7 +1120,7 @@ function createModelRulesIDS(modelIdsRules, next) {
 //создание модели хранения дополнительной информации
 function createModelAdditionalInformation(modelAdditionalInformation, next) {
 
-    debug('find model additional informetion');
+    debug("find model additional informetion");
 
     modelAdditionalInformation.find({}, { _id: 1 }, (err, document) => {
         if (err) return next(err);
@@ -1129,8 +1129,8 @@ function createModelAdditionalInformation(modelAdditionalInformation, next) {
         new modelAdditionalInformation({
             ids_rules: {
                 create_date: +new Date(),
-                create_login: 'administrator',
-                create_username: 'Администратор',
+                create_login: "administrator",
+                create_username: "Администратор",
                 count_rules: 0
             }
         }).save();

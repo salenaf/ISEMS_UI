@@ -9,10 +9,10 @@
  * Версия 0.1, дата релиза 10.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const globalObject = require('../../configure/globalObject');
-const connection = globalObject.getData('descriptionDB', 'MongoDB', 'connection');
+const globalObject = require("../../configure/globalObject");
+const connection = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
 let additionalInformation = new connection.Schema({
     ids_rules: {
@@ -23,4 +23,4 @@ let additionalInformation = new connection.Schema({
     }
 });
 
-module.exports = connection.model('additional.information', additionalInformation);
+module.exports = connection.model("additional.information", additionalInformation);

@@ -4,10 +4,10 @@
  * Версия 0.1, дата релиза 21.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const globalObject = require('../../configure/globalObject');
-const connection = globalObject.getData('descriptionDB', 'MongoDB', 'connection');
+const globalObject = require("../../configure/globalObject");
+const connection = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
 let groupSchema = new connection.Schema({
     group_name: String,
@@ -150,6 +150,6 @@ let groupSchema = new connection.Schema({
     }
 });
 
-groupSchema.set('toObject', { getters: true });
+groupSchema.set("toObject", { getters: true });
 
-module.exports = connection.model('group', groupSchema);
+module.exports = connection.model("group", groupSchema);

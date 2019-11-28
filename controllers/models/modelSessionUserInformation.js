@@ -5,14 +5,14 @@
  * Версия 0.1, дата релиза 10.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const globalObject = require('../../configure/globalObject');
-const connection = globalObject.getData('descriptionDB', 'MongoDB', 'connection');
+const globalObject = require("../../configure/globalObject");
+const connection = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
 let sessionUserInformation = new connection.Schema({
     passport_id: String,
-    session_id: { type: String, default: '' },
+    session_id: { type: String, default: "" },
     login: String,
     user_name: String,
     user_settings: {
@@ -36,4 +36,4 @@ let sessionUserInformation = new connection.Schema({
     dateCreate: Number
 });
 
-module.exports = connection.model('session.user.information', sessionUserInformation);
+module.exports = connection.model("session.user.information", sessionUserInformation);

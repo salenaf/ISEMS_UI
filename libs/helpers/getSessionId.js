@@ -13,6 +13,8 @@
 
 const debug = require("debug")("getSessionId");
 
+const globalObject = require("../../configure/globalObject");
+
 module.exports = function(typeSession, objectSession, callback) {
     let objTypeSession = {
         "http": getSessionForHttp,
@@ -36,22 +38,21 @@ function getSessionForSocketIo(objectSession, callback) {
     if (typeof objectSession.request.headers === "undefined") return callback(new Error("Error socketIo,there is no title"));
     if (typeof objectSession.request.headers.cookie === "undefined") return callback(new Error("Error socketIo, missing the cookie"));
 
-    debug(`ALL COOKIE: ${objectSession.request.headers.cookie}`);
+    let sessionID = "";
+    let listSessionID = globalObject.getData("users");
 
-    //if (!(~objectSession.request.headers.cookie.indexOf(";"))) return callback(new Error("Error socketIo, incorrect cookie"));
-    if (!objectSession.request.headers.cookie.includes(";")) return callback(new Error("Error socketIo, incorrect cookie"));
-    let cookie = objectSession.request.headers.cookie.split("; ");
+    for (let sID in listSessionID) {
 
-    let sessionId = "";
-    for (let i = 0; i < cookie.length; i++) {
-        if (cookie[i].includes("connect.sid")) {
-            if (!cookie[i].includes(".")) return callback(new Error("Error socketIo, incorrect cookie"));
-            sessionId = cookie[i].slice(16).split(".");
+        debug(`current session ID: ${sID}`);
+
+        if (objectSession.request.headers.cookie.includes(sID)) {
+
+            sessionID = sID;
+            break;
         }
     }
 
-    debug(`session ID: ${sessionId}`);
+    debug(`Session ID: ${sessionID}`);
 
-    if (sessionId.length < 2) return callback(new Error("Error socketIo, incorrect cookie"));
-    else callback(null, sessionId[0]);
+    return (sessionID.length === 0) ? callback(new Error("Error socketIo, incorrect cookie")) : callback(null, sessionID);
 }
