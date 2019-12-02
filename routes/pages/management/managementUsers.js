@@ -62,7 +62,7 @@ module.exports = function(req, res, objHeader) {
             mainInformation: result.mainInformation
         };
 
-        debug(result.mainInformation.administrator);
+        debug(result.mainInformation);
         debug(objResult.userGroupPermissions);
 
         res.render("menu/settings/setting_users", objResult);

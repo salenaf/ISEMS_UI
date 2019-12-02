@@ -84,6 +84,7 @@ function createModelUsers(modelUser, next) {
         debug("add user \"administrator\"");
 
         new modelUser({
+            user_id: createUniqID.getMD5("user_name_administrator"),
             date_register: +(new Date()),
             date_change: +(new Date()),
             login: "administrator",

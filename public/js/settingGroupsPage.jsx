@@ -173,6 +173,7 @@ class ButtonAddGroup extends React.Component {
 }
 
 ButtonAddGroup.propTypes = {
+    changeGroup: PropTypes.func,
     access: PropTypes.object.isRequired,
     groupListElement: PropTypes.object.isRequired
 };
@@ -247,6 +248,7 @@ class EnumGroupName extends React.Component {
 }
 
 EnumGroupName.propTypes = {
+    changeGroup: PropTypes.func,
     groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
     list: PropTypes.object.isRequired,
     accessRights: PropTypes.object.isRequired
@@ -264,17 +266,18 @@ class ShowDateCreateGroup extends React.Component {
                 textCenter = "text-left";
             }
 
-            if (typeof this.props.list[group] === "undefinde") return <th></th>;
+            if (typeof this.props.list[group] === "undefined") return <th></th>;
 
             let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(" ");
             let [year, month, day] = dateString.split("-");
             let dateCreate = `${day}.${month}.${year}`;
 
-            return <th
-                className={textCenter}
-                key={`date_create_${group}`}>
-                {`${text} ${dateCreate}`}
-            </th>;
+            return (
+                <th
+                    className={textCenter}
+                    key={`date_create_${group}`}>
+                    {`${text} ${dateCreate}`}
+                </th>);
         });
 
         return dateCreate;

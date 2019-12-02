@@ -11,6 +11,7 @@ const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
 module.exports = function(cb) {
     let objNameItems = {
+        "user_id": "userID",
         "date_register": "dateRegister",
         "date_change": "dateChange",
         "group": "group",
@@ -21,14 +22,15 @@ module.exports = function(cb) {
     mongodbQueryProcessor.querySelect(models.modelUser, { isMany: true }, (err, users) => {
         if (err) return cb(err);
 
-        let objUsers = {};
-        users.forEach(user => {
-            objUsers[user.login] = {};
+        let listUsers = users.map(user => {
+            let obj = {};
             for (let item in objNameItems) {
-                objUsers[user.login][objNameItems[item]] = user[item];
+                obj[objNameItems[item]] = user[item];
             }
+
+            return obj;
         });
 
-        cb(null, objUsers);
+        cb(null, listUsers);
     });
 };

@@ -41114,6 +41114,7 @@ function (_React$Component3) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonAddGroup.propTypes = {
+  changeGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func,
   access: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //кнопка 'сохранить изменение параметров группы'
@@ -41229,6 +41230,7 @@ function (_React$Component6) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 EnumGroupName.propTypes = {
+  changeGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func,
   groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
@@ -41259,7 +41261,7 @@ function (_React$Component7) {
           textCenter = "text-left";
         }
 
-        if (typeof _this2.props.list[group] === "undefinde") return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
+        if (typeof _this2.props.list[group] === "undefined") return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
 
         var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(" "),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),

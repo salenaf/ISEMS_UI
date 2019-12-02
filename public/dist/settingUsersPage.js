@@ -40916,10 +40916,221 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-var CreateTable =
+var HeadTable =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(CreateTable, _React$Component);
+  _inherits(HeadTable, _React$Component);
+
+  function HeadTable() {
+    _classCallCheck(this, HeadTable);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(HeadTable).apply(this, arguments));
+  }
+
+  _createClass(HeadTable, [{
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u041B\u043E\u0433\u0438\u043D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
+        className: "text-right"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+        variant: "outline-primary"
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"))));
+    }
+  }]);
+
+  return HeadTable;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+var ButtonEdit =
+/*#__PURE__*/
+function (_React$Component2) {
+  _inherits(ButtonEdit, _React$Component2);
+
+  function ButtonEdit() {
+    _classCallCheck(this, ButtonEdit);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonEdit).apply(this, arguments));
+  }
+
+  _createClass(ButtonEdit, [{
+    key: "render",
+    value: function render() {
+      var login = this.props.login;
+      var accessRights = this.props.accessRights;
+      var isDisabled;
+
+      if (login === "administrator" || !accessRights.edit.status) {
+        isDisabled = "disabled";
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+        variant: "outline-dark",
+        size: "sm",
+        disabled: isDisabled
+      }, "\u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C");
+    }
+  }]);
+
+  return ButtonEdit;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ButtonEdit.propTypes = {
+  login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+};
+
+var ButtonDelete =
+/*#__PURE__*/
+function (_React$Component3) {
+  _inherits(ButtonDelete, _React$Component3);
+
+  function ButtonDelete() {
+    _classCallCheck(this, ButtonDelete);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonDelete).apply(this, arguments));
+  }
+
+  _createClass(ButtonDelete, [{
+    key: "render",
+    value: function render() {
+      var login = this.props.login;
+      var accessRights = this.props.accessRights;
+      var isDisabled;
+
+      if (login === "administrator" || !accessRights.delete.status) {
+        isDisabled = "disabled";
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+        variant: "outline-danger",
+        size: "sm",
+        disabled: isDisabled
+      }, "\u0443\u0434\u0430\u043B\u0438\u0442\u044C");
+    }
+  }]);
+
+  return ButtonDelete;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ButtonDelete.propTypes = {
+  login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+};
+
+var BodyTable =
+/*#__PURE__*/
+function (_React$Component4) {
+  _inherits(BodyTable, _React$Component4);
+
+  function BodyTable(props) {
+    var _this;
+
+    _classCallCheck(this, BodyTable);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(BodyTable).call(this, props));
+    _this.addUsersList = _this.addUsersList.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    return _this;
+  }
+
+  _createClass(BodyTable, [{
+    key: "addUsersList",
+    value: function addUsersList() {
+      var _this2 = this;
+
+      var users = this.props.users;
+      var adminUser = [],
+          othersUser = [];
+      var dateFormatter = new Intl.DateTimeFormat("ru", {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric"
+      });
+      users.forEach(function (user) {
+        var key = users.userID;
+        var elem = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
+          key: "tr_".concat(key)
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          key: "td_login_".concat(key)
+        }, user.login), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          key: "td_user_name_".concat(key)
+        }, user.userName), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          key: "td_group_".concat(key)
+        }, user.group), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          key: "td_date_register_".concat(key)
+        }, dateFormatter.format(user.dateRegister)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          key: "td_date_change_".concat(key)
+        }, dateFormatter.format(user.dateChange)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+          className: "text-right",
+          key: "td_buttons_".concat(key)
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
+          login: user.login,
+          accessRights: _this2.props.accessRights,
+          key: "button_edit_".concat(key)
+        }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
+          login: user.login,
+          accessRights: _this2.props.accessRights,
+          key: "button_del_".concat(key)
+        })));
+
+        if (user.login === "administrator") {
+          adminUser.push(elem);
+        } else {
+          othersUser.push(elem);
+        }
+
+        adminUser.push(othersUser);
+      });
+      return adminUser;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, this.addUsersList());
+    }
+  }]);
+
+  return BodyTable;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+BodyTable.propTypes = {
+  users: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+};
+/**
+ * {
+  managementUsers   dateRegister: 1550043504498,
+  managementUsers   dateChange: 1550043504498,
+  managementUsers   group: 'administrator',
+  managementUsers   userName: 'Администратор',
+  managementUsers   login: 'administrator'
+  managementUsers } +1ms
+
+    managementUsers {
+  managementUsers   create: {
+  managementUsers     id: 'c0234594174f3051d8177822554ea5d1',
+  managementUsers     status: true,
+  managementUsers     description: 'создание'
+  managementUsers   },
+  managementUsers   edit: {
+  managementUsers     id: '20398ecd2be259828494872d98d71de7',
+  managementUsers     status: true,
+  managementUsers     description: 'редактирование'
+  managementUsers   },
+  managementUsers   delete: {
+  managementUsers     id: '76775b639fd7626ab307e9ffed7b8a9c',
+  managementUsers     status: true,
+  managementUsers     description: 'удаление'
+  managementUsers   }
+  managementUsers } +0ms
+ */
+
+var CreateTable =
+/*#__PURE__*/
+function (_React$Component5) {
+  _inherits(CreateTable, _React$Component5);
 
   function CreateTable(props) {
     _classCallCheck(this, CreateTable);
@@ -40930,7 +41141,15 @@ function (_React$Component) {
   _createClass(CreateTable, [{
     key: "render",
     value: function render() {
-      return;
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
+        className: "text-left text-uppercase"
+      }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
+        striped: true,
+        hover: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HeadTable, null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
+        users: this.props.mainInformation,
+        accessRights: this.props.accessRights
+      })));
     }
   }]);
 
@@ -40938,7 +41157,7 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateTable.propTypes = {
-  mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 };
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
