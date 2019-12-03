@@ -95,6 +95,33 @@ function createModelUsers(modelUser, next) {
                 sourceMainPage: []
             }
         }).save();
+
+        /** Тестовые пользователи */
+        new modelUser({
+            user_id: createUniqID.getMD5("user_name_testuser1"),
+            date_register: +(new Date()),
+            date_change: +(new Date()),
+            login: "testuser_1",
+            password: "testuser_1",
+            group: "all_users",
+            user_name: "Первый Тестовый Пользователь",
+            settings: {
+                sourceMainPage: []
+            }
+        }).save();
+        new modelUser({
+            user_id: createUniqID.getMD5("user_name_testuser2"),
+            date_register: +(new Date()),
+            date_change: +(new Date()),
+            login: "testuser_2",
+            password: "testuser_2",
+            group: "all_users",
+            user_name: "Второй Тестовый Пользователь",
+            settings: {
+                sourceMainPage: []
+            }
+        }).save();
+
         next(null);
     });
 }

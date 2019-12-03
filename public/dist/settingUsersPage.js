@@ -40718,8 +40718,8 @@ __webpack_require__.r(__webpack_exports__);
 var helpers = {
   //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
   loadNetworkMarginTop: function loadNetworkMarginTop() {
-    var arrayLoadNetwork = document.getElementsByName('loadNetwork');
-    if (arrayLoadNetwork.hasOwnProperty('length')) return;
+    var arrayLoadNetwork = document.getElementsByName("loadNetwork");
+    if (arrayLoadNetwork.hasOwnProperty("length")) return;
 
     for (var key in arrayLoadNetwork) {
       var countElements = 0;
@@ -40729,9 +40729,9 @@ var helpers = {
       }
 
       var num = (countElements - 4) / 3;
-      var px = '0px';
-      if (3 <= num && num <= 5) px = '35px';
-      if (1 <= num && num <= 3) px = '40px';
+      var px = "0px";
+      if (3 <= num && num <= 5) px = "35px";
+      if (1 <= num && num <= 3) px = "40px";
 
       if (arrayLoadNetwork[key].nodeType === 1) {
         arrayLoadNetwork[key].style.marginTop = px;
@@ -40741,14 +40741,14 @@ var helpers = {
   //конвертирование даты и времени из формата Unix в стандартный формат
   getDate: function getDate(dateUnix) {
     var x = new Date().getTimezoneOffset() * 60000;
-    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
   },
   //получить цвет значения
   getColor: function getColor(number) {
-    if (0 <= number && number <= 35) return 'color: #83B4D7;';
-    if (36 <= number && number <= 65) return 'color: #9FD783;';
-    if (66 <= number && number <= 85) return 'color: #E1E691;';
-    if (86 <= number) return 'color: #C78888;';
+    if (0 <= number && number <= 35) return "color: #83B4D7;";
+    if (36 <= number && number <= 65) return "color: #9FD783;";
+    if (66 <= number && number <= 85) return "color: #E1E691;";
+    if (86 <= number) return "color: #C78888;";
   },
   //преобразование числа в строку с пробелами после каждой третьей цифры 
   intConvert: function intConvert(nLoad) {
@@ -40763,16 +40763,16 @@ var helpers = {
     }
 
     interimArray.reverse();
-    return interimArray.join(' ');
+    return interimArray.join(" ");
   },
   //пересчет в Кбайты, Мбайты и Гбайты
   changeByteSize: function changeByteSize(byte) {
-    if (3 >= byte.length) return '<strong>' + byte + '</strong> байт';else if (3 < byte.length && byte.length <= 6) return '<strong>' + (byte / 1000).toFixed(2) + '</strong> Кбайт';else if (6 < byte.length && byte.length <= 9) return '<strong>' + (byte / 1000000).toFixed(2) + '</strong> Мбайт';else return '<strong>' + (byte / 1000000000).toFixed(2) + '</strong> Гбайт';
+    if (3 >= byte.length) return "<strong>" + byte + "</strong> байт";else if (3 < byte.length && byte.length <= 6) return "<strong>" + (byte / 1000).toFixed(2) + "</strong> Кбайт";else if (6 < byte.length && byte.length <= 9) return "<strong>" + (byte / 1000000).toFixed(2) + "</strong> Мбайт";else return "<strong>" + (byte / 1000000000).toFixed(2) + "</strong> Гбайт";
   },
   //конвертирование даты и вермени
   dateTimeConvert: function dateTimeConvert(dateUnixFormat) {
     var x = new Date().getTimezoneOffset() * 60000;
-    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
   },
   //получить не повторяющиеся элементы двух массивов
   getDifferenceArray: function getDifferenceArray(arrOne, arrTwo) {
@@ -40790,14 +40790,14 @@ var helpers = {
         }
       }
 
-      result = arrOne.concat(arrTwo.join(','));
+      result = arrOne.concat(arrTwo.join(","));
     } else if (arrOne.length < arrTwo.length) {
-      var stringOne = arrOne.join(' ');
+      var stringOne = arrOne.join(" ");
       arrTwo.filter(function (item) {
         return stringOne.indexOf(item.toString()) < 0;
       });
     } else {
-      var _stringOne = arrTwo.join(' ');
+      var _stringOne = arrTwo.join(" ");
 
       arrOne.filter(function (item) {
         return _stringOne.indexOf(item.toString()) < 0;
@@ -40806,24 +40806,32 @@ var helpers = {
 
     return result;
   },
-  //проверка данных полученных от пользователя
+
+  /**
+   * проверка данных полученных от пользователя
+   * 
+   * @param {object} elem 
+   */
   checkInputValidation: function checkInputValidation(elem) {
     var objSettings = {
-      'hostId': new RegExp('^[0-9]{1,7}$'),
-      'shortNameHost': new RegExp('^[a-zA-Z0-9_№"\\-\\s]{3,15}$'),
-      'fullNameHost': new RegExp('^[a-zA-Zа-яА-Яё0-9_№"\\-\\s\\.,]{5,}$'),
-      'ipaddress': new RegExp('^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$'),
-      'port': new RegExp('^[0-9]{1,5}$'),
-      'countProcess': new RegExp('^[0-9]{1}$'),
-      'intervalTransmission': new RegExp('^[0-9]{1,}$')
+      "hostId": new RegExp("^[0-9]{1,7}$"),
+      "shortNameHost": new RegExp("^[a-zA-Z0-9_№\"\\-\\s]{3,15}$"),
+      "fullNameHost": new RegExp("^[a-zA-Zа-яА-ЯёЁ0-9_№\"\\-\\s\\.,]{5,}$"),
+      "ipaddress": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),
+      "port": new RegExp("^[0-9]{1,5}$"),
+      "countProcess": new RegExp("^[0-9]{1}$"),
+      "intervalTransmission": new RegExp("^[0-9]{1,}$"),
+      "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}"),
+      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
+      "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
     };
     var pattern = objSettings[elem.name];
 
-    if (elem.name === 'port') {
+    if (elem.name === "port") {
       if (!(0 <= elem.value && elem.value < 65536)) return false;
     }
 
-    if (elem.name === 'intervalTransmission' && elem.value < 10) return false;
+    if (elem.name === "intervalTransmission" && elem.value < 10) return false;
     return !pattern.test(elem.value) ? false : true;
   },
   //генератор токена
@@ -40866,28 +40874,25 @@ var showNotifyMessage = function showNotifyMessage(data) {
 
 /***/ }),
 
-/***/ "./settingUsersPage.jsx":
-/*!******************************!*\
-  !*** ./settingUsersPage.jsx ***!
-  \******************************/
-/*! no exports provided */
+/***/ "./commons/modalAlertMessage.jsx":
+/*!***************************************!*\
+  !*** ./commons/modalAlertMessage.jsx ***!
+  \***************************************/
+/*! exports provided: ModalAlertDangerMessage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalAlertDangerMessage", function() { return ModalAlertDangerMessage; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/showNotifyMessage */ "./common_helpers/showNotifyMessage.js");
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
 /**
- * Модуль формирующий основную таблицу на странице
+ * Модуль формирования сообщения об ошибке при выполнении валидации в модальном окне
  * 
- * Версия 0.1, дата релиза 28.11.2019
+ * Версия 0.1, дата релиза 03.12.2019
  */
 
 
@@ -40914,6 +40919,93 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+var ModalAlertDangerMessage =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(ModalAlertDangerMessage, _React$Component);
+
+  function ModalAlertDangerMessage() {
+    _classCallCheck(this, ModalAlertDangerMessage);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ModalAlertDangerMessage).apply(this, arguments));
+  }
+
+  _createClass(ModalAlertDangerMessage, [{
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
+        dismissible: true,
+        variant: "danger",
+        show: this.props.show,
+        onClose: this.props.onClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, {
+        className: "text-center"
+      }, this.props.children), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.message)));
+    }
+  }]);
+
+  return ModalAlertDangerMessage;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ModalAlertDangerMessage.propTypes = {
+  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  message: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
+};
+
+/***/ }),
+
+/***/ "./settingUsersPage.jsx":
+/*!******************************!*\
+  !*** ./settingUsersPage.jsx ***!
+  \******************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
+/* harmony import */ var _common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/showNotifyMessage */ "./common_helpers/showNotifyMessage.js");
+/* harmony import */ var _setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting_users_page/modalWindowAddEditUser.jsx */ "./setting_users_page/modalWindowAddEditUser.jsx");
+/**
+ * Модуль формирующий основную таблицу на странице
+ * 
+ * Версия 0.1, дата релиза 28.11.2019
+ */
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+
+
+
+
+
+
 
 
 var HeadTable =
@@ -40921,25 +41013,60 @@ var HeadTable =
 function (_React$Component) {
   _inherits(HeadTable, _React$Component);
 
-  function HeadTable() {
+  function HeadTable(props) {
+    var _this;
+
     _classCallCheck(this, HeadTable);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(HeadTable).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(HeadTable).call(this, props));
+    _this.handleShow = _this.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleClose = _this.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.state = {
+      modalShow: false
+    };
+    return _this;
   }
 
   _createClass(HeadTable, [{
+    key: "handleShow",
+    value: function handleShow() {
+      this.setState({
+        modalShow: true
+      });
+    }
+  }, {
+    key: "handleClose",
+    value: function handleClose() {
+      this.setState({
+        modalShow: false
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
+      var accessRights = this.props.accessRights;
+      var isDisabled = accessRights.create.status ? "" : "disabled";
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u041B\u043E\u0433\u0438\u043D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
         className: "text-right"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        variant: "outline-primary"
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"))));
+        variant: "outline-primary",
+        onClick: this.handleShow,
+        disabled: isDisabled
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_6__["ModalWindowAddEditUser"], {
+        show: this.state.modalShow,
+        onHide: this.handleClose,
+        listWorkGroup: this.props.listWorkGroup
+      }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043D\u043E\u0432\u043E\u0433\u043E \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"))));
     }
   }]);
 
   return HeadTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+HeadTable.propTypes = {
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
+};
 
 var ButtonEdit =
 /*#__PURE__*/
@@ -41023,24 +41150,29 @@ function (_React$Component4) {
   _inherits(BodyTable, _React$Component4);
 
   function BodyTable(props) {
-    var _this;
+    var _this2;
 
     _classCallCheck(this, BodyTable);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(BodyTable).call(this, props));
-    _this.addUsersList = _this.addUsersList.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    return _this;
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(BodyTable).call(this, props));
+    _this2.addUsersList = _this2.addUsersList.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
+    return _this2;
   }
 
   _createClass(BodyTable, [{
     key: "addUsersList",
     value: function addUsersList() {
-      var _this2 = this;
+      var _this3 = this;
 
       var users = this.props.users;
       var adminUser = [],
           othersUser = [];
       var dateFormatter = new Intl.DateTimeFormat("ru", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric"
+      });
+      var dateTimeFormatter = new Intl.DateTimeFormat("ru", {
         hour: "numeric",
         minute: "numeric",
         second: "numeric",
@@ -41049,7 +41181,7 @@ function (_React$Component4) {
         day: "numeric"
       });
       users.forEach(function (user) {
-        var key = users.userID;
+        var key = user.userID;
         var elem = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
           key: "tr_".concat(key)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
@@ -41062,16 +41194,16 @@ function (_React$Component4) {
           key: "td_date_register_".concat(key)
         }, dateFormatter.format(user.dateRegister)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
           key: "td_date_change_".concat(key)
-        }, dateFormatter.format(user.dateChange)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+        }, dateTimeFormatter.format(user.dateChange)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
           className: "text-right",
           key: "td_buttons_".concat(key)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
           login: user.login,
-          accessRights: _this2.props.accessRights,
+          accessRights: _this3.props.accessRights,
           key: "button_edit_".concat(key)
         }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
           login: user.login,
-          accessRights: _this2.props.accessRights,
+          accessRights: _this3.props.accessRights,
           key: "button_del_".concat(key)
         })));
 
@@ -41080,9 +41212,8 @@ function (_React$Component4) {
         } else {
           othersUser.push(elem);
         }
-
-        adminUser.push(othersUser);
       });
+      adminUser.push(othersUser);
       return adminUser;
     }
   }, {
@@ -41146,7 +41277,10 @@ function (_React$Component5) {
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HeadTable, null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HeadTable, {
+        accessRights: this.props.accessRights,
+        listWorkGroup: this.props.listWorkGroup
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
         users: this.props.mainInformation,
         accessRights: this.props.accessRights
       })));
@@ -41158,12 +41292,274 @@ function (_React$Component5) {
 
 CreateTable.propTypes = {
   mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
 };
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
   mainInformation: receivedFromServerMain,
-  accessRights: receivedFromServerAccess
+  accessRights: receivedFromServerAccess,
+  listWorkGroup: receivedFromServerListWorkGroup
 }), document.getElementById("field_information"));
+
+/***/ }),
+
+/***/ "./setting_users_page/modalWindowAddEditUser.jsx":
+/*!*******************************************************!*\
+  !*** ./setting_users_page/modalWindowAddEditUser.jsx ***!
+  \*******************************************************/
+/*! exports provided: ModalWindowAddEditUser */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowAddEditUser", function() { return ModalWindowAddEditUser; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../common_helpers/helpers */ "./common_helpers/helpers.js");
+/* harmony import */ var _commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../commons/modalAlertMessage.jsx */ "./commons/modalAlertMessage.jsx");
+/**
+ * Модуль формирования модального окна добавления нового пользователя
+ * 
+ * Версия 0.1, дата релиза 03.12.2019
+ */
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+
+
+
+
+
+
+
+var ModalWindowAddEditUser =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(ModalWindowAddEditUser, _React$Component);
+
+  function ModalWindowAddEditUser(props) {
+    var _this;
+
+    _classCallCheck(this, ModalWindowAddEditUser);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddEditUser).call(this, props));
+
+    _this.props.listWorkGroup.sort();
+
+    _this.alertClose = _this.alertClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerSave = _this.handlerSave.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerUserInput = _this.handlerUserInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.state = {
+      alertShow: false,
+      formElements: {
+        userName: {
+          value: "",
+          isValid: false,
+          isInvalid: false
+        },
+        login: {
+          value: "",
+          isValid: false,
+          isInvalid: false
+        },
+        firstPassword: {
+          value: "",
+          isValid: false,
+          isInvalid: false
+        },
+        secondPassword: {
+          value: "",
+          isValid: false,
+          isInvalid: false
+        },
+        workGroup: {
+          value: _this.props.listWorkGroup[0]
+        }
+      }
+    };
+    return _this;
+  }
+
+  _createClass(ModalWindowAddEditUser, [{
+    key: "getKey",
+    value: function getKey(str) {
+      var key = 0;
+
+      for (var i = 0; i < str.length; i++) {
+        key += str.charCodeAt(i);
+      }
+
+      return key.toString();
+    }
+  }, {
+    key: "handlerUserInput",
+    value: function handlerUserInput(event) {
+      var value = event.target.value;
+      var elementName = event.target.id;
+      var elemType = {
+        userName: "stringAlphaRu",
+        login: "stringAlphaNumEng",
+        firstPassword: "stringPasswd",
+        secondPassword: "stringPasswd"
+      };
+      var objUpdate = Object.assign({}, this.state);
+
+      if (objUpdate.formElements[elementName] === "undefined") {
+        return;
+      }
+
+      objUpdate.formElements[elementName].value = value;
+
+      if (elementName === "workGroup") {
+        this.setState(objUpdate);
+        return;
+      }
+
+      if (_common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__["helpers"].checkInputValidation({
+        name: elemType[elementName],
+        value: value
+      })) {
+        objUpdate.formElements[elementName].isInvalid = false;
+        objUpdate.formElements[elementName].isValid = true;
+      } else {
+        objUpdate.formElements[elementName].isInvalid = true;
+        objUpdate.formElements[elementName].isValid = false;
+      }
+
+      this.setState(objUpdate);
+    }
+  }, {
+    key: "alertClose",
+    value: function alertClose() {
+      this.setState({
+        alertShow: false
+      });
+    }
+  }, {
+    key: "handlerClose",
+    value: function handlerClose() {
+      this.props.onHide();
+    }
+  }, {
+    key: "handlerSave",
+    value: function handlerSave() {
+      var userInputs = this.state.formElements;
+      var firstPasswdIsInvalide = userInputs.firstPassword.isInvalid;
+      var passwdIsEqual = userInputs.firstPassword.value.localeCompare(userInputs.secondPassword.value) === 0;
+      console.log("passwd is equal:".concat(passwdIsEqual));
+
+      if (userInputs.userName.isInvalid || userInputs.login.isInvalid || firstPasswdIsInvalide || !passwdIsEqual) {
+        console.log("SAVE FAILURE!!!");
+        this.setState({
+          alertShow: true
+        });
+        return;
+      }
+
+      var transferObject = {
+        "user_name": userInputs.userName.value,
+        "work_group": userInputs.workGroup.value,
+        "user_login": userInputs.login.value,
+        "user_password": userInputs.firstPassword.value
+      };
+      console.log("SENDING object with information to server -->");
+      console.log(JSON.stringify(transferObject));
+      this.handlerClose();
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      var alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
+        show: this.props.show,
+        onHide: this.handlerClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
+        closeButton: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, this.props.children)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "userName"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        control: "text",
+        onChange: this.handlerUserInput,
+        isValid: this.state.formElements.userName.isValid,
+        isInvalid: this.state.formElements.userName.isInvalid
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "workGroup"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        as: "select",
+        onChange: this.handlerUserInput
+      }, this.props.listWorkGroup.map(function (group) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
+          key: _this2.getKey("group_".concat(group))
+        }, group);
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "login"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041B\u043E\u0433\u0438\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        control: "text",
+        onChange: this.handlerUserInput,
+        isValid: this.state.formElements.login.isValid,
+        isInvalid: this.state.formElements.login.isInvalid
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "firstPassword"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041F\u0430\u0440\u043E\u043B\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        type: "password",
+        placeholder: "\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C",
+        onChange: this.handlerUserInput,
+        isValid: this.state.formElements.firstPassword.isValid,
+        isInvalid: this.state.formElements.firstPassword.isInvalid
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "secondPassword"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        type: "password",
+        placeholder: "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C",
+        onChange: this.handlerUserInput,
+        isValid: this.state.formElements.secondPassword.isValid,
+        isInvalid: this.state.formElements.secondPassword.isInvalid
+      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalAlertDangerMessage"], {
+        show: this.state.alertShow,
+        onClose: this.alertClose,
+        message: alertMessage
+      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-secondary",
+        onClick: this.handlerClose
+      }, "\u0437\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-primary",
+        onClick: this.handlerSave
+      }, "\u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
+    }
+  }]);
+
+  return ModalWindowAddEditUser;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ModalWindowAddEditUser.propTypes = {
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
+  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.array.isRequired
+};
 
 /***/ })
 

@@ -1,21 +1,25 @@
 /**
- * Модуль формирования модального окна добавления нового пользователя
+ * Модуль формирования модального окна добавления новой рабочей группы пользователей
  * 
  * Версия 0.11, дата релиза 11.02.2019
  */
 
-import React from 'react'
-import { Alert, Button, Modal, Table } from 'react-bootstrap'
-import PropTypes from 'prop-types'
+"use strict";
+
+import React from "react";
+import { Alert, Button, Modal, Table } from "react-bootstrap";
+import PropTypes from "prop-types";
+
+import { ModalAlertDangerMessage } from "../commons/modalAlertMessage.jsx";
 
 //список доступных действий
 class CreateListCategory extends React.Component {
     render() {
-        let itemName = (typeof this.props.listelement.name === 'undefined') ? ' ' : <strong>{this.props.listelement.name}</strong>
-        let liNoMarker = { 'listStyleType': 'none' }
+        let itemName = (typeof this.props.listelement.name === "undefined") ? " " : <strong>{this.props.listelement.name}</strong>;
+        let liNoMarker = { "listStyleType": "none" };
 
-        let isMenuItem = this.props.itemName === 'menu_items'
-        let moreThanTree = this.props.countSend === 3
+        let isMenuItem = this.props.itemName === "menu_items";
+        let moreThanTree = this.props.countSend === 3;
 
         let createCategoryValue =
             <CreateCategoryValue
@@ -24,14 +28,14 @@ class CreateListCategory extends React.Component {
                 itemName={this.props.itemName}
                 countSend={this.props.countSend}
                 isListName={this.props.isListName}
-                onChangeUserInput={this.props.onChangeUserInput} />
+                onChangeUserInput={this.props.onChangeUserInput} />;
 
         if (!this.props.isListName) {
             if (isMenuItem || this.props.isFirstItem || moreThanTree) {
-                return <div>&nbsp;{createCategoryValue}</div>
+                return <div>&nbsp;{createCategoryValue}</div>;
             }
 
-            return createCategoryValue
+            return createCategoryValue;
         }
 
         if (this.props.countSend === 1) {
@@ -41,7 +45,7 @@ class CreateListCategory extends React.Component {
                     <ul style={liNoMarker}>
                         {createCategoryValue}
                     </ul>
-                </ul>)
+                </ul>);
         }
 
         if (isMenuItem || moreThanTree) {
@@ -51,38 +55,39 @@ class CreateListCategory extends React.Component {
                     <ul style={liNoMarker}>
                         {createCategoryValue}
                     </ul>
-                </div>)
+                </div>);
         }
 
         return (
             <div>
                 {itemName}
                 {createCategoryValue}
-            </div>)
+            </div>);
     }
 }
 
 CreateListCategory.propTypes = {
+    isFirstItem: PropTypes.bool.isRequired,
     listelement: PropTypes.object.isRequired,
     checkboxMarked: PropTypes.object.isRequired,
     itemName: PropTypes.string.isRequired,
     countSend: PropTypes.number.isRequired,
     isListName: PropTypes.bool.isRequired,
     onChangeUserInput: PropTypes.func.isRequired
-}
+};
 
 CreateListCategory.defaultProps = {
     isFirstItem: true
-}
+};
 
 //создание элементов для выбора действий
 class CreateCategoryValue extends React.Component {
     render() {
-        let arrItems = []
+        let arrItems = [];
 
         for (let item in this.props.listelement) {
-            if (item === 'name' || item === 'id') continue
-            if (typeof this.props.listelement[item].status === 'undefined') {
+            if (item === "name" || item === "id") continue;
+            if (typeof this.props.listelement[item].status === "undefined") {
 
                 arrItems.push(
                     <CreateListCategory
@@ -93,9 +98,9 @@ class CreateCategoryValue extends React.Component {
                         isListName={this.props.isListName}
                         onChangeUserInput={this.props.onChangeUserInput}
                         isFirstItem={false}
-                        key={`return_${this.props.listelement[item].id}`} />)
+                        key={`return_${this.props.listelement[item].id}`} />);
 
-                continue
+                continue;
             }
 
             arrItems.push(
@@ -107,10 +112,10 @@ class CreateCategoryValue extends React.Component {
                             id={this.props.listelement[item].id}
                             defaultChecked={this.props.checkboxMarked[this.props.listelement[item].id]}
                             onChange={this.props.onChangeUserInput} />}
-                </div>)
+                </div>);
         }
 
-        return arrItems
+        return arrItems;
     }
 }
 
@@ -121,24 +126,24 @@ CreateCategoryValue.propTypes = {
     countSend: PropTypes.number.isRequired,
     isListName: PropTypes.bool.isRequired,
     onChangeUserInput: PropTypes.func.isRequired
-}
+};
 
 //создание списка доступных действий
 class CreateTable extends React.Component {
     handleChangeGroupName(event) {
-        this.props.onUserInput(event.target.value)
+        this.props.onUserInput(event.target.value);
     }
 
     createTableBody() {
-        let tableBody = []
+        let tableBody = [];
         for (let item in this.props.listelement) {
-            let arrTD = []
+            let arrTD = [];
 
             for (let i = 1; i <= 2; i++) {
                 arrTD.push(
                     <td
                         key={`td_${this.props.listelement[item].id}_${i}`}
-                        className={(i === 2) ? 'text-center' : ''} >
+                        className={(i === 2) ? "text-center" : ""} >
 
                         <CreateListCategory
                             listelement={this.props.listelement[item]}
@@ -148,16 +153,16 @@ class CreateTable extends React.Component {
                             isListName={(i % 2) ? true : false}
                             onChangeUserInput={this.props.onChangeUserInput}
                             key={`${this.props.listelement[item].id}_${i}`} />
-                    </td>)
+                    </td>);
             }
 
             tableBody.push(
                 <tr key={`tr_${this.props.listelement[item].id}`}>
                     {arrTD}
-                </tr>)
+                </tr>);
         }
 
-        return <tbody>{tableBody}</tbody>
+        return <tbody>{tableBody}</tbody>;
     }
 
     render() {
@@ -178,7 +183,7 @@ class CreateTable extends React.Component {
                 </thead>
                 {this.createTableBody.call(this)}
             </Table>
-        )
+        );
     }
 }
 
@@ -189,100 +194,84 @@ CreateTable.propTypes = {
     onChangeUserInput: PropTypes.func.isRequired,
     groupName: PropTypes.string.isRequired,
     classGroupNameValide: PropTypes.string
-}
-
-class AlertMessage extends React.Component {
-    render() {
-        return (<>
-            <Alert dismissible variant="danger" show={this.props.show} onClose={this.props.onCloseHandle}>
-                <Alert.Heading>Ошибка при сохранении!</Alert.Heading>
-                <p>Вероятно вы забыли написать название группы или не выбрали ни одного из элементов перечисленных выше.</p>
-            </Alert>
-        </>)
-    }
-}
-
-AlertMessage.propTypes = {
-    show: PropTypes.bool.isRequired,
-    onCloseHandle: PropTypes.func.isRequired
-}
+};
 
 class ModalWindowAddNewGroup extends React.Component {
     constructor() {
-        super(...arguments)
+        super(...arguments);
 
         this.state = {
             showAlert: false,
-            groupName: '',
+            groupName: "",
             groupNameValide: false,
-            classGroupName: 'form-control',
+            classGroupName: "form-control",
             checkboxMarked: {}
-        }
+        };
 
-        this.handleSave = this.handleSave.bind(this)
-        this.handleClose = this.handleClose.bind(this)
-        this.clearElements = this.clearElements.bind(this)
-        this.onCloseHandle = this.onCloseHandle.bind(this)
-        this.handleUserInput = this.handleUserInput.bind(this)
-        this.setCheckboxMarked = this.setCheckboxMarked.bind(this)
-        this.handleAddNewGroup = this.props.handleAddNewGroup.bind(this)
-        this.changeCheckboxMarked = this.changeCheckboxMarked.bind(this)
+        this.handleSave = this.handleSave.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.clearElements = this.clearElements.bind(this);
+        this.onCloseHandle = this.onCloseHandle.bind(this);
+        this.handleUserInput = this.handleUserInput.bind(this);
+        this.setCheckboxMarked = this.setCheckboxMarked.bind(this);
+        this.handleAddNewGroup = this.props.handleAddNewGroup.bind(this);
+        this.changeCheckboxMarked = this.changeCheckboxMarked.bind(this);
     }
 
     componentWillMount() {
-        this.setCheckboxMarked()
+        this.setCheckboxMarked();
     }
 
     componentDidUpdate(prevProp) {
         if (!prevProp.show) {
-            this.clearElements()
+            this.clearElements();
         }
     }
 
     clearElements() {
-        let stateCopy = Object.assign({}, this.state)
+        let stateCopy = Object.assign({}, this.state);
 
-        stateCopy.showAlert = false
-        stateCopy.groupName = ''
-        stateCopy.groupNameValide = false
-        stateCopy.classGroupName = 'form-control'
+        stateCopy.showAlert = false;
+        stateCopy.groupName = "";
+        stateCopy.groupNameValide = false;
+        stateCopy.classGroupName = "form-control";
 
         for (let id in stateCopy.checkboxMarked) {
-            stateCopy.checkboxMarked[id] = false
+            stateCopy.checkboxMarked[id] = false;
         }
 
-        this.setState(stateCopy)
+        this.setState(stateCopy);
     }
 
     onCloseHandle() {
-        this.setState({ showAlert: false })
+        this.setState({ showAlert: false });
     }
 
     setCheckboxMarked() {
-        let obj = {}
+        let obj = {};
         let getElementObject = listElement => {
             for (let key in listElement) {
-                if ((typeof listElement[key] === 'string')) continue
-                if ('status' in listElement[key]) {
-                    obj[listElement[key].id] = false
-                    continue
+                if ((typeof listElement[key] === "string")) continue;
+                if ("status" in listElement[key]) {
+                    obj[listElement[key].id] = false;
+                    continue;
                 }
 
-                getElementObject(listElement[key])
+                getElementObject(listElement[key]);
             }
-        }
+        };
 
-        getElementObject(this.props.listelement)
+        getElementObject(this.props.listelement);
 
-        this.setState({ checkboxMarked: obj })
+        this.setState({ checkboxMarked: obj });
     }
 
     changeCheckboxMarked(event) {
-        let id = event.currentTarget.id
+        let id = event.currentTarget.id;
 
-        let stateCopy = Object.assign({}, this.state)
-        stateCopy.checkboxMarked[id] = !this.state.checkboxMarked[id]
-        this.setState({ stateCopy })
+        let stateCopy = Object.assign({}, this.state);
+        stateCopy.checkboxMarked[id] = !this.state.checkboxMarked[id];
+        this.setState({ stateCopy });
     }
 
     handleUserInput(groupName) {
@@ -290,51 +279,52 @@ class ModalWindowAddNewGroup extends React.Component {
             this.setState({
                 groupName: groupName,
                 groupNameValide: true,
-                classGroupName: 'form-control is-valid'
-            })
+                classGroupName: "form-control is-valid"
+            });
         } else {
             this.setState({
                 groupNameValide: false,
-                classGroupName: 'form-control is-invalid'
-            })
+                classGroupName: "form-control is-invalid"
+            });
         }
     }
 
     handleClose() {
-        this.props.onHide()
+        this.props.onHide();
 
-        this.clearElements()
+        this.clearElements();
     }
 
     handleSave() {
-        let listActions = Object.assign({}, this.state.checkboxMarked)
+        let listActions = Object.assign({}, this.state.checkboxMarked);
 
         let isChecked = Object.keys(listActions).some(item => {
-            return listActions[item]
-        })
+            return listActions[item];
+        });
 
         if (this.state.groupNameValide && isChecked) {
 
             this.handleAddNewGroup({
                 groupName: this.state.groupName,
                 listPossibleActions: listActions
-            })
+            });
 
-            this.handleClose()
+            this.handleClose();
         } else {
-            this.setState({ showAlert: true })
+            this.setState({ showAlert: true });
         }
     }
 
     render() {
+        let alertMessage = "Вероятно вы забыли заполнить поле с названием группы или не выбрали ни одного из элементов перечисленных выше.";
+
         return (
             <Modal
                 show={this.props.show}
                 onHide={this.props.onHide}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
+                centered >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         Добавить группу
@@ -352,17 +342,22 @@ class ModalWindowAddNewGroup extends React.Component {
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <AlertMessage show={this.state.showAlert} onCloseHandle={this.onCloseHandle} />
-                    <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>
-                        Закрыть
-                    </Button>
-                    <Button variant="outline-primary" size="sm" onClick={this.handleSave}>
-                        Сохранить
-                    </Button>
+                    <ModalAlertDangerMessage show={this.state.showAlert} onClose={this.onCloseHandle} message={alertMessage}>
+                            Ошибка при сохранении!
+                    </ModalAlertDangerMessage>                    
+                    <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
+                    <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
                 </Modal.Footer>
             </Modal>
         );
     }
 }
 
-export default ModalWindowAddNewGroup 
+ModalWindowAddNewGroup.propTypes = {
+    show: PropTypes.bool,
+    onHide: PropTypes.func.isRequired,
+    handleAddNewGroup: PropTypes.func.isRequired,
+    listelement: PropTypes.object.isRequired,
+};
+
+export default ModalWindowAddNewGroup;

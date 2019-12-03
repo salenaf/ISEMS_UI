@@ -40718,8 +40718,8 @@ __webpack_require__.r(__webpack_exports__);
 var helpers = {
   //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
   loadNetworkMarginTop: function loadNetworkMarginTop() {
-    var arrayLoadNetwork = document.getElementsByName('loadNetwork');
-    if (arrayLoadNetwork.hasOwnProperty('length')) return;
+    var arrayLoadNetwork = document.getElementsByName("loadNetwork");
+    if (arrayLoadNetwork.hasOwnProperty("length")) return;
 
     for (var key in arrayLoadNetwork) {
       var countElements = 0;
@@ -40729,9 +40729,9 @@ var helpers = {
       }
 
       var num = (countElements - 4) / 3;
-      var px = '0px';
-      if (3 <= num && num <= 5) px = '35px';
-      if (1 <= num && num <= 3) px = '40px';
+      var px = "0px";
+      if (3 <= num && num <= 5) px = "35px";
+      if (1 <= num && num <= 3) px = "40px";
 
       if (arrayLoadNetwork[key].nodeType === 1) {
         arrayLoadNetwork[key].style.marginTop = px;
@@ -40741,14 +40741,14 @@ var helpers = {
   //конвертирование даты и времени из формата Unix в стандартный формат
   getDate: function getDate(dateUnix) {
     var x = new Date().getTimezoneOffset() * 60000;
-    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
   },
   //получить цвет значения
   getColor: function getColor(number) {
-    if (0 <= number && number <= 35) return 'color: #83B4D7;';
-    if (36 <= number && number <= 65) return 'color: #9FD783;';
-    if (66 <= number && number <= 85) return 'color: #E1E691;';
-    if (86 <= number) return 'color: #C78888;';
+    if (0 <= number && number <= 35) return "color: #83B4D7;";
+    if (36 <= number && number <= 65) return "color: #9FD783;";
+    if (66 <= number && number <= 85) return "color: #E1E691;";
+    if (86 <= number) return "color: #C78888;";
   },
   //преобразование числа в строку с пробелами после каждой третьей цифры 
   intConvert: function intConvert(nLoad) {
@@ -40763,16 +40763,16 @@ var helpers = {
     }
 
     interimArray.reverse();
-    return interimArray.join(' ');
+    return interimArray.join(" ");
   },
   //пересчет в Кбайты, Мбайты и Гбайты
   changeByteSize: function changeByteSize(byte) {
-    if (3 >= byte.length) return '<strong>' + byte + '</strong> байт';else if (3 < byte.length && byte.length <= 6) return '<strong>' + (byte / 1000).toFixed(2) + '</strong> Кбайт';else if (6 < byte.length && byte.length <= 9) return '<strong>' + (byte / 1000000).toFixed(2) + '</strong> Мбайт';else return '<strong>' + (byte / 1000000000).toFixed(2) + '</strong> Гбайт';
+    if (3 >= byte.length) return "<strong>" + byte + "</strong> байт";else if (3 < byte.length && byte.length <= 6) return "<strong>" + (byte / 1000).toFixed(2) + "</strong> Кбайт";else if (6 < byte.length && byte.length <= 9) return "<strong>" + (byte / 1000000).toFixed(2) + "</strong> Мбайт";else return "<strong>" + (byte / 1000000000).toFixed(2) + "</strong> Гбайт";
   },
   //конвертирование даты и вермени
   dateTimeConvert: function dateTimeConvert(dateUnixFormat) {
     var x = new Date().getTimezoneOffset() * 60000;
-    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
   },
   //получить не повторяющиеся элементы двух массивов
   getDifferenceArray: function getDifferenceArray(arrOne, arrTwo) {
@@ -40790,14 +40790,14 @@ var helpers = {
         }
       }
 
-      result = arrOne.concat(arrTwo.join(','));
+      result = arrOne.concat(arrTwo.join(","));
     } else if (arrOne.length < arrTwo.length) {
-      var stringOne = arrOne.join(' ');
+      var stringOne = arrOne.join(" ");
       arrTwo.filter(function (item) {
         return stringOne.indexOf(item.toString()) < 0;
       });
     } else {
-      var _stringOne = arrTwo.join(' ');
+      var _stringOne = arrTwo.join(" ");
 
       arrOne.filter(function (item) {
         return _stringOne.indexOf(item.toString()) < 0;
@@ -40806,24 +40806,32 @@ var helpers = {
 
     return result;
   },
-  //проверка данных полученных от пользователя
+
+  /**
+   * проверка данных полученных от пользователя
+   * 
+   * @param {object} elem 
+   */
   checkInputValidation: function checkInputValidation(elem) {
     var objSettings = {
-      'hostId': new RegExp('^[0-9]{1,7}$'),
-      'shortNameHost': new RegExp('^[a-zA-Z0-9_№"\\-\\s]{3,15}$'),
-      'fullNameHost': new RegExp('^[a-zA-Zа-яА-Яё0-9_№"\\-\\s\\.,]{5,}$'),
-      'ipaddress': new RegExp('^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$'),
-      'port': new RegExp('^[0-9]{1,5}$'),
-      'countProcess': new RegExp('^[0-9]{1}$'),
-      'intervalTransmission': new RegExp('^[0-9]{1,}$')
+      "hostId": new RegExp("^[0-9]{1,7}$"),
+      "shortNameHost": new RegExp("^[a-zA-Z0-9_№\"\\-\\s]{3,15}$"),
+      "fullNameHost": new RegExp("^[a-zA-Zа-яА-ЯёЁ0-9_№\"\\-\\s\\.,]{5,}$"),
+      "ipaddress": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),
+      "port": new RegExp("^[0-9]{1,5}$"),
+      "countProcess": new RegExp("^[0-9]{1}$"),
+      "intervalTransmission": new RegExp("^[0-9]{1,}$"),
+      "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}"),
+      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
+      "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
     };
     var pattern = objSettings[elem.name];
 
-    if (elem.name === 'port') {
+    if (elem.name === "port") {
       if (!(0 <= elem.value && elem.value < 65536)) return false;
     }
 
-    if (elem.name === 'intervalTransmission' && elem.value < 10) return false;
+    if (elem.name === "intervalTransmission" && elem.value < 10) return false;
     return !pattern.test(elem.value) ? false : true;
   },
   //генератор токена
@@ -40863,6 +40871,88 @@ var showNotifyMessage = function showNotifyMessage(data) {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (showNotifyMessage);
+
+/***/ }),
+
+/***/ "./commons/modalAlertMessage.jsx":
+/*!***************************************!*\
+  !*** ./commons/modalAlertMessage.jsx ***!
+  \***************************************/
+/*! exports provided: ModalAlertDangerMessage */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalAlertDangerMessage", function() { return ModalAlertDangerMessage; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
+/**
+ * Модуль формирования сообщения об ошибке при выполнении валидации в модальном окне
+ * 
+ * Версия 0.1, дата релиза 03.12.2019
+ */
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+
+
+var ModalAlertDangerMessage =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(ModalAlertDangerMessage, _React$Component);
+
+  function ModalAlertDangerMessage() {
+    _classCallCheck(this, ModalAlertDangerMessage);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ModalAlertDangerMessage).apply(this, arguments));
+  }
+
+  _createClass(ModalAlertDangerMessage, [{
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
+        dismissible: true,
+        variant: "danger",
+        show: this.props.show,
+        onClose: this.props.onClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, {
+        className: "text-center"
+      }, this.props.children), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.message)));
+    }
+  }]);
+
+  return ModalAlertDangerMessage;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ModalAlertDangerMessage.propTypes = {
+  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  message: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
+};
 
 /***/ }),
 
@@ -41524,6 +41614,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../commons/modalAlertMessage.jsx */ "./commons/modalAlertMessage.jsx");
+/**
+ * Модуль формирования модального окна добавления новой рабочей группы пользователей
+ * 
+ * Версия 0.11, дата релиза 11.02.2019
+ */
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41542,11 +41640,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-/**
- * Модуль формирования модального окна добавления нового пользователя
- * 
- * Версия 0.11, дата релиза 11.02.2019
- */
+
 
 
  //список доступных действий
@@ -41565,11 +41659,11 @@ function (_React$Component) {
   _createClass(CreateListCategory, [{
     key: "render",
     value: function render() {
-      var itemName = typeof this.props.listelement.name === 'undefined' ? ' ' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.listelement.name);
+      var itemName = typeof this.props.listelement.name === "undefined" ? " " : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.listelement.name);
       var liNoMarker = {
-        'listStyleType': 'none'
+        "listStyleType": "none"
       };
-      var isMenuItem = this.props.itemName === 'menu_items';
+      var isMenuItem = this.props.itemName === "menu_items";
       var moreThanTree = this.props.countSend === 3;
       var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
         listelement: this.props.listelement,
@@ -41610,6 +41704,7 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateListCategory.propTypes = {
+  isFirstItem: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   itemName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
@@ -41618,9 +41713,8 @@ CreateListCategory.propTypes = {
   onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
 CreateListCategory.defaultProps = {
-  isFirstItem: true //создание элементов для выбора действий
-
-};
+  isFirstItem: true
+}; //создание элементов для выбора действий
 
 var CreateCategoryValue =
 /*#__PURE__*/
@@ -41639,9 +41733,9 @@ function (_React$Component2) {
       var arrItems = [];
 
       for (var item in this.props.listelement) {
-        if (item === 'name' || item === 'id') continue;
+        if (item === "name" || item === "id") continue;
 
-        if (typeof this.props.listelement[item].status === 'undefined') {
+        if (typeof this.props.listelement[item].status === "undefined") {
           arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             listelement: this.props.listelement[item],
             checkboxMarked: this.props.checkboxMarked,
@@ -41679,9 +41773,8 @@ CreateCategoryValue.propTypes = {
   itemName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
   countSend: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.number.isRequired,
   isListName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
-  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired //создание списка доступных действий
-
-};
+  onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
+}; //создание списка доступных действий
 
 var CreateTable =
 /*#__PURE__*/
@@ -41710,7 +41803,7 @@ function (_React$Component3) {
         for (var i = 1; i <= 2; i++) {
           arrTD.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
             key: "td_".concat(this.props.listelement[item].id, "_").concat(i),
-            className: i === 2 ? 'text-center' : ''
+            className: i === 2 ? "text-center" : ""
           }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
             listelement: this.props.listelement[item],
             checkboxMarked: this.props.checkboxMarked,
@@ -41761,41 +41854,10 @@ CreateTable.propTypes = {
   classGroupNameValide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string
 };
 
-var AlertMessage =
-/*#__PURE__*/
-function (_React$Component4) {
-  _inherits(AlertMessage, _React$Component4);
-
-  function AlertMessage() {
-    _classCallCheck(this, AlertMessage);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(AlertMessage).apply(this, arguments));
-  }
-
-  _createClass(AlertMessage, [{
-    key: "render",
-    value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
-        dismissible: true,
-        variant: "danger",
-        show: this.props.show,
-        onClose: this.props.onCloseHandle
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, null, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u0412\u0435\u0440\u043E\u044F\u0442\u043D\u043E \u0432\u044B \u0437\u0430\u0431\u044B\u043B\u0438 \u043D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u044B \u0438\u043B\u0438 \u043D\u0435 \u0432\u044B\u0431\u0440\u0430\u043B\u0438 \u043D\u0438 \u043E\u0434\u043D\u043E\u0433\u043E \u0438\u0437 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432 \u043F\u0435\u0440\u0435\u0447\u0438\u0441\u043B\u0435\u043D\u043D\u044B\u0445 \u0432\u044B\u0448\u0435.")));
-    }
-  }]);
-
-  return AlertMessage;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-AlertMessage.propTypes = {
-  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
-  onCloseHandle: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
-};
-
 var ModalWindowAddNewGroup =
 /*#__PURE__*/
-function (_React$Component5) {
-  _inherits(ModalWindowAddNewGroup, _React$Component5);
+function (_React$Component4) {
+  _inherits(ModalWindowAddNewGroup, _React$Component4);
 
   function ModalWindowAddNewGroup() {
     var _this;
@@ -41805,9 +41867,9 @@ function (_React$Component5) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).apply(this, arguments));
     _this.state = {
       showAlert: false,
-      groupName: '',
+      groupName: "",
       groupNameValide: false,
-      classGroupName: 'form-control',
+      classGroupName: "form-control",
       checkboxMarked: {}
     };
     _this.handleSave = _this.handleSave.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -41838,9 +41900,9 @@ function (_React$Component5) {
     value: function clearElements() {
       var stateCopy = Object.assign({}, this.state);
       stateCopy.showAlert = false;
-      stateCopy.groupName = '';
+      stateCopy.groupName = "";
       stateCopy.groupNameValide = false;
-      stateCopy.classGroupName = 'form-control';
+      stateCopy.classGroupName = "form-control";
 
       for (var id in stateCopy.checkboxMarked) {
         stateCopy.checkboxMarked[id] = false;
@@ -41862,9 +41924,9 @@ function (_React$Component5) {
 
       var getElementObject = function getElementObject(listElement) {
         for (var key in listElement) {
-          if (typeof listElement[key] === 'string') continue;
+          if (typeof listElement[key] === "string") continue;
 
-          if ('status' in listElement[key]) {
+          if ("status" in listElement[key]) {
             obj[listElement[key].id] = false;
             continue;
           }
@@ -41895,12 +41957,12 @@ function (_React$Component5) {
         this.setState({
           groupName: groupName,
           groupNameValide: true,
-          classGroupName: 'form-control is-valid'
+          classGroupName: "form-control is-valid"
         });
       } else {
         this.setState({
           groupNameValide: false,
-          classGroupName: 'form-control is-invalid'
+          classGroupName: "form-control is-invalid"
         });
       }
     }
@@ -41933,6 +41995,7 @@ function (_React$Component5) {
   }, {
     key: "render",
     value: function render() {
+      var alertMessage = "Вероятно вы забыли заполнить поле с названием группы или не выбрали ни одного из элементов перечисленных выше.";
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
         show: this.props.show,
         onHide: this.props.onHide,
@@ -41950,24 +42013,31 @@ function (_React$Component5) {
         classGroupNameValide: this.state.classGroupName,
         onChangeUserInput: this.changeCheckboxMarked,
         onUserInput: this.handleUserInput
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AlertMessage, {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_3__["ModalAlertDangerMessage"], {
         show: this.state.showAlert,
-        onCloseHandle: this.onCloseHandle
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        onClose: this.onCloseHandle,
+        message: alertMessage
+      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-secondary",
         size: "sm",
         onClick: this.handleClose
-      }, "\u0417\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+      }, "\u0437\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-primary",
         size: "sm",
         onClick: this.handleSave
-      }, "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
+      }, "\u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
     }
   }]);
 
   return ModalWindowAddNewGroup;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
+ModalWindowAddNewGroup.propTypes = {
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
+  onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  handleAddNewGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired
+};
 /* harmony default export */ __webpack_exports__["default"] = (ModalWindowAddNewGroup);
 
 /***/ })

@@ -13,6 +13,7 @@ const async = require("async");
 const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 const informationForPageManagementUsers = require("../../../libs/management_settings/informationForPageManagementUsers");
+const informationForPageManagementGroups = require("../../../libs/management_settings/informationForPageManagementGroups");
 
 //const informationItemGroups = require("../../../libs/management_settings/informationItemGroups");
 //const informationUserGroupPermissions = require("../../../libs/informationUserGroupPermissions");
@@ -36,6 +37,13 @@ module.exports = function(req, res, objHeader) {
                 if (err) callback(err);
                 else callback(null, result);
             });
+        },
+        //получаем список доступных рабочих групп
+        listWorkGroup: callback => {
+            informationForPageManagementGroups((err, result) => {
+                if (err) callback(err);
+                else callback(null, result);
+            });
         }
     }, (err, result) => {
         if (err) {
@@ -48,8 +56,6 @@ module.exports = function(req, res, objHeader) {
             return;
         }
 
-        debug(`RESULT: ${result}`);
-
         //проверяем права на доступ к странице
         let readStatus = result.userGroupPermissions.group_settings.menu_items.element_settings.setting_users.status;
         if (readStatus === false) return res.render("403");
@@ -59,11 +65,13 @@ module.exports = function(req, res, objHeader) {
         let objResult = {
             header: objHeader,
             userGroupPermissions: result.userGroupPermissions.group_settings.management_groups.element_settings,
-            mainInformation: result.mainInformation
+            mainInformation: result.mainInformation,
+            listWorkGroup: Object.keys(result.listWorkGroup),
         };
 
         debug(result.mainInformation);
         debug(objResult.userGroupPermissions);
+        debug(objResult.listWorkGroup);
 
         res.render("menu/settings/setting_users", objResult);
     });
