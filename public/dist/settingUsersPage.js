@@ -41053,6 +41053,7 @@ function (_React$Component) {
         onClick: this.handleShow,
         disabled: isDisabled
       }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_6__["ModalWindowAddEditUser"], {
+        socketIo: this.props.socketIo,
         show: this.state.modalShow,
         onHide: this.handleClose,
         listWorkGroup: this.props.listWorkGroup
@@ -41264,24 +41265,63 @@ function (_React$Component5) {
   _inherits(CreateTable, _React$Component5);
 
   function CreateTable(props) {
+    var _this4;
+
     _classCallCheck(this, CreateTable);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this4 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this4.tableUpdate = _this4.tableUpdate.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.state = {
+      userList: _this4.props.mainInformation
+    };
+    return _this4;
   }
 
   _createClass(CreateTable, [{
+    key: "userListUpdate",
+    value: function userListUpdate() {
+      this.props.socketIo.on("update user list", function (list) {
+        console.log("reseived event 'update user list'");
+        console.log(list);
+      });
+    }
+  }, {
+    key: "tableUpdate",
+    value: function tableUpdate(e) {
+      var _this5 = this;
+
+      setTimeout(function () {
+        var objState = Object.assign({}, _this5.state);
+        objState.userList.push({
+          userID: "je9j9cj9j93939hfh84444545",
+          dateRegister: Date.now(),
+          dateChange: Date.now(),
+          group: "all_user",
+          userName: "Добавлен новый пользователь",
+          login: "addnewuser"
+        });
+
+        _this5.setState(objState);
+
+        console.log(_this5.state.userList);
+      }, 5000);
+    }
+  }, {
     key: "render",
     value: function render() {
+      //        this.tableUpdate();
+      this.userListUpdate();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left text-uppercase"
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HeadTable, {
+        socketIo: this.props.socketIo,
         accessRights: this.props.accessRights,
         listWorkGroup: this.props.listWorkGroup
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
-        users: this.props.mainInformation,
+        users: this.state.userList,
         accessRights: this.props.accessRights
       })));
     }
@@ -41291,11 +41331,13 @@ function (_React$Component5) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateTable.propTypes = {
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object,
   mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
 };
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
+  socketIo: socket,
   mainInformation: receivedFromServerMain,
   accessRights: receivedFromServerAccess,
   listWorkGroup: receivedFromServerListWorkGroup
@@ -41485,6 +41527,10 @@ function (_React$Component) {
       };
       console.log("SENDING object with information to server -->");
       console.log(JSON.stringify(transferObject));
+      this.props.socketIo.emit("add new user", {
+        actionType: "create",
+        arguments: transferObject
+      });
       this.handlerClose();
     }
   }, {
@@ -41555,6 +41601,7 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ModalWindowAddEditUser.propTypes = {
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object,
   show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
   children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
   onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,

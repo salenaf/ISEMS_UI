@@ -131,6 +131,11 @@ class ModalWindowAddEditUser extends React.Component {
         console.log("SENDING object with information to server -->");
         console.log(JSON.stringify(transferObject));
 
+        this.props.socketIo.emit("add new user", {
+            actionType: "create",
+            arguments: transferObject,
+        });
+
         this.handlerClose();
     }
 
@@ -200,6 +205,7 @@ class ModalWindowAddEditUser extends React.Component {
 }
 
 ModalWindowAddEditUser.propTypes ={
+    socketIo: PropTypes.object,
     show: PropTypes.bool,
     children: PropTypes.string,
     onHide: PropTypes.func.isRequired,

@@ -31693,8 +31693,8 @@ var showNotify = function showNotify(type, message) {
   }, {
     type: type,
     placement: {
-      from: 'top',
-      align: 'right'
+      from: "top",
+      align: "right"
     },
     offset: {
       x: 0,

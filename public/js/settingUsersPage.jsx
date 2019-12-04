@@ -52,7 +52,11 @@ class HeadTable extends React.Component {
                         <Button variant="outline-primary" onClick={this.handleShow} disabled={isDisabled}>
                             добавить
                         </Button>
-                        <ModalWindowAddEditUser show={this.state.modalShow} onHide={this.handleClose} listWorkGroup={this.props.listWorkGroup}>
+                        <ModalWindowAddEditUser
+                            socketIo={this.props.socketIo} 
+                            show={this.state.modalShow} 
+                            onHide={this.handleClose} 
+                            listWorkGroup={this.props.listWorkGroup}>
                             Добавить нового пользователя
                         </ModalWindowAddEditUser>
                     </th>
@@ -204,15 +208,50 @@ BodyTable.propTypes = {
 class CreateTable extends React.Component {
     constructor(props){
         super(props);
+       
+        this.tableUpdate = this.tableUpdate.bind(this);
+
+        this.state = {
+            userList: this.props.mainInformation,
+        };
+    }
+
+    userListUpdate(){
+        this.props.socketIo.on("update user list", (list) => {
+            console.log("reseived event 'update user list'");
+            console.log(list);
+        });
+    }
+
+    tableUpdate(e){
+        setTimeout(() => {
+            let objState = Object.assign({}, this.state);
+
+            objState.userList.push({
+                userID: "je9j9cj9j93939hfh84444545",
+                dateRegister: Date.now(),
+                dateChange: Date.now(),
+                group: "all_user",
+                userName: "Добавлен новый пользователь",
+                login: "addnewuser",
+            });
+
+            this.setState(objState);
+
+            console.log(this.state.userList);
+        }, 5000);
     }
 
     render(){
+        //        this.tableUpdate();
+        this.userListUpdate();
+
         return (
             <div>
                 <h4 className="text-left text-uppercase">управление пользователями</h4>
                 <Table striped hover>
-                    <HeadTable accessRights={this.props.accessRights} listWorkGroup={this.props.listWorkGroup}/>
-                    <BodyTable users={this.props.mainInformation} accessRights={this.props.accessRights}/>
+                    <HeadTable socketIo={this.props.socketIo} accessRights={this.props.accessRights} listWorkGroup={this.props.listWorkGroup}/>
+                    <BodyTable users={this.state.userList} accessRights={this.props.accessRights}/>
                 </Table>
             </div>
         );
@@ -220,12 +259,14 @@ class CreateTable extends React.Component {
 }
 
 CreateTable.propTypes = {
+    socketIo: PropTypes.object,
     mainInformation: PropTypes.array.isRequired,
     accessRights: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
 };
 
 ReactDOM.render(<CreateTable 
+    socketIo={socket}
     mainInformation={receivedFromServerMain} 
     accessRights={receivedFromServerAccess} 
     listWorkGroup={receivedFromServerListWorkGroup} />, document.getElementById("field_information"));

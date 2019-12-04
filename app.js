@@ -75,6 +75,14 @@ async.parallel([
                     });
                 });
             }).then(() => {
+                return require("./libs/mongodb_requests/getUsersSessionInformation")();
+            }).then((listUserSession) => {
+                for (let sessionId in listUserSession) {
+                    globalObject.setData("users", sessionId, listUserSession[sessionId]);
+                }
+
+                debug(globalObject.getData("users"));
+
                 callback(null);
             }).catch(err => {
 

@@ -41204,8 +41204,8 @@ function (_React$Component3) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonAddGroup.propTypes = {
-  changeGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func,
   access: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  changeGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
   groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //кнопка 'сохранить изменение параметров группы'
 

@@ -96,16 +96,43 @@ module.exports.setSessionID = function(passportID, sessionID, cb) {
     debug(`sessionID: ${sessionID}`);
 
     globalObject.setData("users", sessionID, {});
+    new Promise((resolve, reject) => {
 
-    mongodbQueryProcessor.queryUpdate(
-        models.modelSessionUserInformation, {
-            query: { passport_id: passportID },
-            update: { session_id: sessionID }
-        }, err => {
-            if (err) cb(err);
-            else cb(null);
-        }
-    );
+        debug("query update");
+
+        mongodbQueryProcessor.queryUpdate(
+            models.modelSessionUserInformation, {
+                query: { passport_id: passportID },
+                update: { session_id: sessionID }
+            }, err => {
+                if (err) reject(err);
+                else resolve();
+            }
+        );
+    }).then(() => {
+        return new Promise((resolve, reject) => {
+
+            debug("query select");
+
+            mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, { query: { session_id: sessionID } }, (err, session) => {
+                if (err) reject(err);
+
+                debug(session);
+
+                resolve(session);
+            });
+        });
+    }).then((userSession) => {
+        debug("------------------------");
+        debug(userSession);
+        debug("------------------------");
+
+        globalObject.setData("users", userSession.sessionId, userSession.data);
+
+        cb(null);
+    }).catch((err) => {
+        cb(err);
+    });
 };
 
 //получить всю информацию о пользователе по идентификаторам passportId или sessionId 
@@ -142,12 +169,16 @@ module.exports.delete = function(sessionID, cb) {
 
     debug("удаление всей информации о пользователе");
 
-    mongodbQueryProcessor.queryDelete(models.modelSessionUserInformation, {
-        query: {
-            session_id: sessionID
-        }
-    }, err => {
-        if (err) cb(err);
-        else cb(null);
+    new Promise((resolve, reject) => {
+        mongodbQueryProcessor.queryDelete(models.modelSessionUserInformation, { query: { session_id: sessionID } }, err => {
+            if (err) reject(err);
+            else resolve(null);
+        });
+    }).then(() => {
+        globalObject.deleteData("users", sessionID);
+
+        cb(null);
+    }).catch(err => {
+        cb(err);
     });
 };

@@ -4,15 +4,15 @@
  * Версия 0.1, дата релиза 15.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const usersSessionInformation = require('../../../libs/mongodb_requests/usersSessionInformation');
+const usersSessionInformation = require("../../../libs/mongodb_requests/usersSessionInformation");
 
 module.exports = function(req) {
     return new Promise((resolve, reject) => {
         usersSessionInformation.getInformation({ sessionId: req.sessionID }, (err, result) => {
             if (err) reject(err);
-            else resolve(result)
+            else resolve(result);
         });
     }).then(result => {
         let objMenuSettings = {};
@@ -20,7 +20,7 @@ module.exports = function(req) {
 
         let createList = function(listMenu, items) {
             for (let key in items) {
-                if (typeof items[key].name === 'undefined') {
+                if (typeof items[key].name === "undefined") {
                     if (items[key].status) {
                         listMenu[key] = { name: items[key].description, status: items[key].status };
                     }
@@ -43,6 +43,6 @@ module.exports = function(req) {
             menuSettings: objMenuSettings
         };
     }).catch(err => {
-        throw (err)
+        throw (err);
     });
 };

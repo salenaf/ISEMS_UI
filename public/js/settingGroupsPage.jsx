@@ -173,8 +173,8 @@ class ButtonAddGroup extends React.Component {
 }
 
 ButtonAddGroup.propTypes = {
-    changeGroup: PropTypes.func,
     access: PropTypes.object.isRequired,
+    changeGroup: PropTypes.func.isRequired,
     groupListElement: PropTypes.object.isRequired
 };
 

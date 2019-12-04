@@ -16,6 +16,7 @@ const objGlobals = require("../configure/globalObject");
 const writeLogFile = require("../libs/writeLogFile");
 const getSessionId = require("../libs/helpers/getSessionId");
 const checkStatusSource = require("../libs/processing/status_source/checkStatusSource");
+const handlerActionsUsers = require("./routeHandlersSocketIo/handlerActionsUsers");
 const checkUserAuthentication = require("../libs/check/checkUserAuthentication");
 //const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
 
@@ -187,6 +188,9 @@ exports.eventHandling = function(socketIo) {
                 return writeLogFile("error", err.toString());
             });
     });
+
+    /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
+    handlerActionsUsers.handlerActions(socketIo);
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */

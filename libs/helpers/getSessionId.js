@@ -17,7 +17,7 @@ const globalObject = require("../../configure/globalObject");
 
 module.exports = function(typeSession, objectSession, callback) {
     let objTypeSession = {
-        "http": getSessionForHttp,
+        //"http": getSessionForHttp,
         "socketIo": getSessionForSocketIo
     };
 
@@ -29,9 +29,7 @@ module.exports = function(typeSession, objectSession, callback) {
     });
 };
 
-function getSessionForHttp(objectSession, callback) {
-
-}
+//function getSessionForHttp(objectSession, callback) {}
 
 function getSessionForSocketIo(objectSession, callback) {
     if (typeof objectSession.request === "undefined") return callback(new Error("Error socketIo, incorrect request"));
@@ -40,6 +38,8 @@ function getSessionForSocketIo(objectSession, callback) {
 
     let sessionID = "";
     let listSessionID = globalObject.getData("users");
+
+    debug(listSessionID);
 
     for (let sID in listSessionID) {
 
@@ -52,7 +52,7 @@ function getSessionForSocketIo(objectSession, callback) {
         }
     }
 
-    debug(`Session ID: ${sessionID}`);
+    debug(`Session ID: '${sessionID}'`);
 
     return (sessionID.length === 0) ? callback(new Error("Error socketIo, incorrect cookie")) : callback(null, sessionID);
 }

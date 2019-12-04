@@ -1,7 +1,7 @@
 /*
  * Модуль маршрутизации для запросов к HTTP серверу
  *
- * Версия 0.1, дата релиза 15.01.2019
+ * Версия 0.2, дата релиза 04.12.2019
  * */
 
 "use strict";
@@ -9,7 +9,6 @@
 const passport = require("passport");
 
 const headerPage = require("./pages/elements/headerPage");
-const globalObject = require("../configure/globalObject");
 const writeLogFile = require("../libs/writeLogFile");
 const usersSessionInformation = require("../libs/mongodb_requests/usersSessionInformation");
 //const checkAccessRightsExecute = require("../libs/check/checkAccessRightsExecute");
@@ -349,14 +348,11 @@ module.exports = function(app, socketIo) {
     app.get("/logout", (req, res) => {
         req.logOut();
         req.session.destroy();
+
         //удаляем сессионные данные о пользователе
         usersSessionInformation.delete(req.sessionID, err => {
             if (err) writeLogFile("error", err.toString());
         });
-
-        if (typeof globalObject.getData("users", req.sessionID) === "object") {
-            globalObject.deleteData("users", req.sessionID);
-        }
 
         res.redirect("/auth");
     });
