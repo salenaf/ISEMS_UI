@@ -13,6 +13,7 @@ const path = require("path");
 const validate = require("validate.js");
 
 const objGlobals = require("../configure/globalObject");
+const showNotify = require("../libs/showNotify");
 const writeLogFile = require("../libs/writeLogFile");
 const getSessionId = require("../libs/helpers/getSessionId");
 const checkStatusSource = require("../libs/processing/status_source/checkStatusSource");
@@ -142,7 +143,7 @@ exports.eventEmitter = function(socketIo, object) {
  * ОБРАБОТЧИК СОБЫТИЙ ПОСТУПАЮЩИХ С User Interface 
  * 
  **/
-exports.eventHandling = function(socketIo) {
+module.exports.eventHandling = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
 
     // добавление новой группы
@@ -190,7 +191,7 @@ exports.eventHandling = function(socketIo) {
     });
 
     /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
-    handlerActionsUsers.handlerActions(socketIo);
+    handlerActionsUsers.addHandlers(socketIo);
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
@@ -550,11 +551,6 @@ exports.uploadFiles = function(socketIo, ss) {
         });
     });
 };
-
-//отправляет сообщение notify
-function showNotify(socketIo, type, message) {
-    socketIo.emit("notify information", { notify: JSON.stringify({ type: type, message: message }) });
-}
 
 //изменение статуса на 'не подключен' для всех источников
 function setDisconnectSourceAll() {

@@ -40843,37 +40843,6 @@ var helpers = {
 
 /***/ }),
 
-/***/ "./common_helpers/showNotifyMessage.js":
-/*!*********************************************!*\
-  !*** ./common_helpers/showNotifyMessage.js ***!
-  \*********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/** Вывод информационного сообщения */
-var showNotifyMessage = function showNotifyMessage(data) {
-  var notify = JSON.parse(data.notify);
-  $.notify({
-    message: notify.message
-  }, {
-    type: notify.type,
-    placement: {
-      from: 'top',
-      align: 'right'
-    },
-    offset: {
-      x: 10,
-      y: 10
-    }
-  });
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (showNotifyMessage);
-
-/***/ }),
-
 /***/ "./commons/modalAlertMessage.jsx":
 /*!***************************************!*\
   !*** ./commons/modalAlertMessage.jsx ***!
@@ -40956,29 +40925,26 @@ ModalAlertDangerMessage.propTypes = {
 
 /***/ }),
 
-/***/ "./settingUsersPage.jsx":
-/*!******************************!*\
-  !*** ./settingUsersPage.jsx ***!
-  \******************************/
-/*! no exports provided */
+/***/ "./commons/modalWindowConfirmMessage.jsx":
+/*!***********************************************!*\
+  !*** ./commons/modalWindowConfirmMessage.jsx ***!
+  \***********************************************/
+/*! exports provided: ModalWindowConfirmMessage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowConfirmMessage", function() { return ModalWindowConfirmMessage; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/showNotifyMessage */ "./common_helpers/showNotifyMessage.js");
-/* harmony import */ var _setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting_users_page/modalWindowAddEditUser.jsx */ "./setting_users_page/modalWindowAddEditUser.jsx");
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
 /**
- * Модуль формирующий основную таблицу на странице
+ * Модуль формирования модального окна для дольнейшего
+ * подтверждения или отклонения действия по УДАЛЕНИЮ
  * 
- * Версия 0.1, дата релиза 28.11.2019
+ * Версия 0.1. дата релиза 10.12.2019
  */
 
 
@@ -41000,6 +40966,111 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+
+
+
+
+
+var ModalWindowConfirmMessage =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(ModalWindowConfirmMessage, _React$Component);
+
+  function ModalWindowConfirmMessage(props) {
+    var _this;
+
+    _classCallCheck(this, ModalWindowConfirmMessage);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowConfirmMessage).call(this, props));
+    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerConfirm = _this.handlerConfirm.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    return _this;
+  }
+
+  _createClass(ModalWindowConfirmMessage, [{
+    key: "handlerClose",
+    value: function handlerClose() {
+      this.props.onHide();
+    }
+  }, {
+    key: "handlerConfirm",
+    value: function handlerConfirm() {
+      this.props.handlerConfirm(this.props.userID);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
+        show: this.props.show,
+        onHide: this.handlerClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
+        closeButton: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, this.props.msgTitle)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, this.props.msgBody), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-secondary",
+        onClick: this.handlerClose
+      }, "\u043E\u0442\u043C\u0435\u043D\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-primary",
+        onClick: this.handlerConfirm
+      }, "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044C")));
+    }
+  }]);
+
+  return ModalWindowConfirmMessage;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ModalWindowConfirmMessage.propTypes = {
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  msgBody: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  msgTitle: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  userID: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  handlerConfirm: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
+};
+
+/***/ }),
+
+/***/ "./settingUsersPage.jsx":
+/*!******************************!*\
+  !*** ./settingUsersPage.jsx ***!
+  \******************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./setting_users_page/modalWindowAddEditUser.jsx */ "./setting_users_page/modalWindowAddEditUser.jsx");
+/* harmony import */ var _commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./commons/modalWindowConfirmMessage.jsx */ "./commons/modalWindowConfirmMessage.jsx");
+/**
+ * Модуль формирующий основную таблицу на странице
+ * 
+ * Версия 0.2, дата релиза 10.12.2019
+ */
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 
 
@@ -41052,7 +41123,7 @@ function (_React$Component) {
         variant: "outline-primary",
         onClick: this.handleShow,
         disabled: isDisabled
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_6__["ModalWindowAddEditUser"], {
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalWindowAddEditUser"], {
         socketIo: this.props.socketIo,
         show: this.state.modalShow,
         onHide: this.handleClose,
@@ -41130,6 +41201,7 @@ function (_React$Component3) {
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+        onClick: this.props.handler,
         variant: "outline-danger",
         size: "sm",
         disabled: isDisabled
@@ -41142,7 +41214,8 @@ function (_React$Component3) {
 
 ButtonDelete.propTypes = {
   login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handler: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 };
 
 var BodyTable =
@@ -41202,8 +41275,9 @@ function (_React$Component4) {
           login: user.login,
           accessRights: _this3.props.accessRights,
           key: "button_edit_".concat(key)
-        }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
+        }), "\xA0\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
           login: user.login,
+          handler: _this3.props.handlerButtonDelete.bind(_this3, key, user.login),
           accessRights: _this3.props.accessRights,
           key: "button_del_".concat(key)
         })));
@@ -41229,35 +41303,9 @@ function (_React$Component4) {
 
 BodyTable.propTypes = {
   users: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handlerButtonDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 };
-/**
- * {
-  managementUsers   dateRegister: 1550043504498,
-  managementUsers   dateChange: 1550043504498,
-  managementUsers   group: 'administrator',
-  managementUsers   userName: 'Администратор',
-  managementUsers   login: 'administrator'
-  managementUsers } +1ms
-
-    managementUsers {
-  managementUsers   create: {
-  managementUsers     id: 'c0234594174f3051d8177822554ea5d1',
-  managementUsers     status: true,
-  managementUsers     description: 'создание'
-  managementUsers   },
-  managementUsers   edit: {
-  managementUsers     id: '20398ecd2be259828494872d98d71de7',
-  managementUsers     status: true,
-  managementUsers     description: 'редактирование'
-  managementUsers   },
-  managementUsers   delete: {
-  managementUsers     id: '76775b639fd7626ab307e9ffed7b8a9c',
-  managementUsers     status: true,
-  managementUsers     description: 'удаление'
-  managementUsers   }
-  managementUsers } +0ms
- */
 
 var CreateTable =
 /*#__PURE__*/
@@ -41270,47 +41318,109 @@ function (_React$Component5) {
     _classCallCheck(this, CreateTable);
 
     _this4 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this4.tableUpdate = _this4.tableUpdate.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.addListeners = _this4.addListeners.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.addOrUpdateNewUser = _this4.addOrUpdateNewUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.deleteUser = _this4.deleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.handlerModalConfirmShow = _this4.handlerModalConfirmShow.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.handlerModalConfirmClose = _this4.handlerModalConfirmClose.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.sendMsgDeleteUser = _this4.sendMsgDeleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.state = {
-      userList: _this4.props.mainInformation
+      userList: _this4.props.mainInformation,
+      modalConfirm: {
+        show: false,
+        userID: "",
+        userLogin: ""
+      }
     };
     return _this4;
   }
 
   _createClass(CreateTable, [{
-    key: "userListUpdate",
-    value: function userListUpdate() {
-      this.props.socketIo.on("update user list", function (list) {
-        console.log("reseived event 'update user list'");
-        console.log(list);
-      });
+    key: "handlerModalConfirmShow",
+    value: function handlerModalConfirmShow(userID, userLogin) {
+      var objState = Object.assign({}, this.state);
+      objState.modalConfirm = {
+        show: true,
+        userID: userID,
+        userLogin: userLogin
+      };
+      this.setState(objState);
     }
   }, {
-    key: "tableUpdate",
-    value: function tableUpdate(e) {
+    key: "handlerModalConfirmClose",
+    value: function handlerModalConfirmClose() {
+      var objState = Object.assign({}, this.state);
+      objState.modalConfirm = {
+        show: false,
+        userID: "",
+        userLogin: ""
+      };
+      this.setState(objState);
+    }
+  }, {
+    key: "addOrUpdateNewUser",
+    value: function addOrUpdateNewUser(newUser) {
+      var objNewUser = JSON.parse(newUser);
+      console.log(objNewUser);
+      var objState = Object.assign({}, this.state);
+      objState.userList.push({
+        userID: objNewUser.userID,
+        userName: objNewUser.userName,
+        login: objNewUser.login,
+        group: objNewUser.group,
+        dateRegister: objNewUser.dateRegister,
+        dateChange: objNewUser.dateChange
+      });
+      this.setState(objState);
+    }
+  }, {
+    key: "deleteUser",
+    value: function deleteUser(delUserID) {
+      console.log("Resived message 'delete user with ID ".concat(delUserID, "'"));
+      var newUserList = this.state.userList.filter(function (item) {
+        return item.userID !== delUserID;
+      });
+      var objState = Object.assign({}, this.state);
+      objState.userList = newUserList;
+      this.setState(objState);
+    }
+  }, {
+    key: "sendMsgDeleteUser",
+    value: function sendMsgDeleteUser(userID) {
+      console.log("Delete user with ID '".concat(userID, "'"));
+      this.props.socketIo.emit("delete user", {
+        actionType: "delete",
+        arguments: {
+          userID: userID
+        }
+      });
+      this.handlerModalConfirmClose();
+    }
+  }, {
+    key: "addListeners",
+    value: function addListeners() {
       var _this5 = this;
 
-      setTimeout(function () {
-        var objState = Object.assign({}, _this5.state);
-        objState.userList.push({
-          userID: "je9j9cj9j93939hfh84444545",
-          dateRegister: Date.now(),
-          dateChange: Date.now(),
-          group: "all_user",
-          userName: "Добавлен новый пользователь",
-          login: "addnewuser"
-        });
+      var listEvents = {
+        "add new user": function addNewUser(newUser) {
+          _this5.addOrUpdateNewUser(newUser);
+        },
+        "update user": function updateUser(_updateUser) {
+          _this5.addOrUpdateNewUser(_updateUser);
+        },
+        "delete user": function deleteUser(delUserID) {
+          _this5.deleteUser(delUserID);
+        }
+      };
 
-        _this5.setState(objState);
-
-        console.log(_this5.state.userList);
-      }, 5000);
+      for (var event in listEvents) {
+        this.props.socketIo.on(event, listEvents[event]);
+      }
     }
   }, {
     key: "render",
     value: function render() {
-      //        this.tableUpdate();
-      this.userListUpdate();
+      this.addListeners();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left text-uppercase"
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
@@ -41322,13 +41432,31 @@ function (_React$Component5) {
         listWorkGroup: this.props.listWorkGroup
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
         users: this.state.userList,
-        accessRights: this.props.accessRights
-      })));
+        accessRights: this.props.accessRights,
+        handlerButtonDelete: this.handlerModalConfirmShow
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__["ModalWindowConfirmMessage"], {
+        show: this.state.modalConfirm.show,
+        onHide: this.handlerModalConfirmClose,
+        userID: this.state.modalConfirm.userID,
+        handlerConfirm: this.sendMsgDeleteUser,
+        msgTitle: "Удаление",
+        msgBody: "\u0412\u044B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F ".concat(this.state.modalConfirm.userLogin, "?")
+      }));
     }
   }]);
 
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+/**
+ *                 <ModalWindowConfirmMessage
+                    show={this.state.modalConfirmShow} 
+                    onHide={this.handlerModalConfirmClose}
+                    elementID={key}
+                    msgTitle={"подтверждение удаления"}
+                    msgBody={`Вы действительно хотите удалить пользователя с логином ${user.login}?`}
+                />
+ */
+
 
 CreateTable.propTypes = {
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object,
@@ -41601,10 +41729,10 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ModalWindowAddEditUser.propTypes = {
-  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object,
-  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
-  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.array.isRequired
 };
 

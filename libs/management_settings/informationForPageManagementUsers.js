@@ -1,5 +1,5 @@
 /*
- * Подготовка информации для вывода на странице settings_users
+ * Подготовка списка пользователей для вывода на странице settings_users
  *
  * Версия 0.1, дата релиза 28.11.2019
  * */
@@ -9,7 +9,7 @@
 const models = require("../../controllers/models");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
-module.exports = function(cb) {
+module.exports = function(callback) {
     let objNameItems = {
         "user_id": "userID",
         "date_register": "dateRegister",
@@ -20,7 +20,7 @@ module.exports = function(cb) {
     };
 
     mongodbQueryProcessor.querySelect(models.modelUser, { isMany: true }, (err, users) => {
-        if (err) return cb(err);
+        if (err) return callback(err);
 
         let listUsers = users.map(user => {
             let obj = {};
@@ -31,6 +31,6 @@ module.exports = function(cb) {
             return obj;
         });
 
-        cb(null, listUsers);
+        callback(null, listUsers);
     });
 };

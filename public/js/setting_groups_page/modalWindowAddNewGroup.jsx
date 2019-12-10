@@ -7,7 +7,7 @@
 "use strict";
 
 import React from "react";
-import { Alert, Button, Modal, Table } from "react-bootstrap";
+import { Button, Modal, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { ModalAlertDangerMessage } from "../commons/modalAlertMessage.jsx";

@@ -40853,24 +40853,22 @@ var helpers = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /** Вывод информационного сообщения */
-var showNotifyMessage = function showNotifyMessage(data) {
+/* harmony default export */ __webpack_exports__["default"] = (function (data) {
   var notify = JSON.parse(data.notify);
   $.notify({
     message: notify.message
   }, {
     type: notify.type,
     placement: {
-      from: 'top',
-      align: 'right'
+      from: "top",
+      align: "right"
     },
     offset: {
       x: 10,
       y: 10
     }
   });
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (showNotifyMessage);
+});
 
 /***/ }),
 

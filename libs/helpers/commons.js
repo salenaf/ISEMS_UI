@@ -21,6 +21,7 @@ module.exports = {
             "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
             "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
             "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$"),
+            "hexSumMD5": new RegExp("^[a-f0-9]{7,}$"),
         };
 
         return objSettings[str];

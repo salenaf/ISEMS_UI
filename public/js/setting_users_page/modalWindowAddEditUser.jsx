@@ -205,9 +205,9 @@ class ModalWindowAddEditUser extends React.Component {
 }
 
 ModalWindowAddEditUser.propTypes ={
-    socketIo: PropTypes.object,
-    show: PropTypes.bool,
-    children: PropTypes.string,
+    show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
+    children: PropTypes.string.isRequired,
+    socketIo: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
 };

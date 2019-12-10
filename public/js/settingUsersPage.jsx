@@ -1,7 +1,7 @@
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.1, дата релиза 28.11.2019
+ * Версия 0.2, дата релиза 10.12.2019
  */
 
 "use strict";
@@ -9,12 +9,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { Alert, Button, Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import { helpers } from "./common_helpers/helpers";
-import showNotifyMessage from "./common_helpers/showNotifyMessage";
 import { ModalWindowAddEditUser } from "./setting_users_page/modalWindowAddEditUser.jsx";
+import { ModalWindowConfirmMessage } from "./commons/modalWindowConfirmMessage.jsx";
 
 class HeadTable extends React.Component {
     constructor(props){
@@ -102,13 +101,21 @@ class ButtonDelete extends React.Component {
             isDisabled = "disabled";
         }
 
-        return <Button variant="outline-danger" size="sm" disabled={isDisabled}>удалить</Button>;
+        return (
+            <Button 
+                onClick={this.props.handler}
+                variant="outline-danger" 
+                size="sm" 
+                disabled={isDisabled}>
+            удалить
+            </Button>);
     }
 }
 
 ButtonDelete.propTypes = {
     login: PropTypes.string.isRequired,
     accessRights: PropTypes.object.isRequired,
+    handler: PropTypes.func.isRequired,
 };
 
 class BodyTable extends React.Component {
@@ -148,8 +155,13 @@ class BodyTable extends React.Component {
                 <td key={`td_date_register_${key}`}>{dateFormatter.format(user.dateRegister)}</td>
                 <td key={`td_date_change_${key}`}>{dateTimeFormatter.format(user.dateChange)}</td>
                 <td className={"text-right"} key={`td_buttons_${key}`}>
-                    <ButtonEdit login={user.login} accessRights={this.props.accessRights} key={`button_edit_${key}`}/>&nbsp;
-                    <ButtonDelete login={user.login} accessRights={this.props.accessRights} key={`button_del_${key}`}/>
+                    <ButtonEdit login={user.login} accessRights={this.props.accessRights} key={`button_edit_${key}`}/>
+                    &nbsp;&nbsp;
+                    <ButtonDelete 
+                        login={user.login} 
+                        handler={this.props.handlerButtonDelete.bind(this, key, user.login)} 
+                        accessRights={this.props.accessRights} 
+                        key={`button_del_${key}`}/>
                 </td>
             </tr>;
 
@@ -175,88 +187,147 @@ class BodyTable extends React.Component {
 BodyTable.propTypes = {
     users: PropTypes.array.isRequired,
     accessRights: PropTypes.object.isRequired,
+    handlerButtonDelete: PropTypes.func.isRequired,
 };
-
-/**
- * {
-  managementUsers   dateRegister: 1550043504498,
-  managementUsers   dateChange: 1550043504498,
-  managementUsers   group: 'administrator',
-  managementUsers   userName: 'Администратор',
-  managementUsers   login: 'administrator'
-  managementUsers } +1ms
-
-    managementUsers {
-  managementUsers   create: {
-  managementUsers     id: 'c0234594174f3051d8177822554ea5d1',
-  managementUsers     status: true,
-  managementUsers     description: 'создание'
-  managementUsers   },
-  managementUsers   edit: {
-  managementUsers     id: '20398ecd2be259828494872d98d71de7',
-  managementUsers     status: true,
-  managementUsers     description: 'редактирование'
-  managementUsers   },
-  managementUsers   delete: {
-  managementUsers     id: '76775b639fd7626ab307e9ffed7b8a9c',
-  managementUsers     status: true,
-  managementUsers     description: 'удаление'
-  managementUsers   }
-  managementUsers } +0ms
- */
 
 class CreateTable extends React.Component {
     constructor(props){
         super(props);
        
-        this.tableUpdate = this.tableUpdate.bind(this);
+        this.addListeners = this.addListeners.bind(this);        
+        this.addOrUpdateNewUser = this.addOrUpdateNewUser.bind(this);
+        this.deleteUser = this.deleteUser.bind(this);
+
+        this.handlerModalConfirmShow = this.handlerModalConfirmShow.bind(this);
+        this.handlerModalConfirmClose = this.handlerModalConfirmClose.bind(this);
+
+        this.sendMsgDeleteUser = this.sendMsgDeleteUser.bind(this);
 
         this.state = {
             userList: this.props.mainInformation,
+            modalConfirm: {
+                show: false,
+                userID: "",
+                userLogin: "",
+            },
         };
     }
+  
+    handlerModalConfirmShow(userID, userLogin){
+        let objState = Object.assign({}, this.state);
+        objState.modalConfirm = {
+            show: true,
+            userID: userID,
+            userLogin: userLogin,
+        };
 
-    userListUpdate(){
-        this.props.socketIo.on("update user list", (list) => {
-            console.log("reseived event 'update user list'");
-            console.log(list);
-        });
+        this.setState(objState);
     }
 
-    tableUpdate(e){
-        setTimeout(() => {
-            let objState = Object.assign({}, this.state);
+    handlerModalConfirmClose(){
+        let objState = Object.assign({}, this.state);
+        objState.modalConfirm = {
+            show: false,
+            userID: "",
+            userLogin: "",
+        };
 
-            objState.userList.push({
-                userID: "je9j9cj9j93939hfh84444545",
-                dateRegister: Date.now(),
-                dateChange: Date.now(),
-                group: "all_user",
-                userName: "Добавлен новый пользователь",
-                login: "addnewuser",
-            });
+        this.setState(objState);    
+    }
 
-            this.setState(objState);
+    addOrUpdateNewUser(newUser){
+        let objNewUser = JSON.parse(newUser);
 
-            console.log(this.state.userList);
-        }, 5000);
+        console.log(objNewUser);
+
+        let objState = Object.assign({}, this.state);
+
+        objState.userList.push({
+            userID: objNewUser.userID,
+            userName: objNewUser.userName,
+            login: objNewUser.login,
+            group: objNewUser.group,
+            dateRegister: objNewUser.dateRegister,
+            dateChange: objNewUser.dateChange,
+        });
+
+        this.setState(objState);    
+    }
+
+    deleteUser(delUserID){
+        console.log(`Resived message 'delete user with ID ${delUserID}'`);
+
+        let newUserList = this.state.userList.filter(item => item.userID !== delUserID);
+
+        let objState = Object.assign({}, this.state);
+        objState.userList = newUserList;
+
+        this.setState(objState);
+    }
+
+    sendMsgDeleteUser(userID){
+        console.log(`Delete user with ID '${userID}'`);
+
+        this.props.socketIo.emit("delete user", {
+            actionType: "delete",
+            arguments: {
+                userID: userID,
+            },
+        });
+
+        this.handlerModalConfirmClose();
+    }
+
+    addListeners(){
+        let listEvents = {
+            "add new user": newUser => {
+                this.addOrUpdateNewUser(newUser);
+            },
+            "update user": updateUser => {
+                this.addOrUpdateNewUser(updateUser);
+            },
+            "delete user": delUserID => {
+                this.deleteUser(delUserID);
+            },
+        };
+
+        for(let event in listEvents){
+            this.props.socketIo.on(event, listEvents[event]);
+        }
     }
 
     render(){
-        //        this.tableUpdate();
-        this.userListUpdate();
+        this.addListeners();
 
         return (
             <div>
                 <h4 className="text-left text-uppercase">управление пользователями</h4>
                 <Table striped hover>
                     <HeadTable socketIo={this.props.socketIo} accessRights={this.props.accessRights} listWorkGroup={this.props.listWorkGroup}/>
-                    <BodyTable users={this.state.userList} accessRights={this.props.accessRights}/>
+                    <BodyTable users={this.state.userList} accessRights={this.props.accessRights} handlerButtonDelete={this.handlerModalConfirmShow}/>
                 </Table>
+                <ModalWindowConfirmMessage
+                    show={this.state.modalConfirm.show} 
+                    onHide={this.handlerModalConfirmClose}
+                    userID={this.state.modalConfirm.userID}
+                    handlerConfirm={this.sendMsgDeleteUser}
+                    msgTitle={"Удаление"}
+                    msgBody={`Вы действительно хотите удалить пользователя ${this.state.modalConfirm.userLogin}?`}
+                />
             </div>
         );
     }
 }
+
+/**
+ *                 <ModalWindowConfirmMessage
+                    show={this.state.modalConfirmShow} 
+                    onHide={this.handlerModalConfirmClose}
+                    elementID={key}
+                    msgTitle={"подтверждение удаления"}
+                    msgBody={`Вы действительно хотите удалить пользователя с логином ${user.login}?`}
+                />
+ */
 
 CreateTable.propTypes = {
     socketIo: PropTypes.object,
