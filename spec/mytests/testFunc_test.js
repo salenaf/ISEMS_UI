@@ -51,7 +51,7 @@ describe("Тест 2. Проверка функций взаимодейству
     let hexSum = (require("../../libs/helpers/createUniqID")).getMD5(`user_name_${userLogin}`);
 
     it("Запрос пользователя по логину (ПОЛЬЗОВАТЕЛь НАЙДЕН)", function(done) {
-        (require("../../libs/management_settings/informationAboutUser"))("administrator", (err, userInfo) => {
+        (require("../../libs/management_settings/informationAboutUser")).getInformationByLogin("administrator", (err, userInfo) => {
             //console.log(userInfo);
 
             expect(userInfo.user_name).toEqual("Администратор");
@@ -63,7 +63,10 @@ describe("Тест 2. Проверка функций взаимодейству
     });
 
     it("Запрос пользователя по логину (ПОЛЬЗОВАТЕЛь НЕ НАЙДЕН)", function(done) {
-        (require("../../libs/management_settings/informationAboutUser"))("fssdfrator", (err, userInfo) => {
+        (require("../../libs/management_settings/informationAboutUser")).getInformationByLogin("fssdfrator", (err, userInfo) => {
+
+            console.log(`userInfo is NULL ${userInfo === null}`);
+            console.log(`userInfo is undefined ${typeof userInfo === "undefined"}`);
 
             expect(err).toBeNull();
             expect(userInfo).toBeNull();
@@ -155,8 +158,6 @@ describe("Тест 2. Проверка функций взаимодейству
                 else resolve(user);
             });
         }).then(user => {
-
-            console.log(user);
 
             done();
         }).catch(err => {

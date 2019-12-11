@@ -86,7 +86,7 @@ function addUser(socketIo, data) {
                         debug("//проверяем есть ли уже пользователь с таким логином");
 
                         //проверяем есть ли уже пользователь с таким логином 
-                        informationAboutUser(data.arguments.user_login, (err, userInfo) => {
+                        informationAboutUser.getInformationByLogin(data.arguments.user_login, (err, userInfo) => {
                             if (err) return callbackParallel(err);
 
                             let errorMsg = `Невозможно добавить нового пользователя. Пользователь с логином '${data.arguments.user_login}' уже существует.`;
@@ -112,7 +112,7 @@ function addUser(socketIo, data) {
                     userID: createUniqID.getMD5(`user_name_${data.arguments.user_login}`),
                     dateRegister: +(new Date()),
                     dateChange: +(new Date()),
-                    login: data.arguments.user_login,
+                    login: data.arguments.user_login.toLowerCase(),
                     userName: data.arguments.user_name,
                     group: data.arguments.work_group,
                 };
@@ -145,9 +145,18 @@ function addUser(socketIo, data) {
 
                 debug(err);
 
-                if (err.name === "user management") return showNotify("danger", err.message);
+                if (err.name === "user management") return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
 
-                showNotify("danger", "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.");
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                });
+
                 writeLogFile("error", err.toString());
             });
         });
@@ -158,6 +167,10 @@ function updateUser(socketIo, data) {
 }
 
 function deleteUser(socketIo, data) {
+    let getUserInformation = informationAboutUser.getInformationByID.bind(null);
+
+    debug(getUserInformation);
+
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
         .then(authData => {
@@ -184,24 +197,54 @@ function deleteUser(socketIo, data) {
                 throw new MyError("user management", "Невозможно удалить пользователя. Получен не верный идентификатор.");
             }
         }).then(() => {
+            return new Promise((resolve, reject) => {
+                informationAboutUser.getInformationByID(data.arguments.userID, (err, userInfo) => {
+                    if (err) reject(err);
+                    else resolve(userInfo);
+                });
+            });
+        }).then(userInfo => {
             debug("Ищем пользователя с указанным ID и проверяем есть ли он и его логин не 'Administrator'");
+            debug(userInfo);
 
+            if (userInfo === null || (typeof userInfo === "undefined")) {
+                throw new MyError("user management", "Невозможно удалить пользователя, не найден пользователь с заданным идентификатором.");
+            }
 
-            /**
-             * Дописать проверку пользователя на наличие и что бы его логин не был 'Administrator'
-             * Сделать удаление пользователя и отправку в UI подтверждение удаления
-             *      В ТЕСТАХ ПОЧТИ ДОПИСАЛ ПРОВЕРКУ УДАЛЕНИЯ ПОЛЬЗОВАТЕЛЯ
-             * 
-             * Кроме того написать в UI ВЫВОД ИНФОРМАЦИОННых СООБЩЕНИй!!!!
-             */
+            if (userInfo.login === "administrator") {
+                throw new MyError("user management", "Невозможно удалить пользователя, так как пользователь является администратором.");
+            }
 
+        }).then(() => {
+            debug("Удаляем пользователя из таблицы БД");
+
+            new Promise((resolve, reject) => {
+                mongodbQueryProcessor.queryDelete(require("../../controllers/models").modelUser, { query: { user_id: data.arguments.userID } }, err => {
+                    if (err) reject(err);
+                    resolve();
+                });
+            });
+        }).then(() => {
+            debug("Удаление пользователя выполненно успешно, отправляем сообщение об удалении в UI");
+
+            socketIo.emit("del selected user", JSON.stringify({ userID: data.arguments.userID }));
         }).catch(err => {
 
-            debug(err);
+            debug("Catch ERROR:");
+            //debug(err);
 
-            if (err.name === "user management") return showNotify("danger", err.message);
+            if (err.name === "user management") return showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: err.message
+            });
 
-            showNotify("danger", "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.");
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+            });
+
             writeLogFile("error", err.toString());
         });
 }

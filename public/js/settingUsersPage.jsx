@@ -1,7 +1,7 @@
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.2, дата релиза 10.12.2019
+ * Версия 0.21, дата релиза 11.12.2019
  */
 
 "use strict";
@@ -38,6 +38,15 @@ class HeadTable extends React.Component {
     render(){
         let accessRights = this.props.accessRights;        
         let isDisabled = (accessRights.create.status)? "": "disabled";
+
+        /**
+ * 
+ * Сделать отрисовку информационных сообщений
+ * но это нужно делать гдето в заголовке станицы или меню
+ * вобщем в том разделе который постоянно находится на любой странице 
+ * 
+ * 
+ */
 
         return (
             <thead>
@@ -211,6 +220,8 @@ class CreateTable extends React.Component {
                 userLogin: "",
             },
         };
+
+        this.addListeners();
     }
   
     handlerModalConfirmShow(userID, userLogin){
@@ -238,8 +249,6 @@ class CreateTable extends React.Component {
     addOrUpdateNewUser(newUser){
         let objNewUser = JSON.parse(newUser);
 
-        console.log(objNewUser);
-
         let objState = Object.assign({}, this.state);
 
         objState.userList.push({
@@ -254,10 +263,10 @@ class CreateTable extends React.Component {
         this.setState(objState);    
     }
 
-    deleteUser(delUserID){
-        console.log(`Resived message 'delete user with ID ${delUserID}'`);
+    deleteUser(delUser){
+        let userID = JSON.parse(delUser).userID;
 
-        let newUserList = this.state.userList.filter(item => item.userID !== delUserID);
+        let newUserList = this.state.userList.filter(item => item.userID !== userID);
 
         let objState = Object.assign({}, this.state);
         objState.userList = newUserList;
@@ -266,8 +275,6 @@ class CreateTable extends React.Component {
     }
 
     sendMsgDeleteUser(userID){
-        console.log(`Delete user with ID '${userID}'`);
-
         this.props.socketIo.emit("delete user", {
             actionType: "delete",
             arguments: {
@@ -286,8 +293,8 @@ class CreateTable extends React.Component {
             "update user": updateUser => {
                 this.addOrUpdateNewUser(updateUser);
             },
-            "delete user": delUserID => {
-                this.deleteUser(delUserID);
+            "del selected user": delUser => {
+                this.deleteUser(delUser);
             },
         };
 
@@ -297,8 +304,6 @@ class CreateTable extends React.Component {
     }
 
     render(){
-        this.addListeners();
-
         return (
             <div>
                 <h4 className="text-left text-uppercase">управление пользователями</h4>
@@ -318,16 +323,6 @@ class CreateTable extends React.Component {
         );
     }
 }
-
-/**
- *                 <ModalWindowConfirmMessage
-                    show={this.state.modalConfirmShow} 
-                    onHide={this.handlerModalConfirmClose}
-                    elementID={key}
-                    msgTitle={"подтверждение удаления"}
-                    msgBody={`Вы действительно хотите удалить пользователя с логином ${user.login}?`}
-                />
- */
 
 CreateTable.propTypes = {
     socketIo: PropTypes.object,

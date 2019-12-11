@@ -41050,7 +41050,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.2, дата релиза 10.12.2019
+ * Версия 0.21, дата релиза 11.12.2019
  */
 
 
@@ -41117,6 +41117,15 @@ function (_React$Component) {
     value: function render() {
       var accessRights = this.props.accessRights;
       var isDisabled = accessRights.create.status ? "" : "disabled";
+      /**
+      * 
+      * Сделать отрисовку информационных сообщений
+      * но это нужно делать гдето в заголовке станицы или меню
+      * вобщем в том разделе который постоянно находится на любой странице 
+      * 
+      * 
+      */
+
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u041B\u043E\u0433\u0438\u043D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
         className: "text-right"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
@@ -41332,6 +41341,9 @@ function (_React$Component5) {
         userLogin: ""
       }
     };
+
+    _this4.addListeners();
+
     return _this4;
   }
 
@@ -41361,7 +41373,6 @@ function (_React$Component5) {
     key: "addOrUpdateNewUser",
     value: function addOrUpdateNewUser(newUser) {
       var objNewUser = JSON.parse(newUser);
-      console.log(objNewUser);
       var objState = Object.assign({}, this.state);
       objState.userList.push({
         userID: objNewUser.userID,
@@ -41375,10 +41386,10 @@ function (_React$Component5) {
     }
   }, {
     key: "deleteUser",
-    value: function deleteUser(delUserID) {
-      console.log("Resived message 'delete user with ID ".concat(delUserID, "'"));
+    value: function deleteUser(delUser) {
+      var userID = JSON.parse(delUser).userID;
       var newUserList = this.state.userList.filter(function (item) {
-        return item.userID !== delUserID;
+        return item.userID !== userID;
       });
       var objState = Object.assign({}, this.state);
       objState.userList = newUserList;
@@ -41387,7 +41398,6 @@ function (_React$Component5) {
   }, {
     key: "sendMsgDeleteUser",
     value: function sendMsgDeleteUser(userID) {
-      console.log("Delete user with ID '".concat(userID, "'"));
       this.props.socketIo.emit("delete user", {
         actionType: "delete",
         arguments: {
@@ -41408,8 +41418,8 @@ function (_React$Component5) {
         "update user": function updateUser(_updateUser) {
           _this5.addOrUpdateNewUser(_updateUser);
         },
-        "delete user": function deleteUser(delUserID) {
-          _this5.deleteUser(delUserID);
+        "del selected user": function delSelectedUser(delUser) {
+          _this5.deleteUser(delUser);
         }
       };
 
@@ -41420,7 +41430,6 @@ function (_React$Component5) {
   }, {
     key: "render",
     value: function render() {
-      this.addListeners();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left text-uppercase"
       }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
@@ -41447,16 +41456,6 @@ function (_React$Component5) {
 
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-/**
- *                 <ModalWindowConfirmMessage
-                    show={this.state.modalConfirmShow} 
-                    onHide={this.handlerModalConfirmClose}
-                    elementID={key}
-                    msgTitle={"подтверждение удаления"}
-                    msgBody={`Вы действительно хотите удалить пользователя с логином ${user.login}?`}
-                />
- */
-
 
 CreateTable.propTypes = {
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object,
@@ -41630,17 +41629,32 @@ function (_React$Component) {
     key: "handlerClose",
     value: function handlerClose() {
       this.props.onHide();
+      var objUpdate = Object.assign({}, this.state);
+
+      for (var elem in objUpdate.formElements) {
+        if (elem === "workGroup") continue;
+        objUpdate.formElements[elem].isValid = false;
+        objUpdate.formElements[elem].isInvalid = false;
+      }
+
+      objUpdate.alertShow = false;
+      this.setState(objUpdate);
     }
   }, {
     key: "handlerSave",
     value: function handlerSave() {
       var userInputs = this.state.formElements;
-      var firstPasswdIsInvalide = userInputs.firstPassword.isInvalid;
-      var passwdIsEqual = userInputs.firstPassword.value.localeCompare(userInputs.secondPassword.value) === 0;
-      console.log("passwd is equal:".concat(passwdIsEqual));
+      var firstPasswdIsInvalide = userInputs.firstPassword.isValid;
+      var passwdIsEqual = userInputs.firstPassword.value.localeCompare(userInputs.secondPassword.value) === 0; //если пароли не равны
 
-      if (userInputs.userName.isInvalid || userInputs.login.isInvalid || firstPasswdIsInvalide || !passwdIsEqual) {
-        console.log("SAVE FAILURE!!!");
+      if (!passwdIsEqual) {
+        var objUpdate = Object.assign({}, this.state);
+        objUpdate.formElements.firstPassword.isInvalid = true;
+        objUpdate.formElements.secondPassword.isInvalid = true;
+        this.setState(objUpdate);
+      }
+
+      if (!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
         this.setState({
           alertShow: true
         });
@@ -41653,8 +41667,6 @@ function (_React$Component) {
         "user_login": userInputs.login.value,
         "user_password": userInputs.firstPassword.value
       };
-      console.log("SENDING object with information to server -->");
-      console.log(JSON.stringify(transferObject));
       this.props.socketIo.emit("add new user", {
         actionType: "create",
         arguments: transferObject

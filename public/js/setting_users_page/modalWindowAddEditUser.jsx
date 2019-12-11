@@ -104,18 +104,33 @@ class ModalWindowAddEditUser extends React.Component {
    
     handlerClose(){
         this.props.onHide();
+
+        let objUpdate = Object.assign({}, this.state);
+        for(let elem in objUpdate.formElements){
+            if (elem === "workGroup") continue;
+            objUpdate.formElements[elem].isValid = false;
+            objUpdate.formElements[elem].isInvalid =false;    
+        }
+        objUpdate.alertShow = false;
+        this.setState( objUpdate );
     }
 
     handlerSave(){
         let userInputs = this.state.formElements;
-        let firstPasswdIsInvalide = userInputs.firstPassword.isInvalid;
+        let firstPasswdIsInvalide = userInputs.firstPassword.isValid;
         let passwdIsEqual = (userInputs.firstPassword.value.localeCompare(userInputs.secondPassword.value) === 0);
+        
+        //если пароли не равны
+        if (!passwdIsEqual){
+            let objUpdate = Object.assign({}, this.state);
+            
+            objUpdate.formElements.firstPassword.isInvalid = true;
+            objUpdate.formElements.secondPassword.isInvalid = true;
 
-        console.log(`passwd is equal:${passwdIsEqual}`);
+            this.setState( objUpdate );
+        }
 
-        if(userInputs.userName.isInvalid || userInputs.login.isInvalid || firstPasswdIsInvalide || !passwdIsEqual){
-            console.log("SAVE FAILURE!!!");
-
+        if(!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
             this.setState({alertShow: true});
 
             return;
@@ -127,9 +142,6 @@ class ModalWindowAddEditUser extends React.Component {
             "user_login": userInputs.login.value,
             "user_password": userInputs.firstPassword.value,
         };
-
-        console.log("SENDING object with information to server -->");
-        console.log(JSON.stringify(transferObject));
 
         this.props.socketIo.emit("add new user", {
             actionType: "create",
