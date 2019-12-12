@@ -12,7 +12,6 @@ module.exports = function(settings) {
     let { socketIo = null, type = "danger", message = "сообщение не определено" } = settings;
 
     if (socketIo === null) return writeLogFile.writeLog("\tError: the 'socketIo' variable is not defined");
-
     socketIo.emit("notify information", {
         notify: JSON.stringify({ type: type, message: message })
     });

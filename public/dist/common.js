@@ -31685,23 +31685,7 @@ module.exports = function(module) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) { //вывод информационного сообщения
-
-var showNotify = function showNotify(type, message) {
-  $.notify({
-    message: message
-  }, {
-    type: type,
-    placement: {
-      from: "top",
-      align: "right"
-    },
-    offset: {
-      x: 0,
-      y: 60
-    }
-  });
-};
+/* WEBPACK VAR INJECTION */(function(global) {
 
 var io = __webpack_require__(/*! socket.io-client */ "../../node_modules/socket.io-client/dist/socket.io.js");
 
@@ -31724,8 +31708,7 @@ __webpack_require__(/*! moment */ "../../node_modules/moment/moment.js"); //requ
 
 
 global.socket = io.connect();
-global.ss = __webpack_require__(/*! socket.io-stream */ "../../node_modules/socket.io-stream/socket.io-stream.js");
-exports.showNotify = showNotify; //import 'bootstrap.css';
+global.ss = __webpack_require__(/*! socket.io-stream */ "../../node_modules/socket.io-stream/socket.io-stream.js"); //import 'bootstrap.css';
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js")))
 
 /***/ })

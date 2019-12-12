@@ -1,4 +1,4 @@
-var settingUsersPage =
+var drawingAlertsMessage =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -82,7 +82,7 @@ var settingUsersPage =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./settingUsersPage.jsx");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./drawingAlertsMessage.jsx");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -40703,336 +40703,10 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "./common_helpers/helpers.js":
-/*!***********************************!*\
-  !*** ./common_helpers/helpers.js ***!
-  \***********************************/
-/*! exports provided: helpers */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "helpers", function() { return helpers; });
-
-
-var helpers = {
-  //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
-  loadNetworkMarginTop: function loadNetworkMarginTop() {
-    var arrayLoadNetwork = document.getElementsByName("loadNetwork");
-    if (arrayLoadNetwork.hasOwnProperty("length")) return;
-
-    for (var key in arrayLoadNetwork) {
-      var countElements = 0;
-
-      for (var i in arrayLoadNetwork[key].children) {
-        countElements++;
-      }
-
-      var num = (countElements - 4) / 3;
-      var px = "0px";
-      if (3 <= num && num <= 5) px = "35px";
-      if (1 <= num && num <= 3) px = "40px";
-
-      if (arrayLoadNetwork[key].nodeType === 1) {
-        arrayLoadNetwork[key].style.marginTop = px;
-      }
-    }
-  },
-  //конвертирование даты и времени из формата Unix в стандартный формат
-  getDate: function getDate(dateUnix) {
-    var x = new Date().getTimezoneOffset() * 60000;
-    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
-  },
-  //получить цвет значения
-  getColor: function getColor(number) {
-    if (0 <= number && number <= 35) return "color: #83B4D7;";
-    if (36 <= number && number <= 65) return "color: #9FD783;";
-    if (66 <= number && number <= 85) return "color: #E1E691;";
-    if (86 <= number) return "color: #C78888;";
-  },
-  //преобразование числа в строку с пробелами после каждой третьей цифры 
-  intConvert: function intConvert(nLoad) {
-    var newString = nLoad.toString();
-    var interimArray = [];
-    var countCycles = Math.ceil(newString.length / 3);
-    var num = 0;
-
-    for (var i = 1; i <= countCycles; i++) {
-      interimArray.push(newString.charAt(newString.length - 3 - num) + newString.charAt(newString.length - 2 - num) + newString.charAt(newString.length - 1 - num));
-      num += 3;
-    }
-
-    interimArray.reverse();
-    return interimArray.join(" ");
-  },
-  //пересчет в Кбайты, Мбайты и Гбайты
-  changeByteSize: function changeByteSize(byte) {
-    if (3 >= byte.length) return "<strong>" + byte + "</strong> байт";else if (3 < byte.length && byte.length <= 6) return "<strong>" + (byte / 1000).toFixed(2) + "</strong> Кбайт";else if (6 < byte.length && byte.length <= 9) return "<strong>" + (byte / 1000000).toFixed(2) + "</strong> Мбайт";else return "<strong>" + (byte / 1000000000).toFixed(2) + "</strong> Гбайт";
-  },
-  //конвертирование даты и вермени
-  dateTimeConvert: function dateTimeConvert(dateUnixFormat) {
-    var x = new Date().getTimezoneOffset() * 60000;
-    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
-  },
-  //получить не повторяющиеся элементы двух массивов
-  getDifferenceArray: function getDifferenceArray(arrOne, arrTwo) {
-    if (arrOne.length === 0) return arrTwo;
-    if (arrTwo.length === 0) return arrOne;
-    var result = [];
-
-    if (arrOne.length === arrTwo.length) {
-      for (var i = 0; i < arrOne.length; i++) {
-        for (var j = 0; j < arrTwo.length; j++) {
-          if (arrOne[i] === arrTwo[j]) {
-            arrOne.splice(i, 1);
-            arrTwo.splice(j, 1);
-          }
-        }
-      }
-
-      result = arrOne.concat(arrTwo.join(","));
-    } else if (arrOne.length < arrTwo.length) {
-      var stringOne = arrOne.join(" ");
-      arrTwo.filter(function (item) {
-        return stringOne.indexOf(item.toString()) < 0;
-      });
-    } else {
-      var _stringOne = arrTwo.join(" ");
-
-      arrOne.filter(function (item) {
-        return _stringOne.indexOf(item.toString()) < 0;
-      });
-    }
-
-    return result;
-  },
-
-  /**
-   * проверка данных полученных от пользователя
-   * 
-   * @param {object} elem 
-   */
-  checkInputValidation: function checkInputValidation(elem) {
-    var objSettings = {
-      "hostId": new RegExp("^[0-9]{1,7}$"),
-      "shortNameHost": new RegExp("^[a-zA-Z0-9_№\"\\-\\s]{3,15}$"),
-      "fullNameHost": new RegExp("^[a-zA-Zа-яА-ЯёЁ0-9_№\"\\-\\s\\.,]{5,}$"),
-      "ipaddress": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),
-      "port": new RegExp("^[0-9]{1,5}$"),
-      "countProcess": new RegExp("^[0-9]{1}$"),
-      "intervalTransmission": new RegExp("^[0-9]{1,}$"),
-      "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
-      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
-      "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
-    };
-    var pattern = objSettings[elem.name];
-
-    if (elem.name === "port") {
-      if (!(0 <= elem.value && elem.value < 65536)) return false;
-    }
-
-    if (elem.name === "intervalTransmission" && elem.value < 10) return false;
-    return !pattern.test(elem.value) ? false : true;
-  },
-  //генератор токена
-  tokenRand: function tokenRand() {
-    return Math.random().toString(14).substr(2) + Math.random().toString(14).substr(2);
-  }
-};
-
-
-/***/ }),
-
-/***/ "./commons/modalAlertMessage.jsx":
-/*!***************************************!*\
-  !*** ./commons/modalAlertMessage.jsx ***!
-  \***************************************/
-/*! exports provided: ModalAlertDangerMessage */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalAlertDangerMessage", function() { return ModalAlertDangerMessage; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/**
- * Модуль формирования сообщения об ошибке при выполнении валидации в модальном окне
- * 
- * Версия 0.1, дата релиза 03.12.2019
- */
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-
-
-
-
-
-var ModalAlertDangerMessage =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(ModalAlertDangerMessage, _React$Component);
-
-  function ModalAlertDangerMessage() {
-    _classCallCheck(this, ModalAlertDangerMessage);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(ModalAlertDangerMessage).apply(this, arguments));
-  }
-
-  _createClass(ModalAlertDangerMessage, [{
-    key: "render",
-    value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
-        dismissible: true,
-        variant: "danger",
-        show: this.props.show,
-        onClose: this.props.onClose
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, {
-        className: "text-center"
-      }, this.props.children), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.message)));
-    }
-  }]);
-
-  return ModalAlertDangerMessage;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-ModalAlertDangerMessage.propTypes = {
-  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
-  message: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
-  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
-  onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
-};
-
-/***/ }),
-
-/***/ "./commons/modalWindowConfirmMessage.jsx":
-/*!***********************************************!*\
-  !*** ./commons/modalWindowConfirmMessage.jsx ***!
-  \***********************************************/
-/*! exports provided: ModalWindowConfirmMessage */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowConfirmMessage", function() { return ModalWindowConfirmMessage; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/**
- * Модуль формирования модального окна для дольнейшего
- * подтверждения или отклонения действия по УДАЛЕНИЮ
- * 
- * Версия 0.1. дата релиза 10.12.2019
- */
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-
-
-
-
-
-var ModalWindowConfirmMessage =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(ModalWindowConfirmMessage, _React$Component);
-
-  function ModalWindowConfirmMessage(props) {
-    var _this;
-
-    _classCallCheck(this, ModalWindowConfirmMessage);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowConfirmMessage).call(this, props));
-    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handlerConfirm = _this.handlerConfirm.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    return _this;
-  }
-
-  _createClass(ModalWindowConfirmMessage, [{
-    key: "handlerClose",
-    value: function handlerClose() {
-      this.props.onHide();
-    }
-  }, {
-    key: "handlerConfirm",
-    value: function handlerConfirm() {
-      this.props.handlerConfirm(this.props.userID);
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
-        show: this.props.show,
-        onHide: this.handlerClose
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
-        closeButton: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, this.props.msgTitle)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, this.props.msgBody), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-        variant: "outline-secondary",
-        onClick: this.handlerClose
-      }, "\u043E\u0442\u043C\u0435\u043D\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-        variant: "outline-primary",
-        onClick: this.handlerConfirm
-      }, "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044C")));
-    }
-  }]);
-
-  return ModalWindowConfirmMessage;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-ModalWindowConfirmMessage.propTypes = {
-  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
-  onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
-  msgBody: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  msgTitle: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  userID: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  handlerConfirm: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
-};
-
-/***/ }),
-
-/***/ "./settingUsersPage.jsx":
-/*!******************************!*\
-  !*** ./settingUsersPage.jsx ***!
-  \******************************/
+/***/ "./drawingAlertsMessage.jsx":
+/*!**********************************!*\
+  !*** ./drawingAlertsMessage.jsx ***!
+  \**********************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -41045,12 +40719,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./setting_users_page/modalWindowAddEditUser.jsx */ "./setting_users_page/modalWindowAddEditUser.jsx");
-/* harmony import */ var _commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./commons/modalWindowConfirmMessage.jsx */ "./commons/modalWindowConfirmMessage.jsx");
 /**
- * Модуль формирующий основную таблицу на странице
+ * Модуль формирующий информационные сообщения на странице
  * 
- * Версия 0.21, дата релиза 11.12.2019
+ * Версия 0.1, дата релиза 12.12.2019
  */
 
 
@@ -41077,678 +40749,80 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 
 
-
-
-var HeadTable =
+var CreateAlert =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(HeadTable, _React$Component);
+  _inherits(CreateAlert, _React$Component);
 
-  function HeadTable(props) {
+  function CreateAlert(props) {
     var _this;
 
-    _classCallCheck(this, HeadTable);
+    _classCallCheck(this, CreateAlert);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(HeadTable).call(this, props));
-    _this.handleShow = _this.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handleClose = _this.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.state = {
-      modalShow: false
-    };
-    return _this;
-  }
-
-  _createClass(HeadTable, [{
-    key: "handleShow",
-    value: function handleShow() {
-      this.setState({
-        modalShow: true
-      });
-    }
-  }, {
-    key: "handleClose",
-    value: function handleClose() {
-      this.setState({
-        modalShow: false
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var accessRights = this.props.accessRights;
-      var isDisabled = accessRights.create.status ? "" : "disabled";
-      /**
-      * 
-      * Сделать отрисовку информационных сообщений
-      * но это нужно делать гдето в заголовке станицы или меню
-      * вобщем в том разделе который постоянно находится на любой странице 
-      * 
-      * 
-      */
-
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u041B\u043E\u0433\u0438\u043D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
-        className: "text-right"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        variant: "outline-primary",
-        onClick: this.handleShow,
-        disabled: isDisabled
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalWindowAddEditUser"], {
-        socketIo: this.props.socketIo,
-        show: this.state.modalShow,
-        onHide: this.handleClose,
-        listWorkGroup: this.props.listWorkGroup
-      }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043D\u043E\u0432\u043E\u0433\u043E \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"))));
-    }
-  }]);
-
-  return HeadTable;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-HeadTable.propTypes = {
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
-};
-
-var ButtonEdit =
-/*#__PURE__*/
-function (_React$Component2) {
-  _inherits(ButtonEdit, _React$Component2);
-
-  function ButtonEdit() {
-    _classCallCheck(this, ButtonEdit);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonEdit).apply(this, arguments));
-  }
-
-  _createClass(ButtonEdit, [{
-    key: "render",
-    value: function render() {
-      var login = this.props.login;
-      var accessRights = this.props.accessRights;
-      var isDisabled;
-
-      if (login === "administrator" || !accessRights.edit.status) {
-        isDisabled = "disabled";
-      }
-
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        variant: "outline-dark",
-        size: "sm",
-        disabled: isDisabled
-      }, "\u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C");
-    }
-  }]);
-
-  return ButtonEdit;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-ButtonEdit.propTypes = {
-  login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
-};
-
-var ButtonDelete =
-/*#__PURE__*/
-function (_React$Component3) {
-  _inherits(ButtonDelete, _React$Component3);
-
-  function ButtonDelete() {
-    _classCallCheck(this, ButtonDelete);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(ButtonDelete).apply(this, arguments));
-  }
-
-  _createClass(ButtonDelete, [{
-    key: "render",
-    value: function render() {
-      var login = this.props.login;
-      var accessRights = this.props.accessRights;
-      var isDisabled;
-
-      if (login === "administrator" || !accessRights.delete.status) {
-        isDisabled = "disabled";
-      }
-
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        onClick: this.props.handler,
-        variant: "outline-danger",
-        size: "sm",
-        disabled: isDisabled
-      }, "\u0443\u0434\u0430\u043B\u0438\u0442\u044C");
-    }
-  }]);
-
-  return ButtonDelete;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-ButtonDelete.propTypes = {
-  login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  handler: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
-};
-
-var BodyTable =
-/*#__PURE__*/
-function (_React$Component4) {
-  _inherits(BodyTable, _React$Component4);
-
-  function BodyTable(props) {
-    var _this2;
-
-    _classCallCheck(this, BodyTable);
-
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(BodyTable).call(this, props));
-    _this2.addUsersList = _this2.addUsersList.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
-    return _this2;
-  }
-
-  _createClass(BodyTable, [{
-    key: "addUsersList",
-    value: function addUsersList() {
-      var _this3 = this;
-
-      var users = this.props.users;
-      var adminUser = [],
-          othersUser = [];
-      var dateFormatter = new Intl.DateTimeFormat("ru", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric"
-      });
-      var dateTimeFormatter = new Intl.DateTimeFormat("ru", {
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        year: "numeric",
-        month: "numeric",
-        day: "numeric"
-      });
-      users.forEach(function (user) {
-        var key = user.userID;
-        var elem = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
-          key: "tr_".concat(key)
-        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-          key: "td_login_".concat(key)
-        }, user.login), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-          key: "td_user_name_".concat(key)
-        }, user.userName), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-          key: "td_group_".concat(key)
-        }, user.group), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-          key: "td_date_register_".concat(key)
-        }, dateFormatter.format(user.dateRegister)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-          key: "td_date_change_".concat(key)
-        }, dateTimeFormatter.format(user.dateChange)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-          className: "text-right",
-          key: "td_buttons_".concat(key)
-        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
-          login: user.login,
-          accessRights: _this3.props.accessRights,
-          key: "button_edit_".concat(key)
-        }), "\xA0\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
-          login: user.login,
-          handler: _this3.props.handlerButtonDelete.bind(_this3, key, user.login),
-          accessRights: _this3.props.accessRights,
-          key: "button_del_".concat(key)
-        })));
-
-        if (user.login === "administrator") {
-          adminUser.push(elem);
-        } else {
-          othersUser.push(elem);
-        }
-      });
-      adminUser.push(othersUser);
-      return adminUser;
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, this.addUsersList());
-    }
-  }]);
-
-  return BodyTable;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-BodyTable.propTypes = {
-  users: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  handlerButtonDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
-};
-
-var CreateTable =
-/*#__PURE__*/
-function (_React$Component5) {
-  _inherits(CreateTable, _React$Component5);
-
-  function CreateTable(props) {
-    var _this4;
-
-    _classCallCheck(this, CreateTable);
-
-    _this4 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this4.addListeners = _this4.addListeners.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.addOrUpdateNewUser = _this4.addOrUpdateNewUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.deleteUser = _this4.deleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.handlerModalConfirmShow = _this4.handlerModalConfirmShow.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.handlerModalConfirmClose = _this4.handlerModalConfirmClose.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.sendMsgDeleteUser = _this4.sendMsgDeleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.state = {
-      userList: _this4.props.mainInformation,
-      modalConfirm: {
-        show: false,
-        userID: "",
-        userLogin: ""
-      }
-    };
-
-    _this4.addListeners();
-
-    return _this4;
-  }
-
-  _createClass(CreateTable, [{
-    key: "handlerModalConfirmShow",
-    value: function handlerModalConfirmShow(userID, userLogin) {
-      var objState = Object.assign({}, this.state);
-      objState.modalConfirm = {
-        show: true,
-        userID: userID,
-        userLogin: userLogin
-      };
-      this.setState(objState);
-    }
-  }, {
-    key: "handlerModalConfirmClose",
-    value: function handlerModalConfirmClose() {
-      var objState = Object.assign({}, this.state);
-      objState.modalConfirm = {
-        show: false,
-        userID: "",
-        userLogin: ""
-      };
-      this.setState(objState);
-    }
-  }, {
-    key: "addOrUpdateNewUser",
-    value: function addOrUpdateNewUser(newUser) {
-      var objNewUser = JSON.parse(newUser);
-      var objState = Object.assign({}, this.state);
-      objState.userList.push({
-        userID: objNewUser.userID,
-        userName: objNewUser.userName,
-        login: objNewUser.login,
-        group: objNewUser.group,
-        dateRegister: objNewUser.dateRegister,
-        dateChange: objNewUser.dateChange
-      });
-      this.setState(objState);
-    }
-  }, {
-    key: "deleteUser",
-    value: function deleteUser(delUser) {
-      var userID = JSON.parse(delUser).userID;
-      var newUserList = this.state.userList.filter(function (item) {
-        return item.userID !== userID;
-      });
-      var objState = Object.assign({}, this.state);
-      objState.userList = newUserList;
-      this.setState(objState);
-    }
-  }, {
-    key: "sendMsgDeleteUser",
-    value: function sendMsgDeleteUser(userID) {
-      this.props.socketIo.emit("delete user", {
-        actionType: "delete",
-        arguments: {
-          userID: userID
-        }
-      });
-      this.handlerModalConfirmClose();
-    }
-  }, {
-    key: "addListeners",
-    value: function addListeners() {
-      var _this5 = this;
-
-      var listEvents = {
-        "add new user": function addNewUser(newUser) {
-          _this5.addOrUpdateNewUser(newUser);
-        },
-        "update user": function updateUser(_updateUser) {
-          _this5.addOrUpdateNewUser(_updateUser);
-        },
-        "del selected user": function delSelectedUser(delUser) {
-          _this5.deleteUser(delUser);
-        }
-      };
-
-      for (var event in listEvents) {
-        this.props.socketIo.on(event, listEvents[event]);
-      }
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
-        className: "text-left text-uppercase"
-      }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
-        striped: true,
-        hover: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HeadTable, {
-        socketIo: this.props.socketIo,
-        accessRights: this.props.accessRights,
-        listWorkGroup: this.props.listWorkGroup
-      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
-        users: this.state.userList,
-        accessRights: this.props.accessRights,
-        handlerButtonDelete: this.handlerModalConfirmShow
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__["ModalWindowConfirmMessage"], {
-        show: this.state.modalConfirm.show,
-        onHide: this.handlerModalConfirmClose,
-        userID: this.state.modalConfirm.userID,
-        handlerConfirm: this.sendMsgDeleteUser,
-        msgTitle: "Удаление",
-        msgBody: "\u0412\u044B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F ".concat(this.state.modalConfirm.userLogin, "?")
-      }));
-    }
-  }]);
-
-  return CreateTable;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-CreateTable.propTypes = {
-  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
-};
-react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
-  socketIo: socket,
-  mainInformation: receivedFromServerMain,
-  accessRights: receivedFromServerAccess,
-  listWorkGroup: receivedFromServerListWorkGroup
-}), document.getElementById("field_information"));
-
-/***/ }),
-
-/***/ "./setting_users_page/modalWindowAddEditUser.jsx":
-/*!*******************************************************!*\
-  !*** ./setting_users_page/modalWindowAddEditUser.jsx ***!
-  \*******************************************************/
-/*! exports provided: ModalWindowAddEditUser */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowAddEditUser", function() { return ModalWindowAddEditUser; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../commons/modalAlertMessage.jsx */ "./commons/modalAlertMessage.jsx");
-/**
- * Модуль формирования модального окна добавления нового пользователя
- * 
- * Версия 0.1, дата релиза 03.12.2019
- */
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-
-
-
-
-
-
-
-var ModalWindowAddEditUser =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(ModalWindowAddEditUser, _React$Component);
-
-  function ModalWindowAddEditUser(props) {
-    var _this;
-
-    _classCallCheck(this, ModalWindowAddEditUser);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddEditUser).call(this, props));
-
-    _this.props.listWorkGroup.sort();
-
-    _this.alertClose = _this.alertClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handlerSave = _this.handlerSave.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handlerUserInput = _this.handlerUserInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CreateAlert).call(this, props));
     _this.state = {
       alertShow: false,
-      formElements: {
-        userName: {
-          value: "",
-          isValid: false,
-          isInvalid: false
-        },
-        login: {
-          value: "",
-          isValid: false,
-          isInvalid: false
-        },
-        firstPassword: {
-          value: "",
-          isValid: false,
-          isInvalid: false
-        },
-        secondPassword: {
-          value: "",
-          isValid: false,
-          isInvalid: false
-        },
-        workGroup: {
-          value: _this.props.listWorkGroup[0]
-        }
-      }
+      type: "",
+      message: ""
     };
+    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+
+    _this.eventsListener();
+
     return _this;
   }
 
-  _createClass(ModalWindowAddEditUser, [{
-    key: "getKey",
-    value: function getKey(str) {
-      var key = 0;
+  _createClass(CreateAlert, [{
+    key: "eventsListener",
+    value: function eventsListener() {
+      var _this2 = this;
 
-      for (var i = 0; i < str.length; i++) {
-        key += str.charCodeAt(i);
-      }
+      this.props.socketIo.on("notify information", function (msg) {
+        console.log(msg);
+        var msgObj = JSON.parse(msg.notify);
 
-      return key.toString();
-    }
-  }, {
-    key: "handlerUserInput",
-    value: function handlerUserInput(event) {
-      var value = event.target.value;
-      var elementName = event.target.id;
-      var elemType = {
-        userName: "stringAlphaRu",
-        login: "stringAlphaNumEng",
-        firstPassword: "stringPasswd",
-        secondPassword: "stringPasswd"
-      };
-      var objUpdate = Object.assign({}, this.state);
-
-      if (objUpdate.formElements[elementName] === "undefined") {
-        return;
-      }
-
-      objUpdate.formElements[elementName].value = value;
-
-      if (elementName === "workGroup") {
-        this.setState(objUpdate);
-        return;
-      }
-
-      if (_common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__["helpers"].checkInputValidation({
-        name: elemType[elementName],
-        value: value
-      })) {
-        objUpdate.formElements[elementName].isInvalid = false;
-        objUpdate.formElements[elementName].isValid = true;
-      } else {
-        objUpdate.formElements[elementName].isInvalid = true;
-        objUpdate.formElements[elementName].isValid = false;
-      }
-
-      this.setState(objUpdate);
-    }
-  }, {
-    key: "alertClose",
-    value: function alertClose() {
-      this.setState({
-        alertShow: false
+        _this2.setState({
+          alertShow: true,
+          type: msgObj.type,
+          message: msgObj.message
+        });
       });
     }
   }, {
     key: "handlerClose",
     value: function handlerClose() {
-      this.props.onHide();
-      var objUpdate = Object.assign({}, this.state);
-
-      for (var elem in objUpdate.formElements) {
-        if (elem === "workGroup") continue;
-        objUpdate.formElements[elem].isValid = false;
-        objUpdate.formElements[elem].isInvalid = false;
-      }
-
-      objUpdate.alertShow = false;
-      this.setState(objUpdate);
-    }
-  }, {
-    key: "handlerSave",
-    value: function handlerSave() {
-      var userInputs = this.state.formElements;
-      var firstPasswdIsInvalide = userInputs.firstPassword.isValid;
-      var passwdIsEqual = userInputs.firstPassword.value.localeCompare(userInputs.secondPassword.value) === 0; //если пароли не равны
-
-      if (!passwdIsEqual) {
-        var objUpdate = Object.assign({}, this.state);
-        objUpdate.formElements.firstPassword.isInvalid = true;
-        objUpdate.formElements.secondPassword.isInvalid = true;
-        this.setState(objUpdate);
-      }
-
-      if (!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
-        this.setState({
-          alertShow: true
-        });
-        return;
-      }
-
-      var transferObject = {
-        "user_name": userInputs.userName.value,
-        "work_group": userInputs.workGroup.value,
-        "user_login": userInputs.login.value,
-        "user_password": userInputs.firstPassword.value
-      };
-      this.props.socketIo.emit("add new user", {
-        actionType: "create",
-        arguments: transferObject
+      this.setState({
+        alertShow: false,
+        type: "",
+        message: ""
       });
-      this.handlerClose();
     }
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      if (!this.state.alertShow) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null);
+      }
 
-      var alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
-        show: this.props.show,
-        onHide: this.handlerClose
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
-        closeButton: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, this.props.children)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
-        controlId: "userName"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
-        control: "text",
-        onChange: this.handlerUserInput,
-        isValid: this.state.formElements.userName.isValid,
-        isInvalid: this.state.formElements.userName.isInvalid
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
-        controlId: "workGroup"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
-        as: "select",
-        onChange: this.handlerUserInput
-      }, this.props.listWorkGroup.map(function (group) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
-          key: _this2.getKey("group_".concat(group))
-        }, group);
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
-        controlId: "login"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041B\u043E\u0433\u0438\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
-        control: "text",
-        onChange: this.handlerUserInput,
-        isValid: this.state.formElements.login.isValid,
-        isInvalid: this.state.formElements.login.isInvalid
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
-        controlId: "firstPassword"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041F\u0430\u0440\u043E\u043B\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
-        type: "password",
-        placeholder: "\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C",
-        onChange: this.handlerUserInput,
-        isValid: this.state.formElements.firstPassword.isValid,
-        isInvalid: this.state.formElements.firstPassword.isInvalid
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
-        controlId: "secondPassword"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
-        type: "password",
-        placeholder: "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C",
-        onChange: this.handlerUserInput,
-        isValid: this.state.formElements.secondPassword.isValid,
-        isInvalid: this.state.formElements.secondPassword.isInvalid
-      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalAlertDangerMessage"], {
-        show: this.state.alertShow,
-        onClose: this.alertClose,
-        message: alertMessage
-      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-        variant: "outline-secondary",
-        onClick: this.handlerClose
-      }, "\u0437\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-        variant: "outline-primary",
-        onClick: this.handlerSave
-      }, "\u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Alert"], {
+        variant: this.state.type,
+        onClose: this.handlerClose,
+        dismissible: true
+      }, this.state.message);
     }
   }]);
 
-  return ModalWindowAddEditUser;
+  return CreateAlert;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
-ModalWindowAddEditUser.propTypes = {
-  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
-  onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
-  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
-  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.array.isRequired
+CreateAlert.propTypes = {
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 };
+react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateAlert, {
+  socketIo: socket
+}), document.getElementById("location-alerts"));
 
 /***/ })
 
 /******/ });
-//# sourceMappingURL=settingUsersPage.js.map
+//# sourceMappingURL=drawingAlertsMessage.js.map

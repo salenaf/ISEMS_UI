@@ -137,7 +137,12 @@ function addUser(socketIo, data) {
             }).then(newUser => {
 
                 debug("Отправляем полученный список в UI");
-                debug(newUser);
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "success",
+                    message: "Пользователь успешно добавлен."
+                });
 
                 socketIo.emit("add new user", JSON.stringify(newUser));
 
@@ -226,6 +231,12 @@ function deleteUser(socketIo, data) {
             });
         }).then(() => {
             debug("Удаление пользователя выполненно успешно, отправляем сообщение об удалении в UI");
+
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Пользователь успешно удален."
+            });
 
             socketIo.emit("del selected user", JSON.stringify({ userID: data.arguments.userID }));
         }).catch(err => {

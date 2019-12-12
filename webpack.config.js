@@ -37,6 +37,7 @@ module.exports = {
         settingGroupsPage: "./settingGroupsPage.jsx",
         settingSourcesPage: "./settingSourcesPage.js",
         settingIdsRulesPage: "./settingIdsRulesPage.js",
+        drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",
         styles: "./styles.js"
     },
@@ -197,15 +198,15 @@ module.exports = {
             loader: "imports-loader?this=>window&exports=>false&define=>false"
         },
         /*            {
-                                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                    include: /\/node_modules\//,
-                                    loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
-                                },
-                                {
-                                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                    exclude: /\/node_modules\//,
-                                    loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
-                                },*/
+                                        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                        include: /\/node_modules\//,
+                                        loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
+                                    },
+                                    {
+                                        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                        exclude: /\/node_modules\//,
+                                        loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
+                                    },*/
         {
             test: /\.ejs$/,
             loader: "ejs-loader"

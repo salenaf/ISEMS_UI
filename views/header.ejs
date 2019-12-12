@@ -1,9 +1,11 @@
 <header>
+    <% include head.ejs %>
     <script>
         var resivedFromServer = <%- JSON.stringify(header) %>
     </script>
 
     <div class="navbar navbar-inverse set-radius-zero">
+    <div id="location-alerts" style="display: block; z-index: 100;"></div>
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand" href="/">
@@ -24,5 +26,6 @@
             </div>
         </div>
     </section>
+    <script src="/dist/drawingAlertsMessage.js"></script>
     <script src="/dist/headerMenu.js"></script>
 </header>

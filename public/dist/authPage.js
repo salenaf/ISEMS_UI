@@ -1134,7 +1134,7 @@ var authPage =
 var md5js = __webpack_require__(/*! md5js */ "../../node_modules/crypto-js/md5.js");
 
 (function () {
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener("DOMContentLoaded", function () {
     var authForm = document.forms[0];
     if (authForm !== null) authForm.onsubmit = checkForm;
     displayError();
@@ -1142,28 +1142,28 @@ var md5js = __webpack_require__(/*! md5js */ "../../node_modules/crypto-js/md5.j
 
   function displayError() {
     var parametersString = window.location.search.substring(1);
-    var parametrs = parametersString.split('&');
+    var parametrs = parametersString.split("&");
 
     for (var i = 0; i < parametrs.length; i++) {
-      var string = parametrs[i].split('=');
+      var string = parametrs[i].split("=");
 
-      if (string[0] === 'username' && string[1] === 'error') {
-        var div = document.getElementById('divAlert');
-        div.style.display = '';
+      if (string[0] === "username" && string[1] === "error") {
+        var div = document.getElementById("divAlert");
+        div.style.display = "";
       }
     }
   } //проверка формы
 
 
   function checkForm() {
-    var divLogin = document.getElementById('inputLogin').value;
-    var divPassword = document.getElementById('inputPassword').value;
+    var divLogin = document.getElementById("inputLogin").value;
+    var divPassword = document.getElementById("inputPassword").value;
     if (divLogin.length === 0) return false;
     if (divPassword.length === 0) return false;
 
     if (!/^\w+$/.test(divLogin)) {
-      var divAlert = document.getElementById('divAlert');
-      divAlert.style.display = '';
+      var divAlert = document.getElementById("divAlert");
+      divAlert.style.display = "";
       return false;
     }
 
@@ -1172,7 +1172,7 @@ var md5js = __webpack_require__(/*! md5js */ "../../node_modules/crypto-js/md5.j
 
 
   function md5Hash(password) {
-    var div = document.getElementById('inputPassword');
+    var div = document.getElementById("inputPassword");
     div.value = md5js(password).toString();
     return true;
   }

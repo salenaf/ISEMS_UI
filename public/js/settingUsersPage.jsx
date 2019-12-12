@@ -325,7 +325,7 @@ class CreateTable extends React.Component {
 }
 
 CreateTable.propTypes = {
-    socketIo: PropTypes.object,
+    socketIo: PropTypes.object.isRequired,
     mainInformation: PropTypes.array.isRequired,
     accessRights: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
