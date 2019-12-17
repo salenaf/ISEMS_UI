@@ -41117,27 +41117,13 @@ function (_React$Component) {
     value: function render() {
       var accessRights = this.props.accessRights;
       var isDisabled = accessRights.create.status ? "" : "disabled";
-      /**
-      * 
-      * Сделать отрисовку информационных сообщений
-      * но это нужно делать гдето в заголовке станицы или меню
-      * вобщем в том разделе который постоянно находится на любой странице 
-      * 
-      * 
-      */
-
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u041B\u043E\u0433\u0438\u043D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null, "\u0414\u0430\u0442\u0430 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
         className: "text-right"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
         variant: "outline-primary",
-        onClick: this.handleShow,
+        onClick: this.props.headerButtonAdd.bind(this, true, ""),
         disabled: isDisabled
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalWindowAddEditUser"], {
-        socketIo: this.props.socketIo,
-        show: this.state.modalShow,
-        onHide: this.handleClose,
-        listWorkGroup: this.props.listWorkGroup
-      }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043D\u043E\u0432\u043E\u0433\u043E \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"))));
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"))));
     }
   }]);
 
@@ -41146,7 +41132,8 @@ function (_React$Component) {
 
 HeadTable.propTypes = {
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
+  listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
+  headerButtonAdd: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 };
 
 var ButtonEdit =
@@ -41172,6 +41159,7 @@ function (_React$Component2) {
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+        onClick: this.props.handler.bind(this, false, this.props.login),
         variant: "outline-dark",
         size: "sm",
         disabled: isDisabled
@@ -41184,7 +41172,8 @@ function (_React$Component2) {
 
 ButtonEdit.propTypes = {
   login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handler: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 };
 
 var ButtonDelete =
@@ -41238,11 +41227,17 @@ function (_React$Component4) {
     _classCallCheck(this, BodyTable);
 
     _this2 = _possibleConstructorReturn(this, _getPrototypeOf(BodyTable).call(this, props));
+    _this2.handlerShow = _this2.handlerShow.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
     _this2.addUsersList = _this2.addUsersList.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
     return _this2;
   }
 
   _createClass(BodyTable, [{
+    key: "handlerShow",
+    value: function handlerShow(isAdd, userLogin) {
+      this.props.handlerButtonEdit(isAdd, userLogin);
+    }
+  }, {
     key: "addUsersList",
     value: function addUsersList() {
       var _this3 = this;
@@ -41283,6 +41278,7 @@ function (_React$Component4) {
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
           login: user.login,
           accessRights: _this3.props.accessRights,
+          handler: _this3.handlerShow,
           key: "button_edit_".concat(key)
         }), "\xA0\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
           login: user.login,
@@ -41313,6 +41309,7 @@ function (_React$Component4) {
 BodyTable.propTypes = {
   users: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handlerButtonEdit: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
   handlerButtonDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 };
 
@@ -41332,12 +41329,19 @@ function (_React$Component5) {
     _this4.deleteUser = _this4.deleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.handlerModalConfirmShow = _this4.handlerModalConfirmShow.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.handlerModalConfirmClose = _this4.handlerModalConfirmClose.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.handlerModalAddOrEditShow = _this4.handlerModalAddOrEditShow.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.handlerModalAddOrEditClose = _this4.handlerModalAddOrEditClose.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.sendMsgDeleteUser = _this4.sendMsgDeleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.state = {
       userList: _this4.props.mainInformation,
       modalConfirm: {
         show: false,
         userID: "",
+        userLogin: ""
+      },
+      modalAddOrEdit: {
+        show: false,
+        pressButtonIsAdd: true,
         userLogin: ""
       }
     };
@@ -41348,6 +41352,26 @@ function (_React$Component5) {
   }
 
   _createClass(CreateTable, [{
+    key: "handlerModalAddOrEditShow",
+    value: function handlerModalAddOrEditShow(pressButtonIsAdd, userLogin) {
+      var objState = Object.assign({}, this.state);
+      objState.modalAddOrEdit = {
+        show: true,
+        pressButtonIsAdd: pressButtonIsAdd,
+        userLogin: userLogin
+      };
+      this.setState(objState);
+    }
+  }, {
+    key: "handlerModalAddOrEditClose",
+    value: function handlerModalAddOrEditClose() {
+      var objState = Object.assign({}, this.state);
+      objState.modalAddOrEdit = {
+        show: false
+      };
+      this.setState(objState);
+    }
+  }, {
     key: "handlerModalConfirmShow",
     value: function handlerModalConfirmShow(userID, userLogin) {
       var objState = Object.assign({}, this.state);
@@ -41431,19 +41455,28 @@ function (_React$Component5) {
     key: "render",
     value: function render() {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
-        className: "text-left text-uppercase"
-      }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
+        className: "text-left"
+      }, "\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HeadTable, {
         socketIo: this.props.socketIo,
         accessRights: this.props.accessRights,
+        headerButtonAdd: this.handlerModalAddOrEditShow,
         listWorkGroup: this.props.listWorkGroup
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(BodyTable, {
         users: this.state.userList,
         accessRights: this.props.accessRights,
+        handlerButtonEdit: this.handlerModalAddOrEditShow,
         handlerButtonDelete: this.handlerModalConfirmShow
-      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__["ModalWindowConfirmMessage"], {
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_users_page_modalWindowAddEditUser_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalWindowAddEdit"], {
+        socketIo: this.props.socketIo,
+        show: this.state.modalAddOrEdit.show,
+        isAddUser: this.state.modalAddOrEdit.pressButtonIsAdd,
+        userLogin: this.state.modalAddOrEdit.userLogin,
+        onHide: this.handlerModalAddOrEditClose,
+        listWorkGroup: this.props.listWorkGroup
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__["ModalWindowConfirmMessage"], {
         show: this.state.modalConfirm.show,
         onHide: this.handlerModalConfirmClose,
         userID: this.state.modalConfirm.userID,
@@ -41476,12 +41509,12 @@ react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_
 /*!*******************************************************!*\
   !*** ./setting_users_page/modalWindowAddEditUser.jsx ***!
   \*******************************************************/
-/*! exports provided: ModalWindowAddEditUser */
+/*! exports provided: ModalWindowAddEdit */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowAddEditUser", function() { return ModalWindowAddEditUser; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowAddEdit", function() { return ModalWindowAddEdit; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
@@ -41521,17 +41554,17 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 
 
-var ModalWindowAddEditUser =
+var ModalWindowAddEdit =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(ModalWindowAddEditUser, _React$Component);
+  _inherits(ModalWindowAddEdit, _React$Component);
 
-  function ModalWindowAddEditUser(props) {
+  function ModalWindowAddEdit(props) {
     var _this;
 
-    _classCallCheck(this, ModalWindowAddEditUser);
+    _classCallCheck(this, ModalWindowAddEdit);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddEditUser).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddEdit).call(this, props));
 
     _this.props.listWorkGroup.sort();
 
@@ -41570,7 +41603,7 @@ function (_React$Component) {
     return _this;
   }
 
-  _createClass(ModalWindowAddEditUser, [{
+  _createClass(ModalWindowAddEdit, [{
     key: "getKey",
     value: function getKey(str) {
       var key = 0;
@@ -41654,24 +41687,61 @@ function (_React$Component) {
         this.setState(objUpdate);
       }
 
-      if (!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
-        this.setState({
-          alertShow: true
-        });
-        return;
-      }
-
       var transferObject = {
         "user_name": userInputs.userName.value,
         "work_group": userInputs.workGroup.value,
         "user_login": userInputs.login.value,
         "user_password": userInputs.firstPassword.value
       };
-      this.props.socketIo.emit("add new user", {
-        actionType: "create",
+      var typeEvent = "add new user";
+      var at = "create";
+
+      if (!this.props.isAddUser) {
+        if (!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
+          this.setState({
+            alertShow: true
+          });
+          return;
+        }
+
+        transferObject.user_login = this.props.userLogin;
+        typeEvent = "update user";
+        at = "edit";
+      } else {
+        if (!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
+          this.setState({
+            alertShow: true
+          });
+          return;
+        }
+
+        transferObject.user_login = userInputs.login.value;
+      }
+
+      this.props.socketIo.emit(typeEvent, {
+        actionType: at,
         arguments: transferObject
       });
       this.handlerClose();
+    }
+  }, {
+    key: "addOrEdit",
+    value: function addOrEdit() {
+      var settings = {
+        windowHeader: "Добавить нового пользователя",
+        isReadOnly: "",
+        defaultValue: ""
+      };
+
+      if (!this.props.isAddUser) {
+        settings = {
+          windowHeader: "Изменить настройки пользователя",
+          isReadOnly: " true",
+          defaultValue: this.props.userLogin
+        };
+      }
+
+      return settings;
     }
   }, {
     key: "render",
@@ -41679,12 +41749,13 @@ function (_React$Component) {
       var _this2 = this;
 
       var alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";
+      var modalSettings = this.addOrEdit();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
         show: this.props.show,
         onHide: this.handlerClose
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
         closeButton: true
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, this.props.children)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, modalSettings.windowHeader)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
         controlId: "userName"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
         control: "text",
@@ -41705,6 +41776,8 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041B\u043E\u0433\u0438\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
         control: "text",
         onChange: this.handlerUserInput,
+        readOnly: modalSettings.isReadOnly,
+        defaultValue: modalSettings.defaultValue,
         isValid: this.state.formElements.login.isValid,
         isInvalid: this.state.formElements.login.isInvalid
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
@@ -41737,13 +41810,14 @@ function (_React$Component) {
     }
   }]);
 
-  return ModalWindowAddEditUser;
+  return ModalWindowAddEdit;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
-ModalWindowAddEditUser.propTypes = {
+ModalWindowAddEdit.propTypes = {
   show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
-  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  isAddUser: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
+  userLogin: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.array.isRequired
 };

@@ -106,7 +106,7 @@ class CreateCategoryValue extends React.Component {
                         type="checkbox"
                         disabled={isDisabled}
                         defaultChecked={this.props.list[item].status}
-                        name="checkbox_administrator" />
+                        name="checkbox_administrator" />&nbsp;
                     {description}
                 </div>);
         }
@@ -273,9 +273,7 @@ class ShowDateCreateGroup extends React.Component {
             let dateCreate = `${day}.${month}.${year}`;
 
             return (
-                <th
-                    className={textCenter}
-                    key={`date_create_${group}`}>
+                <th className={textCenter} key={`date_create_${group}`}>
                     {`${text} ${dateCreate}`}
                 </th>);
         });
@@ -457,7 +455,7 @@ class CreateTable extends React.Component {
         });
 
         return <div>
-            <h4 className="text-left text-uppercase">управление группами</h4>
+            <h4 className="text-left">Управление группами</h4>
             <Table striped hover>
                 <thead>
                     <tr>
@@ -490,8 +488,6 @@ CreateTable.propTypes = {
     accessRights: PropTypes.object.isRequired
 };
 
-ReactDOM.render(<CreateTable
-    mainInformation={receivedFromServerMain}
-    accessRights={receivedFromServerAccess} />,
-document.getElementById("field_information"));
+ReactDOM.render(<CreateTable mainInformation={receivedFromServerMain} accessRights={receivedFromServerAccess} />,
+    document.getElementById("field_information"));
 

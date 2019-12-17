@@ -7,6 +7,8 @@
 "use strict";
 
 const async = require("async");
+const crypto = require("crypto");
+
 const debug = require("debug")("handlerActionsUsers");
 
 const models = require("../../controllers/models");
@@ -14,6 +16,7 @@ const MyError = require("../../libs/helpers/myError");
 const commons = require("../../libs/helpers/commons");
 const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
+const hashPassword = require("../../libs/hashPassword");
 const createUniqID = require("../../libs/helpers/createUniqID");
 const writeLogFile = require("../../libs/writeLogFile");
 const informationAboutUser = require("../../libs/management_settings/informationAboutUser");
@@ -42,6 +45,7 @@ function addUser(socketIo, data) {
         .then(authData => {
 
             debug("авторизован ли пользователь");
+            debug(authData);
 
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
@@ -104,9 +108,14 @@ function addUser(socketIo, data) {
         }).then(() => {
             debug("Проверка наличия указанной группы и отсутствия такого же логина пользователя выполнена успешно");
 
-            new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
 
-                debug("добавляем нового пользователя");
+                debug("добавляем нового пользователя и пароль");
+                debug(data.arguments.user_password);
+
+                let md5string = crypto.createHash("md5")
+                    .update(data.arguments.user_password)
+                    .digest("hex");
 
                 let newUser = {
                     userID: createUniqID.getMD5(`user_name_${data.arguments.user_login}`),
@@ -123,7 +132,7 @@ function addUser(socketIo, data) {
                         date_register: newUser.dateRegister,
                         date_change: newUser.dateChange,
                         login: newUser.login,
-                        password: data.arguments.user_password,
+                        password: hashPassword.getHashPassword(md5string, "isems-ui"),
                         group: newUser.group,
                         user_name: newUser.userName,
                         settings: {
@@ -134,40 +143,50 @@ function addUser(socketIo, data) {
                     if (err) reject(err);
                     else resolve(newUser);
                 });
-            }).then(newUser => {
-
-                debug("Отправляем полученный список в UI");
-
-                showNotify({
-                    socketIo: socketIo,
-                    type: "success",
-                    message: "Пользователь успешно добавлен."
-                });
-
-                socketIo.emit("add new user", JSON.stringify(newUser));
-
-            }).catch(err => {
-
-                debug(err);
-
-                if (err.name === "user management") return showNotify({
-                    socketIo: socketIo,
-                    type: "danger",
-                    message: err.message
-                });
-
-                showNotify({
-                    socketIo: socketIo,
-                    type: "danger",
-                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
-                });
-
-                writeLogFile("error", err.toString());
             });
+        }).then(newUser => {
+
+            debug("Отправляем полученный список в UI");
+
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Пользователь успешно добавлен"
+            });
+
+            socketIo.emit("add new user", JSON.stringify(newUser));
+
+        }).catch(err => {
+
+            debug(err);
+
+            if (err.name === "user management") return showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: err.message
+            });
+
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору"
+            });
+
+            writeLogFile("error", err.toString());
         });
 }
 
 function updateUser(socketIo, data) {
+    debug("-------- user edit -------");
+    debug(data);
+
+    /**
+     * 
+     * Сделать обработку изменения параметров пользователя!!!
+     * Сделать модальное окно по изменению дефолтного пароля администратора
+     * оно будет вызываться в разделе меню
+     * 
+     */
 
 }
 
@@ -181,6 +200,7 @@ function deleteUser(socketIo, data) {
         .then(authData => {
 
             debug("авторизован ли пользователь");
+            debug(authData);
 
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
@@ -235,14 +255,14 @@ function deleteUser(socketIo, data) {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
-                message: "Пользователь успешно удален."
+                message: "Пользователь успешно удален"
             });
 
             socketIo.emit("del selected user", JSON.stringify({ userID: data.arguments.userID }));
         }).catch(err => {
 
             debug("Catch ERROR:");
-            //debug(err);
+            debug(err);
 
             if (err.name === "user management") return showNotify({
                 socketIo: socketIo,
@@ -253,7 +273,7 @@ function deleteUser(socketIo, data) {
             showNotify({
                 socketIo: socketIo,
                 type: "danger",
-                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору"
             });
 
             writeLogFile("error", err.toString());

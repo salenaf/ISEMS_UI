@@ -58,9 +58,21 @@ class GlobalObject {
      *    });
      */
     setData(type, group, key = null, value = null) {
-        if (this._checkKeys(type)) return false;
-        if (typeof group === "undefined") return false;
-        if (key === null) return false;
+        if (this._checkKeys(type)) {
+            console.log("Error 1");
+
+            return false;
+        }
+        if (typeof group === "undefined") {
+            console.log("Error 2");
+
+            return false;
+        }
+        if (key === null) {
+            console.log("Error 3");
+
+            return false;
+        }
 
         if ((value === null) && (typeof key === "object")) {
             this.obj[type][group] = key;

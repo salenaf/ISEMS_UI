@@ -22,8 +22,10 @@ exports.authenticate = function(userName, password, cb) {
 
         let hashPwd = hashPassword.getHashPassword(password, "isems-ui");
 
-        debug(userName);
-        debug(password);
+        debug(`reseived user name: ${userName}`);
+        debug(`reseived password: ${password}`);
+        debug(`original password from DB: ${user.password}`);
+        debug(`valide password: ${hashPwd}`);
 
         if ((user === null) || (user.password !== hashPwd)) {
             return cb(null, false, { message: "incorrect username or password" });

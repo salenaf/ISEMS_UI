@@ -27,12 +27,12 @@ body {
 
 .content-wrapper {
     margin-top: 40px;
-    min-height: 800px;
+    min-height: 900px;
     padding-bottom: 90px;
 }
 
 .header-line {
-    font-weight: 900;
+    font-weight: 850;
     padding-bottom: 25px;
     border-bottom: 1px solid #eeeeee;
     text-transform: uppercase;
@@ -54,7 +54,7 @@ body {
 
 #menu-top a {
     font-weight: 500;
-    padding: 10px 10px 10px 10px;
+    padding: 2px 7px 2px 7px;
 }
 
 .menu-section {

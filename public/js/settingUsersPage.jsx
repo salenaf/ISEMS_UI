@@ -12,7 +12,7 @@ import ReactDOM from "react-dom";
 import { Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import { ModalWindowAddEditUser } from "./setting_users_page/modalWindowAddEditUser.jsx";
+import { ModalWindowAddEdit } from "./setting_users_page/modalWindowAddEditUser.jsx";
 import { ModalWindowConfirmMessage } from "./commons/modalWindowConfirmMessage.jsx";
 
 class HeadTable extends React.Component {
@@ -39,15 +39,6 @@ class HeadTable extends React.Component {
         let accessRights = this.props.accessRights;        
         let isDisabled = (accessRights.create.status)? "": "disabled";
 
-        /**
- * 
- * Сделать отрисовку информационных сообщений
- * но это нужно делать гдето в заголовке станицы или меню
- * вобщем в том разделе который постоянно находится на любой странице 
- * 
- * 
- */
-
         return (
             <thead>
                 <tr>
@@ -57,16 +48,9 @@ class HeadTable extends React.Component {
                     <th>Дата создания</th>
                     <th>Дата изменения</th>
                     <th className={"text-right"}>
-                        <Button variant="outline-primary" onClick={this.handleShow} disabled={isDisabled}>
+                        <Button variant="outline-primary" onClick={this.props.headerButtonAdd.bind(this, true, "")} disabled={isDisabled}>
                             добавить
                         </Button>
-                        <ModalWindowAddEditUser
-                            socketIo={this.props.socketIo} 
-                            show={this.state.modalShow} 
-                            onHide={this.handleClose} 
-                            listWorkGroup={this.props.listWorkGroup}>
-                            Добавить нового пользователя
-                        </ModalWindowAddEditUser>
                     </th>
                 </tr>
             </thead>
@@ -77,6 +61,7 @@ class HeadTable extends React.Component {
 HeadTable.propTypes = {
     accessRights: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
+    headerButtonAdd: PropTypes.func.isRequired,
 };
 
 class ButtonEdit extends React.Component {
@@ -90,13 +75,19 @@ class ButtonEdit extends React.Component {
             isDisabled = "disabled";
         }
 
-        return <Button variant="outline-dark" size="sm" disabled={isDisabled}>редактировать</Button>;
+        return <Button 
+            onClick={this.props.handler.bind(this, false, this.props.login)}
+            variant="outline-dark" 
+            size="sm" 
+            disabled={isDisabled}>редактировать
+        </Button>;
     }
 }
 
 ButtonEdit.propTypes = {
     login: PropTypes.string.isRequired,
     accessRights: PropTypes.object.isRequired,
+    handler: PropTypes.func.isRequired,
 };
 
 class ButtonDelete extends React.Component {
@@ -110,14 +101,13 @@ class ButtonDelete extends React.Component {
             isDisabled = "disabled";
         }
 
-        return (
-            <Button 
-                onClick={this.props.handler}
-                variant="outline-danger" 
-                size="sm" 
-                disabled={isDisabled}>
+        return <Button 
+            onClick={this.props.handler}
+            variant="outline-danger" 
+            size="sm" 
+            disabled={isDisabled}>
             удалить
-            </Button>);
+        </Button>;
     }
 }
 
@@ -131,7 +121,12 @@ class BodyTable extends React.Component {
     constructor(props){
         super(props);
 
+        this.handlerShow = this.handlerShow.bind(this);
         this.addUsersList = this.addUsersList.bind(this);
+    }
+
+    handlerShow(isAdd, userLogin){
+        this.props.handlerButtonEdit(isAdd, userLogin);
     }
 
     addUsersList(){
@@ -164,7 +159,11 @@ class BodyTable extends React.Component {
                 <td key={`td_date_register_${key}`}>{dateFormatter.format(user.dateRegister)}</td>
                 <td key={`td_date_change_${key}`}>{dateTimeFormatter.format(user.dateChange)}</td>
                 <td className={"text-right"} key={`td_buttons_${key}`}>
-                    <ButtonEdit login={user.login} accessRights={this.props.accessRights} key={`button_edit_${key}`}/>
+                    <ButtonEdit 
+                        login={user.login} 
+                        accessRights={this.props.accessRights} 
+                        handler={this.handlerShow} 
+                        key={`button_edit_${key}`}/>
                     &nbsp;&nbsp;
                     <ButtonDelete 
                         login={user.login} 
@@ -196,6 +195,7 @@ class BodyTable extends React.Component {
 BodyTable.propTypes = {
     users: PropTypes.array.isRequired,
     accessRights: PropTypes.object.isRequired,
+    handlerButtonEdit: PropTypes.func.isRequired,
     handlerButtonDelete: PropTypes.func.isRequired,
 };
 
@@ -209,6 +209,8 @@ class CreateTable extends React.Component {
 
         this.handlerModalConfirmShow = this.handlerModalConfirmShow.bind(this);
         this.handlerModalConfirmClose = this.handlerModalConfirmClose.bind(this);
+        this.handlerModalAddOrEditShow = this.handlerModalAddOrEditShow.bind(this);
+        this.handlerModalAddOrEditClose = this.handlerModalAddOrEditClose.bind(this);
 
         this.sendMsgDeleteUser = this.sendMsgDeleteUser.bind(this);
 
@@ -219,11 +221,36 @@ class CreateTable extends React.Component {
                 userID: "",
                 userLogin: "",
             },
+            modalAddOrEdit: {
+                show: false,
+                pressButtonIsAdd: true,
+                userLogin: "",
+            },
         };
 
         this.addListeners();
     }
   
+    handlerModalAddOrEditShow(pressButtonIsAdd, userLogin){
+        let objState = Object.assign({}, this.state);
+        objState.modalAddOrEdit = {
+            show: true,
+            pressButtonIsAdd: pressButtonIsAdd,
+            userLogin: userLogin,
+        };
+
+        this.setState(objState); 
+    }
+
+    handlerModalAddOrEditClose(){
+        let objState = Object.assign({}, this.state);
+        objState.modalAddOrEdit = {
+            show: false,
+        };
+
+        this.setState(objState); 
+    }
+
     handlerModalConfirmShow(userID, userLogin){
         let objState = Object.assign({}, this.state);
         objState.modalConfirm = {
@@ -306,11 +333,26 @@ class CreateTable extends React.Component {
     render(){
         return (
             <div>
-                <h4 className="text-left text-uppercase">управление пользователями</h4>
+                <h4 className="text-left">Управление пользователями</h4>
                 <Table striped hover>
-                    <HeadTable socketIo={this.props.socketIo} accessRights={this.props.accessRights} listWorkGroup={this.props.listWorkGroup}/>
-                    <BodyTable users={this.state.userList} accessRights={this.props.accessRights} handlerButtonDelete={this.handlerModalConfirmShow}/>
+                    <HeadTable 
+                        socketIo={this.props.socketIo} 
+                        accessRights={this.props.accessRights} 
+                        headerButtonAdd={this.handlerModalAddOrEditShow}
+                        listWorkGroup={this.props.listWorkGroup}/>
+                    <BodyTable 
+                        users={this.state.userList} 
+                        accessRights={this.props.accessRights} 
+                        handlerButtonEdit={this.handlerModalAddOrEditShow}
+                        handlerButtonDelete={this.handlerModalConfirmShow}/>
                 </Table>
+                <ModalWindowAddEdit
+                    socketIo={this.props.socketIo} 
+                    show={this.state.modalAddOrEdit.show}
+                    isAddUser={this.state.modalAddOrEdit.pressButtonIsAdd}
+                    userLogin={this.state.modalAddOrEdit.userLogin}
+                    onHide={this.handlerModalAddOrEditClose} 
+                    listWorkGroup={this.props.listWorkGroup}/>
                 <ModalWindowConfirmMessage
                     show={this.state.modalConfirm.show} 
                     onHide={this.handlerModalConfirmClose}

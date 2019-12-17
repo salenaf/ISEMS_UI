@@ -115,19 +115,54 @@ module.exports.setSessionID = function(passportID, sessionID, cb) {
             debug("query select");
 
             mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, { query: { session_id: sessionID } }, (err, session) => {
-                if (err) reject(err);
+                if (err) return reject(err);
 
-                debug(session);
-
-                resolve(session);
+                resolve({
+                    userLogin: session.login,
+                    userName: session.user_name,
+                    userGroup: session.group_name,
+                    groupSettings: session.group_settings,
+                    userSettings: session.user_settings,
+                });
             });
+
+
+            /**
+             * return new Promise((resolve, reject) => {
+        mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, { isMany: true }, (err, sessions) => {
+            if (err) reject(err);
+
+            let listSession = {};
+
+            sessions.forEach(element => {
+                listSession[element.session_id] = {
+                    userLogin: element.login,
+                    userName: element.user_name,
+                    userGroup: element.group_name,
+                    groupSettings: element.group_settings,
+                    userSettings: element.user_settings,
+                };
+            });
+
+            resolve(listSession);
+        });
+    });
+             * 
+             */
         });
     }).then((userSession) => {
         debug("------------------------");
         debug(userSession);
         debug("------------------------");
 
-        globalObject.setData("users", userSession.sessionId, userSession.data);
+        debug("Добавляем данные в глобальный объект 'globalObject'");
+
+        let isTrue = globalObject.setData("users", sessionID, userSession);
+        debug(`Write data is success: '${isTrue}'`);
+
+
+        debug("Проверяем записанные данные");
+        debug(globalObject.getData("users", userSession.sessionId));
 
         cb(null);
     }).catch((err) => {

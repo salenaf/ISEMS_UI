@@ -1,86 +1,98 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Button, Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
+import PropTypes from "prop-types";
+
+import { ModalWindowChangeAdminPasswd } from "./commons/modalWindowChangeAdminPasswd.jsx";
 
 class CreateHeaderMenu extends React.Component {
-    constructor(props) {
+    constructor(props){
         super(props);
+
+        this.listItems = this.props.listItems;
+        this.createMenu = this.createMenu(this);
+
+        console.log(this.listItems);
     }
 
-    render() {
-        let createMenu = function (objMenuItem, isDropDown) {
-            let linkIsDisabled = "false";
+    createSubmenu(listDropDown){
+        let list = [];
 
-            let classLi = (isDropDown) ? "nav-item dropdown" : "nav-item";
-            let classA = (isDropDown) ? "dropdown-item" : "nav-link";
-            let tmpArr = [];
-            for (let key in objMenuItem) {
-                let submenuIsExist = (typeof objMenuItem[key].submenu === "undefined");
+        for(let item in listDropDown){
+            let linkElemIsDisabled = "";
+            let classElemIsDisable = "";
+            if ((typeof listDropDown[item].status !== "undefined") && (!listDropDown[item].status)) {
+                linkElemIsDisabled = "true";
+                classElemIsDisable = " disabled";
+            }
+        
+            list.push(<NavDropdown.Item className={classElemIsDisable} href={item} key={`${item}_key`} aria-disabled={linkElemIsDisabled}>
+                {listDropDown[item].name.toLowerCase()}
+            </NavDropdown.Item>);
+        }
 
-                if ((typeof objMenuItem[key].status !== "undefined") && (!objMenuItem[key].status)) {
-                    classA += " disabled";
-                    linkIsDisabled = "true";
-                }
+        return list;
+    }
 
-                if (submenuIsExist) {
-                    if (isDropDown) {
-                        tmpArr.push(
-                            <a className={classA} key={key} href={key} aria-disabled={linkIsDisabled}>{objMenuItem[key].name}</a>
-                        );
-                        continue;
-                    } else {
-                        tmpArr.push(
-                            <li className={classLi} key={key}>
-                                <a className={classA} href={key} aria-disabled={linkIsDisabled}>{objMenuItem[key].name.toUpperCase()}</a>
-                            </li>
-                        );
-                        continue;
-                    }
-                }
+    createMenu(){
+        let list = [];
+        list.push(<Nav.Link href="/" key="main_key">{"главная".toLowerCase()}</Nav.Link>);
 
-                let newString = (
-                    <li className="nav-item dropdown" key={key}>
-                        <a
-                            href="#"
-                            role="button"
-                            className="nav-link dropdown-toggle"
-                            id="ddlmenuItem"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                        >{objMenuItem[key].name.toUpperCase()}</a>
-                        <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            {createMenu(objMenuItem[key].submenu, true)}
-                        </div>
-                    </li>
-                );
+        let linkElemIsDisabled = "";
+        let classElemIsDisable = "";
+        let menuSettings = this.listItems.menuSettings;
+        
+        for(let key in menuSettings){
+            let submenuIsExist = (typeof menuSettings[key].submenu === "undefined");
 
-                tmpArr.push(newString);
+            if ((typeof menuSettings[key].status !== "undefined") && (!menuSettings[key].status)) {
+                linkElemIsDisabled = "true";
+                classElemIsDisable = " disabled";
             }
 
-            return tmpArr;
-        };
+            if (submenuIsExist) {
+                list.push(<Nav.Link className={classElemIsDisable} href={key} key={`${key}_key`} aria-disabled={linkElemIsDisabled}>
+                    {menuSettings[key].name.toLowerCase()}
+                </Nav.Link>);
 
-        let menuSettings = this.props.header.menuSettings;
-        let newMenu = createMenu(menuSettings, false);
+                continue;
+            }
 
+            list.push(
+                <NavDropdown title={menuSettings[key].name.toLowerCase()} key={`${key}_key`}>
+                    {this.createSubmenu.call(this, menuSettings[key].submenu)}
+                </NavDropdown>);
+        }
 
+        return list;
+    }
 
-        newMenu.unshift(
-            <li className="nav-item" key='index'>
-                <a className="nav-link" href='/'>ГЛАВНАЯ</a>
-            </li>
-        );
-
+    render(){
         return (
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="collapse navbar-collapse">
-                    <ul className="navbar-nav mr-auto">{newMenu}</ul>
-                </div>
-            </nav >);
+            <Container>
+                <Navbar fixed="top" bg="light" variant="light">
+                    <Navbar.Brand href="/">
+                        <img src="images/logo.png" className="d-inline-block align-top" height="50" width="120" />
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Nav className="mr-auto">{this.createMenu}</Nav>
+                    <Navbar.Collapse className="justify-content-end">
+                        <Navbar.Text>{this.listItems.userName}</Navbar.Text>&nbsp;&nbsp;
+                        <Button variant="outline-primary" size="sm" href="logout">ВЫХОД</Button>
+                    </Navbar.Collapse>
+                </Navbar>
+                <ModalWindowChangeAdminPasswd 
+                    login={this.listItems.login} 
+                    passIsDefault={this.listItems.isPasswordDefaultAdministrator}/>
+            </Container>);
     }
 }
 
+CreateHeaderMenu.protoType = {
+    listItems: PropTypes.object.isRequired,
+};
+
 ReactDOM.render(
-    <CreateHeaderMenu header={resivedFromServer} />,
+    <CreateHeaderMenu listItems={resivedFromServer} />,
     document.getElementById("menu-top")
 );

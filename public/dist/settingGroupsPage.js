@@ -41122,7 +41122,7 @@ function (_React$Component2) {
           disabled: isDisabled,
           defaultChecked: this.props.list[item].status,
           name: "checkbox_administrator"
-        }), description));
+        }), "\xA0", description));
       }
 
       return arrItems;
@@ -41561,8 +41561,8 @@ function (_React$Component9) {
         Object(_common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__["default"])(data);
       });
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
-        className: "text-left text-uppercase"
-      }, "\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
+        className: "text-left"
+      }, "\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
         striped: true,
         hover: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup, {

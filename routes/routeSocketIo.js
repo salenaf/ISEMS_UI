@@ -516,36 +516,39 @@ exports.uploadFiles = function(socketIo, ss) {
                     if (err) {
                         writeLogFile("error", err.toString());
                         showNotify(socketIo, "danger", "Ошибка обработки запроса");
+
                         return;
                     }
 
                     if (!successfully) {
                         writeLogFile("error", "not enough rights to perform the action (session ID: " + socketIo.sessionID + ")");
                         showNotify(socketIo, "danger", "Недостаточно прав для выполнения действия");
-                    } else {
-                        let fileName = (__dirname.substr(0, (__dirname.length - 6)) + "uploads/") + path.basename(data.name);
-                        let tempFile = fs.createWriteStream(fileName, { flags: "w", defaultEncoding: "utf8", autoClose: true });
-                        stream.pipe(tempFile);
 
-                        tempFile.on("close", function() {
-                            require("../libs/processing/processing_uploaded_files/processingUploadFileSourceSetting")(fileName, function(err, objCountUploaded) {
-                                if (err) {
-                                    writeLogFile("error", err.toString());
-                                    showNotify(socketIo, "danger", "Ошибка обработки загруженного файла");
-                                } else {
-                                    let messageLog = "the information update performed by the user with a username of administrator,";
-                                    messageLog += " a number of processed data is updated / not updated " + objCountUploaded.countUpdate + "/" + objCountUploaded.countOverlap;
-                                    writeLogFile("info", messageLog);
-
-                                    let message = "Импорт информации по источникам успешно выполнен, всего обработано ";
-                                    message += (objCountUploaded.countUpdate + objCountUploaded.countOverlap) + " из них добавлено " + objCountUploaded.countUpdate;
-
-                                    showNotify(socketIo, "success", message);
-                                    socketIo.emit("action page", { reload: true });
-                                }
-                            });
-                        });
+                        return;
                     }
+
+                    let fileName = (__dirname.substr(0, (__dirname.length - 6)) + "uploads/") + path.basename(data.name);
+                    let tempFile = fs.createWriteStream(fileName, { flags: "w", defaultEncoding: "utf8", autoClose: true });
+                    stream.pipe(tempFile);
+
+                    tempFile.on("close", function() {
+                        require("../libs/processing/processing_uploaded_files/processingUploadFileSourceSetting")(fileName, function(err, objCountUploaded) {
+                            if (err) {
+                                writeLogFile("error", err.toString());
+                                showNotify(socketIo, "danger", "Ошибка обработки загруженного файла");
+                            } else {
+                                let messageLog = "the information update performed by the user with a username of administrator,";
+                                messageLog += " a number of processed data is updated / not updated " + objCountUploaded.countUpdate + "/" + objCountUploaded.countOverlap;
+                                writeLogFile("info", messageLog);
+
+                                let message = "Импорт информации по источникам успешно выполнен, всего обработано ";
+                                message += (objCountUploaded.countUpdate + objCountUploaded.countOverlap) + " из них добавлено " + objCountUploaded.countUpdate;
+
+                                showNotify(socketIo, "success", message);
+                                socketIo.emit("action page", { reload: true });
+                            }
+                        });
+                    });
                 });
             });
         });

@@ -13,9 +13,9 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import { ModalAlertDangerMessage } from "../commons/modalAlertMessage.jsx";
 
-export { ModalWindowAddEditUser };
+export { ModalWindowAddEdit };
 
-class ModalWindowAddEditUser extends React.Component {
+class ModalWindowAddEdit extends React.Component {
     constructor(props){
         super(props);
 
@@ -130,34 +130,69 @@ class ModalWindowAddEditUser extends React.Component {
             this.setState( objUpdate );
         }
 
-        if(!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
-            this.setState({alertShow: true});
-
-            return;
-        }
-
         let transferObject = {
             "user_name": userInputs.userName.value,
             "work_group": userInputs.workGroup.value,
             "user_login": userInputs.login.value,
             "user_password": userInputs.firstPassword.value,
         };
+        let typeEvent = "add new user";
+        let at = "create";
 
-        this.props.socketIo.emit("add new user", {
-            actionType: "create",
+        if(!this.props.isAddUser){
+            if(!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
+                this.setState({alertShow: true});
+    
+                return;
+            }            
+
+            transferObject.user_login = this.props.userLogin;
+            typeEvent = "update user";
+            at = "edit";
+        } else {
+            if(!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
+                this.setState({alertShow: true});
+    
+                return;
+            }
+
+            transferObject.user_login = userInputs.login.value;
+        }
+
+        this.props.socketIo.emit(typeEvent, {
+            actionType: at,
             arguments: transferObject,
         });
 
         this.handlerClose();
     }
 
+    addOrEdit(){
+        let settings = {
+            windowHeader: "Добавить нового пользователя",
+            isReadOnly: "",
+            defaultValue: "",
+        };
+
+        if (!this.props.isAddUser){
+            settings = {
+                windowHeader: "Изменить настройки пользователя",
+                isReadOnly: " true",
+                defaultValue: this.props.userLogin,
+            };
+        }
+
+        return settings;
+    }
+
     render(){
-        let alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";
+        let alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";      
+        let modalSettings = this.addOrEdit();
 
         return(
             <Modal show={this.props.show} onHide={this.handlerClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{this.props.children}</Modal.Title>
+                    <Modal.Title>{modalSettings.windowHeader}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
@@ -182,6 +217,8 @@ class ModalWindowAddEditUser extends React.Component {
                             <Form.Control 
                                 control="text" 
                                 onChange={this.handlerUserInput}
+                                readOnly={modalSettings.isReadOnly}
+                                defaultValue={modalSettings.defaultValue}
                                 isValid={this.state.formElements.login.isValid} 
                                 isInvalid={this.state.formElements.login.isInvalid} />
                         </Form.Group>
@@ -216,10 +253,12 @@ class ModalWindowAddEditUser extends React.Component {
     }
 }
 
-ModalWindowAddEditUser.propTypes ={
+ModalWindowAddEdit.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
-    children: PropTypes.string.isRequired,
+    isAddUser: PropTypes.bool,
+    userLogin: PropTypes.string,
     socketIo: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
 };
+

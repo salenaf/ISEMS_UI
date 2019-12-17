@@ -64,7 +64,7 @@ module.exports = function(req, res, objHeader) {
 
         let objResult = {
             header: objHeader,
-            userGroupPermissions: result.userGroupPermissions.group_settings.management_groups.element_settings,
+            userGroupPermissions: result.userGroupPermissions.group_settings.management_users.element_settings,
             mainInformation: result.mainInformation,
             listWorkGroup: Object.keys(result.listWorkGroup),
         };
