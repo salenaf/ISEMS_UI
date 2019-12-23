@@ -66,17 +66,17 @@ HeadTable.propTypes = {
 
 class ButtonEdit extends React.Component {
     render(){
-        let login = this.props.login;
+        let userSettings = this.props.userSettings;
         let accessRights = this.props.accessRights;
 
         let isDisabled;
 
-        if((login === "administrator") || !accessRights.edit.status) {
+        if((userSettings.userLogin === "administrator") || !accessRights.edit.status) {
             isDisabled = "disabled";
         }
 
         return <Button 
-            onClick={this.props.handler.bind(this, false, this.props.login)}
+            onClick={this.props.handler.bind(this, false, userSettings)}
             variant="outline-dark" 
             size="sm" 
             disabled={isDisabled}>редактировать
@@ -85,7 +85,7 @@ class ButtonEdit extends React.Component {
 }
 
 ButtonEdit.propTypes = {
-    login: PropTypes.string.isRequired,
+    userSettings: PropTypes.object.isRequired,
     accessRights: PropTypes.object.isRequired,
     handler: PropTypes.func.isRequired,
 };
@@ -125,8 +125,8 @@ class BodyTable extends React.Component {
         this.addUsersList = this.addUsersList.bind(this);
     }
 
-    handlerShow(isAdd, userLogin){
-        this.props.handlerButtonEdit(isAdd, userLogin);
+    handlerShow(isAdd, settings){
+        this.props.handlerButtonEdit(isAdd, settings);
     }
 
     addUsersList(){
@@ -152,6 +152,11 @@ class BodyTable extends React.Component {
 
         users.forEach(user => {          
             let key = user.userID;
+            let userSettings = {
+                userName: user.userName,
+                userLogin: user.login,
+                userGroup: user.group,
+            };
             let elem = <tr key={`tr_${key}`}>
                 <td key={`td_login_${key}`}>{user.login}</td>
                 <td key={`td_user_name_${key}`}>{user.userName}</td>
@@ -160,7 +165,7 @@ class BodyTable extends React.Component {
                 <td key={`td_date_change_${key}`}>{dateTimeFormatter.format(user.dateChange)}</td>
                 <td className={"text-right"} key={`td_buttons_${key}`}>
                     <ButtonEdit 
-                        login={user.login} 
+                        userSettings={userSettings} 
                         accessRights={this.props.accessRights} 
                         handler={this.handlerShow} 
                         key={`button_edit_${key}`}/>
@@ -203,8 +208,10 @@ class CreateTable extends React.Component {
     constructor(props){
         super(props);
        
-        this.addListeners = this.addListeners.bind(this);        
-        this.addOrUpdateNewUser = this.addOrUpdateNewUser.bind(this);
+        this.addListeners = this.addListeners.bind(this);
+                
+        this.addNewUser = this.addNewUser.bind(this);
+        this.updateUser = this.updateUser.bind(this);
         this.deleteUser = this.deleteUser.bind(this);
 
         this.handlerModalConfirmShow = this.handlerModalConfirmShow.bind(this);
@@ -231,15 +238,21 @@ class CreateTable extends React.Component {
         this.addListeners();
     }
   
-    handlerModalAddOrEditShow(pressButtonIsAdd, userLogin){
+    handlerModalAddOrEditShow(pressButtonIsAdd, settings){
         let objState = Object.assign({}, this.state);
         objState.modalAddOrEdit = {
             show: true,
             pressButtonIsAdd: pressButtonIsAdd,
-            userLogin: userLogin,
+            userLogin: settings.userLogin,
         };
 
-        this.setState(objState); 
+        this.setState(objState);
+
+        this.userSettings = {
+            name: settings.userName,
+            login: settings.userLogin,
+            group: settings.userGroup,
+        };
     }
 
     handlerModalAddOrEditClose(){
@@ -273,7 +286,7 @@ class CreateTable extends React.Component {
         this.setState(objState);    
     }
 
-    addOrUpdateNewUser(newUser){
+    addNewUser(newUser){
         let objNewUser = JSON.parse(newUser);
 
         let objState = Object.assign({}, this.state);
@@ -288,6 +301,22 @@ class CreateTable extends React.Component {
         });
 
         this.setState(objState);    
+    }
+
+    updateUser(updateUserInfo){
+        let uu = JSON.parse(updateUserInfo);
+
+        let objState = Object.assign({}, this.state);
+    
+        for(let i = 0; i < objState.userList.length; i++){
+            if(objState.userList[i].userID === uu.userID){
+                objState.userList[i].userName = uu.userName;
+                objState.userList[i].group = uu.group;
+                objState.userList[i].dateChange = uu.dateChange;            
+            }
+        }
+    
+        this.setState(objState);
     }
 
     deleteUser(delUser){
@@ -315,10 +344,10 @@ class CreateTable extends React.Component {
     addListeners(){
         let listEvents = {
             "add new user": newUser => {
-                this.addOrUpdateNewUser(newUser);
+                this.addNewUser(newUser);
             },
-            "update user": updateUser => {
-                this.addOrUpdateNewUser(updateUser);
+            "update user": updateUserInfo => {
+                this.updateUser(updateUserInfo);
             },
             "del selected user": delUser => {
                 this.deleteUser(delUser);
@@ -350,7 +379,7 @@ class CreateTable extends React.Component {
                     socketIo={this.props.socketIo} 
                     show={this.state.modalAddOrEdit.show}
                     isAddUser={this.state.modalAddOrEdit.pressButtonIsAdd}
-                    userLogin={this.state.modalAddOrEdit.userLogin}
+                    userSettings={this.userSettings}
                     onHide={this.handlerModalAddOrEditClose} 
                     listWorkGroup={this.props.listWorkGroup}/>
                 <ModalWindowConfirmMessage

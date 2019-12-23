@@ -41150,16 +41150,16 @@ function (_React$Component2) {
   _createClass(ButtonEdit, [{
     key: "render",
     value: function render() {
-      var login = this.props.login;
+      var userSettings = this.props.userSettings;
       var accessRights = this.props.accessRights;
       var isDisabled;
 
-      if (login === "administrator" || !accessRights.edit.status) {
+      if (userSettings.userLogin === "administrator" || !accessRights.edit.status) {
         isDisabled = "disabled";
       }
 
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        onClick: this.props.handler.bind(this, false, this.props.login),
+        onClick: this.props.handler.bind(this, false, userSettings),
         variant: "outline-dark",
         size: "sm",
         disabled: isDisabled
@@ -41171,7 +41171,7 @@ function (_React$Component2) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonEdit.propTypes = {
-  login: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
+  userSettings: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   handler: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 };
@@ -41234,8 +41234,8 @@ function (_React$Component4) {
 
   _createClass(BodyTable, [{
     key: "handlerShow",
-    value: function handlerShow(isAdd, userLogin) {
-      this.props.handlerButtonEdit(isAdd, userLogin);
+    value: function handlerShow(isAdd, settings) {
+      this.props.handlerButtonEdit(isAdd, settings);
     }
   }, {
     key: "addUsersList",
@@ -41260,6 +41260,11 @@ function (_React$Component4) {
       });
       users.forEach(function (user) {
         var key = user.userID;
+        var userSettings = {
+          userName: user.userName,
+          userLogin: user.login,
+          userGroup: user.group
+        };
         var elem = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
           key: "tr_".concat(key)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
@@ -41276,7 +41281,7 @@ function (_React$Component4) {
           className: "text-right",
           key: "td_buttons_".concat(key)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
-          login: user.login,
+          userSettings: userSettings,
           accessRights: _this3.props.accessRights,
           handler: _this3.handlerShow,
           key: "button_edit_".concat(key)
@@ -41325,7 +41330,8 @@ function (_React$Component5) {
 
     _this4 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
     _this4.addListeners = _this4.addListeners.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
-    _this4.addOrUpdateNewUser = _this4.addOrUpdateNewUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.addNewUser = _this4.addNewUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
+    _this4.updateUser = _this4.updateUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.deleteUser = _this4.deleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.handlerModalConfirmShow = _this4.handlerModalConfirmShow.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.handlerModalConfirmClose = _this4.handlerModalConfirmClose.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
@@ -41353,14 +41359,19 @@ function (_React$Component5) {
 
   _createClass(CreateTable, [{
     key: "handlerModalAddOrEditShow",
-    value: function handlerModalAddOrEditShow(pressButtonIsAdd, userLogin) {
+    value: function handlerModalAddOrEditShow(pressButtonIsAdd, settings) {
       var objState = Object.assign({}, this.state);
       objState.modalAddOrEdit = {
         show: true,
         pressButtonIsAdd: pressButtonIsAdd,
-        userLogin: userLogin
+        userLogin: settings.userLogin
       };
       this.setState(objState);
+      this.userSettings = {
+        name: settings.userName,
+        login: settings.userLogin,
+        group: settings.userGroup
+      };
     }
   }, {
     key: "handlerModalAddOrEditClose",
@@ -41394,8 +41405,8 @@ function (_React$Component5) {
       this.setState(objState);
     }
   }, {
-    key: "addOrUpdateNewUser",
-    value: function addOrUpdateNewUser(newUser) {
+    key: "addNewUser",
+    value: function addNewUser(newUser) {
       var objNewUser = JSON.parse(newUser);
       var objState = Object.assign({}, this.state);
       objState.userList.push({
@@ -41406,6 +41417,22 @@ function (_React$Component5) {
         dateRegister: objNewUser.dateRegister,
         dateChange: objNewUser.dateChange
       });
+      this.setState(objState);
+    }
+  }, {
+    key: "updateUser",
+    value: function updateUser(updateUserInfo) {
+      var uu = JSON.parse(updateUserInfo);
+      var objState = Object.assign({}, this.state);
+
+      for (var i = 0; i < objState.userList.length; i++) {
+        if (objState.userList[i].userID === uu.userID) {
+          objState.userList[i].userName = uu.userName;
+          objState.userList[i].group = uu.group;
+          objState.userList[i].dateChange = uu.dateChange;
+        }
+      }
+
       this.setState(objState);
     }
   }, {
@@ -41437,10 +41464,10 @@ function (_React$Component5) {
 
       var listEvents = {
         "add new user": function addNewUser(newUser) {
-          _this5.addOrUpdateNewUser(newUser);
+          _this5.addNewUser(newUser);
         },
-        "update user": function updateUser(_updateUser) {
-          _this5.addOrUpdateNewUser(_updateUser);
+        "update user": function updateUser(updateUserInfo) {
+          _this5.updateUser(updateUserInfo);
         },
         "del selected user": function delSelectedUser(delUser) {
           _this5.deleteUser(delUser);
@@ -41473,7 +41500,7 @@ function (_React$Component5) {
         socketIo: this.props.socketIo,
         show: this.state.modalAddOrEdit.show,
         isAddUser: this.state.modalAddOrEdit.pressButtonIsAdd,
-        userLogin: this.state.modalAddOrEdit.userLogin,
+        userSettings: this.userSettings,
         onHide: this.handlerModalAddOrEditClose,
         listWorkGroup: this.props.listWorkGroup
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__["ModalWindowConfirmMessage"], {
@@ -41525,7 +41552,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Модуль формирования модального окна добавления нового пользователя
  * 
- * Версия 0.1, дата релиза 03.12.2019
+ * Версия 0.2, дата релиза 23.12.2019
  */
 
 
@@ -41697,14 +41724,25 @@ function (_React$Component) {
       var at = "create";
 
       if (!this.props.isAddUser) {
-        if (!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
-          this.setState({
-            alertShow: true
-          });
-          return;
+        if (userInputs.userName.value.length === 0) {
+          if (!firstPasswdIsInvalide || !passwdIsEqual) {
+            this.setState({
+              alertShow: true
+            });
+            return;
+          }
+
+          transferObject.user_name = this.props.userSettings.name;
+        } else {
+          if (!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual) {
+            this.setState({
+              alertShow: true
+            });
+            return;
+          }
         }
 
-        transferObject.user_login = this.props.userLogin;
+        transferObject.user_login = this.props.userSettings.login;
         typeEvent = "update user";
         at = "edit";
       } else {
@@ -41737,7 +41775,11 @@ function (_React$Component) {
         settings = {
           windowHeader: "Изменить настройки пользователя",
           isReadOnly: " true",
-          defaultValue: this.props.userLogin
+          defaultValue: {
+            defaultUserName: this.props.userSettings.name,
+            defaultUserLogin: this.props.userSettings.login,
+            defaultUserGroup: this.props.userSettings.group
+          }
         };
       }
 
@@ -41750,6 +41792,12 @@ function (_React$Component) {
 
       var alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";
       var modalSettings = this.addOrEdit();
+      var defaultValueGroup = "";
+
+      if (!this.props.isAddUser) {
+        defaultValueGroup = this.props.userSettings.group;
+      }
+
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
         show: this.props.show,
         onHide: this.handlerClose
@@ -41760,12 +41808,14 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
         control: "text",
         onChange: this.handlerUserInput,
+        defaultValue: modalSettings.defaultValue.defaultUserName,
         isValid: this.state.formElements.userName.isValid,
         isInvalid: this.state.formElements.userName.isInvalid
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
         controlId: "workGroup"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0420\u0430\u0431\u043E\u0447\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
         as: "select",
+        defaultValue: defaultValueGroup,
         onChange: this.handlerUserInput
       }, this.props.listWorkGroup.map(function (group) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
@@ -41777,7 +41827,7 @@ function (_React$Component) {
         control: "text",
         onChange: this.handlerUserInput,
         readOnly: modalSettings.isReadOnly,
-        defaultValue: modalSettings.defaultValue,
+        defaultValue: modalSettings.defaultValue.defaultUserLogin,
         isValid: this.state.formElements.login.isValid,
         isInvalid: this.state.formElements.login.isInvalid
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
@@ -41817,7 +41867,7 @@ ModalWindowAddEdit.propTypes = {
   show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
   isAddUser: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
-  userLogin: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  userSettings: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object,
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.array.isRequired
 };

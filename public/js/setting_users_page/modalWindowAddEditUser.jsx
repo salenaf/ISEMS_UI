@@ -1,7 +1,7 @@
 /**
  * Модуль формирования модального окна добавления нового пользователя
  * 
- * Версия 0.1, дата релиза 03.12.2019
+ * Версия 0.2, дата релиза 23.12.2019
  */
 
 "use strict";
@@ -140,13 +140,23 @@ class ModalWindowAddEdit extends React.Component {
         let at = "create";
 
         if(!this.props.isAddUser){
-            if(!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
-                this.setState({alertShow: true});
-    
-                return;
-            }            
+            if(userInputs.userName.value.length === 0){
+                if(!firstPasswdIsInvalide || !passwdIsEqual){
+                    this.setState({alertShow: true});
 
-            transferObject.user_login = this.props.userLogin;
+                    return;
+                }
+                
+                transferObject.user_name = this.props.userSettings.name;
+            } else {
+                if(!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
+                    this.setState({alertShow: true});
+
+                    return;
+                }            
+            }
+
+            transferObject.user_login = this.props.userSettings.login;
             typeEvent = "update user";
             at = "edit";
         } else {
@@ -178,7 +188,11 @@ class ModalWindowAddEdit extends React.Component {
             settings = {
                 windowHeader: "Изменить настройки пользователя",
                 isReadOnly: " true",
-                defaultValue: this.props.userLogin,
+                defaultValue: {
+                    defaultUserName: this.props.userSettings.name,
+                    defaultUserLogin: this.props.userSettings.login,
+                    defaultUserGroup: this.props.userSettings.group,
+                },
             };
         }
 
@@ -188,6 +202,10 @@ class ModalWindowAddEdit extends React.Component {
     render(){
         let alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";      
         let modalSettings = this.addOrEdit();
+        let defaultValueGroup = "";
+        if(!this.props.isAddUser){
+            defaultValueGroup = this.props.userSettings.group;
+        }
 
         return(
             <Modal show={this.props.show} onHide={this.handlerClose}>
@@ -201,12 +219,13 @@ class ModalWindowAddEdit extends React.Component {
                             <Form.Control 
                                 control="text" 
                                 onChange={this.handlerUserInput}
+                                defaultValue={modalSettings.defaultValue.defaultUserName}
                                 isValid={this.state.formElements.userName.isValid} 
                                 isInvalid={this.state.formElements.userName.isInvalid} />
                         </Form.Group>
                         <Form.Group controlId="workGroup">
                             <Form.Label>Рабочая группа</Form.Label>
-                            <Form.Control as="select" onChange={this.handlerUserInput}>
+                            <Form.Control as="select" defaultValue={defaultValueGroup} onChange={this.handlerUserInput}>
                                 {this.props.listWorkGroup.map(group => {
                                     return <option key={this.getKey(`group_${group}`)}>{group}</option>;
                                 })}
@@ -218,7 +237,7 @@ class ModalWindowAddEdit extends React.Component {
                                 control="text" 
                                 onChange={this.handlerUserInput}
                                 readOnly={modalSettings.isReadOnly}
-                                defaultValue={modalSettings.defaultValue}
+                                defaultValue={modalSettings.defaultValue.defaultUserLogin}
                                 isValid={this.state.formElements.login.isValid} 
                                 isInvalid={this.state.formElements.login.isInvalid} />
                         </Form.Group>
@@ -257,7 +276,7 @@ ModalWindowAddEdit.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
     isAddUser: PropTypes.bool,
-    userLogin: PropTypes.string,
+    userSettings: PropTypes.object,
     socketIo: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
 };

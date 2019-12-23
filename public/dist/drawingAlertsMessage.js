@@ -6823,54 +6823,49 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Alert = function Alert(_ref) {
-	var _ref$type = _ref.type,
-	    type = _ref$type === undefined ? "info" : _ref$type,
-	    children = _ref.children,
-	    headline = _ref.headline,
-	    onDismiss = _ref.onDismiss,
-	    _ref$dismissTitle = _ref.dismissTitle,
-	    dismissTitle = _ref$dismissTitle === undefined ? "Dismiss" : _ref$dismissTitle,
-	    classes = _ref.classes,
-	    _ref$showIcon = _ref.showIcon,
-	    showIcon = _ref$showIcon === undefined ? true : _ref$showIcon;
+    var _ref$type = _ref.type,
+        type = _ref$type === undefined ? "info" : _ref$type,
+        children = _ref.children,
+        headline = _ref.headline,
+        onDismiss = _ref.onDismiss,
+        _ref$dismissTitle = _ref.dismissTitle,
+        dismissTitle = _ref$dismissTitle === undefined ? "Dismiss" : _ref$dismissTitle,
+        classes = _ref.classes,
+        _ref$showIcon = _ref.showIcon,
+        showIcon = _ref$showIcon === undefined ? true : _ref$showIcon;
 
-	var isDismissable = !!onDismiss;
-	var css = (isDismissable ? classes.dismissable : "") + " " + classes[type] + " " + classes.alert;
-	var dismiss = isDismissable ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-		"button",
-		{
-			type: "button",
-			className: classes.close,
-			title: dismissTitle,
-			onClick: onDismiss
-		},
-		"\xD7"
-	) : null;
+    var isDismissable = !!onDismiss;
+    var css = (isDismissable ? classes.dismissable : "") + " " + classes[type] + " " + classes.alert;
+    var dismiss = isDismissable ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
+        "button", {
+            type: "button",
+            className: classes.close,
+            title: dismissTitle,
+            onClick: onDismiss
+        },
+        "   \xD7"
+    ) : null;
 
-	return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-		"div",
-		null,
-		react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-			"div",
-			{ className: css },
-			dismiss,
-			showIcon ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_icon__WEBPACK_IMPORTED_MODULE_1__["default"], { className: classes.icon, type: type }) : null,
-			react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-				"div",
-				{ className: classes.msgContainer },
-				headline ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-					"h4",
-					{ className: classes.headline },
-					headline
-				) : null,
-				react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-					"div",
-					{ className: classes.body },
-					children
-				)
-			)
-		)
-	);
+    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
+        "div",
+        null,
+        react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
+            "div", { className: css },
+            dismiss,
+            showIcon ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_icon__WEBPACK_IMPORTED_MODULE_1__["default"], { className: classes.icon, type: type }) : null,
+            react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
+                "div", { className: classes.msgContainer },
+                headline ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
+                    "h4", { className: classes.headline },
+                    headline
+                ) : null,
+                react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
+                    "div", { className: classes.body },
+                    children
+                )
+            )
+        )
+    );
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Object(_styles__WEBPACK_IMPORTED_MODULE_2__["default"])(Alert));

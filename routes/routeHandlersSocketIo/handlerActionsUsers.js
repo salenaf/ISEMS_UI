@@ -151,7 +151,7 @@ function addUser(socketIo, data) {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
-                message: "Пользователь успешно добавлен"
+                message: "Пользователь успешно добавлен."
             });
 
             socketIo.emit("add new user", JSON.stringify(newUser));
@@ -169,7 +169,7 @@ function addUser(socketIo, data) {
             showNotify({
                 socketIo: socketIo,
                 type: "danger",
-                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору"
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
             writeLogFile("error", err.toString());
@@ -188,6 +188,136 @@ function updateUser(socketIo, data) {
      * 
      */
 
+    //проверка авторизован ли пользователь
+    checkUserAuthentication(socketIo)
+        .then(authData => {
+
+            debug("авторизован ли пользователь");
+            debug(authData);
+
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("user management", "Пользователь не авторизован.");
+            }
+
+            debug("может ли пользователь редактировать информацию о пользователе");
+
+            //может ли пользователь создавать нового пользователя
+            if (!authData.document.groupSettings.management_users.element_settings.edit.status) {
+                throw new MyError("user management", "Невозможно изменить информацию о пользователе. Недостаточно прав на выполнение данного действия.");
+            }
+        }).then(() => {
+            debug("Проверка прав пользователей выполненна успешно");
+
+            //проверяем параметры полученные от пользователя
+            if (!helpersFunc.checkUserSettingsManagementUsers(data.arguments)) {
+                throw new MyError("user management", "Невозможно изменить информацию о пользователе. Один или более заданных параметров некорректен.");
+            }
+        }).then(() => {
+            debug("Проверка параметров заданных пользователем выполненна успешно");
+
+            return new Promise((resolve, reject) => {
+                async.parallel({
+                    listGroup: (callbackParallel) => {
+
+                        debug("//проверяем наличие группы ");
+
+                        //проверяем наличие группы 
+                        informationItemGroups((err, listGroup) => {
+                            if (err) return callbackParallel(err);
+
+                            let errorMsg = `Невозможно изменить информацию о пользователе. Группы '${data.arguments.work_group}' не существует.`;
+                            let myError = new MyError("user management", errorMsg);
+
+                            if (!listGroup.some(elem => elem === data.arguments.work_group)) callbackParallel(myError);
+                            else callbackParallel(null);
+                        });
+                    },
+                    userInfo: (callbackParallel) => {
+
+                        debug("//проверяем есть ли уже пользователь с таким логином");
+
+                        //проверяем есть ли уже пользователь с таким логином 
+                        informationAboutUser.getInformationByLogin(data.arguments.user_login, (err, userInfo) => {
+                            if (err) return callbackParallel(err);
+
+                            let errorMsg = `Невозможно изменить информацию о пользователе. Пользователь с логином '${data.arguments.user_login}' не существует.`;
+                            let myError = new MyError("user management", errorMsg);
+
+                            if (userInfo === null) callbackParallel(myError);
+                            else callbackParallel(null, userInfo);
+                        });
+                    }
+                }, (err, result) => {
+                    if (err) reject(err);
+                    else resolve(result.userInfo);
+                });
+            });
+        }).then(userInfo => {
+            debug("Проверка наличия указанной группы и логина пользователя выполнена успешно");
+            debug(userInfo);
+
+            return new Promise((resolve, reject) => {
+
+                debug("добавляем нового пользователя и пароль");
+                debug(data.arguments.user_password);
+
+                let md5string = crypto.createHash("md5")
+                    .update(data.arguments.user_password)
+                    .digest("hex");
+
+                let updateUser = {
+                    userID: userInfo.user_id,
+                    dateRegister: userInfo.date_register,
+                    dateChange: +(new Date()),
+                    login: userInfo.login,
+                    userName: data.arguments.user_name,
+                    group: data.arguments.work_group,
+                };
+
+                mongodbQueryProcessor.queryUpdate(models.modelUser, {
+                    id: userInfo.id,
+                    update: {
+                        date_change: updateUser.dateChange,
+                        password: hashPassword.getHashPassword(md5string, "isems-ui"),
+                        group: updateUser.group,
+                        user_name: updateUser.userName,
+                        settings: {
+                            sourceMainPage: []
+                        },
+                    },
+                }, err => {
+                    if (err) reject(err);
+                    else resolve(updateUser);
+                });
+            });
+        }).then(updateUser => {
+            debug("Отправляем полученный список в UI");
+
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Информация о пользователе успешно изменена."
+            });
+
+            socketIo.emit("update user", JSON.stringify(updateUser));
+        }).catch(err => {
+            debug(err);
+
+            if (err.name === "user management") return showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: err.message
+            });
+
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору"
+            });
+
+            writeLogFile("error", err.toString());
+        });
 }
 
 function deleteUser(socketIo, data) {

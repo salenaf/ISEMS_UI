@@ -40703,26 +40703,25 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "./commons/modalWindowChangeAdminPasswd.jsx":
-/*!**************************************************!*\
-  !*** ./commons/modalWindowChangeAdminPasswd.jsx ***!
-  \**************************************************/
-/*! exports provided: ModalWindowChangeAdminPasswd */
+/***/ "./commons/modalAlertMessage.jsx":
+/*!***************************************!*\
+  !*** ./commons/modalAlertMessage.jsx ***!
+  \***************************************/
+/*! exports provided: ModalAlertDangerMessage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowChangeAdminPasswd", function() { return ModalWindowChangeAdminPasswd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalAlertDangerMessage", function() { return ModalAlertDangerMessage; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
 /**
- * Модуль формирования модального окна для изменения дефолтного
- * пароля администратора
+ * Модуль формирования сообщения об ошибке при выполнении валидации в модальном окне
  * 
- * Версия 0.1, дата релиза 17.12.2019
+ * Версия 0.1, дата релиза 03.12.2019
  */
 
 
@@ -40749,21 +40748,189 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+var ModalAlertDangerMessage =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(ModalAlertDangerMessage, _React$Component);
+
+  function ModalAlertDangerMessage() {
+    _classCallCheck(this, ModalAlertDangerMessage);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ModalAlertDangerMessage).apply(this, arguments));
+  }
+
+  _createClass(ModalAlertDangerMessage, [{
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
+        dismissible: true,
+        variant: "danger",
+        show: this.props.show,
+        onClose: this.props.onClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, {
+        className: "text-center"
+      }, this.props.children), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.message)));
+    }
+  }]);
+
+  return ModalAlertDangerMessage;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ModalAlertDangerMessage.propTypes = {
+  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  message: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
+};
+
+/***/ }),
+
+/***/ "./commons/modalWindowChangeAdminPasswd.jsx":
+/*!**************************************************!*\
+  !*** ./commons/modalWindowChangeAdminPasswd.jsx ***!
+  \**************************************************/
+/*! exports provided: ModalWindowChangeAdminPasswd */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowChangeAdminPasswd", function() { return ModalWindowChangeAdminPasswd; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../commons/modalAlertMessage.jsx */ "./commons/modalAlertMessage.jsx");
+/**
+ * Модуль формирования модального окна для изменения дефолтного
+ * пароля администратора
+ * 
+ * Версия 0.1, дата релиза 17.12.2019
+ */
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+
+
+
+
+
+
 var ModalWindowChangeAdminPasswd =
 /*#__PURE__*/
 function (_React$Component) {
   _inherits(ModalWindowChangeAdminPasswd, _React$Component);
 
   function ModalWindowChangeAdminPasswd(props) {
+    var _this;
+
     _classCallCheck(this, ModalWindowChangeAdminPasswd);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowChangeAdminPasswd).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowChangeAdminPasswd).call(this, props));
+    _this.windowShow = _this.windowShow.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerUserInput = _this.handlerUserInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.state = {
+      alertShow: false,
+      modalWindowShow: true,
+      formElements: {
+        firstPassword: {
+          value: "",
+          isValid: false,
+          isInvalid: false
+        },
+        secondPassword: {
+          value: "",
+          isValid: false,
+          isInvalid: false
+        }
+      }
+    };
+    return _this;
   }
 
   _createClass(ModalWindowChangeAdminPasswd, [{
+    key: "windowShow",
+    value: function windowShow() {
+      this.setState({
+        modalWindowShow: true
+      });
+    }
+  }, {
+    key: "handlerClose",
+    value: function handlerClose() {
+      this.setState({
+        modalWindowShow: false
+      });
+    }
+  }, {
+    key: "alertClose",
+    value: function alertClose() {
+      this.setState({
+        alertClose: false
+      });
+    }
+  }, {
+    key: "handlerUserInput",
+    value: function handlerUserInput() {}
+  }, {
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null);
+      var alertMessage = "Заданный пароль не прошел валидацию.";
+
+      if (!this.props.passIsDefault) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null);
+      }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
+        show: this.state.modalWindowShow,
+        onHide: this.handlerClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
+        closeButton: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, "\u0421\u043C\u0435\u043D\u0430 \u043F\u0430\u0440\u043E\u043B\u044F")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u0414\u043B\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442\u0441\u044F \u0441\u0442\u0430\u043D\u0434\u0430\u0440\u0442\u043D\u044B\u0439 \u043F\u0430\u0440\u043E\u043B\u044C, \u0444\u043E\u0440\u043C\u0438\u0440\u0443\u0435\u043C\u044B\u0439 \u043F\u0440\u0438 \u043F\u0435\u0440\u0432\u043E\u043C \u0437\u0430\u043F\u0443\u0441\u043A\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F. \u0414\u043B\u044F \u0431\u0435\u0437\u043E\u043F\u0430\u0441\u043D\u043E\u0433\u043E \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u044F \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E \u0441\u043C\u0435\u043D\u0438\u0442\u044C \u043F\u0430\u0440\u043E\u043B\u044C \u043D\u0430 \u0431\u043E\u043B\u0435\u0435 \u0441\u0442\u043E\u0439\u043A\u0438\u0439."), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "firstPassword"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041D\u043E\u0432\u044B\u0439 \u043F\u0430\u0440\u043E\u043B\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        type: "password",
+        placeholder: "\u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C",
+        onChange: this.handlerUserInput,
+        isValid: this.state.formElements.firstPassword.isValid,
+        isInvalid: this.state.formElements.firstPassword.isInvalid
+      })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+        controlId: "secondPassword"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        type: "password",
+        placeholder: "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C",
+        onChange: this.handlerUserInput,
+        isValid: this.state.formElements.secondPassword.isValid,
+        isInvalid: this.state.formElements.secondPassword.isInvalid
+      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_3__["ModalAlertDangerMessage"], {
+        show: this.state.alertShow,
+        onClose: this.alertClose,
+        message: alertMessage
+      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-secondary",
+        onClick: this.handlerClose
+      }, "\u0437\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-primary",
+        onClick: this.handlerSave
+      }, "\u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C")));
     }
   }]);
 
