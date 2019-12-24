@@ -199,6 +199,14 @@ class ModalWindowAddEdit extends React.Component {
         return settings;
     }
 
+    getListGroup(userLogin = null){
+        if(userLogin === "administrator"){
+            return <option key={this.getKey("group_administrator")}>administrator</option>;
+        }
+
+        return this.props.listWorkGroup.map(group => <option key={this.getKey(`group_${group}`)}>{group}</option>);
+    }
+
     render(){
         let alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";      
         let modalSettings = this.addOrEdit();
@@ -206,69 +214,67 @@ class ModalWindowAddEdit extends React.Component {
         if(!this.props.isAddUser){
             defaultValueGroup = this.props.userSettings.group;
         }
+        let readOnlyIsAdmin = (modalSettings.defaultValue.defaultUserLogin === "administrator") ? " true" : "";
 
-        return(
-            <Modal show={this.props.show} onHide={this.handlerClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{modalSettings.windowHeader}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="userName">
-                            <Form.Label>Имя пользователя</Form.Label>
-                            <Form.Control 
-                                control="text" 
-                                onChange={this.handlerUserInput}
-                                defaultValue={modalSettings.defaultValue.defaultUserName}
-                                isValid={this.state.formElements.userName.isValid} 
-                                isInvalid={this.state.formElements.userName.isInvalid} />
-                        </Form.Group>
-                        <Form.Group controlId="workGroup">
-                            <Form.Label>Рабочая группа</Form.Label>
-                            <Form.Control as="select" defaultValue={defaultValueGroup} onChange={this.handlerUserInput}>
-                                {this.props.listWorkGroup.map(group => {
-                                    return <option key={this.getKey(`group_${group}`)}>{group}</option>;
-                                })}
-                            </Form.Control>
-                        </Form.Group>
-                        <Form.Group controlId="login">
-                            <Form.Label>Логин пользователя</Form.Label>
-                            <Form.Control 
-                                control="text" 
-                                onChange={this.handlerUserInput}
-                                readOnly={modalSettings.isReadOnly}
-                                defaultValue={modalSettings.defaultValue.defaultUserLogin}
-                                isValid={this.state.formElements.login.isValid} 
-                                isInvalid={this.state.formElements.login.isInvalid} />
-                        </Form.Group>
-                        <Form.Group controlId="firstPassword">
-                            <Form.Label>Пароль пользователя</Form.Label>
-                            <Form.Control 
-                                type="password" 
-                                placeholder="введите пароль" 
-                                onChange={this.handlerUserInput}
-                                isValid={this.state.formElements.firstPassword.isValid} 
-                                isInvalid={this.state.formElements.firstPassword.isInvalid} />
-                        </Form.Group>
-                        <Form.Group controlId="secondPassword">
-                            <Form.Control 
-                                type="password" 
-                                placeholder="подтвердите пароль" 
-                                onChange={this.handlerUserInput}
-                                isValid={this.state.formElements.secondPassword.isValid} 
-                                isInvalid={this.state.formElements.secondPassword.isInvalid} />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <ModalAlertDangerMessage show={this.state.alertShow} onClose={this.alertClose} message={alertMessage}>
+        return <Modal show={this.props.show} onHide={this.handlerClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>{modalSettings.windowHeader}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Form.Group controlId="userName">
+                        <Form.Label>Имя пользователя</Form.Label>
+                        <Form.Control 
+                            control="text" 
+                            onChange={this.handlerUserInput}
+                            readOnly={readOnlyIsAdmin}
+                            defaultValue={modalSettings.defaultValue.defaultUserName}
+                            isValid={this.state.formElements.userName.isValid} 
+                            isInvalid={this.state.formElements.userName.isInvalid} />
+                    </Form.Group>
+                    <Form.Group controlId="workGroup">
+                        <Form.Label>Рабочая группа</Form.Label>
+                        <Form.Control as="select" defaultValue={defaultValueGroup} onChange={this.handlerUserInput}>
+                            {this.getListGroup(modalSettings.defaultValue.defaultUserLogin)}
+                        </Form.Control>
+                    </Form.Group>
+                    <Form.Group controlId="login">
+                        <Form.Label>Логин пользователя</Form.Label>
+                        <Form.Control 
+                            control="text" 
+                            onChange={this.handlerUserInput}
+                            readOnly={modalSettings.isReadOnly}
+                            defaultValue={modalSettings.defaultValue.defaultUserLogin}
+                            isValid={this.state.formElements.login.isValid} 
+                            isInvalid={this.state.formElements.login.isInvalid} />
+                    </Form.Group>
+                    <Form.Group controlId="firstPassword">
+                        <Form.Label>Пароль пользователя</Form.Label>
+                        <Form.Control 
+                            type="password" 
+                            placeholder="введите пароль" 
+                            onChange={this.handlerUserInput}
+                            isValid={this.state.formElements.firstPassword.isValid} 
+                            isInvalid={this.state.formElements.firstPassword.isInvalid} />
+                    </Form.Group>
+                    <Form.Group controlId="secondPassword">
+                        <Form.Control 
+                            type="password" 
+                            placeholder="подтвердите пароль" 
+                            onChange={this.handlerUserInput}
+                            isValid={this.state.formElements.secondPassword.isValid} 
+                            isInvalid={this.state.formElements.secondPassword.isInvalid} />
+                    </Form.Group>
+                </Form>
+                <ModalAlertDangerMessage show={this.state.alertShow} onClose={this.alertClose} message={alertMessage}>
                             Ошибка при сохранении!
-                    </ModalAlertDangerMessage>
-                    <Button variant="outline-secondary" onClick={this.handlerClose}>закрыть</Button>
-                    <Button variant="outline-primary" onClick={this.handlerSave}>сохранить</Button>
-                </Modal.Footer>
-            </Modal>
-        );
+                </ModalAlertDangerMessage>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="outline-secondary" onClick={this.handlerClose}>закрыть</Button>
+                <Button variant="outline-primary" onClick={this.handlerSave}>сохранить</Button>
+            </Modal.Footer>
+        </Modal>;
     }
 }
 

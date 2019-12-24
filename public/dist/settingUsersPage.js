@@ -41154,7 +41154,7 @@ function (_React$Component2) {
       var accessRights = this.props.accessRights;
       var isDisabled;
 
-      if (userSettings.userLogin === "administrator" || !accessRights.edit.status) {
+      if (!accessRights.edit.status) {
         isDisabled = "disabled";
       }
 
@@ -41786,10 +41786,27 @@ function (_React$Component) {
       return settings;
     }
   }, {
-    key: "render",
-    value: function render() {
+    key: "getListGroup",
+    value: function getListGroup() {
       var _this2 = this;
 
+      var userLogin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+      if (userLogin === "administrator") {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
+          key: this.getKey("group_administrator")
+        }, "administrator");
+      }
+
+      return this.props.listWorkGroup.map(function (group) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
+          key: _this2.getKey("group_".concat(group))
+        }, group);
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
       var alertMessage = "Вероятно вы забыли заполнить некоторые поля или заданные пользователем параметры не прошли валидацию.";
       var modalSettings = this.addOrEdit();
       var defaultValueGroup = "";
@@ -41798,6 +41815,7 @@ function (_React$Component) {
         defaultValueGroup = this.props.userSettings.group;
       }
 
+      var readOnlyIsAdmin = modalSettings.defaultValue.defaultUserLogin === "administrator" ? " true" : "";
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
         show: this.props.show,
         onHide: this.handlerClose
@@ -41808,6 +41826,7 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
         control: "text",
         onChange: this.handlerUserInput,
+        readOnly: readOnlyIsAdmin,
         defaultValue: modalSettings.defaultValue.defaultUserName,
         isValid: this.state.formElements.userName.isValid,
         isInvalid: this.state.formElements.userName.isInvalid
@@ -41817,11 +41836,7 @@ function (_React$Component) {
         as: "select",
         defaultValue: defaultValueGroup,
         onChange: this.handlerUserInput
-      }, this.props.listWorkGroup.map(function (group) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
-          key: _this2.getKey("group_".concat(group))
-        }, group);
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
+      }, this.getListGroup(modalSettings.defaultValue.defaultUserLogin))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Group, {
         controlId: "login"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Label, null, "\u041B\u043E\u0433\u0438\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
         control: "text",
@@ -41846,11 +41861,11 @@ function (_React$Component) {
         onChange: this.handlerUserInput,
         isValid: this.state.formElements.secondPassword.isValid,
         isInvalid: this.state.formElements.secondPassword.isInvalid
-      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalAlertDangerMessage"], {
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalAlertDangerMessage"], {
         show: this.state.alertShow,
         onClose: this.alertClose,
         message: alertMessage
-      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-secondary",
         onClick: this.handlerClose
       }, "\u0437\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {

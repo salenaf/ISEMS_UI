@@ -8,7 +8,6 @@
 
 const async = require("async");
 const crypto = require("crypto");
-
 const debug = require("debug")("handlerActionsUsers");
 
 const models = require("../../controllers/models");
@@ -37,43 +36,27 @@ module.exports.addHandlers = function(socketIo) {
 };
 
 function addUser(socketIo, data) {
-    debug("reseived command 'add new user'");
-    debug(data);
-
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
         .then(authData => {
-
-            debug("авторизован ли пользователь");
-            debug(authData);
-
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("user management", "Пользователь не авторизован.");
             }
-
-            debug("может ли пользователь создавать нового пользователя");
 
             //может ли пользователь создавать нового пользователя
             if (!authData.document.groupSettings.management_users.element_settings.create.status) {
                 throw new MyError("user management", "Невозможно добавить нового пользователя. Недостаточно прав на выполнение данного действия.");
             }
         }).then(() => {
-            debug("Проверка прав пользователей выполненна успешно");
-
             //проверяем параметры полученные от пользователя
             if (!helpersFunc.checkUserSettingsManagementUsers(data.arguments)) {
                 throw new MyError("user management", "Невозможно добавить нового пользователя. Один или более заданных параметров некорректен.");
             }
         }).then(() => {
-            debug("Проверка параметров заданных пользователем выполненна успешно");
-
             return new Promise((resolve, reject) => {
                 async.parallel({
                     listGroup: (callbackParallel) => {
-
-                        debug("//проверяем наличие группы ");
-
                         //проверяем наличие группы 
                         informationItemGroups((err, listGroup) => {
                             if (err) return callbackParallel(err);
@@ -86,9 +69,6 @@ function addUser(socketIo, data) {
                         });
                     },
                     userInfo: (callbackParallel) => {
-
-                        debug("//проверяем есть ли уже пользователь с таким логином");
-
                         //проверяем есть ли уже пользователь с таким логином 
                         informationAboutUser.getInformationByLogin(data.arguments.user_login, (err, userInfo) => {
                             if (err) return callbackParallel(err);
@@ -106,13 +86,7 @@ function addUser(socketIo, data) {
                 });
             });
         }).then(() => {
-            debug("Проверка наличия указанной группы и отсутствия такого же логина пользователя выполнена успешно");
-
             return new Promise((resolve, reject) => {
-
-                debug("добавляем нового пользователя и пароль");
-                debug(data.arguments.user_password);
-
                 let md5string = crypto.createHash("md5")
                     .update(data.arguments.user_password)
                     .digest("hex");
@@ -145,26 +119,32 @@ function addUser(socketIo, data) {
                 });
             });
         }).then(newUser => {
-
-            debug("Отправляем полученный список в UI");
-
             showNotify({
                 socketIo: socketIo,
                 type: "success",
                 message: "Пользователь успешно добавлен."
             });
 
+
+            /** Для тестов!!! */
+            setTimeout(() => {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "success",
+                    message: "Пользователь успешно добавлен. (Это просто тест)"
+                });
+            }, 3000);
+
             socketIo.emit("add new user", JSON.stringify(newUser));
 
         }).catch(err => {
-
-            debug(err);
-
-            if (err.name === "user management") return showNotify({
-                socketIo: socketIo,
-                type: "danger",
-                message: err.message
-            });
+            if (err.name === "user management") {
+                return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
+            }
 
             showNotify({
                 socketIo: socketIo,
@@ -177,51 +157,27 @@ function addUser(socketIo, data) {
 }
 
 function updateUser(socketIo, data) {
-    debug("-------- user edit -------");
-    debug(data);
-
-    /**
-     * 
-     * Сделать обработку изменения параметров пользователя!!!
-     * Сделать модальное окно по изменению дефолтного пароля администратора
-     * оно будет вызываться в разделе меню
-     * 
-     */
-
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
         .then(authData => {
-
-            debug("авторизован ли пользователь");
-            debug(authData);
-
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("user management", "Пользователь не авторизован.");
             }
 
-            debug("может ли пользователь редактировать информацию о пользователе");
-
-            //может ли пользователь создавать нового пользователя
+            //может ли пользователь изменять информацию о пользователе
             if (!authData.document.groupSettings.management_users.element_settings.edit.status) {
                 throw new MyError("user management", "Невозможно изменить информацию о пользователе. Недостаточно прав на выполнение данного действия.");
             }
         }).then(() => {
-            debug("Проверка прав пользователей выполненна успешно");
-
             //проверяем параметры полученные от пользователя
             if (!helpersFunc.checkUserSettingsManagementUsers(data.arguments)) {
                 throw new MyError("user management", "Невозможно изменить информацию о пользователе. Один или более заданных параметров некорректен.");
             }
         }).then(() => {
-            debug("Проверка параметров заданных пользователем выполненна успешно");
-
             return new Promise((resolve, reject) => {
                 async.parallel({
                     listGroup: (callbackParallel) => {
-
-                        debug("//проверяем наличие группы ");
-
                         //проверяем наличие группы 
                         informationItemGroups((err, listGroup) => {
                             if (err) return callbackParallel(err);
@@ -234,14 +190,11 @@ function updateUser(socketIo, data) {
                         });
                     },
                     userInfo: (callbackParallel) => {
-
-                        debug("//проверяем есть ли уже пользователь с таким логином");
-
                         //проверяем есть ли уже пользователь с таким логином 
                         informationAboutUser.getInformationByLogin(data.arguments.user_login, (err, userInfo) => {
                             if (err) return callbackParallel(err);
 
-                            let errorMsg = `Невозможно изменить информацию о пользователе. Пользователь с логином '${data.arguments.user_login}' не существует.`;
+                            let errorMsg = `Невозможно изменить информацию о пользователе. Пользователя с логином '${data.arguments.user_login}' не существует.`;
                             let myError = new MyError("user management", errorMsg);
 
                             if (userInfo === null) callbackParallel(myError);
@@ -254,14 +207,7 @@ function updateUser(socketIo, data) {
                 });
             });
         }).then(userInfo => {
-            debug("Проверка наличия указанной группы и логина пользователя выполнена успешно");
-            debug(userInfo);
-
             return new Promise((resolve, reject) => {
-
-                debug("добавляем нового пользователя и пароль");
-                debug(data.arguments.user_password);
-
                 let md5string = crypto.createHash("md5")
                     .update(data.arguments.user_password)
                     .digest("hex");
@@ -275,25 +221,28 @@ function updateUser(socketIo, data) {
                     group: data.arguments.work_group,
                 };
 
+                let userInfoUpdate = {
+                    date_change: updateUser.dateChange,
+                    password: hashPassword.getHashPassword(md5string, "isems-ui"),
+                    settings: {
+                        sourceMainPage: [],
+                    },
+                };
+
+                if (userInfo.login !== "administrator") {
+                    userInfoUpdate.group = updateUser.group;
+                    userInfoUpdate.user_name = updateUser.userName;
+                }
+
                 mongodbQueryProcessor.queryUpdate(models.modelUser, {
                     id: userInfo.id,
-                    update: {
-                        date_change: updateUser.dateChange,
-                        password: hashPassword.getHashPassword(md5string, "isems-ui"),
-                        group: updateUser.group,
-                        user_name: updateUser.userName,
-                        settings: {
-                            sourceMainPage: []
-                        },
-                    },
+                    update: userInfoUpdate,
                 }, err => {
                     if (err) reject(err);
                     else resolve(updateUser);
                 });
             });
         }).then(updateUser => {
-            debug("Отправляем полученный список в UI");
-
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -302,13 +251,13 @@ function updateUser(socketIo, data) {
 
             socketIo.emit("update user", JSON.stringify(updateUser));
         }).catch(err => {
-            debug(err);
-
-            if (err.name === "user management") return showNotify({
-                socketIo: socketIo,
-                type: "danger",
-                message: err.message
-            });
+            if (err.name === "user management") {
+                return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
+            }
 
             showNotify({
                 socketIo: socketIo,
@@ -321,31 +270,19 @@ function updateUser(socketIo, data) {
 }
 
 function deleteUser(socketIo, data) {
-    let getUserInformation = informationAboutUser.getInformationByID.bind(null);
-
-    debug(getUserInformation);
-
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
         .then(authData => {
-
-            debug("авторизован ли пользователь");
-            debug(authData);
-
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("user management", "Пользователь не авторизован.");
             }
 
-            debug("может ли пользователь удалять пользователя");
-
-            //может ли пользователь создавать нового пользователя
+            //может ли пользователь удалять пользователя
             if (!authData.document.groupSettings.management_users.element_settings.delete.status) {
                 throw new MyError("user management", "Невозможно удалить пользователя. Недостаточно прав на выполнение данного действия.");
             }
         }).then(() => {
-            debug("Проверка прав пользователей выполненна успешно");
-
             //проверяем параметры полученные от пользователя
             let pattern = commons.getRegularExpression("hexSumMD5");
             if (!pattern.test(data.arguments.userID)) {
@@ -359,9 +296,6 @@ function deleteUser(socketIo, data) {
                 });
             });
         }).then(userInfo => {
-            debug("Ищем пользователя с указанным ID и проверяем есть ли он и его логин не 'Administrator'");
-            debug(userInfo);
-
             if (userInfo === null || (typeof userInfo === "undefined")) {
                 throw new MyError("user management", "Невозможно удалить пользователя, не найден пользователь с заданным идентификатором.");
             }
@@ -371,8 +305,6 @@ function deleteUser(socketIo, data) {
             }
 
         }).then(() => {
-            debug("Удаляем пользователя из таблицы БД");
-
             new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryDelete(require("../../controllers/models").modelUser, { query: { user_id: data.arguments.userID } }, err => {
                     if (err) reject(err);
@@ -380,8 +312,6 @@ function deleteUser(socketIo, data) {
                 });
             });
         }).then(() => {
-            debug("Удаление пользователя выполненно успешно, отправляем сообщение об удалении в UI");
-
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -390,15 +320,13 @@ function deleteUser(socketIo, data) {
 
             socketIo.emit("del selected user", JSON.stringify({ userID: data.arguments.userID }));
         }).catch(err => {
-
-            debug("Catch ERROR:");
-            debug(err);
-
-            if (err.name === "user management") return showNotify({
-                socketIo: socketIo,
-                type: "danger",
-                message: err.message
-            });
+            if (err.name === "user management") {
+                return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
+            }
 
             showNotify({
                 socketIo: socketIo,
@@ -409,27 +337,3 @@ function deleteUser(socketIo, data) {
             writeLogFile("error", err.toString());
         });
 }
-
-/**
- *      МОЖЕТ БЫТЬ ЭТО ИСПОЛЬЗОВАТЬ ПРИ УДАЛЕНИИ ПОЛЬЗОВАТЕЛЯ
- * 
- * then(() => {
-
-                debug("Делаем запрос на получение списка пользователей");
-
-                return new Promise((resolve, reject) => {
-                    informationForPageManagementUsers((err, listUsers) => {
-                        if (err) reject(err);
-                        else resolve(listUsers);
-                    });
-                });
-            }).then(listUsers => {
-
-                debug("Отправляем полученный список в UI");
-                debug(listUsers);
-
-                socketIo.emit("update user list", JSON.stringify(listUsers));
-
-            })
- * 
- */

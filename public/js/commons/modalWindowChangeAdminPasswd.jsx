@@ -2,7 +2,7 @@
  * Модуль формирования модального окна для изменения дефолтного
  * пароля администратора
  * 
- * Версия 0.1, дата релиза 17.12.2019
+ * Версия 0.2, дата релиза 24.12.2019
  */
 
 "use strict";
@@ -11,6 +11,7 @@ import React from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import { helpers } from "../common_helpers/helpers";
 import { ModalAlertDangerMessage } from "../commons/modalAlertMessage.jsx";
 
 export { ModalWindowChangeAdminPasswd };
@@ -19,7 +20,9 @@ class ModalWindowChangeAdminPasswd extends React.Component {
     constructor(props){
         super(props);
 
+        this.alertClose = this.alertClose.bind(this);
         this.windowShow = this.windowShow.bind(this);
+        this.handlerSave = this.handlerSave.bind(this);
         this.handlerClose = this.handlerClose.bind(this);
         this.handlerUserInput = this.handlerUserInput.bind(this);
 
@@ -49,16 +52,62 @@ class ModalWindowChangeAdminPasswd extends React.Component {
         this.setState({modalWindowShow: false});
     }
 
-    alertClose(){
-        this.setState({alertClose: false});
+    handlerSave(){
+        const firstPasswd = this.state.formElements.firstPassword.value;
+        const secondPasswd = this.state.formElements.secondPassword.value;
+
+        if(firstPasswd !== secondPasswd){
+            this.setState({ alertShow: true });
+
+            return;
+        }
+
+        this.props.socketIo.emit("change password", {
+            actionType: "change password",
+            arguments: { 
+                "user_login": this.props.login,
+                "user_password": firstPasswd, 
+            },
+        });
+
+        console.log("send handler save");
+
+        this.handlerClose();
     }
 
-    handlerUserInput(){
+    alertClose(){
+        this.setState({alertShow: false});
+    }
 
+    handlerUserInput(event){
+        const value = event.target.value;
+        const elementName = event.target.id;
+
+        const elemType = {
+            firstPassword: "stringPasswd",
+            secondPassword: "stringPasswd",
+        };
+
+        let objUpdate = Object.assign({}, this.state);
+        if(objUpdate.formElements[elementName] === "undefined"){
+            return;
+        }
+
+        objUpdate.formElements[elementName].value = value;
+
+        if(helpers.checkInputValidation({name: elemType[elementName], value: value})){
+            objUpdate.formElements[elementName].isValid = true;
+            objUpdate.formElements[elementName].isInvalid = false;
+        } else {
+            objUpdate.formElements[elementName].isValid = false;
+            objUpdate.formElements[elementName].isInvalid = true;
+        }
+
+        this.setState( objUpdate );
     }
 
     render(){
-        let alertMessage = "Заданный пароль не прошел валидацию.";
+        let alertMessage = "Пароль не прошел валидацию. ";
 
         if(!this.props.passIsDefault){
             return <span></span>;
@@ -92,11 +141,11 @@ class ModalWindowChangeAdminPasswd extends React.Component {
                             isInvalid={this.state.formElements.secondPassword.isInvalid} />
                     </Form.Group>
                 </Form>
-            </Modal.Body>
-            <Modal.Footer>
                 <ModalAlertDangerMessage show={this.state.alertShow} onClose={this.alertClose} message={alertMessage}>
                     Ошибка при сохранении!
                 </ModalAlertDangerMessage>
+            </Modal.Body>
+            <Modal.Footer>
                 <Button variant="outline-secondary" onClick={this.handlerClose}>закрыть</Button>
                 <Button variant="outline-primary" onClick={this.handlerSave}>сохранить</Button>
             </Modal.Footer>
@@ -107,4 +156,5 @@ class ModalWindowChangeAdminPasswd extends React.Component {
 ModalWindowChangeAdminPasswd.propTypes = {
     login: PropTypes.string.isRequired,
     passIsDefault: PropTypes.bool,
+    socketIo: PropTypes.object.isRequired,
 };

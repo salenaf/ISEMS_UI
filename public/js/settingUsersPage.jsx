@@ -71,7 +71,7 @@ class ButtonEdit extends React.Component {
 
         let isDisabled;
 
-        if((userSettings.userLogin === "administrator") || !accessRights.edit.status) {
+        if(!accessRights.edit.status) {
             isDisabled = "disabled";
         }
 
@@ -209,7 +209,7 @@ class CreateTable extends React.Component {
         super(props);
        
         this.addListeners = this.addListeners.bind(this);
-                
+
         this.addNewUser = this.addNewUser.bind(this);
         this.updateUser = this.updateUser.bind(this);
         this.deleteUser = this.deleteUser.bind(this);

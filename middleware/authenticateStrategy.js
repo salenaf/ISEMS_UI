@@ -6,8 +6,6 @@
 
 "use strict";
 
-const debug = require("debug")("authStrat");
-
 const models = require("../controllers/models");
 const hashPassword = require("../libs/hashPassword");
 const writeLogFile = require("../libs/writeLogFile");
@@ -22,23 +20,12 @@ exports.authenticate = function(userName, password, cb) {
 
         let hashPwd = hashPassword.getHashPassword(password, "isems-ui");
 
-        debug(`reseived user name: ${userName}`);
-        debug(`reseived password: ${password}`);
-        debug(`original password from DB: ${user.password}`);
-        debug(`valide password: ${hashPwd}`);
-
         if ((user === null) || (user.password !== hashPwd)) {
             return cb(null, false, { message: "incorrect username or password" });
         }
 
         //проверяем использует ли администратор дефолтный пароль
         let isDefaultPassword = ((userName === "administrator") && (hashPwd === "2ab65043ba1e301ab163c6d336dd1469ea087016c52743c4d51ff2d6c0b1c8c1")) ? true : false;
-
-        debug(`userName: ${userName}`);
-        debug(`current password: ${password}`);
-        debug(`password after hex: ${hashPwd}`);
-        debug(`found user: ${user}`);
-        debug(`isDefaultPassword: ${isDefaultPassword}`);
 
         //добавляем информацию о пользователе (passport id) в sessions_user_information
         usersSessionInformation.create(userName, user._id, isDefaultPassword, err => {

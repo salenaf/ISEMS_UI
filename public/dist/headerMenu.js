@@ -40703,6 +40703,146 @@ module.exports = g;
 
 /***/ }),
 
+/***/ "./common_helpers/helpers.js":
+/*!***********************************!*\
+  !*** ./common_helpers/helpers.js ***!
+  \***********************************/
+/*! exports provided: helpers */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "helpers", function() { return helpers; });
+
+
+var helpers = {
+  //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
+  loadNetworkMarginTop: function loadNetworkMarginTop() {
+    var arrayLoadNetwork = document.getElementsByName("loadNetwork");
+    if (arrayLoadNetwork.hasOwnProperty("length")) return;
+
+    for (var key in arrayLoadNetwork) {
+      var countElements = 0;
+
+      for (var i in arrayLoadNetwork[key].children) {
+        countElements++;
+      }
+
+      var num = (countElements - 4) / 3;
+      var px = "0px";
+      if (3 <= num && num <= 5) px = "35px";
+      if (1 <= num && num <= 3) px = "40px";
+
+      if (arrayLoadNetwork[key].nodeType === 1) {
+        arrayLoadNetwork[key].style.marginTop = px;
+      }
+    }
+  },
+  //конвертирование даты и времени из формата Unix в стандартный формат
+  getDate: function getDate(dateUnix) {
+    var x = new Date().getTimezoneOffset() * 60000;
+    return new Date(+dateUnix - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
+  },
+  //получить цвет значения
+  getColor: function getColor(number) {
+    if (0 <= number && number <= 35) return "color: #83B4D7;";
+    if (36 <= number && number <= 65) return "color: #9FD783;";
+    if (66 <= number && number <= 85) return "color: #E1E691;";
+    if (86 <= number) return "color: #C78888;";
+  },
+  //преобразование числа в строку с пробелами после каждой третьей цифры 
+  intConvert: function intConvert(nLoad) {
+    var newString = nLoad.toString();
+    var interimArray = [];
+    var countCycles = Math.ceil(newString.length / 3);
+    var num = 0;
+
+    for (var i = 1; i <= countCycles; i++) {
+      interimArray.push(newString.charAt(newString.length - 3 - num) + newString.charAt(newString.length - 2 - num) + newString.charAt(newString.length - 1 - num));
+      num += 3;
+    }
+
+    interimArray.reverse();
+    return interimArray.join(" ");
+  },
+  //пересчет в Кбайты, Мбайты и Гбайты
+  changeByteSize: function changeByteSize(byte) {
+    if (3 >= byte.length) return "<strong>" + byte + "</strong> байт";else if (3 < byte.length && byte.length <= 6) return "<strong>" + (byte / 1000).toFixed(2) + "</strong> Кбайт";else if (6 < byte.length && byte.length <= 9) return "<strong>" + (byte / 1000000).toFixed(2) + "</strong> Мбайт";else return "<strong>" + (byte / 1000000000).toFixed(2) + "</strong> Гбайт";
+  },
+  //конвертирование даты и вермени
+  dateTimeConvert: function dateTimeConvert(dateUnixFormat) {
+    var x = new Date().getTimezoneOffset() * 60000;
+    return new Date(+dateUnixFormat - x).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
+  },
+  //получить не повторяющиеся элементы двух массивов
+  getDifferenceArray: function getDifferenceArray(arrOne, arrTwo) {
+    if (arrOne.length === 0) return arrTwo;
+    if (arrTwo.length === 0) return arrOne;
+    var result = [];
+
+    if (arrOne.length === arrTwo.length) {
+      for (var i = 0; i < arrOne.length; i++) {
+        for (var j = 0; j < arrTwo.length; j++) {
+          if (arrOne[i] === arrTwo[j]) {
+            arrOne.splice(i, 1);
+            arrTwo.splice(j, 1);
+          }
+        }
+      }
+
+      result = arrOne.concat(arrTwo.join(","));
+    } else if (arrOne.length < arrTwo.length) {
+      var stringOne = arrOne.join(" ");
+      arrTwo.filter(function (item) {
+        return stringOne.indexOf(item.toString()) < 0;
+      });
+    } else {
+      var _stringOne = arrTwo.join(" ");
+
+      arrOne.filter(function (item) {
+        return _stringOne.indexOf(item.toString()) < 0;
+      });
+    }
+
+    return result;
+  },
+
+  /**
+   * проверка данных полученных от пользователя
+   * 
+   * @param {object} elem 
+   */
+  checkInputValidation: function checkInputValidation(elem) {
+    var objSettings = {
+      "hostId": new RegExp("^[0-9]{1,7}$"),
+      "shortNameHost": new RegExp("^[a-zA-Z0-9_№\"\\-\\s]{3,15}$"),
+      "fullNameHost": new RegExp("^[a-zA-Zа-яА-ЯёЁ0-9_№\"\\-\\s\\.,]{5,}$"),
+      "ipaddress": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),
+      "port": new RegExp("^[0-9]{1,5}$"),
+      "countProcess": new RegExp("^[0-9]{1}$"),
+      "intervalTransmission": new RegExp("^[0-9]{1,}$"),
+      "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
+      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
+      "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
+    };
+    var pattern = objSettings[elem.name];
+
+    if (elem.name === "port") {
+      if (!(0 <= elem.value && elem.value < 65536)) return false;
+    }
+
+    if (elem.name === "intervalTransmission" && elem.value < 10) return false;
+    return !pattern.test(elem.value) ? false : true;
+  },
+  //генератор токена
+  tokenRand: function tokenRand() {
+    return Math.random().toString(14).substr(2) + Math.random().toString(14).substr(2);
+  }
+};
+
+
+/***/ }),
+
 /***/ "./commons/modalAlertMessage.jsx":
 /*!***************************************!*\
   !*** ./commons/modalAlertMessage.jsx ***!
@@ -40800,12 +40940,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../commons/modalAlertMessage.jsx */ "./commons/modalAlertMessage.jsx");
+/* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../common_helpers/helpers */ "./common_helpers/helpers.js");
+/* harmony import */ var _commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../commons/modalAlertMessage.jsx */ "./commons/modalAlertMessage.jsx");
 /**
  * Модуль формирования модального окна для изменения дефолтного
  * пароля администратора
  * 
- * Версия 0.1, дата релиза 17.12.2019
+ * Версия 0.2, дата релиза 24.12.2019
  */
 
 
@@ -40833,6 +40974,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 
 
+
 var ModalWindowChangeAdminPasswd =
 /*#__PURE__*/
 function (_React$Component) {
@@ -40844,7 +40986,9 @@ function (_React$Component) {
     _classCallCheck(this, ModalWindowChangeAdminPasswd);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowChangeAdminPasswd).call(this, props));
+    _this.alertClose = _this.alertClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.windowShow = _this.windowShow.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerSave = _this.handlerSave.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handlerUserInput = _this.handlerUserInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.state = {
@@ -40881,19 +41025,69 @@ function (_React$Component) {
       });
     }
   }, {
+    key: "handlerSave",
+    value: function handlerSave() {
+      var firstPasswd = this.state.formElements.firstPassword.value;
+      var secondPasswd = this.state.formElements.secondPassword.value;
+
+      if (firstPasswd !== secondPasswd) {
+        this.setState({
+          alertShow: true
+        });
+        return;
+      }
+
+      this.props.socketIo.emit("change password", {
+        actionType: "change password",
+        arguments: {
+          "user_login": this.props.login,
+          "user_password": firstPasswd
+        }
+      });
+      console.log("send handler save");
+      this.handlerClose();
+    }
+  }, {
     key: "alertClose",
     value: function alertClose() {
       this.setState({
-        alertClose: false
+        alertShow: false
       });
     }
   }, {
     key: "handlerUserInput",
-    value: function handlerUserInput() {}
+    value: function handlerUserInput(event) {
+      var value = event.target.value;
+      var elementName = event.target.id;
+      var elemType = {
+        firstPassword: "stringPasswd",
+        secondPassword: "stringPasswd"
+      };
+      var objUpdate = Object.assign({}, this.state);
+
+      if (objUpdate.formElements[elementName] === "undefined") {
+        return;
+      }
+
+      objUpdate.formElements[elementName].value = value;
+
+      if (_common_helpers_helpers__WEBPACK_IMPORTED_MODULE_3__["helpers"].checkInputValidation({
+        name: elemType[elementName],
+        value: value
+      })) {
+        objUpdate.formElements[elementName].isValid = true;
+        objUpdate.formElements[elementName].isInvalid = false;
+      } else {
+        objUpdate.formElements[elementName].isValid = false;
+        objUpdate.formElements[elementName].isInvalid = true;
+      }
+
+      this.setState(objUpdate);
+    }
   }, {
     key: "render",
     value: function render() {
-      var alertMessage = "Заданный пароль не прошел валидацию.";
+      var alertMessage = "Пароль не прошел валидацию. ";
 
       if (!this.props.passIsDefault) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null);
@@ -40920,11 +41114,11 @@ function (_React$Component) {
         onChange: this.handlerUserInput,
         isValid: this.state.formElements.secondPassword.isValid,
         isInvalid: this.state.formElements.secondPassword.isInvalid
-      })))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_3__["ModalAlertDangerMessage"], {
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalAlertMessage_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalAlertDangerMessage"], {
         show: this.state.alertShow,
         onClose: this.alertClose,
         message: alertMessage
-      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+      }, "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0438!")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
         variant: "outline-secondary",
         onClick: this.handlerClose
       }, "\u0437\u0430\u043A\u0440\u044B\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
@@ -40939,7 +41133,8 @@ function (_React$Component) {
 
 ModalWindowChangeAdminPasswd.propTypes = {
   login: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  passIsDefault: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool
+  passIsDefault: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired
 };
 
 /***/ }),
@@ -41090,7 +41285,8 @@ function (_React$Component) {
         href: "logout"
       }, "\u0412\u042B\u0425\u041E\u0414"))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowChangeAdminPasswd_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalWindowChangeAdminPasswd"], {
         login: this.listItems.login,
-        passIsDefault: this.listItems.isPasswordDefaultAdministrator
+        passIsDefault: this.listItems.isPasswordDefaultAdministrator,
+        socketIo: this.props.socketIo
       }));
     }
   }]);
@@ -41099,10 +41295,12 @@ function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateHeaderMenu.protoType = {
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   listItems: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 };
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateHeaderMenu, {
-  listItems: resivedFromServer
+  listItems: resivedFromServer,
+  socketIo: socket
 }), document.getElementById("menu-top"));
 
 /***/ })

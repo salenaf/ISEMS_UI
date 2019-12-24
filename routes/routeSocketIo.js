@@ -144,6 +144,9 @@ exports.eventEmitter = function(socketIo, object) {
  * 
  **/
 module.exports.eventHandling = function(socketIo) {
+    /* --- УПРАВЛЕНИЕ ПАРОЛЯМИ ПО УМОЛЧАНИЮ --- */
+    require("./routeHandlersSocketIo/handlerChangePassword")(socketIo);
+
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
 
     // добавление новой группы

@@ -83,16 +83,17 @@ class CreateHeaderMenu extends React.Component {
                 </Navbar>
                 <ModalWindowChangeAdminPasswd 
                     login={this.listItems.login} 
-                    passIsDefault={this.listItems.isPasswordDefaultAdministrator}/>
+                    passIsDefault={this.listItems.isPasswordDefaultAdministrator}
+                    socketIo={this.props.socketIo}/>
             </Container>);
     }
 }
 
 CreateHeaderMenu.protoType = {
+    socketIo: PropTypes.object.isRequired,
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(
-    <CreateHeaderMenu listItems={resivedFromServer} />,
-    document.getElementById("menu-top")
-);
+ReactDOM.render(<CreateHeaderMenu 
+    listItems={resivedFromServer} 
+    socketIo={socket} />, document.getElementById("menu-top"));
