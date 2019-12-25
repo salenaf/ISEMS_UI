@@ -41547,19 +41547,17 @@ function (_React$Component9) {
   }, {
     key: "render",
     value: function render() {
-      socket.on("notify information", function (data) {
-        console.log("resived MSG ---");
-        console.log(data);
-        var notify = JSON.parse(data.notify);
-
-        if (notify.type === "success") {
-          console.log("ADD GROUP SUCCESS!!!!");
-        } else {
-          console.log("ADD GROUP ___FAILURE___!!!!");
-        }
-
-        Object(_common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__["default"])(data);
-      });
+      /*socket.on("notify information", data => {
+           console.log("resived MSG ---");
+          console.log(data);
+           let notify = JSON.parse(data.notify);
+           if (notify.type === "success") {
+              console.log("ADD GROUP SUCCESS!!!!");
+          } else {
+              console.log("ADD GROUP ___FAILURE___!!!!");
+          }
+           showNotifyMessage(data);
+      });*/
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left"
       }, "\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {

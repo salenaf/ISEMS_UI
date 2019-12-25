@@ -8,7 +8,6 @@
 
 const async = require("async");
 const crypto = require("crypto");
-const debug = require("debug")("handlerActionsUsers");
 
 const models = require("../../controllers/models");
 const MyError = require("../../libs/helpers/myError");
@@ -125,18 +124,7 @@ function addUser(socketIo, data) {
                 message: "Пользователь успешно добавлен."
             });
 
-
-            /** Для тестов!!! */
-            setTimeout(() => {
-                showNotify({
-                    socketIo: socketIo,
-                    type: "success",
-                    message: "Пользователь успешно добавлен. (Это просто тест)"
-                });
-            }, 3000);
-
             socketIo.emit("add new user", JSON.stringify(newUser));
-
         }).catch(err => {
             if (err.name === "user management") {
                 return showNotify({

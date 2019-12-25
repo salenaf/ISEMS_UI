@@ -87,5597 +87,6 @@ var drawingAlertsMessage =
 /************************************************************************/
 /******/ ({
 
-/***/ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js":
-/*!*****************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/@babel/runtime/helpers/interopRequireDefault.js ***!
-  \*****************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : {
-    default: obj
-  };
-}
-
-module.exports = _interopRequireDefault;
-
-/***/ }),
-
-/***/ "../../node_modules/brcast/dist/brcast.es.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/brcast/dist/brcast.es.js ***!
-  \******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-function createBroadcast (initialState) {
-  var listeners = {};
-  var id = 1;
-  var _state = initialState;
-
-  function getState () {
-    return _state
-  }
-
-  function setState (state) {
-    _state = state;
-    var keys = Object.keys(listeners);
-    var i = 0;
-    var len = keys.length;
-    for (; i < len; i++) {
-      // if a listener gets unsubscribed during setState we just skip it
-      if (listeners[keys[i]]) { listeners[keys[i]](state); }
-    }
-  }
-
-  // subscribe to changes and return the subscriptionId
-  function subscribe (listener) {
-    if (typeof listener !== 'function') {
-      throw new Error('listener must be a function.')
-    }
-    var currentId = id;
-    listeners[currentId] = listener;
-    id += 1;
-    return currentId
-  }
-
-  // remove subscription by removing the listener function
-  function unsubscribe (id) {
-    listeners[id] = undefined;
-  }
-
-  return { getState: getState, setState: setState, subscribe: subscribe, unsubscribe: unsubscribe }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (createBroadcast);
-
-
-/***/ }),
-
-/***/ "../../node_modules/css-vendor/lib/camelize.js":
-/*!********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/css-vendor/lib/camelize.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = camelize;
-var regExp = /[-\s]+(.)?/g;
-
-/**
- * Convert dash separated strings to camel cased.
- *
- * @param {String} str
- * @return {String}
- */
-function camelize(str) {
-  return str.replace(regExp, toUpper);
-}
-
-function toUpper(match, c) {
-  return c ? c.toUpperCase() : '';
-}
-
-/***/ }),
-
-/***/ "../../node_modules/css-vendor/lib/index.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/css-vendor/lib/index.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.supportedValue = exports.supportedProperty = exports.prefix = undefined;
-
-var _prefix = __webpack_require__(/*! ./prefix */ "../../node_modules/css-vendor/lib/prefix.js");
-
-var _prefix2 = _interopRequireDefault(_prefix);
-
-var _supportedProperty = __webpack_require__(/*! ./supported-property */ "../../node_modules/css-vendor/lib/supported-property.js");
-
-var _supportedProperty2 = _interopRequireDefault(_supportedProperty);
-
-var _supportedValue = __webpack_require__(/*! ./supported-value */ "../../node_modules/css-vendor/lib/supported-value.js");
-
-var _supportedValue2 = _interopRequireDefault(_supportedValue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-exports['default'] = {
-  prefix: _prefix2['default'],
-  supportedProperty: _supportedProperty2['default'],
-  supportedValue: _supportedValue2['default']
-}; /**
-    * CSS Vendor prefix detection and property feature testing.
-    *
-    * @copyright Oleg Slobodskoi 2015
-    * @website https://github.com/jsstyles/css-vendor
-    * @license MIT
-    */
-
-exports.prefix = _prefix2['default'];
-exports.supportedProperty = _supportedProperty2['default'];
-exports.supportedValue = _supportedValue2['default'];
-
-/***/ }),
-
-/***/ "../../node_modules/css-vendor/lib/prefix.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/css-vendor/lib/prefix.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _isInBrowser = __webpack_require__(/*! is-in-browser */ "../../node_modules/is-in-browser/dist/module.js");
-
-var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var js = ''; /**
-              * Export javascript style and css style vendor prefixes.
-              * Based on "transform" support test.
-              */
-
-var css = '';
-
-// We should not do anything if required serverside.
-if (_isInBrowser2['default']) {
-  // Order matters. We need to check Webkit the last one because
-  // other vendors use to add Webkit prefixes to some properties
-  var jsCssMap = {
-    Moz: '-moz-',
-    // IE did it wrong again ...
-    ms: '-ms-',
-    O: '-o-',
-    Webkit: '-webkit-'
-  };
-  var style = document.createElement('p').style;
-  var testProp = 'Transform';
-
-  for (var key in jsCssMap) {
-    if (key + testProp in style) {
-      js = key;
-      css = jsCssMap[key];
-      break;
-    }
-  }
-}
-
-/**
- * Vendor prefix string for the current browser.
- *
- * @type {{js: String, css: String}}
- * @api public
- */
-exports['default'] = { js: js, css: css };
-
-/***/ }),
-
-/***/ "../../node_modules/css-vendor/lib/supported-property.js":
-/*!******************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/css-vendor/lib/supported-property.js ***!
-  \******************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = supportedProperty;
-
-var _isInBrowser = __webpack_require__(/*! is-in-browser */ "../../node_modules/is-in-browser/dist/module.js");
-
-var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-
-var _prefix = __webpack_require__(/*! ./prefix */ "../../node_modules/css-vendor/lib/prefix.js");
-
-var _prefix2 = _interopRequireDefault(_prefix);
-
-var _camelize = __webpack_require__(/*! ./camelize */ "../../node_modules/css-vendor/lib/camelize.js");
-
-var _camelize2 = _interopRequireDefault(_camelize);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var el = void 0;
-var cache = {};
-
-if (_isInBrowser2['default']) {
-  el = document.createElement('p');
-
-  /**
-   * We test every property on vendor prefix requirement.
-   * Once tested, result is cached. It gives us up to 70% perf boost.
-   * http://jsperf.com/element-style-object-access-vs-plain-object
-   *
-   * Prefill cache with known css properties to reduce amount of
-   * properties we need to feature test at runtime.
-   * http://davidwalsh.name/vendor-prefix
-   */
-  var computed = window.getComputedStyle(document.documentElement, '');
-  for (var key in computed) {
-    if (!isNaN(key)) cache[computed[key]] = computed[key];
-  }
-}
-
-/**
- * Test if a property is supported, returns supported property with vendor
- * prefix if required. Returns `false` if not supported.
- *
- * @param {String} prop dash separated
- * @return {String|Boolean}
- * @api public
- */
-function supportedProperty(prop) {
-  // For server-side rendering.
-  if (!el) return prop;
-
-  // We have not tested this prop yet, lets do the test.
-  if (cache[prop] != null) return cache[prop];
-
-  // Camelization is required because we can't test using
-  // css syntax for e.g. in FF.
-  // Test if property is supported as it is.
-  if ((0, _camelize2['default'])(prop) in el.style) {
-    cache[prop] = prop;
-  }
-  // Test if property is supported with vendor prefix.
-  else if (_prefix2['default'].js + (0, _camelize2['default'])('-' + prop) in el.style) {
-      cache[prop] = _prefix2['default'].css + prop;
-    } else {
-      cache[prop] = false;
-    }
-
-  return cache[prop];
-}
-
-/***/ }),
-
-/***/ "../../node_modules/css-vendor/lib/supported-value.js":
-/*!***************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/css-vendor/lib/supported-value.js ***!
-  \***************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = supportedValue;
-
-var _isInBrowser = __webpack_require__(/*! is-in-browser */ "../../node_modules/is-in-browser/dist/module.js");
-
-var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-
-var _prefix = __webpack_require__(/*! ./prefix */ "../../node_modules/css-vendor/lib/prefix.js");
-
-var _prefix2 = _interopRequireDefault(_prefix);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var cache = {};
-var el = void 0;
-
-if (_isInBrowser2['default']) el = document.createElement('p');
-
-/**
- * Returns prefixed value if needed. Returns `false` if value is not supported.
- *
- * @param {String} property
- * @param {String} value
- * @return {String|Boolean}
- * @api public
- */
-function supportedValue(property, value) {
-  // For server-side rendering.
-  if (!el) return value;
-
-  // It is a string or a number as a string like '1'.
-  // We want only prefixable values here.
-  if (typeof value !== 'string' || !isNaN(parseInt(value, 10))) return value;
-
-  var cacheKey = property + value;
-
-  if (cache[cacheKey] != null) return cache[cacheKey];
-
-  // IE can even throw an error in some cases, for e.g. style.content = 'bar'
-  try {
-    // Test value as it is.
-    el.style[property] = value;
-  } catch (err) {
-    cache[cacheKey] = false;
-    return false;
-  }
-
-  // Value is supported as it is.
-  if (el.style[property] !== '') {
-    cache[cacheKey] = value;
-  } else {
-    // Test value with vendor prefix.
-    value = _prefix2['default'].css + value;
-
-    // Hardcode test to convert "flex" to "-ms-flexbox" for IE10.
-    if (value === '-ms-flex') value = '-ms-flexbox';
-
-    el.style[property] = value;
-
-    // Value is supported with vendor prefix.
-    if (el.style[property] !== '') cache[cacheKey] = value;
-  }
-
-  if (!cache[cacheKey]) cache[cacheKey] = false;
-
-  // Reset style value.
-  el.style[property] = '';
-
-  return cache[cacheKey];
-}
-
-/***/ }),
-
-/***/ "../../node_modules/dom-helpers/class/addClass.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/dom-helpers/class/addClass.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "../../node_modules/@babel/runtime/helpers/interopRequireDefault.js");
-
-exports.__esModule = true;
-exports.default = addClass;
-
-var _hasClass = _interopRequireDefault(__webpack_require__(/*! ./hasClass */ "../../node_modules/dom-helpers/class/hasClass.js"));
-
-function addClass(element, className) {
-  if (element.classList) element.classList.add(className);else if (!(0, _hasClass.default)(element, className)) if (typeof element.className === 'string') element.className = element.className + ' ' + className;else element.setAttribute('class', (element.className && element.className.baseVal || '') + ' ' + className);
-}
-
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/dom-helpers/class/hasClass.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/dom-helpers/class/hasClass.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.default = hasClass;
-
-function hasClass(element, className) {
-  if (element.classList) return !!className && element.classList.contains(className);else return (" " + (element.className.baseVal || element.className) + " ").indexOf(" " + className + " ") !== -1;
-}
-
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/dom-helpers/class/removeClass.js":
-/*!**************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/dom-helpers/class/removeClass.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function replaceClassName(origClass, classToRemove) {
-  return origClass.replace(new RegExp('(^|\\s)' + classToRemove + '(?:\\s|$)', 'g'), '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '');
-}
-
-module.exports = function removeClass(element, className) {
-  if (element.classList) element.classList.remove(className);else if (typeof element.className === 'string') element.className = replaceClassName(element.className, className);else element.setAttribute('class', replaceClassName(element.className && element.className.baseVal || '', className));
-};
-
-/***/ }),
-
-/***/ "../../node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js":
-/*!*****************************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js ***!
-  \*****************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright 2015, Yahoo! Inc.
- * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
- */
-var REACT_STATICS = {
-    childContextTypes: true,
-    contextTypes: true,
-    defaultProps: true,
-    displayName: true,
-    getDefaultProps: true,
-    getDerivedStateFromProps: true,
-    mixins: true,
-    propTypes: true,
-    type: true
-};
-
-var KNOWN_STATICS = {
-    name: true,
-    length: true,
-    prototype: true,
-    caller: true,
-    callee: true,
-    arguments: true,
-    arity: true
-};
-
-var defineProperty = Object.defineProperty;
-var getOwnPropertyNames = Object.getOwnPropertyNames;
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-var getPrototypeOf = Object.getPrototypeOf;
-var objectPrototype = getPrototypeOf && getPrototypeOf(Object);
-
-function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
-    if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
-
-        if (objectPrototype) {
-            var inheritedComponent = getPrototypeOf(sourceComponent);
-            if (inheritedComponent && inheritedComponent !== objectPrototype) {
-                hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
-            }
-        }
-
-        var keys = getOwnPropertyNames(sourceComponent);
-
-        if (getOwnPropertySymbols) {
-            keys = keys.concat(getOwnPropertySymbols(sourceComponent));
-        }
-
-        for (var i = 0; i < keys.length; ++i) {
-            var key = keys[i];
-            if (!REACT_STATICS[key] && !KNOWN_STATICS[key] && (!blacklist || !blacklist[key])) {
-                var descriptor = getOwnPropertyDescriptor(sourceComponent, key);
-                try { // Avoid failures from read-only properties
-                    defineProperty(targetComponent, key, descriptor);
-                } catch (e) {}
-            }
-        }
-
-        return targetComponent;
-    }
-
-    return targetComponent;
-}
-
-module.exports = hoistNonReactStatics;
-
-
-/***/ }),
-
-/***/ "../../node_modules/hyphenate-style-name/index.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/hyphenate-style-name/index.js ***!
-  \***********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* eslint-disable no-var, prefer-template */
-var uppercasePattern = /[A-Z]/g
-var msPattern = /^ms-/
-var cache = {}
-
-function toHyphenLower(match) {
-  return '-' + match.toLowerCase()
-}
-
-function hyphenateStyleName(name) {
-  if (cache.hasOwnProperty(name)) {
-    return cache[name]
-  }
-
-  var hName = name.replace(uppercasePattern, toHyphenLower)
-  return (cache[name] = msPattern.test(hName) ? '-' + hName : hName)
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (hyphenateStyleName);
-
-
-/***/ }),
-
-/***/ "../../node_modules/is-function/index.js":
-/*!**************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/is-function/index.js ***!
-  \**************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = isFunction
-
-var toString = Object.prototype.toString
-
-function isFunction (fn) {
-  var string = toString.call(fn)
-  return string === '[object Function]' ||
-    (typeof fn === 'function' && string !== '[object RegExp]') ||
-    (typeof window !== 'undefined' &&
-     // IE8 and below
-     (fn === window.setTimeout ||
-      fn === window.alert ||
-      fn === window.confirm ||
-      fn === window.prompt))
-};
-
-
-/***/ }),
-
-/***/ "../../node_modules/is-in-browser/dist/module.js":
-/*!**********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/is-in-browser/dist/module.js ***!
-  \**********************************************************************************/
-/*! exports provided: isBrowser, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isBrowser", function() { return isBrowser; });
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var isBrowser = (typeof window === "undefined" ? "undefined" : _typeof(window)) === "object" && (typeof document === "undefined" ? "undefined" : _typeof(document)) === 'object' && document.nodeType === 9;
-
-/* harmony default export */ __webpack_exports__["default"] = (isBrowser);
-
-
-/***/ }),
-
-/***/ "../../node_modules/is-plain-object/index.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/is-plain-object/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*!
- * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-
-
-var isObject = __webpack_require__(/*! isobject */ "../../node_modules/isobject/index.js");
-
-function isObjectObject(o) {
-  return isObject(o) === true
-    && Object.prototype.toString.call(o) === '[object Object]';
-}
-
-module.exports = function isPlainObject(o) {
-  var ctor,prot;
-
-  if (isObjectObject(o) === false) return false;
-
-  // If has modified constructor
-  ctor = o.constructor;
-  if (typeof ctor !== 'function') return false;
-
-  // If has modified prototype
-  prot = ctor.prototype;
-  if (isObjectObject(prot) === false) return false;
-
-  // If constructor does not have an Object-specific method
-  if (prot.hasOwnProperty('isPrototypeOf') === false) {
-    return false;
-  }
-
-  // Most likely a plain Object
-  return true;
-};
-
-
-/***/ }),
-
-/***/ "../../node_modules/isobject/index.js":
-/*!***********************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/isobject/index.js ***!
-  \***********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*!
- * isobject <https://github.com/jonschlinkert/isobject>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-
-
-module.exports = function isObject(val) {
-  return val != null && typeof val === 'object' && Array.isArray(val) === false;
-};
-
-
-/***/ }),
-
-/***/ "../../node_modules/jss-camel-case/lib/index.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-camel-case/lib/index.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = camelCase;
-
-var _hyphenateStyleName = __webpack_require__(/*! hyphenate-style-name */ "../../node_modules/hyphenate-style-name/index.js");
-
-var _hyphenateStyleName2 = _interopRequireDefault(_hyphenateStyleName);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * Convert camel cased property names to dash separated.
- *
- * @param {Object} style
- * @return {Object}
- */
-function convertCase(style) {
-  var converted = {};
-
-  for (var prop in style) {
-    converted[(0, _hyphenateStyleName2['default'])(prop)] = style[prop];
-  }
-
-  if (style.fallbacks) {
-    if (Array.isArray(style.fallbacks)) converted.fallbacks = style.fallbacks.map(convertCase);else converted.fallbacks = convertCase(style.fallbacks);
-  }
-
-  return converted;
-}
-
-/**
- * Allow camel cased property names by converting them back to dasherized.
- *
- * @param {Rule} rule
- */
-function camelCase() {
-  function onProcessStyle(style) {
-    if (Array.isArray(style)) {
-      // Handle rules like @font-face, which can have multiple styles in an array
-      for (var index = 0; index < style.length; index++) {
-        style[index] = convertCase(style[index]);
-      }
-      return style;
-    }
-
-    return convertCase(style);
-  }
-
-  function onChangeValue(value, prop, rule) {
-    var hyphenatedProp = (0, _hyphenateStyleName2['default'])(prop);
-
-    // There was no camel case in place
-    if (prop === hyphenatedProp) return value;
-
-    rule.prop(hyphenatedProp, value);
-
-    // Core will ignore that property value we set the proper one above.
-    return null;
-  }
-
-  return { onProcessStyle: onProcessStyle, onChangeValue: onChangeValue };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-compose/lib/index.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-compose/lib/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = jssCompose;
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss-compose/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Set selector.
- *
- * @param {Object} original rule
- * @param {String} className class string
- * @return {Boolean} flag, indicating function was successfull or not
- */
-function registerClass(rule, className) {
-  // Skip falsy values
-  if (!className) return true;
-
-  // Support array of class names `{composes: ['foo', 'bar']}`
-  if (Array.isArray(className)) {
-    for (var index = 0; index < className.length; index++) {
-      var isSetted = registerClass(rule, className[index]);
-      if (!isSetted) return false;
-    }
-
-    return true;
-  }
-
-  // Support space separated class names `{composes: 'foo bar'}`
-  if (className.indexOf(' ') > -1) {
-    return registerClass(rule, className.split(' '));
-  }
-
-  var parent = rule.options.parent;
-
-  // It is a ref to a local rule.
-
-  if (className[0] === '$') {
-    var refRule = parent.getRule(className.substr(1));
-
-    if (!refRule) {
-      (0, _warning2.default)(false, '[JSS] Referenced rule is not defined. \r\n%s', rule);
-      return false;
-    }
-
-    if (refRule === rule) {
-      (0, _warning2.default)(false, '[JSS] Cyclic composition detected. \r\n%s', rule);
-      return false;
-    }
-
-    parent.classes[rule.key] += ' ' + parent.classes[refRule.key];
-
-    return true;
-  }
-
-  rule.options.parent.classes[rule.key] += ' ' + className;
-
-  return true;
-}
-
-/**
- * Convert compose property to additional class, remove property from original styles.
- *
- * @param {Rule} rule
- * @api public
- */
-function jssCompose() {
-  function onProcessStyle(style, rule) {
-    if (!style.composes) return style;
-    registerClass(rule, style.composes);
-    // Remove composes property to prevent infinite loop.
-    delete style.composes;
-    return style;
-  }
-  return { onProcessStyle: onProcessStyle };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-compose/node_modules/warning/browser.js":
-/*!*************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-compose/node_modules/warning/browser.js ***!
-  \*************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function() {};
-
-if (true) {
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-        '`warning(condition, format, ...args)` requires a warning ' +
-        'message argument'
-      );
-    }
-
-    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
-      throw new Error(
-        'The warning format should be able to uniquely identify this ' +
-        'warning. Please, use a more descriptive format than: ' + format
-      );
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' +
-        format.replace(/%s/g, function() {
-          return args[argIndex++];
-        });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch(x) {}
-    }
-  };
-}
-
-module.exports = warning;
-
-
-/***/ }),
-
-/***/ "../../node_modules/jss-default-unit/lib/defaultUnits.js":
-/*!******************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-default-unit/lib/defaultUnits.js ***!
-  \******************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Generated jss-default-unit CSS property units
- *
- * @type object
- */
-exports['default'] = {
-  'animation-delay': 'ms',
-  'animation-duration': 'ms',
-  'background-position': 'px',
-  'background-position-x': 'px',
-  'background-position-y': 'px',
-  'background-size': 'px',
-  border: 'px',
-  'border-bottom': 'px',
-  'border-bottom-left-radius': 'px',
-  'border-bottom-right-radius': 'px',
-  'border-bottom-width': 'px',
-  'border-left': 'px',
-  'border-left-width': 'px',
-  'border-radius': 'px',
-  'border-right': 'px',
-  'border-right-width': 'px',
-  'border-spacing': 'px',
-  'border-top': 'px',
-  'border-top-left-radius': 'px',
-  'border-top-right-radius': 'px',
-  'border-top-width': 'px',
-  'border-width': 'px',
-  'border-after-width': 'px',
-  'border-before-width': 'px',
-  'border-end-width': 'px',
-  'border-horizontal-spacing': 'px',
-  'border-start-width': 'px',
-  'border-vertical-spacing': 'px',
-  bottom: 'px',
-  'box-shadow': 'px',
-  'column-gap': 'px',
-  'column-rule': 'px',
-  'column-rule-width': 'px',
-  'column-width': 'px',
-  'flex-basis': 'px',
-  'font-size': 'px',
-  'font-size-delta': 'px',
-  height: 'px',
-  left: 'px',
-  'letter-spacing': 'px',
-  'logical-height': 'px',
-  'logical-width': 'px',
-  margin: 'px',
-  'margin-after': 'px',
-  'margin-before': 'px',
-  'margin-bottom': 'px',
-  'margin-left': 'px',
-  'margin-right': 'px',
-  'margin-top': 'px',
-  'max-height': 'px',
-  'max-width': 'px',
-  'margin-end': 'px',
-  'margin-start': 'px',
-  'mask-position-x': 'px',
-  'mask-position-y': 'px',
-  'mask-size': 'px',
-  'max-logical-height': 'px',
-  'max-logical-width': 'px',
-  'min-height': 'px',
-  'min-width': 'px',
-  'min-logical-height': 'px',
-  'min-logical-width': 'px',
-  motion: 'px',
-  'motion-offset': 'px',
-  outline: 'px',
-  'outline-offset': 'px',
-  'outline-width': 'px',
-  padding: 'px',
-  'padding-bottom': 'px',
-  'padding-left': 'px',
-  'padding-right': 'px',
-  'padding-top': 'px',
-  'padding-after': 'px',
-  'padding-before': 'px',
-  'padding-end': 'px',
-  'padding-start': 'px',
-  'perspective-origin-x': '%',
-  'perspective-origin-y': '%',
-  perspective: 'px',
-  right: 'px',
-  'shape-margin': 'px',
-  size: 'px',
-  'text-indent': 'px',
-  'text-stroke': 'px',
-  'text-stroke-width': 'px',
-  top: 'px',
-  'transform-origin': '%',
-  'transform-origin-x': '%',
-  'transform-origin-y': '%',
-  'transform-origin-z': '%',
-  'transition-delay': 'ms',
-  'transition-duration': 'ms',
-  'vertical-align': 'px',
-  width: 'px',
-  'word-spacing': 'px',
-  // Not existing properties.
-  // Used to avoid issues with jss-expand intergration.
-  'box-shadow-x': 'px',
-  'box-shadow-y': 'px',
-  'box-shadow-blur': 'px',
-  'box-shadow-spread': 'px',
-  'font-line-height': 'px',
-  'text-shadow-x': 'px',
-  'text-shadow-y': 'px',
-  'text-shadow-blur': 'px'
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss-default-unit/lib/index.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-default-unit/lib/index.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports['default'] = defaultUnit;
-
-var _defaultUnits = __webpack_require__(/*! ./defaultUnits */ "../../node_modules/jss-default-unit/lib/defaultUnits.js");
-
-var _defaultUnits2 = _interopRequireDefault(_defaultUnits);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * Clones the object and adds a camel cased property version.
- */
-function addCamelCasedVersion(obj) {
-  var regExp = /(-[a-z])/g;
-  var replace = function replace(str) {
-    return str[1].toUpperCase();
-  };
-  var newObj = {};
-  for (var key in obj) {
-    newObj[key] = obj[key];
-    newObj[key.replace(regExp, replace)] = obj[key];
-  }
-  return newObj;
-}
-
-var units = addCamelCasedVersion(_defaultUnits2['default']);
-
-/**
- * Recursive deep style passing function
- *
- * @param {String} current property
- * @param {(Object|Array|Number|String)} property value
- * @param {Object} options
- * @return {(Object|Array|Number|String)} resulting value
- */
-function iterate(prop, value, options) {
-  if (!value) return value;
-
-  var convertedValue = value;
-
-  var type = typeof value === 'undefined' ? 'undefined' : _typeof(value);
-  if (type === 'object' && Array.isArray(value)) type = 'array';
-
-  switch (type) {
-    case 'object':
-      if (prop === 'fallbacks') {
-        for (var innerProp in value) {
-          value[innerProp] = iterate(innerProp, value[innerProp], options);
-        }
-        break;
-      }
-      for (var _innerProp in value) {
-        value[_innerProp] = iterate(prop + '-' + _innerProp, value[_innerProp], options);
-      }
-      break;
-    case 'array':
-      for (var i = 0; i < value.length; i++) {
-        value[i] = iterate(prop, value[i], options);
-      }
-      break;
-    case 'number':
-      if (value !== 0) {
-        convertedValue = value + (options[prop] || units[prop] || '');
-      }
-      break;
-    default:
-      break;
-  }
-
-  return convertedValue;
-}
-
-/**
- * Add unit to numeric values.
- */
-function defaultUnit() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-  var camelCasedOptions = addCamelCasedVersion(options);
-
-  function onProcessStyle(style, rule) {
-    if (rule.type !== 'style') return style;
-
-    for (var prop in style) {
-      style[prop] = iterate(prop, style[prop], camelCasedOptions);
-    }
-
-    return style;
-  }
-
-  function onChangeValue(value, prop) {
-    return iterate(prop, value, camelCasedOptions);
-  }
-
-  return { onProcessStyle: onProcessStyle, onChangeValue: onChangeValue };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-expand/lib/index.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-expand/lib/index.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.default = jssExpand;
-
-var _props = __webpack_require__(/*! ./props */ "../../node_modules/jss-expand/lib/props.js");
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Map values by given prop.
- *
- * @param {Array} array of values
- * @param {String} original property
- * @param {String} original rule
- * @return {String} mapped values
- */
-function mapValuesByProp(value, prop, rule) {
-  return value.map(function (item) {
-    return objectToArray(item, prop, rule, false, true);
-  });
-}
-
-/**
- * Convert array to nested array, if needed
- *
- * @param {Array} array of values
- * @param {String} original property
- * @param {Object} sheme, for converting arrays in strings
- * @param {Object} original rule
- * @return {String} converted string
- */
-function processArray(value, prop, scheme, rule) {
-  if (scheme[prop] == null) return value;
-  if (value.length === 0) return [];
-  if (Array.isArray(value[0])) return processArray(value[0], prop, scheme);
-  if (_typeof(value[0]) === 'object') {
-    return mapValuesByProp(value, prop, rule);
-  }
-
-  return [value];
-}
-
-/**
- * Convert object to array.
- *
- * @param {Object} object of values
- * @param {String} original property
- * @param {Object} original rule
- * @param {Boolean} is fallback prop
- * @param {Boolean} object is inside array
- * @return {String} converted string
- */
-function objectToArray(value, prop, rule, isFallback, isInArray) {
-  if (!(_props.propObj[prop] || _props.customPropObj[prop])) return [];
-
-  var result = [];
-
-  // Check if exists any non-standart property
-  if (_props.customPropObj[prop]) {
-    value = customPropsToStyle(value, rule, _props.customPropObj[prop], isFallback);
-  }
-
-  // Pass throught all standart props
-  if (Object.keys(value).length) {
-    for (var baseProp in _props.propObj[prop]) {
-      if (value[baseProp]) {
-        if (Array.isArray(value[baseProp])) {
-          result.push(_props.propArrayInObj[baseProp] === null ? value[baseProp] : value[baseProp].join(' '));
-        } else result.push(value[baseProp]);
-        continue;
-      }
-
-      // Add default value from props config.
-      if (_props.propObj[prop][baseProp] != null) {
-        result.push(_props.propObj[prop][baseProp]);
-      }
-    }
-  }
-
-  if (!result.length || isInArray) return result;
-  return [result];
-}
-
-/**
- * Convert custom properties values to styles adding them to rule directly
- *
- * @param {Object} object of values
- * @param {Object} original rule
- * @param {String} property, that contain partial custom properties
- * @param {Boolean} is fallback prop
- * @return {Object} value without custom properties, that was already added to rule
- */
-function customPropsToStyle(value, rule, customProps, isFallback) {
-  for (var prop in customProps) {
-    var propName = customProps[prop];
-
-    // If current property doesn't exist already in rule - add new one
-    if (typeof value[prop] !== 'undefined' && (isFallback || !rule.prop(propName))) {
-      var appendedValue = styleDetector(_defineProperty({}, propName, value[prop]), rule)[propName];
-
-      // Add style directly in rule
-      if (isFallback) rule.style.fallbacks[propName] = appendedValue;else rule.style[propName] = appendedValue;
-    }
-    // Delete converted property to avoid double converting
-    delete value[prop];
-  }
-
-  return value;
-}
-
-/**
- * Detect if a style needs to be converted.
- *
- * @param {Object} style
- * @param {Object} rule
- * @param {Boolean} is fallback prop
- * @return {Object} convertedStyle
- */
-function styleDetector(style, rule, isFallback) {
-  for (var prop in style) {
-    var value = style[prop];
-
-    if (Array.isArray(value)) {
-      // Check double arrays to avoid recursion.
-      if (!Array.isArray(value[0])) {
-        if (prop === 'fallbacks') {
-          for (var index = 0; index < style.fallbacks.length; index++) {
-            style.fallbacks[index] = styleDetector(style.fallbacks[index], rule, true);
-          }
-          continue;
-        }
-
-        style[prop] = processArray(value, prop, _props.propArray);
-        // Avoid creating properties with empty values
-        if (!style[prop].length) delete style[prop];
-      }
-    } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-      if (prop === 'fallbacks') {
-        style.fallbacks = styleDetector(style.fallbacks, rule, true);
-        continue;
-      }
-
-      style[prop] = objectToArray(value, prop, rule, isFallback);
-      // Avoid creating properties with empty values
-      if (!style[prop].length) delete style[prop];
-    }
-
-    // Maybe a computed value resulting in an empty string
-    else if (style[prop] === '') delete style[prop];
-  }
-
-  return style;
-}
-
-/**
- * Adds possibility to write expanded styles.
- *
- * @param {Rule} rule
- * @api public
- */
-function jssExpand() {
-  function onProcessStyle(style, rule) {
-    if (!style || rule.type !== 'style') return style;
-
-    if (Array.isArray(style)) {
-      // Pass rules one by one and reformat them
-      for (var index = 0; index < style.length; index++) {
-        style[index] = styleDetector(style[index], rule);
-      }
-      return style;
-    }
-
-    return styleDetector(style, rule);
-  }
-
-  return { onProcessStyle: onProcessStyle };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-expand/lib/props.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-expand/lib/props.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * A scheme for converting properties from array to regular style.
- * All properties listed below will be transformed to a string separated by space.
- */
-var propArray = exports.propArray = {
-  'background-size': true,
-  'background-position': true,
-  border: true,
-  'border-bottom': true,
-  'border-left': true,
-  'border-top': true,
-  'border-right': true,
-  'border-radius': true,
-  'border-image': true,
-  'border-width': true,
-  'border-style': true,
-  'border-color': true,
-  'box-shadow': true,
-  flex: true,
-  margin: true,
-  padding: true,
-  outline: true,
-  'transform-origin': true,
-  transform: true,
-  transition: true
-
-  /**
-   * A scheme for converting arrays to regular styles inside of objects.
-   * For e.g.: "{position: [0, 0]}" => "background-position: 0 0;".
-   */
-};var propArrayInObj = exports.propArrayInObj = {
-  position: true, // background-position
-  size: true // background-size
-
-
-  /**
-   * A scheme for parsing and building correct styles from passed objects.
-   */
-};var propObj = exports.propObj = {
-  padding: {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0
-  },
-  margin: {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0
-  },
-  background: {
-    attachment: null,
-    color: null,
-    image: null,
-    position: null,
-    repeat: null
-  },
-  border: {
-    width: null,
-    style: null,
-    color: null
-  },
-  'border-top': {
-    width: null,
-    style: null,
-    color: null
-  },
-  'border-right': {
-    width: null,
-    style: null,
-    color: null
-  },
-  'border-bottom': {
-    width: null,
-    style: null,
-    color: null
-  },
-  'border-left': {
-    width: null,
-    style: null,
-    color: null
-  },
-  outline: {
-    width: null,
-    style: null,
-    color: null
-  },
-  'list-style': {
-    type: null,
-    position: null,
-    image: null
-  },
-  transition: {
-    property: null,
-    duration: null,
-    'timing-function': null,
-    timingFunction: null, // Needed for avoiding comilation issues with jss-camel-case
-    delay: null
-  },
-  animation: {
-    name: null,
-    duration: null,
-    'timing-function': null,
-    timingFunction: null, // Needed to avoid compilation issues with jss-camel-case
-    delay: null,
-    'iteration-count': null,
-    iterationCount: null, // Needed to avoid compilation issues with jss-camel-case
-    direction: null,
-    'fill-mode': null,
-    fillMode: null, // Needed to avoid compilation issues with jss-camel-case
-    'play-state': null,
-    playState: null // Needed to avoid compilation issues with jss-camel-case
-  },
-  'box-shadow': {
-    x: 0,
-    y: 0,
-    blur: 0,
-    spread: 0,
-    color: null,
-    inset: null
-  },
-  'text-shadow': {
-    x: 0,
-    y: 0,
-    blur: null,
-    color: null
-  }
-
-  /**
-   * A scheme for converting non-standart properties inside object.
-   * For e.g.: include 'border-radius' property inside 'border' object.
-   */
-};var customPropObj = exports.customPropObj = {
-  border: {
-    radius: 'border-radius',
-    image: 'border-image',
-    width: 'border-width',
-    style: 'border-style',
-    color: 'border-color'
-  },
-  background: {
-    size: 'background-size',
-    image: 'background-image'
-  },
-  font: {
-    style: 'font-style',
-    variant: 'font-variant',
-    weight: 'font-weight',
-    stretch: 'font-stretch',
-    size: 'font-size',
-    family: 'font-family',
-    lineHeight: 'line-height', // Needed to avoid compilation issues with jss-camel-case
-    'line-height': 'line-height'
-  },
-  flex: {
-    grow: 'flex-grow',
-    basis: 'flex-basis',
-    direction: 'flex-direction',
-    wrap: 'flex-wrap',
-    flow: 'flex-flow',
-    shrink: 'flex-shrink'
-  },
-  align: {
-    self: 'align-self',
-    items: 'align-items',
-    content: 'align-content'
-  },
-  grid: {
-    'template-columns': 'grid-template-columns',
-    templateColumns: 'grid-template-columns',
-
-    'template-rows': 'grid-template-rows',
-    templateRows: 'grid-template-rows',
-
-    'template-areas': 'grid-template-areas',
-    templateAreas: 'grid-template-areas',
-
-    template: 'grid-template',
-
-    'auto-columns': 'grid-auto-columns',
-    autoColumns: 'grid-auto-columns',
-
-    'auto-rows': 'grid-auto-rows',
-    autoRows: 'grid-auto-rows',
-
-    'auto-flow': 'grid-auto-flow',
-    autoFlow: 'grid-auto-flow',
-
-    row: 'grid-row',
-    column: 'grid-column',
-
-    'row-start': 'grid-row-start',
-    rowStart: 'grid-row-start',
-    'row-end': 'grid-row-end',
-    rowEnd: 'grid-row-end',
-
-    'column-start': 'grid-column-start',
-    columnStart: 'grid-column-start',
-    'column-end': 'grid-column-end',
-    columnEnd: 'grid-column-end',
-
-    area: 'grid-area',
-    gap: 'grid-gap',
-
-    'row-gap': 'grid-row-gap',
-    rowGap: 'grid-row-gap',
-
-    'column-gap': 'grid-column-gap',
-    columnGap: 'grid-column-gap'
-  }
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss-extend/lib/index.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-extend/lib/index.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports['default'] = jssExtend;
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss-extend/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var isObject = function isObject(obj) {
-  return obj && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && !Array.isArray(obj);
-};
-var valueNs = 'extendCurrValue' + Date.now();
-
-function mergeExtend(style, rule, sheet, newStyle) {
-  var extendType = _typeof(style.extend);
-  // Extend using a rule name.
-  if (extendType === 'string') {
-    if (!sheet) return;
-    var refRule = sheet.getRule(style.extend);
-    if (!refRule) return;
-    if (refRule === rule) {
-      (0, _warning2['default'])(false, '[JSS] A rule tries to extend itself \r\n%s', rule);
-      return;
-    }
-    var parent = refRule.options.parent;
-
-    if (parent) {
-      var originalStyle = parent.rules.raw[style.extend];
-      extend(originalStyle, rule, sheet, newStyle);
-    }
-    return;
-  }
-
-  // Extend using an array of objects.
-  if (Array.isArray(style.extend)) {
-    for (var index = 0; index < style.extend.length; index++) {
-      extend(style.extend[index], rule, sheet, newStyle);
-    }
-    return;
-  }
-
-  // Extend is a style object.
-  for (var prop in style.extend) {
-    if (prop === 'extend') {
-      extend(style.extend.extend, rule, sheet, newStyle);
-      continue;
-    }
-    if (isObject(style.extend[prop])) {
-      if (!(prop in newStyle)) newStyle[prop] = {};
-      extend(style.extend[prop], rule, sheet, newStyle[prop]);
-      continue;
-    }
-    newStyle[prop] = style.extend[prop];
-  }
-}
-
-function mergeRest(style, rule, sheet, newStyle) {
-  // Copy base style.
-  for (var prop in style) {
-    if (prop === 'extend') continue;
-    if (isObject(newStyle[prop]) && isObject(style[prop])) {
-      extend(style[prop], rule, sheet, newStyle[prop]);
-      continue;
-    }
-
-    if (isObject(style[prop])) {
-      newStyle[prop] = extend(style[prop], rule, sheet);
-      continue;
-    }
-
-    newStyle[prop] = style[prop];
-  }
-}
-
-/**
- * Recursively extend styles.
- */
-function extend(style, rule, sheet) {
-  var newStyle = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-  mergeExtend(style, rule, sheet, newStyle);
-  mergeRest(style, rule, sheet, newStyle);
-  return newStyle;
-}
-
-/**
- * Handle `extend` property.
- *
- * @param {Rule} rule
- * @api public
- */
-function jssExtend() {
-  function onProcessStyle(style, rule, sheet) {
-    if ('extend' in style) return extend(style, rule, sheet);
-    return style;
-  }
-
-  function onChangeValue(value, prop, rule) {
-    if (prop !== 'extend') return value;
-
-    // Value is empty, remove properties set previously.
-    if (value == null || value === false) {
-      for (var key in rule[valueNs]) {
-        rule.prop(key, null);
-      }
-      rule[valueNs] = null;
-      return null;
-    }
-
-    for (var _key in value) {
-      rule.prop(_key, value[_key]);
-    }
-    rule[valueNs] = value;
-
-    // Make sure we don't set the value in the core.
-    return null;
-  }
-
-  return { onProcessStyle: onProcessStyle, onChangeValue: onChangeValue };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-extend/node_modules/warning/browser.js":
-/*!************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-extend/node_modules/warning/browser.js ***!
-  \************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function() {};
-
-if (true) {
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-        '`warning(condition, format, ...args)` requires a warning ' +
-        'message argument'
-      );
-    }
-
-    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
-      throw new Error(
-        'The warning format should be able to uniquely identify this ' +
-        'warning. Please, use a more descriptive format than: ' + format
-      );
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' +
-        format.replace(/%s/g, function() {
-          return args[argIndex++];
-        });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch(x) {}
-    }
-  };
-}
-
-module.exports = warning;
-
-
-/***/ }),
-
-/***/ "../../node_modules/jss-global/lib/index.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-global/lib/index.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports['default'] = jssGlobal;
-
-var _jss = __webpack_require__(/*! jss */ "../../node_modules/jss/lib/index.js");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var propKey = '@global';
-var prefixKey = '@global ';
-
-var GlobalContainerRule = function () {
-  function GlobalContainerRule(key, styles, options) {
-    _classCallCheck(this, GlobalContainerRule);
-
-    this.type = 'global';
-
-    this.key = key;
-    this.options = options;
-    this.rules = new _jss.RuleList(_extends({}, options, {
-      parent: this
-    }));
-
-    for (var selector in styles) {
-      this.rules.add(selector, styles[selector], { selector: selector });
-    }
-
-    this.rules.process();
-  }
-
-  /**
-   * Get a rule.
-   */
-
-
-  _createClass(GlobalContainerRule, [{
-    key: 'getRule',
-    value: function getRule(name) {
-      return this.rules.get(name);
-    }
-
-    /**
-     * Create and register rule, run plugins.
-     */
-
-  }, {
-    key: 'addRule',
-    value: function addRule(name, style, options) {
-      var rule = this.rules.add(name, style, options);
-      this.options.jss.plugins.onProcessRule(rule);
-      return rule;
-    }
-
-    /**
-     * Get index of a rule.
-     */
-
-  }, {
-    key: 'indexOf',
-    value: function indexOf(rule) {
-      return this.rules.indexOf(rule);
-    }
-
-    /**
-     * Generates a CSS string.
-     */
-
-  }, {
-    key: 'toString',
-    value: function toString() {
-      return this.rules.toString();
-    }
-  }]);
-
-  return GlobalContainerRule;
-}();
-
-var GlobalPrefixedRule = function () {
-  function GlobalPrefixedRule(name, style, options) {
-    _classCallCheck(this, GlobalPrefixedRule);
-
-    this.name = name;
-    this.options = options;
-    var selector = name.substr(prefixKey.length);
-    this.rule = options.jss.createRule(selector, style, _extends({}, options, {
-      parent: this,
-      selector: selector
-    }));
-  }
-
-  _createClass(GlobalPrefixedRule, [{
-    key: 'toString',
-    value: function toString(options) {
-      return this.rule.toString(options);
-    }
-  }]);
-
-  return GlobalPrefixedRule;
-}();
-
-var separatorRegExp = /\s*,\s*/g;
-
-function addScope(selector, scope) {
-  var parts = selector.split(separatorRegExp);
-  var scoped = '';
-  for (var i = 0; i < parts.length; i++) {
-    scoped += scope + ' ' + parts[i].trim();
-    if (parts[i + 1]) scoped += ', ';
-  }
-  return scoped;
-}
-
-function handleNestedGlobalContainerRule(rule) {
-  var options = rule.options,
-      style = rule.style;
-
-  var rules = style[propKey];
-
-  if (!rules) return;
-
-  for (var name in rules) {
-    options.sheet.addRule(name, rules[name], _extends({}, options, {
-      selector: addScope(name, rule.selector)
-    }));
-  }
-
-  delete style[propKey];
-}
-
-function handlePrefixedGlobalRule(rule) {
-  var options = rule.options,
-      style = rule.style;
-
-  for (var prop in style) {
-    if (prop.substr(0, propKey.length) !== propKey) continue;
-
-    var selector = addScope(prop.substr(propKey.length), rule.selector);
-    options.sheet.addRule(selector, style[prop], _extends({}, options, {
-      selector: selector
-    }));
-    delete style[prop];
-  }
-}
-
-/**
- * Convert nested rules to separate, remove them from original styles.
- *
- * @param {Rule} rule
- * @api public
- */
-function jssGlobal() {
-  function onCreateRule(name, styles, options) {
-    if (name === propKey) {
-      return new GlobalContainerRule(name, styles, options);
-    }
-
-    if (name[0] === '@' && name.substr(0, prefixKey.length) === prefixKey) {
-      return new GlobalPrefixedRule(name, styles, options);
-    }
-
-    var parent = options.parent;
-
-
-    if (parent) {
-      if (parent.type === 'global' || parent.options.parent.type === 'global') {
-        options.global = true;
-      }
-    }
-
-    if (options.global) options.selector = name;
-
-    return null;
-  }
-
-  function onProcessRule(rule) {
-    if (rule.type !== 'style') return;
-
-    handleNestedGlobalContainerRule(rule);
-    handlePrefixedGlobalRule(rule);
-  }
-
-  return { onCreateRule: onCreateRule, onProcessRule: onProcessRule };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-nested/lib/index.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-nested/lib/index.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = jssNested;
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss-nested/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var separatorRegExp = /\s*,\s*/g;
-var parentRegExp = /&/g;
-var refRegExp = /\$([\w-]+)/g;
-
-/**
- * Convert nested rules to separate, remove them from original styles.
- *
- * @param {Rule} rule
- * @api public
- */
-function jssNested() {
-  // Get a function to be used for $ref replacement.
-  function getReplaceRef(container) {
-    return function (match, key) {
-      var rule = container.getRule(key);
-      if (rule) return rule.selector;
-      (0, _warning2.default)(false, '[JSS] Could not find the referenced rule %s in %s.', key, container.options.meta || container);
-      return key;
-    };
-  }
-
-  var hasAnd = function hasAnd(str) {
-    return str.indexOf('&') !== -1;
-  };
-
-  function replaceParentRefs(nestedProp, parentProp) {
-    var parentSelectors = parentProp.split(separatorRegExp);
-    var nestedSelectors = nestedProp.split(separatorRegExp);
-
-    var result = '';
-
-    for (var i = 0; i < parentSelectors.length; i++) {
-      var parent = parentSelectors[i];
-
-      for (var j = 0; j < nestedSelectors.length; j++) {
-        var nested = nestedSelectors[j];
-        if (result) result += ', ';
-        // Replace all & by the parent or prefix & with the parent.
-        result += hasAnd(nested) ? nested.replace(parentRegExp, parent) : parent + ' ' + nested;
-      }
-    }
-
-    return result;
-  }
-
-  function getOptions(rule, container, options) {
-    // Options has been already created, now we only increase index.
-    if (options) return _extends({}, options, { index: options.index + 1 });
-
-    var nestingLevel = rule.options.nestingLevel;
-
-    nestingLevel = nestingLevel === undefined ? 1 : nestingLevel + 1;
-
-    return _extends({}, rule.options, {
-      nestingLevel: nestingLevel,
-      index: container.indexOf(rule) + 1
-    });
-  }
-
-  function onProcessStyle(style, rule) {
-    if (rule.type !== 'style') return style;
-    var container = rule.options.parent;
-    var options = void 0;
-    var replaceRef = void 0;
-    for (var prop in style) {
-      var isNested = hasAnd(prop);
-      var isNestedConditional = prop[0] === '@';
-
-      if (!isNested && !isNestedConditional) continue;
-
-      options = getOptions(rule, container, options);
-
-      if (isNested) {
-        var selector = replaceParentRefs(prop, rule.selector
-        // Lazily create the ref replacer function just once for
-        // all nested rules within the sheet.
-        );if (!replaceRef) replaceRef = getReplaceRef(container
-        // Replace all $refs.
-        );selector = selector.replace(refRegExp, replaceRef);
-
-        container.addRule(selector, style[prop], _extends({}, options, { selector: selector }));
-      } else if (isNestedConditional) {
-        container
-        // Place conditional right after the parent rule to ensure right ordering.
-        .addRule(prop, null, options).addRule(rule.key, style[prop], { selector: rule.selector });
-      }
-
-      delete style[prop];
-    }
-
-    return style;
-  }
-
-  return { onProcessStyle: onProcessStyle };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-nested/node_modules/warning/browser.js":
-/*!************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-nested/node_modules/warning/browser.js ***!
-  \************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function() {};
-
-if (true) {
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-        '`warning(condition, format, ...args)` requires a warning ' +
-        'message argument'
-      );
-    }
-
-    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
-      throw new Error(
-        'The warning format should be able to uniquely identify this ' +
-        'warning. Please, use a more descriptive format than: ' + format
-      );
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' +
-        format.replace(/%s/g, function() {
-          return args[argIndex++];
-        });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch(x) {}
-    }
-  };
-}
-
-module.exports = warning;
-
-
-/***/ }),
-
-/***/ "../../node_modules/jss-preset-default/lib/index.js":
-/*!*************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-preset-default/lib/index.js ***!
-  \*************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _jssTemplate = __webpack_require__(/*! jss-template */ "../../node_modules/jss-template/lib/index.js");
-
-var _jssTemplate2 = _interopRequireDefault(_jssTemplate);
-
-var _jssGlobal = __webpack_require__(/*! jss-global */ "../../node_modules/jss-global/lib/index.js");
-
-var _jssGlobal2 = _interopRequireDefault(_jssGlobal);
-
-var _jssExtend = __webpack_require__(/*! jss-extend */ "../../node_modules/jss-extend/lib/index.js");
-
-var _jssExtend2 = _interopRequireDefault(_jssExtend);
-
-var _jssNested = __webpack_require__(/*! jss-nested */ "../../node_modules/jss-nested/lib/index.js");
-
-var _jssNested2 = _interopRequireDefault(_jssNested);
-
-var _jssCompose = __webpack_require__(/*! jss-compose */ "../../node_modules/jss-compose/lib/index.js");
-
-var _jssCompose2 = _interopRequireDefault(_jssCompose);
-
-var _jssCamelCase = __webpack_require__(/*! jss-camel-case */ "../../node_modules/jss-camel-case/lib/index.js");
-
-var _jssCamelCase2 = _interopRequireDefault(_jssCamelCase);
-
-var _jssDefaultUnit = __webpack_require__(/*! jss-default-unit */ "../../node_modules/jss-default-unit/lib/index.js");
-
-var _jssDefaultUnit2 = _interopRequireDefault(_jssDefaultUnit);
-
-var _jssExpand = __webpack_require__(/*! jss-expand */ "../../node_modules/jss-expand/lib/index.js");
-
-var _jssExpand2 = _interopRequireDefault(_jssExpand);
-
-var _jssVendorPrefixer = __webpack_require__(/*! jss-vendor-prefixer */ "../../node_modules/jss-vendor-prefixer/lib/index.js");
-
-var _jssVendorPrefixer2 = _interopRequireDefault(_jssVendorPrefixer);
-
-var _jssPropsSort = __webpack_require__(/*! jss-props-sort */ "../../node_modules/jss-props-sort/lib/index.js");
-
-var _jssPropsSort2 = _interopRequireDefault(_jssPropsSort);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function () {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  return {
-    plugins: [(0, _jssTemplate2.default)(options.template), (0, _jssGlobal2.default)(options.global), (0, _jssExtend2.default)(options.extend), (0, _jssNested2.default)(options.nested), (0, _jssCompose2.default)(options.compose), (0, _jssCamelCase2.default)(options.camelCase), (0, _jssDefaultUnit2.default)(options.defaultUnit), (0, _jssExpand2.default)(options.expand), (0, _jssVendorPrefixer2.default)(options.vendorPrefixer), (0, _jssPropsSort2.default)(options.propsSort)]
-  };
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss-props-sort/lib/index.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-props-sort/lib/index.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = jssPropsSort;
-/**
- * Sort props by length.
- */
-function jssPropsSort() {
-  function sort(prop0, prop1) {
-    return prop0.length - prop1.length;
-  }
-
-  function onProcessStyle(style, rule) {
-    if (rule.type !== 'style') return style;
-
-    var newStyle = {};
-    var props = Object.keys(style).sort(sort);
-    for (var prop in props) {
-      newStyle[props[prop]] = style[props[prop]];
-    }
-    return newStyle;
-  }
-
-  return { onProcessStyle: onProcessStyle };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss-template/lib/index.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-template/lib/index.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _parse = __webpack_require__(/*! ./parse */ "../../node_modules/jss-template/lib/parse.js");
-
-var _parse2 = _interopRequireDefault(_parse);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var onProcessRule = function onProcessRule(rule) {
-  if (typeof rule.style === 'string') {
-    rule.style = (0, _parse2['default'])(rule.style);
-  }
-};
-
-exports['default'] = function () {
-  return { onProcessRule: onProcessRule };
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss-template/lib/parse.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-template/lib/parse.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss-template/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var semiWithNl = /;\n/;
-
-/**
- * Naive CSS parser.
- * - Supports only rule body (no selectors)
- * - Requires semicolon and new line after the value (except of last line)
- * - No nested rules support
- */
-
-exports['default'] = function (cssText) {
-  var style = {};
-  var split = cssText.split(semiWithNl);
-  for (var i = 0; i < split.length; i++) {
-    var decl = (split[i] || '').trim();
-
-    if (!decl) continue;
-    var colonIndex = decl.indexOf(':');
-    if (colonIndex === -1) {
-      (0, _warning2['default'])(false, 'Malformed CSS string "%s"', decl);
-      continue;
-    }
-    var prop = decl.substr(0, colonIndex).trim();
-    var value = decl.substr(colonIndex + 1).trim();
-    style[prop] = value;
-  }
-  return style;
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss-template/node_modules/warning/browser.js":
-/*!**************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-template/node_modules/warning/browser.js ***!
-  \**************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function() {};
-
-if (true) {
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-        '`warning(condition, format, ...args)` requires a warning ' +
-        'message argument'
-      );
-    }
-
-    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
-      throw new Error(
-        'The warning format should be able to uniquely identify this ' +
-        'warning. Please, use a more descriptive format than: ' + format
-      );
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' +
-        format.replace(/%s/g, function() {
-          return args[argIndex++];
-        });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch(x) {}
-    }
-  };
-}
-
-module.exports = warning;
-
-
-/***/ }),
-
-/***/ "../../node_modules/jss-vendor-prefixer/lib/index.js":
-/*!**************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss-vendor-prefixer/lib/index.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = jssVendorPrefixer;
-
-var _cssVendor = __webpack_require__(/*! css-vendor */ "../../node_modules/css-vendor/lib/index.js");
-
-var vendor = _interopRequireWildcard(_cssVendor);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-/**
- * Add vendor prefix to a property name when needed.
- *
- * @param {Rule} rule
- * @api public
- */
-function jssVendorPrefixer() {
-  function onProcessRule(rule) {
-    if (rule.type === 'keyframes') {
-      rule.key = '@' + vendor.prefix.css + rule.key.substr(1);
-    }
-  }
-
-  function onProcessStyle(style, rule) {
-    if (rule.type !== 'style') return style;
-
-    for (var prop in style) {
-      var value = style[prop];
-
-      var changeProp = false;
-      var supportedProp = vendor.supportedProperty(prop);
-      if (supportedProp && supportedProp !== prop) changeProp = true;
-
-      var changeValue = false;
-      var supportedValue = vendor.supportedValue(supportedProp, value);
-      if (supportedValue && supportedValue !== value) changeValue = true;
-
-      if (changeProp || changeValue) {
-        if (changeProp) delete style[prop];
-        style[supportedProp || prop] = supportedValue || value;
-      }
-    }
-
-    return style;
-  }
-
-  function onChangeValue(value, prop) {
-    return vendor.supportedValue(prop, value);
-  }
-
-  return { onProcessRule: onProcessRule, onProcessStyle: onProcessStyle, onChangeValue: onChangeValue };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/Jss.js":
-/*!********************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/Jss.js ***!
-  \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _isInBrowser = __webpack_require__(/*! is-in-browser */ "../../node_modules/is-in-browser/dist/module.js");
-
-var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-
-var _StyleSheet = __webpack_require__(/*! ./StyleSheet */ "../../node_modules/jss/lib/StyleSheet.js");
-
-var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
-
-var _PluginsRegistry = __webpack_require__(/*! ./PluginsRegistry */ "../../node_modules/jss/lib/PluginsRegistry.js");
-
-var _PluginsRegistry2 = _interopRequireDefault(_PluginsRegistry);
-
-var _rules = __webpack_require__(/*! ./plugins/rules */ "../../node_modules/jss/lib/plugins/rules.js");
-
-var _rules2 = _interopRequireDefault(_rules);
-
-var _observables = __webpack_require__(/*! ./plugins/observables */ "../../node_modules/jss/lib/plugins/observables.js");
-
-var _observables2 = _interopRequireDefault(_observables);
-
-var _functions = __webpack_require__(/*! ./plugins/functions */ "../../node_modules/jss/lib/plugins/functions.js");
-
-var _functions2 = _interopRequireDefault(_functions);
-
-var _sheets = __webpack_require__(/*! ./sheets */ "../../node_modules/jss/lib/sheets.js");
-
-var _sheets2 = _interopRequireDefault(_sheets);
-
-var _StyleRule = __webpack_require__(/*! ./rules/StyleRule */ "../../node_modules/jss/lib/rules/StyleRule.js");
-
-var _StyleRule2 = _interopRequireDefault(_StyleRule);
-
-var _createGenerateClassName = __webpack_require__(/*! ./utils/createGenerateClassName */ "../../node_modules/jss/lib/utils/createGenerateClassName.js");
-
-var _createGenerateClassName2 = _interopRequireDefault(_createGenerateClassName);
-
-var _createRule2 = __webpack_require__(/*! ./utils/createRule */ "../../node_modules/jss/lib/utils/createRule.js");
-
-var _createRule3 = _interopRequireDefault(_createRule2);
-
-var _DomRenderer = __webpack_require__(/*! ./renderers/DomRenderer */ "../../node_modules/jss/lib/renderers/DomRenderer.js");
-
-var _DomRenderer2 = _interopRequireDefault(_DomRenderer);
-
-var _VirtualRenderer = __webpack_require__(/*! ./renderers/VirtualRenderer */ "../../node_modules/jss/lib/renderers/VirtualRenderer.js");
-
-var _VirtualRenderer2 = _interopRequireDefault(_VirtualRenderer);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var defaultPlugins = _rules2['default'].concat([_observables2['default'], _functions2['default']]);
-
-var instanceCounter = 0;
-
-var Jss = function () {
-  function Jss(options) {
-    _classCallCheck(this, Jss);
-
-    this.id = instanceCounter++;
-    this.version = "9.8.7";
-    this.plugins = new _PluginsRegistry2['default']();
-    this.options = {
-      createGenerateClassName: _createGenerateClassName2['default'],
-      Renderer: _isInBrowser2['default'] ? _DomRenderer2['default'] : _VirtualRenderer2['default'],
-      plugins: []
-    };
-    this.generateClassName = (0, _createGenerateClassName2['default'])();
-
-    // eslint-disable-next-line prefer-spread
-    this.use.apply(this, defaultPlugins);
-    this.setup(options);
-  }
-
-  _createClass(Jss, [{
-    key: 'setup',
-    value: function setup() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-      if (options.createGenerateClassName) {
-        this.options.createGenerateClassName = options.createGenerateClassName;
-        // $FlowFixMe
-        this.generateClassName = options.createGenerateClassName();
-      }
-
-      if (options.insertionPoint != null) this.options.insertionPoint = options.insertionPoint;
-      if (options.virtual || options.Renderer) {
-        this.options.Renderer = options.Renderer || (options.virtual ? _VirtualRenderer2['default'] : _DomRenderer2['default']);
-      }
-
-      // eslint-disable-next-line prefer-spread
-      if (options.plugins) this.use.apply(this, options.plugins);
-
-      return this;
-    }
-
-    /**
-     * Create a Style Sheet.
-     */
-
-  }, {
-    key: 'createStyleSheet',
-    value: function createStyleSheet(styles) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      var index = options.index;
-      if (typeof index !== 'number') {
-        index = _sheets2['default'].index === 0 ? 0 : _sheets2['default'].index + 1;
-      }
-      var sheet = new _StyleSheet2['default'](styles, _extends({}, options, {
-        jss: this,
-        generateClassName: options.generateClassName || this.generateClassName,
-        insertionPoint: this.options.insertionPoint,
-        Renderer: this.options.Renderer,
-        index: index
-      }));
-      this.plugins.onProcessSheet(sheet);
-
-      return sheet;
-    }
-
-    /**
-     * Detach the Style Sheet and remove it from the registry.
-     */
-
-  }, {
-    key: 'removeStyleSheet',
-    value: function removeStyleSheet(sheet) {
-      sheet.detach();
-      _sheets2['default'].remove(sheet);
-      return this;
-    }
-
-    /**
-     * Create a rule without a Style Sheet.
-     */
-
-  }, {
-    key: 'createRule',
-    value: function createRule(name) {
-      var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      // Enable rule without name for inline styles.
-      if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
-        options = style;
-        style = name;
-        name = undefined;
-      }
-
-      // Cast from RuleFactoryOptions to RuleOptions
-      // https://stackoverflow.com/questions/41328728/force-casting-in-flow
-      var ruleOptions = options;
-
-      ruleOptions.jss = this;
-      ruleOptions.Renderer = this.options.Renderer;
-      if (!ruleOptions.generateClassName) ruleOptions.generateClassName = this.generateClassName;
-      if (!ruleOptions.classes) ruleOptions.classes = {};
-      var rule = (0, _createRule3['default'])(name, style, ruleOptions);
-
-      if (!ruleOptions.selector && rule instanceof _StyleRule2['default']) {
-        rule.selector = '.' + ruleOptions.generateClassName(rule);
-      }
-
-      this.plugins.onProcessRule(rule);
-
-      return rule;
-    }
-
-    /**
-     * Register plugin. Passed function will be invoked with a rule instance.
-     */
-
-  }, {
-    key: 'use',
-    value: function use() {
-      var _this = this;
-
-      for (var _len = arguments.length, plugins = Array(_len), _key = 0; _key < _len; _key++) {
-        plugins[_key] = arguments[_key];
-      }
-
-      plugins.forEach(function (plugin) {
-        // Avoids applying same plugin twice, at least based on ref.
-        if (_this.options.plugins.indexOf(plugin) === -1) {
-          _this.options.plugins.push(plugin);
-          _this.plugins.use(plugin);
-        }
-      });
-
-      return this;
-    }
-  }]);
-
-  return Jss;
-}();
-
-exports['default'] = Jss;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/PluginsRegistry.js":
-/*!********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/PluginsRegistry.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PluginsRegistry = function () {
-  function PluginsRegistry() {
-    _classCallCheck(this, PluginsRegistry);
-
-    this.hooks = {
-      onCreateRule: [],
-      onProcessRule: [],
-      onProcessStyle: [],
-      onProcessSheet: [],
-      onChangeValue: [],
-      onUpdate: []
-
-      /**
-       * Call `onCreateRule` hooks and return an object if returned by a hook.
-       */
-    };
-  }
-
-  _createClass(PluginsRegistry, [{
-    key: 'onCreateRule',
-    value: function onCreateRule(name, decl, options) {
-      for (var i = 0; i < this.hooks.onCreateRule.length; i++) {
-        var rule = this.hooks.onCreateRule[i](name, decl, options);
-        if (rule) return rule;
-      }
-      return null;
-    }
-
-    /**
-     * Call `onProcessRule` hooks.
-     */
-
-  }, {
-    key: 'onProcessRule',
-    value: function onProcessRule(rule) {
-      if (rule.isProcessed) return;
-      var sheet = rule.options.sheet;
-
-      for (var i = 0; i < this.hooks.onProcessRule.length; i++) {
-        this.hooks.onProcessRule[i](rule, sheet);
-      }
-
-      // $FlowFixMe
-      if (rule.style) this.onProcessStyle(rule.style, rule, sheet);
-
-      rule.isProcessed = true;
-    }
-
-    /**
-     * Call `onProcessStyle` hooks.
-     */
-
-  }, {
-    key: 'onProcessStyle',
-    value: function onProcessStyle(style, rule, sheet) {
-      var nextStyle = style;
-
-      for (var i = 0; i < this.hooks.onProcessStyle.length; i++) {
-        nextStyle = this.hooks.onProcessStyle[i](nextStyle, rule, sheet);
-        // $FlowFixMe
-        rule.style = nextStyle;
-      }
-    }
-
-    /**
-     * Call `onProcessSheet` hooks.
-     */
-
-  }, {
-    key: 'onProcessSheet',
-    value: function onProcessSheet(sheet) {
-      for (var i = 0; i < this.hooks.onProcessSheet.length; i++) {
-        this.hooks.onProcessSheet[i](sheet);
-      }
-    }
-
-    /**
-     * Call `onUpdate` hooks.
-     */
-
-  }, {
-    key: 'onUpdate',
-    value: function onUpdate(data, rule, sheet) {
-      for (var i = 0; i < this.hooks.onUpdate.length; i++) {
-        this.hooks.onUpdate[i](data, rule, sheet);
-      }
-    }
-
-    /**
-     * Call `onChangeValue` hooks.
-     */
-
-  }, {
-    key: 'onChangeValue',
-    value: function onChangeValue(value, prop, rule) {
-      var processedValue = value;
-      for (var i = 0; i < this.hooks.onChangeValue.length; i++) {
-        processedValue = this.hooks.onChangeValue[i](processedValue, prop, rule);
-      }
-      return processedValue;
-    }
-
-    /**
-     * Register a plugin.
-     * If function is passed, it is a shortcut for `{onProcessRule}`.
-     */
-
-  }, {
-    key: 'use',
-    value: function use(plugin) {
-      for (var name in plugin) {
-        if (this.hooks[name]) this.hooks[name].push(plugin[name]);else (0, _warning2['default'])(false, '[JSS] Unknown hook "%s".', name);
-      }
-    }
-  }]);
-
-  return PluginsRegistry;
-}();
-
-exports['default'] = PluginsRegistry;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/RuleList.js":
-/*!*************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/RuleList.js ***!
-  \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _createRule = __webpack_require__(/*! ./utils/createRule */ "../../node_modules/jss/lib/utils/createRule.js");
-
-var _createRule2 = _interopRequireDefault(_createRule);
-
-var _linkRule = __webpack_require__(/*! ./utils/linkRule */ "../../node_modules/jss/lib/utils/linkRule.js");
-
-var _linkRule2 = _interopRequireDefault(_linkRule);
-
-var _StyleRule = __webpack_require__(/*! ./rules/StyleRule */ "../../node_modules/jss/lib/rules/StyleRule.js");
-
-var _StyleRule2 = _interopRequireDefault(_StyleRule);
-
-var _escape = __webpack_require__(/*! ./utils/escape */ "../../node_modules/jss/lib/utils/escape.js");
-
-var _escape2 = _interopRequireDefault(_escape);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Contains rules objects and allows adding/removing etc.
- * Is used for e.g. by `StyleSheet` or `ConditionalRule`.
- */
-var RuleList = function () {
-
-  // Original styles object.
-  function RuleList(options) {
-    var _this = this;
-
-    _classCallCheck(this, RuleList);
-
-    this.map = {};
-    this.raw = {};
-    this.index = [];
-
-    this.update = function (name, data) {
-      var _options = _this.options,
-          plugins = _options.jss.plugins,
-          sheet = _options.sheet;
-
-      if (typeof name === 'string') {
-        plugins.onUpdate(data, _this.get(name), sheet);
-      } else {
-        for (var index = 0; index < _this.index.length; index++) {
-          plugins.onUpdate(name, _this.index[index], sheet);
-        }
-      }
-    };
-
-    this.options = options;
-    this.classes = options.classes;
-  }
-
-  /**
-   * Create and register rule.
-   *
-   * Will not render after Style Sheet was rendered the first time.
-   */
-
-
-  // Used to ensure correct rules order.
-
-  // Rules registry for access by .get() method.
-  // It contains the same rule registered by name and by selector.
-
-
-  _createClass(RuleList, [{
-    key: 'add',
-    value: function add(name, decl, options) {
-      var _options2 = this.options,
-          parent = _options2.parent,
-          sheet = _options2.sheet,
-          jss = _options2.jss,
-          Renderer = _options2.Renderer,
-          generateClassName = _options2.generateClassName;
-
-
-      options = _extends({
-        classes: this.classes,
-        parent: parent,
-        sheet: sheet,
-        jss: jss,
-        Renderer: Renderer,
-        generateClassName: generateClassName
-      }, options);
-
-      if (!options.selector && this.classes[name]) {
-        options.selector = '.' + (0, _escape2['default'])(this.classes[name]);
-      }
-
-      this.raw[name] = decl;
-
-      var rule = (0, _createRule2['default'])(name, decl, options);
-
-      var className = void 0;
-
-      if (!options.selector && rule instanceof _StyleRule2['default']) {
-        className = generateClassName(rule, sheet);
-        rule.selector = '.' + (0, _escape2['default'])(className);
-      }
-
-      this.register(rule, className);
-
-      var index = options.index === undefined ? this.index.length : options.index;
-      this.index.splice(index, 0, rule);
-
-      return rule;
-    }
-
-    /**
-     * Get a rule.
-     */
-
-  }, {
-    key: 'get',
-    value: function get(name) {
-      return this.map[name];
-    }
-
-    /**
-     * Delete a rule.
-     */
-
-  }, {
-    key: 'remove',
-    value: function remove(rule) {
-      this.unregister(rule);
-      this.index.splice(this.indexOf(rule), 1);
-    }
-
-    /**
-     * Get index of a rule.
-     */
-
-  }, {
-    key: 'indexOf',
-    value: function indexOf(rule) {
-      return this.index.indexOf(rule);
-    }
-
-    /**
-     * Run `onProcessRule()` plugins on every rule.
-     */
-
-  }, {
-    key: 'process',
-    value: function process() {
-      var plugins = this.options.jss.plugins;
-      // We need to clone array because if we modify the index somewhere else during a loop
-      // we end up with very hard-to-track-down side effects.
-
-      this.index.slice(0).forEach(plugins.onProcessRule, plugins);
-    }
-
-    /**
-     * Register a rule in `.map` and `.classes` maps.
-     */
-
-  }, {
-    key: 'register',
-    value: function register(rule, className) {
-      this.map[rule.key] = rule;
-      if (rule instanceof _StyleRule2['default']) {
-        this.map[rule.selector] = rule;
-        if (className) this.classes[rule.key] = className;
-      }
-    }
-
-    /**
-     * Unregister a rule.
-     */
-
-  }, {
-    key: 'unregister',
-    value: function unregister(rule) {
-      delete this.map[rule.key];
-      if (rule instanceof _StyleRule2['default']) {
-        delete this.map[rule.selector];
-        delete this.classes[rule.key];
-      }
-    }
-
-    /**
-     * Update the function values with a new data.
-     */
-
-  }, {
-    key: 'link',
-
-
-    /**
-     * Link renderable rules with CSSRuleList.
-     */
-    value: function link(cssRules) {
-      var map = this.options.sheet.renderer.getUnescapedKeysMap(this.index);
-
-      for (var i = 0; i < cssRules.length; i++) {
-        var cssRule = cssRules[i];
-        var _key = this.options.sheet.renderer.getKey(cssRule);
-        if (map[_key]) _key = map[_key];
-        var rule = this.map[_key];
-        if (rule) (0, _linkRule2['default'])(rule, cssRule);
-      }
-    }
-
-    /**
-     * Convert rules to a CSS string.
-     */
-
-  }, {
-    key: 'toString',
-    value: function toString(options) {
-      var str = '';
-      var sheet = this.options.sheet;
-
-      var link = sheet ? sheet.options.link : false;
-
-      for (var index = 0; index < this.index.length; index++) {
-        var rule = this.index[index];
-        var css = rule.toString(options);
-
-        // No need to render an empty rule.
-        if (!css && !link) continue;
-
-        if (str) str += '\n';
-        str += css;
-      }
-
-      return str;
-    }
-  }]);
-
-  return RuleList;
-}();
-
-exports['default'] = RuleList;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/SheetsManager.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/SheetsManager.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * SheetsManager is like a WeakMap which is designed to count StyleSheet
- * instances and attach/detach automatically.
- */
-var SheetsManager = function () {
-  function SheetsManager() {
-    _classCallCheck(this, SheetsManager);
-
-    this.sheets = [];
-    this.refs = [];
-    this.keys = [];
-  }
-
-  _createClass(SheetsManager, [{
-    key: 'get',
-    value: function get(key) {
-      var index = this.keys.indexOf(key);
-      return this.sheets[index];
-    }
-  }, {
-    key: 'add',
-    value: function add(key, sheet) {
-      var sheets = this.sheets,
-          refs = this.refs,
-          keys = this.keys;
-
-      var index = sheets.indexOf(sheet);
-
-      if (index !== -1) return index;
-
-      sheets.push(sheet);
-      refs.push(0);
-      keys.push(key);
-
-      return sheets.length - 1;
-    }
-  }, {
-    key: 'manage',
-    value: function manage(key) {
-      var index = this.keys.indexOf(key);
-      var sheet = this.sheets[index];
-      if (this.refs[index] === 0) sheet.attach();
-      this.refs[index]++;
-      if (!this.keys[index]) this.keys.splice(index, 0, key);
-      return sheet;
-    }
-  }, {
-    key: 'unmanage',
-    value: function unmanage(key) {
-      var index = this.keys.indexOf(key);
-      if (index === -1) {
-        // eslint-ignore-next-line no-console
-        (0, _warning2['default'])(false, "SheetsManager: can't find sheet to unmanage");
-        return;
-      }
-      if (this.refs[index] > 0) {
-        this.refs[index]--;
-        if (this.refs[index] === 0) this.sheets[index].detach();
-      }
-    }
-  }, {
-    key: 'size',
-    get: function get() {
-      return this.keys.length;
-    }
-  }]);
-
-  return SheetsManager;
-}();
-
-exports['default'] = SheetsManager;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/SheetsRegistry.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/SheetsRegistry.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Sheets registry to access them all at one place.
- */
-var SheetsRegistry = function () {
-  function SheetsRegistry() {
-    _classCallCheck(this, SheetsRegistry);
-
-    this.registry = [];
-  }
-
-  _createClass(SheetsRegistry, [{
-    key: 'add',
-
-
-    /**
-     * Register a Style Sheet.
-     */
-    value: function add(sheet) {
-      var registry = this.registry;
-      var index = sheet.options.index;
-
-
-      if (registry.indexOf(sheet) !== -1) return;
-
-      if (registry.length === 0 || index >= this.index) {
-        registry.push(sheet);
-        return;
-      }
-
-      // Find a position.
-      for (var i = 0; i < registry.length; i++) {
-        if (registry[i].options.index > index) {
-          registry.splice(i, 0, sheet);
-          return;
-        }
-      }
-    }
-
-    /**
-     * Reset the registry.
-     */
-
-  }, {
-    key: 'reset',
-    value: function reset() {
-      this.registry = [];
-    }
-
-    /**
-     * Remove a Style Sheet.
-     */
-
-  }, {
-    key: 'remove',
-    value: function remove(sheet) {
-      var index = this.registry.indexOf(sheet);
-      this.registry.splice(index, 1);
-    }
-
-    /**
-     * Convert all attached sheets to a CSS string.
-     */
-
-  }, {
-    key: 'toString',
-    value: function toString(options) {
-      return this.registry.filter(function (sheet) {
-        return sheet.attached;
-      }).map(function (sheet) {
-        return sheet.toString(options);
-      }).join('\n');
-    }
-  }, {
-    key: 'index',
-
-
-    /**
-     * Current highest index number.
-     */
-    get: function get() {
-      return this.registry.length === 0 ? 0 : this.registry[this.registry.length - 1].options.index;
-    }
-  }]);
-
-  return SheetsRegistry;
-}();
-
-exports['default'] = SheetsRegistry;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/StyleSheet.js":
-/*!***************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/StyleSheet.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _linkRule = __webpack_require__(/*! ./utils/linkRule */ "../../node_modules/jss/lib/utils/linkRule.js");
-
-var _linkRule2 = _interopRequireDefault(_linkRule);
-
-var _RuleList = __webpack_require__(/*! ./RuleList */ "../../node_modules/jss/lib/RuleList.js");
-
-var _RuleList2 = _interopRequireDefault(_RuleList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* eslint-disable-next-line no-use-before-define */
-var StyleSheet = function () {
-  function StyleSheet(styles, options) {
-    var _this = this;
-
-    _classCallCheck(this, StyleSheet);
-
-    this.update = function (name, data) {
-      if (typeof name === 'string') {
-        _this.rules.update(name, data);
-      } else {
-        _this.rules.update(name);
-      }
-      return _this;
-    };
-
-    this.attached = false;
-    this.deployed = false;
-    this.linked = false;
-    this.classes = {};
-    this.options = _extends({}, options, {
-      sheet: this,
-      parent: this,
-      classes: this.classes
-    });
-    this.renderer = new options.Renderer(this);
-    this.rules = new _RuleList2['default'](this.options);
-
-    for (var _name in styles) {
-      this.rules.add(_name, styles[_name]);
-    }
-
-    this.rules.process();
-  }
-
-  /**
-   * Attach renderable to the render tree.
-   */
-
-
-  _createClass(StyleSheet, [{
-    key: 'attach',
-    value: function attach() {
-      if (this.attached) return this;
-      if (!this.deployed) this.deploy();
-      this.renderer.attach();
-      if (!this.linked && this.options.link) this.link();
-      this.attached = true;
-      return this;
-    }
-
-    /**
-     * Remove renderable from render tree.
-     */
-
-  }, {
-    key: 'detach',
-    value: function detach() {
-      if (!this.attached) return this;
-      this.renderer.detach();
-      this.attached = false;
-      return this;
-    }
-
-    /**
-     * Add a rule to the current stylesheet.
-     * Will insert a rule also after the stylesheet has been rendered first time.
-     */
-
-  }, {
-    key: 'addRule',
-    value: function addRule(name, decl, options) {
-      var queue = this.queue;
-
-      // Plugins can create rules.
-      // In order to preserve the right order, we need to queue all `.addRule` calls,
-      // which happen after the first `rules.add()` call.
-
-      if (this.attached && !queue) this.queue = [];
-
-      var rule = this.rules.add(name, decl, options);
-      this.options.jss.plugins.onProcessRule(rule);
-
-      if (this.attached) {
-        if (!this.deployed) return rule;
-        // Don't insert rule directly if there is no stringified version yet.
-        // It will be inserted all together when .attach is called.
-        if (queue) queue.push(rule);else {
-          this.insertRule(rule);
-          if (this.queue) {
-            this.queue.forEach(this.insertRule, this);
-            this.queue = undefined;
-          }
-        }
-        return rule;
-      }
-
-      // We can't add rules to a detached style node.
-      // We will redeploy the sheet once user will attach it.
-      this.deployed = false;
-
-      return rule;
-    }
-
-    /**
-     * Insert rule into the StyleSheet
-     */
-
-  }, {
-    key: 'insertRule',
-    value: function insertRule(rule) {
-      var renderable = this.renderer.insertRule(rule);
-      if (renderable && this.options.link) (0, _linkRule2['default'])(rule, renderable);
-    }
-
-    /**
-     * Create and add rules.
-     * Will render also after Style Sheet was rendered the first time.
-     */
-
-  }, {
-    key: 'addRules',
-    value: function addRules(styles, options) {
-      var added = [];
-      for (var _name2 in styles) {
-        added.push(this.addRule(_name2, styles[_name2], options));
-      }
-      return added;
-    }
-
-    /**
-     * Get a rule by name.
-     */
-
-  }, {
-    key: 'getRule',
-    value: function getRule(name) {
-      return this.rules.get(name);
-    }
-
-    /**
-     * Delete a rule by name.
-     * Returns `true`: if rule has been deleted from the DOM.
-     */
-
-  }, {
-    key: 'deleteRule',
-    value: function deleteRule(name) {
-      var rule = this.rules.get(name);
-
-      if (!rule) return false;
-
-      this.rules.remove(rule);
-
-      if (this.attached && rule.renderable) {
-        return this.renderer.deleteRule(rule.renderable);
-      }
-
-      return true;
-    }
-
-    /**
-     * Get index of a rule.
-     */
-
-  }, {
-    key: 'indexOf',
-    value: function indexOf(rule) {
-      return this.rules.indexOf(rule);
-    }
-
-    /**
-     * Deploy pure CSS string to a renderable.
-     */
-
-  }, {
-    key: 'deploy',
-    value: function deploy() {
-      this.renderer.deploy();
-      this.deployed = true;
-      return this;
-    }
-
-    /**
-     * Link renderable CSS rules from sheet with their corresponding models.
-     */
-
-  }, {
-    key: 'link',
-    value: function link() {
-      var cssRules = this.renderer.getRules();
-
-      // Is undefined when VirtualRenderer is used.
-      if (cssRules) this.rules.link(cssRules);
-      this.linked = true;
-      return this;
-    }
-
-    /**
-     * Update the function values with a new data.
-     */
-
-  }, {
-    key: 'toString',
-
-
-    /**
-     * Convert rules to a CSS string.
-     */
-    value: function toString(options) {
-      return this.rules.toString(options);
-    }
-  }]);
-
-  return StyleSheet;
-}();
-
-exports['default'] = StyleSheet;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/index.js":
-/*!**********************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/index.js ***!
-  \**********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.create = exports.createGenerateClassName = exports.sheets = exports.RuleList = exports.SheetsManager = exports.SheetsRegistry = exports.toCssValue = exports.getDynamicStyles = undefined;
-
-var _getDynamicStyles = __webpack_require__(/*! ./utils/getDynamicStyles */ "../../node_modules/jss/lib/utils/getDynamicStyles.js");
-
-Object.defineProperty(exports, 'getDynamicStyles', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_getDynamicStyles)['default'];
-  }
-});
-
-var _toCssValue = __webpack_require__(/*! ./utils/toCssValue */ "../../node_modules/jss/lib/utils/toCssValue.js");
-
-Object.defineProperty(exports, 'toCssValue', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_toCssValue)['default'];
-  }
-});
-
-var _SheetsRegistry = __webpack_require__(/*! ./SheetsRegistry */ "../../node_modules/jss/lib/SheetsRegistry.js");
-
-Object.defineProperty(exports, 'SheetsRegistry', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_SheetsRegistry)['default'];
-  }
-});
-
-var _SheetsManager = __webpack_require__(/*! ./SheetsManager */ "../../node_modules/jss/lib/SheetsManager.js");
-
-Object.defineProperty(exports, 'SheetsManager', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_SheetsManager)['default'];
-  }
-});
-
-var _RuleList = __webpack_require__(/*! ./RuleList */ "../../node_modules/jss/lib/RuleList.js");
-
-Object.defineProperty(exports, 'RuleList', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_RuleList)['default'];
-  }
-});
-
-var _sheets = __webpack_require__(/*! ./sheets */ "../../node_modules/jss/lib/sheets.js");
-
-Object.defineProperty(exports, 'sheets', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_sheets)['default'];
-  }
-});
-
-var _createGenerateClassName = __webpack_require__(/*! ./utils/createGenerateClassName */ "../../node_modules/jss/lib/utils/createGenerateClassName.js");
-
-Object.defineProperty(exports, 'createGenerateClassName', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_createGenerateClassName)['default'];
-  }
-});
-
-var _Jss = __webpack_require__(/*! ./Jss */ "../../node_modules/jss/lib/Jss.js");
-
-var _Jss2 = _interopRequireDefault(_Jss);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * Creates a new instance of Jss.
- */
-var create = exports.create = function create(options) {
-  return new _Jss2['default'](options);
-};
-
-/**
- * A global Jss instance.
- */
-exports['default'] = create();
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/plugins/functions.js":
-/*!**********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/plugins/functions.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _RuleList = __webpack_require__(/*! ../RuleList */ "../../node_modules/jss/lib/RuleList.js");
-
-var _RuleList2 = _interopRequireDefault(_RuleList);
-
-var _StyleRule = __webpack_require__(/*! ../rules/StyleRule */ "../../node_modules/jss/lib/rules/StyleRule.js");
-
-var _StyleRule2 = _interopRequireDefault(_StyleRule);
-
-var _createRule = __webpack_require__(/*! ../utils/createRule */ "../../node_modules/jss/lib/utils/createRule.js");
-
-var _createRule2 = _interopRequireDefault(_createRule);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-// A symbol replacement.
-var now = Date.now();
-
-var fnValuesNs = 'fnValues' + now;
-var fnStyleNs = 'fnStyle' + ++now;
-
-exports['default'] = {
-  onCreateRule: function onCreateRule(name, decl, options) {
-    if (typeof decl !== 'function') return null;
-    var rule = (0, _createRule2['default'])(name, {}, options);
-    rule[fnStyleNs] = decl;
-    return rule;
-  },
-  onProcessStyle: function onProcessStyle(style, rule) {
-    var fn = {};
-    for (var prop in style) {
-      var value = style[prop];
-      if (typeof value !== 'function') continue;
-      delete style[prop];
-      fn[prop] = value;
-    }
-    rule = rule;
-    rule[fnValuesNs] = fn;
-    return style;
-  },
-  onUpdate: function onUpdate(data, rule) {
-    // It is a rules container like for e.g. ConditionalRule.
-    if (rule.rules instanceof _RuleList2['default']) {
-      rule.rules.update(data);
-      return;
-    }
-    if (!(rule instanceof _StyleRule2['default'])) return;
-
-    rule = rule;
-
-    // If we have a fn values map, it is a rule with function values.
-    if (rule[fnValuesNs]) {
-      for (var prop in rule[fnValuesNs]) {
-        rule.prop(prop, rule[fnValuesNs][prop](data));
-      }
-    }
-
-    rule = rule;
-
-    var fnStyle = rule[fnStyleNs];
-
-    // If we have a style function, the entire rule is dynamic and style object
-    // will be returned from that function.
-    if (fnStyle) {
-      var style = fnStyle(data);
-      for (var _prop in style) {
-        rule.prop(_prop, style[_prop]);
-      }
-    }
-  }
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/plugins/observables.js":
-/*!************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/plugins/observables.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _StyleRule = __webpack_require__(/*! ../rules/StyleRule */ "../../node_modules/jss/lib/rules/StyleRule.js");
-
-var _StyleRule2 = _interopRequireDefault(_StyleRule);
-
-var _createRule = __webpack_require__(/*! ../utils/createRule */ "../../node_modules/jss/lib/utils/createRule.js");
-
-var _createRule2 = _interopRequireDefault(_createRule);
-
-var _isObservable = __webpack_require__(/*! ../utils/isObservable */ "../../node_modules/jss/lib/utils/isObservable.js");
-
-var _isObservable2 = _interopRequireDefault(_isObservable);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-exports['default'] = {
-  onCreateRule: function onCreateRule(name, decl, options) {
-    if (!(0, _isObservable2['default'])(decl)) return null;
-
-    // Cast `decl` to `Observable`, since it passed the type guard.
-    var style$ = decl;
-
-    var rule = (0, _createRule2['default'])(name, {}, options);
-
-    // TODO
-    // Call `stream.subscribe()` returns a subscription, which should be explicitly
-    // unsubscribed from when we know this sheet is no longer needed.
-    style$.subscribe(function (style) {
-      for (var prop in style) {
-        rule.prop(prop, style[prop]);
-      }
-    });
-
-    return rule;
-  },
-  onProcessRule: function onProcessRule(rule) {
-    if (!(rule instanceof _StyleRule2['default'])) return;
-    var styleRule = rule;
-    var style = styleRule.style;
-
-    var _loop = function _loop(prop) {
-      var value = style[prop];
-      if (!(0, _isObservable2['default'])(value)) return 'continue';
-      delete style[prop];
-      value.subscribe({
-        next: function next(nextValue) {
-          styleRule.prop(prop, nextValue);
-        }
-      });
-    };
-
-    for (var prop in style) {
-      var _ret = _loop(prop);
-
-      if (_ret === 'continue') continue;
-    }
-  }
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/plugins/rules.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/plugins/rules.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _SimpleRule = __webpack_require__(/*! ../rules/SimpleRule */ "../../node_modules/jss/lib/rules/SimpleRule.js");
-
-var _SimpleRule2 = _interopRequireDefault(_SimpleRule);
-
-var _KeyframesRule = __webpack_require__(/*! ../rules/KeyframesRule */ "../../node_modules/jss/lib/rules/KeyframesRule.js");
-
-var _KeyframesRule2 = _interopRequireDefault(_KeyframesRule);
-
-var _ConditionalRule = __webpack_require__(/*! ../rules/ConditionalRule */ "../../node_modules/jss/lib/rules/ConditionalRule.js");
-
-var _ConditionalRule2 = _interopRequireDefault(_ConditionalRule);
-
-var _FontFaceRule = __webpack_require__(/*! ../rules/FontFaceRule */ "../../node_modules/jss/lib/rules/FontFaceRule.js");
-
-var _FontFaceRule2 = _interopRequireDefault(_FontFaceRule);
-
-var _ViewportRule = __webpack_require__(/*! ../rules/ViewportRule */ "../../node_modules/jss/lib/rules/ViewportRule.js");
-
-var _ViewportRule2 = _interopRequireDefault(_ViewportRule);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var classes = {
-  '@charset': _SimpleRule2['default'],
-  '@import': _SimpleRule2['default'],
-  '@namespace': _SimpleRule2['default'],
-  '@keyframes': _KeyframesRule2['default'],
-  '@media': _ConditionalRule2['default'],
-  '@supports': _ConditionalRule2['default'],
-  '@font-face': _FontFaceRule2['default'],
-  '@viewport': _ViewportRule2['default'],
-  '@-ms-viewport': _ViewportRule2['default']
-
-  /**
-   * Generate plugins which will register all rules.
-   */
-};
-var plugins = Object.keys(classes).map(function (key) {
-  // https://jsperf.com/indexof-vs-substr-vs-regex-at-the-beginning-3
-  var re = new RegExp('^' + key);
-  var RuleClass = classes[key];
-  var onCreateRule = function onCreateRule(name, decl, options) {
-    return re.test(name) ? new RuleClass(name, decl, options) : null;
-  };
-  return { onCreateRule: onCreateRule };
-});
-
-exports['default'] = plugins;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/renderers/DomRenderer.js":
-/*!**************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/renderers/DomRenderer.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-var _sheets = __webpack_require__(/*! ../sheets */ "../../node_modules/jss/lib/sheets.js");
-
-var _sheets2 = _interopRequireDefault(_sheets);
-
-var _StyleRule = __webpack_require__(/*! ../rules/StyleRule */ "../../node_modules/jss/lib/rules/StyleRule.js");
-
-var _StyleRule2 = _interopRequireDefault(_StyleRule);
-
-var _toCssValue = __webpack_require__(/*! ../utils/toCssValue */ "../../node_modules/jss/lib/utils/toCssValue.js");
-
-var _toCssValue2 = _interopRequireDefault(_toCssValue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Cache the value from the first time a function is called.
- */
-var memoize = function memoize(fn) {
-  var value = void 0;
-  return function () {
-    if (!value) value = fn();
-    return value;
-  };
-};
-
-/**
- * Get a style property value.
- */
-function getPropertyValue(cssRule, prop) {
-  try {
-    return cssRule.style.getPropertyValue(prop);
-  } catch (err) {
-    // IE may throw if property is unknown.
-    return '';
-  }
-}
-
-/**
- * Set a style property.
- */
-function setProperty(cssRule, prop, value) {
-  try {
-    var cssValue = value;
-
-    if (Array.isArray(value)) {
-      cssValue = (0, _toCssValue2['default'])(value, true);
-
-      if (value[value.length - 1] === '!important') {
-        cssRule.style.setProperty(prop, cssValue, 'important');
-        return true;
-      }
-    }
-
-    cssRule.style.setProperty(prop, cssValue);
-  } catch (err) {
-    // IE may throw if property is unknown.
-    return false;
-  }
-  return true;
-}
-
-/**
- * Remove a style property.
- */
-function removeProperty(cssRule, prop) {
-  try {
-    cssRule.style.removeProperty(prop);
-  } catch (err) {
-    (0, _warning2['default'])(false, '[JSS] DOMException "%s" was thrown. Tried to remove property "%s".', err.message, prop);
-  }
-}
-
-var CSSRuleTypes = {
-  STYLE_RULE: 1,
-  KEYFRAMES_RULE: 7
-
-  /**
-   * Get the CSS Rule key.
-   */
-
-};var getKey = function () {
-  var extractKey = function extractKey(cssText) {
-    var from = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    return cssText.substr(from, cssText.indexOf('{') - 1);
-  };
-
-  return function (cssRule) {
-    if (cssRule.type === CSSRuleTypes.STYLE_RULE) return cssRule.selectorText;
-    if (cssRule.type === CSSRuleTypes.KEYFRAMES_RULE) {
-      var name = cssRule.name;
-
-      if (name) return '@keyframes ' + name;
-
-      // There is no rule.name in the following browsers:
-      // - IE 9
-      // - Safari 7.1.8
-      // - Mobile Safari 9.0.0
-      var cssText = cssRule.cssText;
-
-      return '@' + extractKey(cssText, cssText.indexOf('keyframes'));
-    }
-
-    // Conditionals.
-    return extractKey(cssRule.cssText);
-  };
-}();
-
-/**
- * Set the selector.
- */
-function setSelector(cssRule, selectorText) {
-  cssRule.selectorText = selectorText;
-
-  // Return false if setter was not successful.
-  // Currently works in chrome only.
-  return cssRule.selectorText === selectorText;
-}
-
-/**
- * Gets the `head` element upon the first call and caches it.
- */
-var getHead = memoize(function () {
-  return document.head || document.getElementsByTagName('head')[0];
-});
-
-/**
- * Gets a map of rule keys, where the property is an unescaped key and value
- * is a potentially escaped one.
- * It is used to identify CSS rules and the corresponding JSS rules. As an identifier
- * for CSSStyleRule we normally use `selectorText`. Though if original selector text
- * contains escaped code points e.g. `:not(#\\20)`, CSSOM will compile it to `:not(# )`
- * and so CSS rule's `selectorText` won't match JSS rule selector.
- *
- * https://www.w3.org/International/questions/qa-escapes#cssescapes
- */
-var getUnescapedKeysMap = function () {
-  var style = void 0;
-  var isAttached = false;
-
-  return function (rules) {
-    var map = {};
-    // https://github.com/facebook/flow/issues/2696
-    if (!style) style = document.createElement('style');
-    for (var i = 0; i < rules.length; i++) {
-      var rule = rules[i];
-      if (!(rule instanceof _StyleRule2['default'])) continue;
-      var selector = rule.selector;
-      // Only unescape selector over CSSOM if it contains a back slash.
-
-      if (selector && selector.indexOf('\\') !== -1) {
-        // Lazilly attach when needed.
-        if (!isAttached) {
-          getHead().appendChild(style);
-          isAttached = true;
-        }
-        style.textContent = selector + ' {}';
-        var _style = style,
-            sheet = _style.sheet;
-
-        if (sheet) {
-          var cssRules = sheet.cssRules;
-
-          if (cssRules) map[cssRules[0].selectorText] = rule.key;
-        }
-      }
-    }
-    if (isAttached) {
-      getHead().removeChild(style);
-      isAttached = false;
-    }
-    return map;
-  };
-}();
-
-/**
- * Find attached sheet with an index higher than the passed one.
- */
-function findHigherSheet(registry, options) {
-  for (var i = 0; i < registry.length; i++) {
-    var sheet = registry[i];
-    if (sheet.attached && sheet.options.index > options.index && sheet.options.insertionPoint === options.insertionPoint) {
-      return sheet;
-    }
-  }
-  return null;
-}
-
-/**
- * Find attached sheet with the highest index.
- */
-function findHighestSheet(registry, options) {
-  for (var i = registry.length - 1; i >= 0; i--) {
-    var sheet = registry[i];
-    if (sheet.attached && sheet.options.insertionPoint === options.insertionPoint) {
-      return sheet;
-    }
-  }
-  return null;
-}
-
-/**
- * Find a comment with "jss" inside.
- */
-function findCommentNode(text) {
-  var head = getHead();
-  for (var i = 0; i < head.childNodes.length; i++) {
-    var node = head.childNodes[i];
-    if (node.nodeType === 8 && node.nodeValue.trim() === text) {
-      return node;
-    }
-  }
-  return null;
-}
-
-/**
- * Find a node before which we can insert the sheet.
- */
-function findPrevNode(options) {
-  var registry = _sheets2['default'].registry;
-
-
-  if (registry.length > 0) {
-    // Try to insert before the next higher sheet.
-    var sheet = findHigherSheet(registry, options);
-    if (sheet) return sheet.renderer.element;
-
-    // Otherwise insert after the last attached.
-    sheet = findHighestSheet(registry, options);
-    if (sheet) return sheet.renderer.element.nextElementSibling;
-  }
-
-  // Try to find a comment placeholder if registry is empty.
-  var insertionPoint = options.insertionPoint;
-
-  if (insertionPoint && typeof insertionPoint === 'string') {
-    var comment = findCommentNode(insertionPoint);
-    if (comment) return comment.nextSibling;
-    // If user specifies an insertion point and it can't be found in the document -
-    // bad specificity issues may appear.
-    (0, _warning2['default'])(insertionPoint === 'jss', '[JSS] Insertion point "%s" not found.', insertionPoint);
-  }
-
-  return null;
-}
-
-/**
- * Insert style element into the DOM.
- */
-function insertStyle(style, options) {
-  var insertionPoint = options.insertionPoint;
-
-  var prevNode = findPrevNode(options);
-
-  if (prevNode) {
-    var parentNode = prevNode.parentNode;
-
-    if (parentNode) parentNode.insertBefore(style, prevNode);
-    return;
-  }
-
-  // Works with iframes and any node types.
-  if (insertionPoint && typeof insertionPoint.nodeType === 'number') {
-    // https://stackoverflow.com/questions/41328728/force-casting-in-flow
-    var insertionPointElement = insertionPoint;
-    var _parentNode = insertionPointElement.parentNode;
-
-    if (_parentNode) _parentNode.insertBefore(style, insertionPointElement.nextSibling);else (0, _warning2['default'])(false, '[JSS] Insertion point is not in the DOM.');
-    return;
-  }
-
-  getHead().insertBefore(style, prevNode);
-}
-
-/**
- * Read jss nonce setting from the page if the user has set it.
- */
-var getNonce = memoize(function () {
-  var node = document.querySelector('meta[property="csp-nonce"]');
-  return node ? node.getAttribute('content') : null;
-});
-
-var DomRenderer = function () {
-  function DomRenderer(sheet) {
-    _classCallCheck(this, DomRenderer);
-
-    this.getPropertyValue = getPropertyValue;
-    this.setProperty = setProperty;
-    this.removeProperty = removeProperty;
-    this.setSelector = setSelector;
-    this.getKey = getKey;
-    this.getUnescapedKeysMap = getUnescapedKeysMap;
-    this.hasInsertedRules = false;
-
-    // There is no sheet when the renderer is used from a standalone StyleRule.
-    if (sheet) _sheets2['default'].add(sheet);
-
-    this.sheet = sheet;
-
-    var _ref = this.sheet ? this.sheet.options : {},
-        media = _ref.media,
-        meta = _ref.meta,
-        element = _ref.element;
-
-    this.element = element || document.createElement('style');
-    this.element.setAttribute('data-jss', '');
-    if (media) this.element.setAttribute('media', media);
-    if (meta) this.element.setAttribute('data-meta', meta);
-    var nonce = getNonce();
-    if (nonce) this.element.setAttribute('nonce', nonce);
-  }
-
-  /**
-   * Insert style element into render tree.
-   */
-
-
-  // HTMLStyleElement needs fixing https://github.com/facebook/flow/issues/2696
-
-
-  _createClass(DomRenderer, [{
-    key: 'attach',
-    value: function attach() {
-      // In the case the element node is external and it is already in the DOM.
-      if (this.element.parentNode || !this.sheet) return;
-
-      // When rules are inserted using `insertRule` API, after `sheet.detach().attach()`
-      // browsers remove those rules.
-      // TODO figure out if its a bug and if it is known.
-      // Workaround is to redeploy the sheet before attaching as a string.
-      if (this.hasInsertedRules) {
-        this.deploy();
-        this.hasInsertedRules = false;
-      }
-
-      insertStyle(this.element, this.sheet.options);
-    }
-
-    /**
-     * Remove style element from render tree.
-     */
-
-  }, {
-    key: 'detach',
-    value: function detach() {
-      this.element.parentNode.removeChild(this.element);
-    }
-
-    /**
-     * Inject CSS string into element.
-     */
-
-  }, {
-    key: 'deploy',
-    value: function deploy() {
-      if (!this.sheet) return;
-      this.element.textContent = '\n' + this.sheet.toString() + '\n';
-    }
-
-    /**
-     * Insert a rule into element.
-     */
-
-  }, {
-    key: 'insertRule',
-    value: function insertRule(rule, index) {
-      var sheet = this.element.sheet;
-      var cssRules = sheet.cssRules;
-
-      var str = rule.toString();
-      if (!index) index = cssRules.length;
-
-      if (!str) return false;
-
-      try {
-        sheet.insertRule(str, index);
-      } catch (err) {
-        (0, _warning2['default'])(false, '[JSS] Can not insert an unsupported rule \n\r%s', rule);
-        return false;
-      }
-      this.hasInsertedRules = true;
-
-      return cssRules[index];
-    }
-
-    /**
-     * Delete a rule.
-     */
-
-  }, {
-    key: 'deleteRule',
-    value: function deleteRule(cssRule) {
-      var sheet = this.element.sheet;
-
-      var index = this.indexOf(cssRule);
-      if (index === -1) return false;
-      sheet.deleteRule(index);
-      return true;
-    }
-
-    /**
-     * Get index of a CSS Rule.
-     */
-
-  }, {
-    key: 'indexOf',
-    value: function indexOf(cssRule) {
-      var cssRules = this.element.sheet.cssRules;
-
-      for (var _index = 0; _index < cssRules.length; _index++) {
-        if (cssRule === cssRules[_index]) return _index;
-      }
-      return -1;
-    }
-
-    /**
-     * Generate a new CSS rule and replace the existing one.
-     */
-
-  }, {
-    key: 'replaceRule',
-    value: function replaceRule(cssRule, rule) {
-      var index = this.indexOf(cssRule);
-      var newCssRule = this.insertRule(rule, index);
-      this.element.sheet.deleteRule(index);
-      return newCssRule;
-    }
-
-    /**
-     * Get all rules elements.
-     */
-
-  }, {
-    key: 'getRules',
-    value: function getRules() {
-      return this.element.sheet.cssRules;
-    }
-  }]);
-
-  return DomRenderer;
-}();
-
-exports['default'] = DomRenderer;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/renderers/VirtualRenderer.js":
-/*!******************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/renderers/VirtualRenderer.js ***!
-  \******************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* eslint-disable class-methods-use-this */
-
-/**
- * Rendering backend to do nothing in nodejs.
- */
-var VirtualRenderer = function () {
-  function VirtualRenderer() {
-    _classCallCheck(this, VirtualRenderer);
-  }
-
-  _createClass(VirtualRenderer, [{
-    key: 'setProperty',
-    value: function setProperty() {
-      return true;
-    }
-  }, {
-    key: 'getPropertyValue',
-    value: function getPropertyValue() {
-      return '';
-    }
-  }, {
-    key: 'removeProperty',
-    value: function removeProperty() {}
-  }, {
-    key: 'setSelector',
-    value: function setSelector() {
-      return true;
-    }
-  }, {
-    key: 'getKey',
-    value: function getKey() {
-      return '';
-    }
-  }, {
-    key: 'attach',
-    value: function attach() {}
-  }, {
-    key: 'detach',
-    value: function detach() {}
-  }, {
-    key: 'deploy',
-    value: function deploy() {}
-  }, {
-    key: 'insertRule',
-    value: function insertRule() {
-      return false;
-    }
-  }, {
-    key: 'deleteRule',
-    value: function deleteRule() {
-      return true;
-    }
-  }, {
-    key: 'replaceRule',
-    value: function replaceRule() {
-      return false;
-    }
-  }, {
-    key: 'getRules',
-    value: function getRules() {}
-  }, {
-    key: 'indexOf',
-    value: function indexOf() {
-      return -1;
-    }
-  }]);
-
-  return VirtualRenderer;
-}();
-
-exports['default'] = VirtualRenderer;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/rules/ConditionalRule.js":
-/*!**************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/rules/ConditionalRule.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _RuleList = __webpack_require__(/*! ../RuleList */ "../../node_modules/jss/lib/RuleList.js");
-
-var _RuleList2 = _interopRequireDefault(_RuleList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Conditional rule for @media, @supports
- */
-var ConditionalRule = function () {
-  function ConditionalRule(key, styles, options) {
-    _classCallCheck(this, ConditionalRule);
-
-    this.type = 'conditional';
-    this.isProcessed = false;
-
-    this.key = key;
-    this.options = options;
-    this.rules = new _RuleList2['default'](_extends({}, options, { parent: this }));
-
-    for (var name in styles) {
-      this.rules.add(name, styles[name]);
-    }
-
-    this.rules.process();
-  }
-
-  /**
-   * Get a rule.
-   */
-
-
-  _createClass(ConditionalRule, [{
-    key: 'getRule',
-    value: function getRule(name) {
-      return this.rules.get(name);
-    }
-
-    /**
-     * Get index of a rule.
-     */
-
-  }, {
-    key: 'indexOf',
-    value: function indexOf(rule) {
-      return this.rules.indexOf(rule);
-    }
-
-    /**
-     * Create and register rule, run plugins.
-     */
-
-  }, {
-    key: 'addRule',
-    value: function addRule(name, style, options) {
-      var rule = this.rules.add(name, style, options);
-      this.options.jss.plugins.onProcessRule(rule);
-      return rule;
-    }
-
-    /**
-     * Generates a CSS string.
-     */
-
-  }, {
-    key: 'toString',
-    value: function toString() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { indent: 1 };
-
-      var inner = this.rules.toString(options);
-      return inner ? this.key + ' {\n' + inner + '\n}' : '';
-    }
-  }]);
-
-  return ConditionalRule;
-}();
-
-exports['default'] = ConditionalRule;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/rules/FontFaceRule.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/rules/FontFaceRule.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _toCss = __webpack_require__(/*! ../utils/toCss */ "../../node_modules/jss/lib/utils/toCss.js");
-
-var _toCss2 = _interopRequireDefault(_toCss);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var FontFaceRule = function () {
-  function FontFaceRule(key, style, options) {
-    _classCallCheck(this, FontFaceRule);
-
-    this.type = 'font-face';
-    this.isProcessed = false;
-
-    this.key = key;
-    this.style = style;
-    this.options = options;
-  }
-
-  /**
-   * Generates a CSS string.
-   */
-
-
-  _createClass(FontFaceRule, [{
-    key: 'toString',
-    value: function toString(options) {
-      if (Array.isArray(this.style)) {
-        var str = '';
-        for (var index = 0; index < this.style.length; index++) {
-          str += (0, _toCss2['default'])(this.key, this.style[index]);
-          if (this.style[index + 1]) str += '\n';
-        }
-        return str;
-      }
-
-      return (0, _toCss2['default'])(this.key, this.style, options);
-    }
-  }]);
-
-  return FontFaceRule;
-}();
-
-exports['default'] = FontFaceRule;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/rules/KeyframesRule.js":
-/*!************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/rules/KeyframesRule.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _RuleList = __webpack_require__(/*! ../RuleList */ "../../node_modules/jss/lib/RuleList.js");
-
-var _RuleList2 = _interopRequireDefault(_RuleList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Rule for @keyframes
- */
-var KeyframesRule = function () {
-  function KeyframesRule(key, frames, options) {
-    _classCallCheck(this, KeyframesRule);
-
-    this.type = 'keyframes';
-    this.isProcessed = false;
-
-    this.key = key;
-    this.options = options;
-    this.rules = new _RuleList2['default'](_extends({}, options, { parent: this }));
-
-    for (var name in frames) {
-      this.rules.add(name, frames[name], _extends({}, this.options, {
-        parent: this,
-        selector: name
-      }));
-    }
-
-    this.rules.process();
-  }
-
-  /**
-   * Generates a CSS string.
-   */
-
-
-  _createClass(KeyframesRule, [{
-    key: 'toString',
-    value: function toString() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { indent: 1 };
-
-      var inner = this.rules.toString(options);
-      if (inner) inner += '\n';
-      return this.key + ' {\n' + inner + '}';
-    }
-  }]);
-
-  return KeyframesRule;
-}();
-
-exports['default'] = KeyframesRule;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/rules/SimpleRule.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/rules/SimpleRule.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SimpleRule = function () {
-  function SimpleRule(key, value, options) {
-    _classCallCheck(this, SimpleRule);
-
-    this.type = 'simple';
-    this.isProcessed = false;
-
-    this.key = key;
-    this.value = value;
-    this.options = options;
-  }
-
-  /**
-   * Generates a CSS string.
-   */
-  // eslint-disable-next-line no-unused-vars
-
-
-  _createClass(SimpleRule, [{
-    key: 'toString',
-    value: function toString(options) {
-      if (Array.isArray(this.value)) {
-        var str = '';
-        for (var index = 0; index < this.value.length; index++) {
-          str += this.key + ' ' + this.value[index] + ';';
-          if (this.value[index + 1]) str += '\n';
-        }
-        return str;
-      }
-
-      return this.key + ' ' + this.value + ';';
-    }
-  }]);
-
-  return SimpleRule;
-}();
-
-exports['default'] = SimpleRule;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/rules/StyleRule.js":
-/*!********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/rules/StyleRule.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-var _toCss = __webpack_require__(/*! ../utils/toCss */ "../../node_modules/jss/lib/utils/toCss.js");
-
-var _toCss2 = _interopRequireDefault(_toCss);
-
-var _toCssValue = __webpack_require__(/*! ../utils/toCssValue */ "../../node_modules/jss/lib/utils/toCssValue.js");
-
-var _toCssValue2 = _interopRequireDefault(_toCssValue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var StyleRule = function () {
-  function StyleRule(key, style, options) {
-    _classCallCheck(this, StyleRule);
-
-    this.type = 'style';
-    this.isProcessed = false;
-    var sheet = options.sheet,
-        Renderer = options.Renderer,
-        selector = options.selector;
-
-    this.key = key;
-    this.options = options;
-    this.style = style;
-    if (selector) this.selectorText = selector;
-    this.renderer = sheet ? sheet.renderer : new Renderer();
-  }
-
-  /**
-   * Set selector string.
-   * Attention: use this with caution. Most browsers didn't implement
-   * selectorText setter, so this may result in rerendering of entire Style Sheet.
-   */
-
-
-  _createClass(StyleRule, [{
-    key: 'prop',
-
-
-    /**
-     * Get or set a style property.
-     */
-    value: function prop(name, value) {
-      // It's a getter.
-      if (value === undefined) return this.style[name];
-
-      // Don't do anything if the value has not changed.
-      if (this.style[name] === value) return this;
-
-      value = this.options.jss.plugins.onChangeValue(value, name, this);
-
-      var isEmpty = value == null || value === false;
-      var isDefined = name in this.style;
-
-      // Value is empty and wasn't defined before.
-      if (isEmpty && !isDefined) return this;
-
-      // We are going to remove this value.
-      var remove = isEmpty && isDefined;
-
-      if (remove) delete this.style[name];else this.style[name] = value;
-
-      // Renderable is defined if StyleSheet option `link` is true.
-      if (this.renderable) {
-        if (remove) this.renderer.removeProperty(this.renderable, name);else this.renderer.setProperty(this.renderable, name, value);
-        return this;
-      }
-
-      var sheet = this.options.sheet;
-
-      if (sheet && sheet.attached) {
-        (0, _warning2['default'])(false, 'Rule is not linked. Missing sheet option "link: true".');
-      }
-      return this;
-    }
-
-    /**
-     * Apply rule to an element inline.
-     */
-
-  }, {
-    key: 'applyTo',
-    value: function applyTo(renderable) {
-      var json = this.toJSON();
-      for (var prop in json) {
-        this.renderer.setProperty(renderable, prop, json[prop]);
-      }return this;
-    }
-
-    /**
-     * Returns JSON representation of the rule.
-     * Fallbacks are not supported.
-     * Useful for inline styles.
-     */
-
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {
-      var json = {};
-      for (var prop in this.style) {
-        var value = this.style[prop];
-        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object') json[prop] = value;else if (Array.isArray(value)) json[prop] = (0, _toCssValue2['default'])(value);
-      }
-      return json;
-    }
-
-    /**
-     * Generates a CSS string.
-     */
-
-  }, {
-    key: 'toString',
-    value: function toString(options) {
-      var sheet = this.options.sheet;
-
-      var link = sheet ? sheet.options.link : false;
-      var opts = link ? _extends({}, options, { allowEmpty: true }) : options;
-      return (0, _toCss2['default'])(this.selector, this.style, opts);
-    }
-  }, {
-    key: 'selector',
-    set: function set(selector) {
-      if (selector === this.selectorText) return;
-
-      this.selectorText = selector;
-
-      if (!this.renderable) return;
-
-      var hasChanged = this.renderer.setSelector(this.renderable, selector);
-
-      // If selector setter is not implemented, rerender the rule.
-      if (!hasChanged && this.renderable) {
-        var renderable = this.renderer.replaceRule(this.renderable, this);
-        if (renderable) this.renderable = renderable;
-      }
-    }
-
-    /**
-     * Get selector string.
-     */
-    ,
-    get: function get() {
-      return this.selectorText;
-    }
-  }]);
-
-  return StyleRule;
-}();
-
-exports['default'] = StyleRule;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/rules/ViewportRule.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/rules/ViewportRule.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _toCss = __webpack_require__(/*! ../utils/toCss */ "../../node_modules/jss/lib/utils/toCss.js");
-
-var _toCss2 = _interopRequireDefault(_toCss);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ViewportRule = function () {
-  function ViewportRule(key, style, options) {
-    _classCallCheck(this, ViewportRule);
-
-    this.type = 'viewport';
-    this.isProcessed = false;
-
-    this.key = key;
-    this.style = style;
-    this.options = options;
-  }
-
-  /**
-   * Generates a CSS string.
-   */
-
-
-  _createClass(ViewportRule, [{
-    key: 'toString',
-    value: function toString(options) {
-      return (0, _toCss2['default'])(this.key, this.style, options);
-    }
-  }]);
-
-  return ViewportRule;
-}();
-
-exports['default'] = ViewportRule;
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/sheets.js":
-/*!***********************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/sheets.js ***!
-  \***********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _SheetsRegistry = __webpack_require__(/*! ./SheetsRegistry */ "../../node_modules/jss/lib/SheetsRegistry.js");
-
-var _SheetsRegistry2 = _interopRequireDefault(_SheetsRegistry);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * This is a global sheets registry. Only DomRenderer will add sheets to it.
- * On the server one should use an own SheetsRegistry instance and add the
- * sheets to it, because you need to make sure to create a new registry for
- * each request in order to not leak sheets across requests.
- */
-exports['default'] = new _SheetsRegistry2['default']();
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/cloneStyle.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/cloneStyle.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports['default'] = cloneStyle;
-
-var _isObservable = __webpack_require__(/*! ./isObservable */ "../../node_modules/jss/lib/utils/isObservable.js");
-
-var _isObservable2 = _interopRequireDefault(_isObservable);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var isArray = Array.isArray;
-function cloneStyle(style) {
-  // Support empty values in case user ends up with them by accident.
-  if (style == null) return style;
-
-  // Support string value for SimpleRule.
-  var typeOfStyle = typeof style === 'undefined' ? 'undefined' : _typeof(style);
-
-  if (typeOfStyle === 'string' || typeOfStyle === 'number' || typeOfStyle === 'function') {
-    return style;
-  }
-
-  // Support array for FontFaceRule.
-  if (isArray(style)) return style.map(cloneStyle);
-
-  // Support Observable styles.  Observables are immutable, so we don't need to
-  // copy them.
-  if ((0, _isObservable2['default'])(style)) return style;
-
-  var newStyle = {};
-  for (var name in style) {
-    var value = style[name];
-    if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-      newStyle[name] = cloneStyle(value);
-      continue;
-    }
-    newStyle[name] = value;
-  }
-
-  return newStyle;
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/createGenerateClassName.js":
-/*!**********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/createGenerateClassName.js ***!
-  \**********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-var _StyleSheet = __webpack_require__(/*! ../StyleSheet */ "../../node_modules/jss/lib/StyleSheet.js");
-
-var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
-
-var _moduleId = __webpack_require__(/*! ./moduleId */ "../../node_modules/jss/lib/utils/moduleId.js");
-
-var _moduleId2 = _interopRequireDefault(_moduleId);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var maxRules = 1e10;
-
-
-var env = "development";
-
-/**
- * Returns a function which generates unique class names based on counters.
- * When new generator function is created, rule counter is reseted.
- * We need to reset the rule counter for SSR for each request.
- */
-
-exports['default'] = function () {
-  var ruleCounter = 0;
-  var defaultPrefix = env === 'production' ? 'c' : '';
-
-  return function (rule, sheet) {
-    ruleCounter += 1;
-
-    if (ruleCounter > maxRules) {
-      (0, _warning2['default'])(false, '[JSS] You might have a memory leak. Rule counter is at %s.', ruleCounter);
-    }
-
-    var prefix = defaultPrefix;
-    var jssId = '';
-
-    if (sheet) {
-      prefix = sheet.options.classNamePrefix || defaultPrefix;
-      if (sheet.options.jss.id != null) jssId += sheet.options.jss.id;
-    }
-
-    if (env === 'production') {
-      return '' + prefix + _moduleId2['default'] + jssId + ruleCounter;
-    }
-
-    return prefix + rule.key + '-' + _moduleId2['default'] + (jssId && '-' + jssId) + '-' + ruleCounter;
-  };
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/createRule.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/createRule.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = createRule;
-
-var _warning = __webpack_require__(/*! warning */ "../../node_modules/jss/node_modules/warning/browser.js");
-
-var _warning2 = _interopRequireDefault(_warning);
-
-var _StyleRule = __webpack_require__(/*! ../rules/StyleRule */ "../../node_modules/jss/lib/rules/StyleRule.js");
-
-var _StyleRule2 = _interopRequireDefault(_StyleRule);
-
-var _cloneStyle = __webpack_require__(/*! ../utils/cloneStyle */ "../../node_modules/jss/lib/utils/cloneStyle.js");
-
-var _cloneStyle2 = _interopRequireDefault(_cloneStyle);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * Create a rule instance.
- */
-function createRule() {
-  var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unnamed';
-  var decl = arguments[1];
-  var options = arguments[2];
-  var jss = options.jss;
-
-  var declCopy = (0, _cloneStyle2['default'])(decl);
-
-  var rule = jss.plugins.onCreateRule(name, declCopy, options);
-  if (rule) return rule;
-
-  // It is an at-rule and it has no instance.
-  if (name[0] === '@') {
-    (0, _warning2['default'])(false, '[JSS] Unknown at-rule %s', name);
-  }
-
-  return new _StyleRule2['default'](name, declCopy, options);
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/escape.js":
-/*!*****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/escape.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var CSS = global.CSS;
-
-var env = "development";
-
-var escapeRegex = /([[\].#*$><+~=|^:(),"'`])/g;
-
-exports['default'] = function (str) {
-  // We don't need to escape it in production, because we are not using user's
-  // input for selectors, we are generating a valid selector.
-  if (env === 'production') return str;
-
-  if (!CSS || !CSS.escape) {
-    return str.replace(escapeRegex, '\\$1');
-  }
-
-  return CSS.escape(str);
-};
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/getDynamicStyles.js":
-/*!***************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/getDynamicStyles.js ***!
-  \***************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports['default'] = getDynamicStyles;
-/**
- * Extracts a styles object with only props that contain function values.
- */
-function getDynamicStyles(styles) {
-  var to = null;
-
-  for (var key in styles) {
-    var value = styles[key];
-    var type = typeof value === 'undefined' ? 'undefined' : _typeof(value);
-
-    if (type === 'function') {
-      if (!to) to = {};
-      to[key] = value;
-    } else if (type === 'object' && value !== null && !Array.isArray(value)) {
-      var extracted = getDynamicStyles(value);
-      if (extracted) {
-        if (!to) to = {};
-        to[key] = extracted;
-      }
-    }
-  }
-
-  return to;
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/isObservable.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/isObservable.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _symbolObservable = __webpack_require__(/*! symbol-observable */ "../../node_modules/symbol-observable/es/index.js");
-
-var _symbolObservable2 = _interopRequireDefault(_symbolObservable);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-exports['default'] = function (value) {
-  return value && value[_symbolObservable2['default']] && value === value[_symbolObservable2['default']]();
-};
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/linkRule.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/linkRule.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = linkRule;
-/**
- * Link rule with CSSStyleRule and nested rules with corresponding nested cssRules if both exists.
- */
-function linkRule(rule, cssRule) {
-  rule.renderable = cssRule;
-  if (rule.rules && cssRule.cssRules) rule.rules.link(cssRule.cssRules);
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/moduleId.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/moduleId.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var ns = '2f1acc6c3a606b082e5eef5e54414ffb';
-if (global[ns] == null) global[ns] = 0;
-
-// Bundle may contain multiple JSS versions at the same time. In order to identify
-// the current version with just one short number and use it for classes generation
-// we use a counter. Also it is more accurate, because user can manually reevaluate
-// the module.
-exports['default'] = global[ns]++;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/toCss.js":
-/*!****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/toCss.js ***!
-  \****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = toCss;
-
-var _toCssValue = __webpack_require__(/*! ./toCssValue */ "../../node_modules/jss/lib/utils/toCssValue.js");
-
-var _toCssValue2 = _interopRequireDefault(_toCssValue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * Indent a string.
- * http://jsperf.com/array-join-vs-for
- */
-function indentStr(str, indent) {
-  var result = '';
-  for (var index = 0; index < indent; index++) {
-    result += '  ';
-  }return result + str;
-}
-
-/**
- * Converts a Rule to CSS string.
- */
-
-function toCss(selector, style) {
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  var result = '';
-
-  if (!style) return result;
-
-  var _options$indent = options.indent,
-      indent = _options$indent === undefined ? 0 : _options$indent;
-  var fallbacks = style.fallbacks;
-
-
-  indent++;
-
-  // Apply fallbacks first.
-  if (fallbacks) {
-    // Array syntax {fallbacks: [{prop: value}]}
-    if (Array.isArray(fallbacks)) {
-      for (var index = 0; index < fallbacks.length; index++) {
-        var fallback = fallbacks[index];
-        for (var prop in fallback) {
-          var value = fallback[prop];
-          if (value != null) {
-            result += '\n' + indentStr(prop + ': ' + (0, _toCssValue2['default'])(value) + ';', indent);
-          }
-        }
-      }
-    } else {
-      // Object syntax {fallbacks: {prop: value}}
-      for (var _prop in fallbacks) {
-        var _value = fallbacks[_prop];
-        if (_value != null) {
-          result += '\n' + indentStr(_prop + ': ' + (0, _toCssValue2['default'])(_value) + ';', indent);
-        }
-      }
-    }
-  }
-
-  for (var _prop2 in style) {
-    var _value2 = style[_prop2];
-    if (_value2 != null && _prop2 !== 'fallbacks') {
-      result += '\n' + indentStr(_prop2 + ': ' + (0, _toCssValue2['default'])(_value2) + ';', indent);
-    }
-  }
-
-  // Allow empty style in this case, because properties will be added dynamically.
-  if (!result && !options.allowEmpty) return result;
-
-  indent--;
-  result = indentStr(selector + ' {' + result + '\n', indent) + indentStr('}', indent);
-
-  return result;
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/lib/utils/toCssValue.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/lib/utils/toCssValue.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = toCssValue;
-var join = function join(value, by) {
-  var result = '';
-  for (var i = 0; i < value.length; i++) {
-    // Remove !important from the value, it will be readded later.
-    if (value[i] === '!important') break;
-    if (result) result += by;
-    result += value[i];
-  }
-  return result;
-};
-
-/**
- * Converts array values to string.
- *
- * `margin: [['5px', '10px']]` > `margin: 5px 10px;`
- * `border: ['1px', '2px']` > `border: 1px, 2px;`
- * `margin: [['5px', '10px'], '!important']` > `margin: 5px 10px !important;`
- * `color: ['red', !important]` > `color: red !important;`
- */
-function toCssValue(value) {
-  var ignoreImportant = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-  if (!Array.isArray(value)) return value;
-
-  var cssValue = '';
-
-  // Support space separated values via `[['5px', '10px']]`.
-  if (Array.isArray(value[0])) {
-    for (var i = 0; i < value.length; i++) {
-      if (value[i] === '!important') break;
-      if (cssValue) cssValue += ', ';
-      cssValue += join(value[i], ' ');
-    }
-  } else cssValue = join(value, ', ');
-
-  // Add !important, because it was ignored.
-  if (!ignoreImportant && value[value.length - 1] === '!important') {
-    cssValue += ' !important';
-  }
-
-  return cssValue;
-}
-
-/***/ }),
-
-/***/ "../../node_modules/jss/node_modules/warning/browser.js":
-/*!*****************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/jss/node_modules/warning/browser.js ***!
-  \*****************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function() {};
-
-if (true) {
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-        '`warning(condition, format, ...args)` requires a warning ' +
-        'message argument'
-      );
-    }
-
-    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
-      throw new Error(
-        'The warning format should be able to uniquely identify this ' +
-        'warning. Please, use a more descriptive format than: ' + format
-      );
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' +
-        format.replace(/%s/g, function() {
-          return args[argIndex++];
-        });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch(x) {}
-    }
-  };
-}
-
-module.exports = warning;
-
-
-/***/ }),
-
 /***/ "../../node_modules/object-assign/index.js":
 /*!****************************************************************************!*\
   !*** /home/development/ISEMS/ISEMS-UI/node_modules/object-assign/index.js ***!
@@ -6506,620 +915,6 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/alert-list.js":
-/*!****************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/alert-list.js ***!
-  \****************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-transition-group */ "../../node_modules/react-transition-group/index.js");
-/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_transition_group__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./container */ "../../node_modules/react-bs-notifier/es/container/index.js");
-/* harmony import */ var _alert_timer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./alert-timer */ "../../node_modules/react-bs-notifier/es/alert-timer.js");
-/* harmony import */ var _alert_transition__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./alert-transition */ "../../node_modules/react-bs-notifier/es/alert-transition.js");
-/* harmony import */ var _container_styles__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./container/styles */ "../../node_modules/react-bs-notifier/es/container/styles.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-
-
-
-
-
-
-
-
-var AlertList = function AlertList(_ref) {
-	var position = _ref.position,
-	    alerts = _ref.alerts,
-	    onDismiss = _ref.onDismiss,
-	    classes = _ref.classes,
-	    props = _objectWithoutProperties(_ref, ["position", "alerts", "onDismiss", "classes"]);
-
-	return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-		_container__WEBPACK_IMPORTED_MODULE_3__["default"],
-		{ position: position, className: classes.container },
-		react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-			react_transition_group__WEBPACK_IMPORTED_MODULE_1__["TransitionGroup"],
-			null,
-			alerts.map(function (item) {
-				var dismiss = onDismiss ? function () {
-					return onDismiss(item);
-				} : null;
-
-				var message = item.message,
-				    alertProps = _objectWithoutProperties(item, ["message"]);
-
-				return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-					_alert_transition__WEBPACK_IMPORTED_MODULE_5__["default"],
-					{ key: item.id },
-					react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-						_alert_timer__WEBPACK_IMPORTED_MODULE_4__["default"],
-						_extends({}, props, alertProps, { onDismiss: dismiss }),
-						message
-					)
-				);
-			})
-		)
-	);
-};
-
-var timeout = _alert_timer__WEBPACK_IMPORTED_MODULE_4__["PropTypes"].timeout,
-    type = _alert_timer__WEBPACK_IMPORTED_MODULE_4__["PropTypes"].type,
-    headline = _alert_timer__WEBPACK_IMPORTED_MODULE_4__["PropTypes"].headline;
-
-
-AlertList.propTypes = _extends({}, _container__WEBPACK_IMPORTED_MODULE_3__["PropTypes"], {
-	alerts: Object(prop_types__WEBPACK_IMPORTED_MODULE_2__["arrayOf"])(Object(prop_types__WEBPACK_IMPORTED_MODULE_2__["shape"])({
-		id: prop_types__WEBPACK_IMPORTED_MODULE_2__["any"].isRequired,
-		type: type,
-		headline: headline,
-		message: Object(prop_types__WEBPACK_IMPORTED_MODULE_2__["oneOfType"])([prop_types__WEBPACK_IMPORTED_MODULE_2__["string"], prop_types__WEBPACK_IMPORTED_MODULE_2__["node"], prop_types__WEBPACK_IMPORTED_MODULE_2__["object"]]).isRequired
-	})).isRequired,
-	onDismiss: prop_types__WEBPACK_IMPORTED_MODULE_2__["func"],
-	timeout: timeout
-});
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(_container_styles__WEBPACK_IMPORTED_MODULE_6__["default"])(AlertList));
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/alert-timer.js":
-/*!*****************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/alert-timer.js ***!
-  \*****************************************************************************************/
-/*! exports provided: default, PropTypes */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PropTypes", function() { return PropTypes; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _alert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./alert */ "../../node_modules/react-bs-notifier/es/alert/index.js");
-/* harmony import */ var _container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./container */ "../../node_modules/react-bs-notifier/es/container/index.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-
-
-
-
-var AlertTimer = function (_Component) {
-	_inherits(AlertTimer, _Component);
-
-	function AlertTimer(props) {
-		_classCallCheck(this, AlertTimer);
-
-		return _possibleConstructorReturn(this, (AlertTimer.__proto__ || Object.getPrototypeOf(AlertTimer)).call(this, props));
-	}
-
-	_createClass(AlertTimer, [{
-		key: "componentDidMount",
-		value: function componentDidMount() {
-			this.setupTimer(this.props.timeout, this.props.onDismiss);
-		}
-	}, {
-		key: "componentDidUpdate",
-		value: function componentDidUpdate(prevProps) {
-			if (this.props.timeout != prevProps.timeout || this.props.onDismiss != prevProps.onDismiss) {
-				this.setupTimer(this.props.timeout, this.props.onDismiss);
-			}
-		}
-	}, {
-		key: "componentWillUnmount",
-		value: function componentWillUnmount() {
-			// need to clean up after ourselves
-			this.setupTimer();
-		}
-	}, {
-		key: "setupTimer",
-		value: function setupTimer(timeout, onDismiss) {
-			if (!timeout || !onDismiss) {
-				// clear any timer we currently have
-				clearTimeout(this.timer);
-				this.timer = null;
-				this.timerTimeout = null;
-			} else {
-				if (this.timer && this.timerTimeout != timeout) {
-					// the timeout value has changed, setup a new timer
-					clearTimeout(this.timer);
-					this.timer = null;
-				}
-
-				// add new timer if we don't already have one
-				if (!this.timer) {
-					this.timer = setTimeout(this.dismissAlert.bind(this, onDismiss), timeout + _container__WEBPACK_IMPORTED_MODULE_3__["ENTER_TIMEOUT"] + _container__WEBPACK_IMPORTED_MODULE_3__["EXIT_TIMEOUT"]);
-					this.timerTimeout = timeout;
-				}
-			}
-		}
-	}, {
-		key: "dismissAlert",
-		value: function dismissAlert(onDismiss) {
-			// clear the timer if it hasn't fired yet
-			clearTimeout(this.timer);
-
-			// we don't need to keep track of any timers for this alert anymore
-			this.timer = null;
-			this.timerTimeout = null;
-
-			// actually dismiss the alert
-			onDismiss();
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			var onDismiss = this.props.onDismiss ? this.dismissAlert.bind(this, this.props.onDismiss) : null;
-			return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_alert__WEBPACK_IMPORTED_MODULE_2__["default"], _extends({}, this.props, { onDismiss: onDismiss }));
-		}
-	}]);
-
-	return AlertTimer;
-}(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
-
-/* harmony default export */ __webpack_exports__["default"] = (AlertTimer);
-
-
-var PropTypes = {
-	type: Object(prop_types__WEBPACK_IMPORTED_MODULE_1__["oneOf"])(["info", "success", "warning", "danger"]),
-	headline: prop_types__WEBPACK_IMPORTED_MODULE_1__["string"],
-	onDismiss: prop_types__WEBPACK_IMPORTED_MODULE_1__["func"],
-	dismissTitle: prop_types__WEBPACK_IMPORTED_MODULE_1__["string"],
-	showIcon: prop_types__WEBPACK_IMPORTED_MODULE_1__["bool"],
-	timeout: prop_types__WEBPACK_IMPORTED_MODULE_1__["number"]
-};
-
-AlertTimer.propTypes = PropTypes;
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/alert-transition.js":
-/*!**********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/alert-transition.js ***!
-  \**********************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _transition_styles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transition-styles */ "../../node_modules/react-bs-notifier/es/transition-styles.js");
-/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-transition-group */ "../../node_modules/react-transition-group/index.js");
-/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_transition_group__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./container */ "../../node_modules/react-bs-notifier/es/container/index.js");
-/* harmony import */ var react_jss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-jss */ "../../node_modules/react-jss/lib/index.js");
-/* harmony import */ var react_jss__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_jss__WEBPACK_IMPORTED_MODULE_4__);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-
-
-
-
-
-
-var AlertTransition = function AlertTransition(_ref) {
-	var classes = _ref.classes,
-	    props = _objectWithoutProperties(_ref, ["classes"]);
-
-	delete props.classes; // if it is there (it may not be depending on which version of JSS is used)
-	var timeout = { enter: _container__WEBPACK_IMPORTED_MODULE_3__["ENTER_TIMEOUT"], exit: _container__WEBPACK_IMPORTED_MODULE_3__["EXIT_TIMEOUT"] };
-	return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_transition_group__WEBPACK_IMPORTED_MODULE_2__["CSSTransition"], _extends({ timeout: timeout, classNames: classes }, props));
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (react_jss__WEBPACK_IMPORTED_MODULE_4___default()(_transition_styles__WEBPACK_IMPORTED_MODULE_1__["default"])(AlertTransition));
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/alert/icon.js":
-/*!****************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/alert/icon.js ***!
-  \****************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-
-
-var Icon = function Icon(_ref) {
-	var type = _ref.type,
-	    _ref$className = _ref.className,
-	    className = _ref$className === undefined ? "" : _ref$className;
-
-	var faType = iconType(type);
-
-	if (faType) {
-		return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("i", { className: faType + " " + className, "aria-hidden": "true" });
-	}
-
-	return null;
-};
-
-function iconType(type) {
-	switch (type) {
-		case "warning":
-			return "fa fa-warning";
-
-		case "info":
-			return "fa fa-info";
-
-		case "success":
-			return "fa fa-check";
-
-		case "danger":
-			return "fa fa-exclamation-circle";
-	}
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Icon);
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/alert/index.js":
-/*!*****************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/alert/index.js ***!
-  \*****************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _icon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./icon */ "../../node_modules/react-bs-notifier/es/alert/icon.js");
-/* harmony import */ var _styles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./styles */ "../../node_modules/react-bs-notifier/es/alert/styles.js");
-
-
-
-
-
-var Alert = function Alert(_ref) {
-    var _ref$type = _ref.type,
-        type = _ref$type === undefined ? "info" : _ref$type,
-        children = _ref.children,
-        headline = _ref.headline,
-        onDismiss = _ref.onDismiss,
-        _ref$dismissTitle = _ref.dismissTitle,
-        dismissTitle = _ref$dismissTitle === undefined ? "Dismiss" : _ref$dismissTitle,
-        classes = _ref.classes,
-        _ref$showIcon = _ref.showIcon,
-        showIcon = _ref$showIcon === undefined ? true : _ref$showIcon;
-
-    var isDismissable = !!onDismiss;
-    var css = (isDismissable ? classes.dismissable : "") + " " + classes[type] + " " + classes.alert;
-    var dismiss = isDismissable ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-        "button", {
-            type: "button",
-            className: classes.close,
-            title: dismissTitle,
-            onClick: onDismiss
-        },
-        "   \xD7"
-    ) : null;
-
-    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-        "div",
-        null,
-        react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-            "div", { className: css },
-            dismiss,
-            showIcon ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_icon__WEBPACK_IMPORTED_MODULE_1__["default"], { className: classes.icon, type: type }) : null,
-            react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-                "div", { className: classes.msgContainer },
-                headline ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-                    "h4", { className: classes.headline },
-                    headline
-                ) : null,
-                react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-                    "div", { className: classes.body },
-                    children
-                )
-            )
-        )
-    );
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(_styles__WEBPACK_IMPORTED_MODULE_2__["default"])(Alert));
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/alert/styles.js":
-/*!******************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/alert/styles.js ***!
-  \******************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var toetag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toetag */ "../../node_modules/toetag/index.js");
-/* harmony import */ var toetag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toetag__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_jss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-jss */ "../../node_modules/react-jss/lib/index.js");
-/* harmony import */ var react_jss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jss__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _transition_styles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../transition-styles */ "../../node_modules/react-bs-notifier/es/transition-styles.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = (react_jss__WEBPACK_IMPORTED_MODULE_1___default()(_extends({}, _transition_styles__WEBPACK_IMPORTED_MODULE_2__["default"], {
-	alert: {
-		composes: "alert",
-		marginBottom: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingBaseVertical,
-		display: "inline-block",
-		textAlign: "left"
-	},
-	info: {
-		composes: "alert-info"
-	},
-	success: {
-		composes: "alert-success"
-	},
-	warning: {
-		composes: "alert-warning"
-	},
-	danger: {
-		composes: "alert-danger"
-	},
-	dismissable: {
-		composes: "alert-dismissable"
-	},
-	close: {
-		composes: "close"
-	},
-	msgContainer: {
-		display: "inline-block"
-	},
-	icon: {
-		verticalAlign: "top",
-		fontSize: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].fontSizeH4,
-		paddingRight: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingLargeHorizontal,
-		opacity: 0.2
-	},
-	headline: {
-		margin: 0,
-		marginBottom: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingBaseVertical
-	},
-	body: {
-		maxWidth: "40em"
-	}
-})));
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/container/index.js":
-/*!*********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/container/index.js ***!
-  \*********************************************************************************************/
-/*! exports provided: ENTER_TIMEOUT, EXIT_TIMEOUT, PropTypes, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ENTER_TIMEOUT", function() { return ENTER_TIMEOUT; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EXIT_TIMEOUT", function() { return EXIT_TIMEOUT; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PropTypes", function() { return PropTypes; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-transition-group */ "../../node_modules/react-transition-group/index.js");
-/* harmony import */ var react_transition_group__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_transition_group__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _alert_transition__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../alert-transition */ "../../node_modules/react-bs-notifier/es/alert-transition.js");
-/* harmony import */ var _styles__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./styles */ "../../node_modules/react-bs-notifier/es/container/styles.js");
-
-
-
-
-
-
-var ENTER_TIMEOUT = 500;
-var EXIT_TIMEOUT = 300;
-
-var AlertContainer = function AlertContainer(_ref) {
-	var _ref$position = _ref.position,
-	    position = _ref$position === undefined ? "top-right" : _ref$position,
-	    children = _ref.children,
-	    classes = _ref.classes;
-
-	return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-		"div",
-		{ className: classes.container + " " + classes[position] },
-		react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-			react_transition_group__WEBPACK_IMPORTED_MODULE_2__["TransitionGroup"],
-			null,
-			react__WEBPACK_IMPORTED_MODULE_0__["Children"].map(children, function (child) {
-				return child ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-					_alert_transition__WEBPACK_IMPORTED_MODULE_3__["default"],
-					{ key: child.props.id },
-					Object(react__WEBPACK_IMPORTED_MODULE_0__["cloneElement"])(child)
-				) : null;
-			})
-		)
-	);
-};
-
-var PropTypes = {
-	position: Object(prop_types__WEBPACK_IMPORTED_MODULE_1__["oneOf"])(["top-right", "top-left", "bottom-right", "bottom-left"])
-};
-
-AlertContainer.propTypes = PropTypes;
-
-/* harmony default export */ __webpack_exports__["default"] = (Object(_styles__WEBPACK_IMPORTED_MODULE_4__["default"])(AlertContainer));
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/container/styles.js":
-/*!**********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/container/styles.js ***!
-  \**********************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var toetag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toetag */ "../../node_modules/toetag/index.js");
-/* harmony import */ var toetag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toetag__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_jss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-jss */ "../../node_modules/react-jss/lib/index.js");
-/* harmony import */ var react_jss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jss__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _transition_styles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../transition-styles */ "../../node_modules/react-bs-notifier/es/transition-styles.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = (react_jss__WEBPACK_IMPORTED_MODULE_1___default()(_extends({
-	container: {
-		position: "fixed",
-		paddingTop: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingBaseVertical,
-		paddingRight: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingBaseHorizontal,
-		paddingBottom: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingBaseVertical,
-		paddingLeft: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].paddingBaseHorizontal,
-		zIndex: toetag__WEBPACK_IMPORTED_MODULE_0__["bootstrap"].zindexNavbarFixed + 1
-	},
-	"top-right": {
-		top: 0,
-		right: 0,
-		textAlign: "right"
-	},
-	"top-left": {
-		top: 0,
-		left: 0
-	},
-	"bottom-right": {
-		bottom: 0,
-		right: 0,
-		textAlign: "right"
-	},
-	"bottom-left": {
-		bottom: 0,
-		left: 0
-	}
-}, _transition_styles__WEBPACK_IMPORTED_MODULE_2__["default"])));
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/index.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/index.js ***!
-  \***********************************************************************************/
-/*! exports provided: AlertList, AlertTransition, Alert, AlertContainer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _alert_list__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./alert-list */ "../../node_modules/react-bs-notifier/es/alert-list.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AlertList", function() { return _alert_list__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _alert_transition__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./alert-transition */ "../../node_modules/react-bs-notifier/es/alert-transition.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AlertTransition", function() { return _alert_transition__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _alert_timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./alert-timer */ "../../node_modules/react-bs-notifier/es/alert-timer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Alert", function() { return _alert_timer__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-/* harmony import */ var _container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./container */ "../../node_modules/react-bs-notifier/es/container/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AlertContainer", function() { return _container__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "../../node_modules/react-bs-notifier/es/transition-styles.js":
-/*!***********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-bs-notifier/es/transition-styles.js ***!
-  \***********************************************************************************************/
-/*! exports provided: MAGICAL_MAX_HEIGHT, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MAGICAL_MAX_HEIGHT", function() { return MAGICAL_MAX_HEIGHT; });
-var MAGICAL_MAX_HEIGHT = "20em";
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	enter: {
-		opacity: 0.01,
-		transform: "translateX(-25%)",
-		maxHeight: 0,
-		overflow: "hidden",
-		transition: ".25s ease-in"
-	},
-	enterActive: {
-		opacity: 1,
-		transform: "translateX(0)",
-		maxHeight: MAGICAL_MAX_HEIGHT
-	},
-	exit: {
-		opacity: 1,
-		transform: "translateX(0)",
-		maxHeight: MAGICAL_MAX_HEIGHT,
-		overflow: "hidden",
-		transition: ".25s ease-out"
-	},
-	exitActive: {
-		opacity: 0.01,
-		transform: "translateX(25%)",
-		maxHeight: 0
-	}
-});
 
 /***/ }),
 
@@ -27265,2533 +21060,1123 @@ if (false) {} else {
 
 /***/ }),
 
-/***/ "../../node_modules/react-jss/lib/JssProvider.js":
-/*!**********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/JssProvider.js ***!
-  \**********************************************************************************/
+/***/ "../../node_modules/react-notification-system/dist/NotificationContainer.js":
+/*!*************************************************************************************************************!*\
+  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-notification-system/dist/NotificationContainer.js ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var React = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+var PropTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+var NotificationItem = __webpack_require__(/*! ./NotificationItem */ "../../node_modules/react-notification-system/dist/NotificationItem.js");
+var Constants = __webpack_require__(/*! ./constants */ "../../node_modules/react-notification-system/dist/constants.js");
 
+class NotificationContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    // Fix position if width is overrided
+    this._style = props.getStyles.container(props.position);
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-
-var _propTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-
-var _jss = __webpack_require__(/*! ./jss */ "../../node_modules/react-jss/lib/jss.js");
-
-var _ns = __webpack_require__(/*! ./ns */ "../../node_modules/react-jss/lib/ns.js");
-
-var ns = _interopRequireWildcard(_ns);
-
-var _contextTypes = __webpack_require__(/*! ./contextTypes */ "../../node_modules/react-jss/lib/contextTypes.js");
-
-var _contextTypes2 = _interopRequireDefault(_contextTypes);
-
-var _propTypes2 = __webpack_require__(/*! ./propTypes */ "../../node_modules/react-jss/lib/propTypes.js");
-
-var _propTypes3 = _interopRequireDefault(_propTypes2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var JssProvider = function (_Component) {
-  _inherits(JssProvider, _Component);
-
-  function JssProvider() {
-    _classCallCheck(this, JssProvider);
-
-    return _possibleConstructorReturn(this, (JssProvider.__proto__ || Object.getPrototypeOf(JssProvider)).apply(this, arguments));
+    if (
+      props.getStyles.overrideWidth &&
+      (props.position === Constants.positions.tc ||
+        props.position === Constants.positions.bc)
+    ) {
+      this._style.marginLeft = -(props.getStyles.overrideWidth / 2);
+    }
   }
 
-  _createClass(JssProvider, [{
-    key: 'getChildContext',
+  render() {
+    var notifications;
 
-
-    // JssProvider can be nested. We allow to overwrite any context prop at any level.
-    // 1. Check if there is a value passed over props.
-    // 2. If value was passed, we set it on the child context.
-    // 3. If value was not passed, we proxy parent context (default context behaviour).
-    value: function getChildContext() {
-      var _props = this.props,
-          registry = _props.registry,
-          classNamePrefix = _props.classNamePrefix,
-          localJss = _props.jss,
-          generateClassName = _props.generateClassName,
-          disableStylesGeneration = _props.disableStylesGeneration;
-
-      var sheetOptions = this.context[ns.sheetOptions] || {};
-      var context = _defineProperty({}, ns.sheetOptions, sheetOptions);
-
-      if (registry) {
-        context[ns.sheetsRegistry] = registry;
-        // This way we identify a new request on the server, because user will create
-        // a new Registry instance for each.
-        if (registry !== this.registry) {
-          // We reset managers because we have to regenerate all sheets for the new request.
-          this.managers = {};
-          this.registry = registry;
-        }
-      }
-
-      // Make sure we don't loose managers when JssProvider is used inside of a stateful
-      // component which decides to rerender.
-      context[ns.managers] = this.managers;
-
-      if (generateClassName) {
-        sheetOptions.generateClassName = generateClassName;
-      } else if (!sheetOptions.generateClassName) {
-        if (!this.generateClassName) {
-          var createGenerateClassName = _jss.createGenerateClassNameDefault;
-          if (localJss && localJss.options.createGenerateClassName) {
-            createGenerateClassName = localJss.options.createGenerateClassName;
-          }
-          // Make sure we don't loose the generator when JssProvider is used inside of a stateful
-          // component which decides to rerender.
-          this.generateClassName = createGenerateClassName();
-        }
-
-        sheetOptions.generateClassName = this.generateClassName;
-      }
-
-      if (classNamePrefix) sheetOptions.classNamePrefix = classNamePrefix;
-      if (localJss) context[ns.jss] = localJss;
-      if (disableStylesGeneration !== undefined) {
-        sheetOptions.disableStylesGeneration = disableStylesGeneration;
-      }
-
-      return context;
+    if (
+      [
+        Constants.positions.bl,
+        Constants.positions.br,
+        Constants.positions.bc
+      ].indexOf(this.props.position) > -1
+    ) {
+      this.props.notifications.reverse();
     }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react.Children.only(this.props.children);
-    }
-  }]);
 
-  return JssProvider;
-}(_react.Component);
+    notifications = this.props.notifications.map((notification) => {
+      return (
+        React.createElement(NotificationItem, {
+          ref:  'notification-' + notification.uid, 
+          key:  notification.uid, 
+          notification:  notification, 
+          getStyles:  this.props.getStyles, 
+          onRemove:  this.props.onRemove, 
+          noAnimation:  this.props.noAnimation, 
+          allowHTML:  this.props.allowHTML, 
+          children:  this.props.children}
+        )
+      );
+    });
 
-JssProvider.propTypes = _extends({}, _propTypes3['default'], {
-  generateClassName: _propTypes.func,
-  classNamePrefix: _propTypes.string,
-  disableStylesGeneration: _propTypes.bool,
-  children: _propTypes.node.isRequired
-});
-JssProvider.childContextTypes = _contextTypes2['default'];
-JssProvider.contextTypes = _contextTypes2['default'];
-exports['default'] = JssProvider;
+    return (
+      React.createElement("div", {
+        className:  'notifications-' + this.props.position, 
+        style:  this._style
+      }, 
+        notifications
+      )
+    );
+  }
+}
+
+NotificationContainer.propTypes = {
+  position: PropTypes.string.isRequired,
+  notifications: PropTypes.array.isRequired,
+  getStyles: PropTypes.object,
+  onRemove: PropTypes.func,
+  noAnimation: PropTypes.bool,
+  allowHTML: PropTypes.bool,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
+};
+
+module.exports = NotificationContainer;
+
 
 /***/ }),
 
-/***/ "../../node_modules/react-jss/lib/compose.js":
-/*!******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/compose.js ***!
-  \******************************************************************************/
+/***/ "../../node_modules/react-notification-system/dist/NotificationItem.js":
+/*!********************************************************************************************************!*\
+  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-notification-system/dist/NotificationItem.js ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-/**
- * Adds `composes` property to each top level rule
- * in order to have a composed class name for dynamic style sheets.
- *
- * It relies on jss-compose and jss-extend plugins.
- *
- * Example:
- * classes:  {left: 'a', button: 'b'}
- * styles:   {button: {height: () => { ... }}}
- * composed: {
- *   button: {
- *     composes: 'b',
- *     height: () => { ... }
- *   },
- *   left: {
- *     composes: 'a'
- *   }
- * }
- *
- * @param {Object} classes static classes map
- * @param {Object} styles dynamic styles object without static properties
- * @return {Object|null}
- */
-exports["default"] = function (staticClasses, dynamicClasses) {
-  var combinedClasses = _extends({}, staticClasses);
-
-  for (var name in dynamicClasses) {
-    combinedClasses[name] = staticClasses[name] ? staticClasses[name] + " " + dynamicClasses[name] : dynamicClasses[name];
-  }
-
-  return combinedClasses;
-};
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/contextTypes.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/contextTypes.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _ns$jss$ns$sheetOptio;
-
-var _propTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-
-var _ns = __webpack_require__(/*! ./ns */ "../../node_modules/react-jss/lib/ns.js");
-
-var ns = _interopRequireWildcard(_ns);
-
-var _propTypes2 = __webpack_require__(/*! ./propTypes */ "../../node_modules/react-jss/lib/propTypes.js");
-
-var _propTypes3 = _interopRequireDefault(_propTypes2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-exports['default'] = (_ns$jss$ns$sheetOptio = {}, _defineProperty(_ns$jss$ns$sheetOptio, ns.jss, _propTypes3['default'].jss), _defineProperty(_ns$jss$ns$sheetOptio, ns.sheetOptions, _propTypes.object), _defineProperty(_ns$jss$ns$sheetOptio, ns.sheetsRegistry, _propTypes3['default'].registry), _defineProperty(_ns$jss$ns$sheetOptio, ns.managers, _propTypes.object), _ns$jss$ns$sheetOptio);
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/createHoc.js":
-/*!********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/createHoc.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _theming = __webpack_require__(/*! theming */ "../../node_modules/theming/dist/esm/index.js");
-
-var _theming2 = _interopRequireDefault(_theming);
-
-var _jss = __webpack_require__(/*! ./jss */ "../../node_modules/react-jss/lib/jss.js");
-
-var _jss2 = _interopRequireDefault(_jss);
-
-var _compose = __webpack_require__(/*! ./compose */ "../../node_modules/react-jss/lib/compose.js");
-
-var _compose2 = _interopRequireDefault(_compose);
-
-var _getDisplayName = __webpack_require__(/*! ./getDisplayName */ "../../node_modules/react-jss/lib/getDisplayName.js");
-
-var _getDisplayName2 = _interopRequireDefault(_getDisplayName);
-
-var _ns = __webpack_require__(/*! ./ns */ "../../node_modules/react-jss/lib/ns.js");
-
-var ns = _interopRequireWildcard(_ns);
-
-var _contextTypes = __webpack_require__(/*! ./contextTypes */ "../../node_modules/react-jss/lib/contextTypes.js");
-
-var _contextTypes2 = _interopRequireDefault(_contextTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var env = "development";
-
-// Like a Symbol
-var dynamicStylesNs = Math.random();
-
-/*
- * # Use cases
- *
- * - Unthemed component accepts styles object
- * - Themed component accepts styles creator function which takes theme as a single argument
- * - Multiple instances will re-use the same static sheet via sheets manager
- * - Sheet manager identifies static sheets by theme as a key
- * - For unthemed components theme is an empty object
- * - The very first instance will add static sheet to sheets manager
- * - Every further instances will get that static sheet from sheet manager
- * - Every mount of every instance will call method `sheetsManager.manage`,
- * thus incrementing reference counter.
- * - Every unmount of every instance will call method `sheetsManager.unmanage`,
- * thus decrementing reference counter.
- * - `sheetsManager.unmanage` under the hood will detach static sheet once reference
- * counter is zero.
- * - Dynamic styles are not shared between instances
- *
- */
-
-var getStyles = function getStyles(stylesOrCreator, theme) {
-  if (typeof stylesOrCreator !== 'function') {
-    return stylesOrCreator;
-  }
-  return stylesOrCreator(theme);
-};
-
-// Returns an object with array property as a key and true as a value.
-var toMap = function toMap(arr) {
-  return arr.reduce(function (map, prop) {
-    map[prop] = true;
-    return map;
-  }, {});
-};
-
-var defaultInjectProps = {
-  sheet: false,
-  classes: true,
-  theme: true
-};
-
-var managersCounter = 0;
-
-/**
- * Wrap a Component into a JSS Container Component.
- *
- * @param {Object|Function} stylesOrCreator
- * @param {Component} InnerComponent
- * @param {Object} [options]
- * @return {Component}
- */
-
-exports['default'] = function (stylesOrCreator, InnerComponent) {
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  var isThemingEnabled = typeof stylesOrCreator === 'function';
-
-  var _options$theming = options.theming,
-      theming = _options$theming === undefined ? _theming2['default'] : _options$theming,
-      inject = options.inject,
-      optionsJss = options.jss,
-      sheetOptions = _objectWithoutProperties(options, ['theming', 'inject', 'jss']);
-
-  var injectMap = inject ? toMap(inject) : defaultInjectProps;
-  var themeListener = theming.themeListener;
-
-  var displayName = (0, _getDisplayName2['default'])(InnerComponent);
-  var defaultClassNamePrefix = env === 'production' ? undefined : displayName + '-';
-  var noTheme = {};
-  var managerId = managersCounter++;
-  var manager = new _jss.SheetsManager();
-  var defaultProps = _extends({}, InnerComponent.defaultProps);
-  delete defaultProps.classes;
-
-  var Jss = function (_Component) {
-    _inherits(Jss, _Component);
-
-    function Jss(props, context) {
-      _classCallCheck(this, Jss);
-
-      var _this = _possibleConstructorReturn(this, (Jss.__proto__ || Object.getPrototypeOf(Jss)).call(this, props, context));
-
-      _initialiseProps.call(_this);
-
-      var theme = isThemingEnabled ? themeListener.initial(context) : noTheme;
-
-      _this.state = _this.createState({ theme: theme }, props);
-      return _this;
-    }
-
-    _createClass(Jss, [{
-      key: 'componentWillMount',
-      value: function componentWillMount() {
-        this.manage(this.state);
-      }
-    }, {
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        if (isThemingEnabled) {
-          this.unsubscribeId = themeListener.subscribe(this.context, this.setTheme);
-        }
-      }
-    }, {
-      key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps(nextProps, nextContext) {
-        this.context = nextContext;
-        var dynamicSheet = this.state.dynamicSheet;
-
-        if (dynamicSheet) dynamicSheet.update(nextProps);
-      }
-    }, {
-      key: 'componentWillUpdate',
-      value: function componentWillUpdate(nextProps, nextState) {
-        if (isThemingEnabled && this.state.theme !== nextState.theme) {
-          var newState = this.createState(nextState, nextProps);
-          this.manage(newState);
-          this.manager.unmanage(this.state.theme);
-          this.setState(newState);
-        }
-      }
-    }, {
-      key: 'componentDidUpdate',
-      value: function componentDidUpdate(prevProps, prevState) {
-        // We remove previous dynamicSheet only after new one was created to avoid FOUC.
-        if (prevState.dynamicSheet !== this.state.dynamicSheet) {
-          this.jss.removeStyleSheet(prevState.dynamicSheet);
-        }
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        if (this.unsubscribeId) {
-          themeListener.unsubscribe(this.context, this.unsubscribeId);
-        }
-
-        this.manager.unmanage(this.state.theme);
-        if (this.state.dynamicSheet) {
-          this.state.dynamicSheet.detach();
-        }
-      }
-    }, {
-      key: 'createState',
-      value: function createState(_ref, _ref2) {
-        var theme = _ref.theme,
-            dynamicSheet = _ref.dynamicSheet;
-        var userClasses = _ref2.classes;
-
-        var contextSheetOptions = this.context[ns.sheetOptions];
-        if (contextSheetOptions && contextSheetOptions.disableStylesGeneration) {
-          return { theme: theme, dynamicSheet: dynamicSheet, classes: {} };
-        }
-
-        var classNamePrefix = defaultClassNamePrefix;
-        var staticSheet = this.manager.get(theme);
-
-        if (contextSheetOptions && contextSheetOptions.classNamePrefix) {
-          classNamePrefix = contextSheetOptions.classNamePrefix + classNamePrefix;
-        }
-
-        if (!staticSheet) {
-          var styles = getStyles(stylesOrCreator, theme);
-          staticSheet = this.jss.createStyleSheet(styles, _extends({}, sheetOptions, contextSheetOptions, {
-            meta: displayName + ', ' + (isThemingEnabled ? 'Themed' : 'Unthemed') + ', Static',
-            classNamePrefix: classNamePrefix
-          }));
-          this.manager.add(theme, staticSheet);
-          staticSheet[dynamicStylesNs] = (0, _jss.getDynamicStyles)(styles);
-        }
-
-        var dynamicStyles = staticSheet[dynamicStylesNs];
-
-        if (dynamicStyles) {
-          dynamicSheet = this.jss.createStyleSheet(dynamicStyles, _extends({}, sheetOptions, contextSheetOptions, {
-            meta: displayName + ', ' + (isThemingEnabled ? 'Themed' : 'Unthemed') + ', Dynamic',
-            classNamePrefix: classNamePrefix,
-            link: true
-          }));
-        }
-
-        var defaultClasses = InnerComponent.defaultProps ? InnerComponent.defaultProps.classes : {};
-        var jssClasses = dynamicSheet ? (0, _compose2['default'])(staticSheet.classes, dynamicSheet.classes) : staticSheet.classes;
-        var classes = _extends({}, defaultClasses, jssClasses, userClasses);
-
-        return { theme: theme, dynamicSheet: dynamicSheet, classes: classes };
-      }
-    }, {
-      key: 'manage',
-      value: function manage(_ref3) {
-        var theme = _ref3.theme,
-            dynamicSheet = _ref3.dynamicSheet;
-
-        var contextSheetOptions = this.context[ns.sheetOptions];
-        if (contextSheetOptions && contextSheetOptions.disableStylesGeneration) {
-          return;
-        }
-        var registry = this.context[ns.sheetsRegistry];
-
-        var staticSheet = this.manager.manage(theme);
-        if (registry) registry.add(staticSheet);
-
-        if (dynamicSheet) {
-          dynamicSheet.update(this.props).attach();
-          if (registry) registry.add(dynamicSheet);
-        }
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        var _state = this.state,
-            theme = _state.theme,
-            dynamicSheet = _state.dynamicSheet,
-            classes = _state.classes;
-
-        var _props = this.props,
-            innerRef = _props.innerRef,
-            props = _objectWithoutProperties(_props, ['innerRef']);
-
-        var sheet = dynamicSheet || this.manager.get(theme);
-
-        if (injectMap.sheet && !props.sheet) props.sheet = sheet;
-        if (isThemingEnabled && injectMap.theme && !props.theme) props.theme = theme;
-
-        // We have merged classes already.
-        if (injectMap.classes) props.classes = classes;
-
-        return _react2['default'].createElement(InnerComponent, _extends({ ref: innerRef }, props));
-      }
-    }, {
-      key: 'jss',
-      get: function get() {
-        return this.context[ns.jss] || optionsJss || _jss2['default'];
-      }
-    }, {
-      key: 'manager',
-      get: function get() {
-        var managers = this.context[ns.managers];
-
-        // If `managers` map is present in the context, we use it in order to
-        // let JssProvider reset them when new response has to render server-side.
-        if (managers) {
-          if (!managers[managerId]) {
-            managers[managerId] = new _jss.SheetsManager();
-          }
-          return managers[managerId];
-        }
-
-        return manager;
-      }
-    }]);
-
-    return Jss;
-  }(_react.Component);
-
-  Jss.displayName = 'Jss(' + displayName + ')';
-  Jss.InnerComponent = InnerComponent;
-  Jss.contextTypes = _extends({}, _contextTypes2['default'], isThemingEnabled && themeListener.contextTypes);
-  Jss.propTypes = {
-    innerRef: _propTypes2['default'].func
+var React = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+var PropTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+var ReactDOM = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
+var Constants = __webpack_require__(/*! ./constants */ "../../node_modules/react-notification-system/dist/constants.js");
+var Helpers = __webpack_require__(/*! ./helpers */ "../../node_modules/react-notification-system/dist/helpers.js");
+var merge = __webpack_require__(/*! object-assign */ "../../node_modules/object-assign/index.js");
+
+/* From Modernizr */
+var whichTransitionEvent = function() {
+  var el = document.createElement('fakeelement');
+  var transition;
+  var transitions = {
+    transition: 'transitionend',
+    OTransition: 'oTransitionEnd',
+    MozTransition: 'transitionend',
+    WebkitTransition: 'webkitTransitionEnd'
   };
-  Jss.defaultProps = defaultProps;
 
-  var _initialiseProps = function _initialiseProps() {
-    var _this2 = this;
+  Object.keys(transitions).forEach(function(transitionKey) {
+    if (el.style[transitionKey] !== undefined) {
+      transition = transitions[transitionKey];
+    }
+  });
 
-    this.setTheme = function (theme) {
-      return _this2.setState({ theme: theme });
+  return transition;
+};
+
+function _allowHTML(string) {
+  return { __html: string };
+}
+
+class NotificationItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this._styles = {};
+    this._notificationTimer = null;
+    this._height = 0;
+    this._noAnimation = null;
+    this._isMounted = false;
+    this._removeCount = 0;
+
+    this.state = {
+      visible: undefined,
+      removed: false
     };
-  };
 
-  return Jss;
-};
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/getDisplayName.js":
-/*!*************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/getDisplayName.js ***!
-  \*************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports['default'] = function (Component) {
-  return Component.displayName || Component.name || 'Component';
-};
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/index.js":
-/*!****************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/index.js ***!
-  \****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _theming = __webpack_require__(/*! theming */ "../../node_modules/theming/dist/esm/index.js");
-
-Object.defineProperty(exports, 'ThemeProvider', {
-  enumerable: true,
-  get: function get() {
-    return _theming.ThemeProvider;
-  }
-});
-Object.defineProperty(exports, 'withTheme', {
-  enumerable: true,
-  get: function get() {
-    return _theming.withTheme;
-  }
-});
-Object.defineProperty(exports, 'createTheming', {
-  enumerable: true,
-  get: function get() {
-    return _theming.createTheming;
-  }
-});
-
-var _JssProvider = __webpack_require__(/*! ./JssProvider */ "../../node_modules/react-jss/lib/JssProvider.js");
-
-Object.defineProperty(exports, 'JssProvider', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_JssProvider)['default'];
-  }
-});
-
-var _jss = __webpack_require__(/*! ./jss */ "../../node_modules/react-jss/lib/jss.js");
-
-Object.defineProperty(exports, 'jss', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_jss)['default'];
-  }
-});
-Object.defineProperty(exports, 'SheetsRegistry', {
-  enumerable: true,
-  get: function get() {
-    return _jss.SheetsRegistry;
-  }
-});
-Object.defineProperty(exports, 'createGenerateClassName', {
-  enumerable: true,
-  get: function get() {
-    return _jss.createGenerateClassNameDefault;
-  }
-});
-
-var _injectSheet = __webpack_require__(/*! ./injectSheet */ "../../node_modules/react-jss/lib/injectSheet.js");
-
-Object.defineProperty(exports, 'default', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_injectSheet)['default'];
-  }
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/injectSheet.js":
-/*!**********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/injectSheet.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports['default'] = injectSheet;
-
-var _hoistNonReactStatics = __webpack_require__(/*! hoist-non-react-statics */ "../../node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js");
-
-var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
-
-var _createHoc = __webpack_require__(/*! ./createHoc */ "../../node_modules/react-jss/lib/createHoc.js");
-
-var _createHoc2 = _interopRequireDefault(_createHoc);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * Global index counter to preserve source order.
- * As we create the style sheet during componentWillMount lifecycle,
- * children are handled after the parents, so the order of style elements would
- * be parent->child. It is a problem though when a parent passes a className
- * which needs to override any childs styles. StyleSheet of the child has a higher
- * specificity, because of the source order.
- * So our solution is to render sheets them in the reverse order child->sheet, so
- * that parent has a higher specificity.
- *
- * @type {Number}
- */
-var indexCounter = -100000;
-
-var NoRenderer = function NoRenderer(_ref) {
-  var children = _ref.children;
-  return children || null;
-};
-
-/**
- * HOC creator function that wrapps the user component.
- *
- * `injectSheet(styles, [options])(Component)`
- *
- * @api public
- */
-function injectSheet(stylesOrSheet) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  if (options.index === undefined) {
-    options.index = indexCounter++;
-  }
-  return function () {
-    var InnerComponent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : NoRenderer;
-
-    var Jss = (0, _createHoc2['default'])(stylesOrSheet, InnerComponent, options);
-    return (0, _hoistNonReactStatics2['default'])(Jss, InnerComponent, { inner: true });
-  };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/jss.js":
-/*!**************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/jss.js ***!
-  \**************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createGenerateClassNameDefault = exports.SheetsManager = exports.getDynamicStyles = exports.SheetsRegistry = undefined;
-
-var _jss = __webpack_require__(/*! jss */ "../../node_modules/jss/lib/index.js");
-
-Object.defineProperty(exports, 'SheetsRegistry', {
-  enumerable: true,
-  get: function get() {
-    return _jss.SheetsRegistry;
-  }
-});
-Object.defineProperty(exports, 'getDynamicStyles', {
-  enumerable: true,
-  get: function get() {
-    return _jss.getDynamicStyles;
-  }
-});
-Object.defineProperty(exports, 'SheetsManager', {
-  enumerable: true,
-  get: function get() {
-    return _jss.SheetsManager;
-  }
-});
-Object.defineProperty(exports, 'createGenerateClassNameDefault', {
-  enumerable: true,
-  get: function get() {
-    return _jss.createGenerateClassName;
-  }
-});
-
-var _jssPresetDefault = __webpack_require__(/*! jss-preset-default */ "../../node_modules/jss-preset-default/lib/index.js");
-
-var _jssPresetDefault2 = _interopRequireDefault(_jssPresetDefault);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-exports['default'] = (0, _jss.create)((0, _jssPresetDefault2['default'])());
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/ns.js":
-/*!*************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/ns.js ***!
-  \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Namespaces to avoid conflicts on the context.
- */
-var jss = exports.jss = '64a55d578f856d258dc345b094a2a2b3';
-var sheetsRegistry = exports.sheetsRegistry = 'd4bd0baacbc52bbd48bbb9eb24344ecd';
-var managers = exports.managers = 'b768b78919504fba9de2c03545c5cd3a';
-var sheetOptions = exports.sheetOptions = '6fc570d6bd61383819d0f9e7407c452d';
-
-/***/ }),
-
-/***/ "../../node_modules/react-jss/lib/propTypes.js":
-/*!********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-jss/lib/propTypes.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _propTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-
-exports['default'] = {
-  jss: (0, _propTypes.shape)({
-    options: (0, _propTypes.shape)({
-      createGenerateClassName: _propTypes.func.isRequired
-    }).isRequired,
-    createStyleSheet: _propTypes.func.isRequired,
-    removeStyleSheet: _propTypes.func.isRequired
-  }),
-  registry: (0, _propTypes.shape)({
-    add: _propTypes.func.isRequired,
-    toString: _propTypes.func.isRequired
-  })
-};
-
-/***/ }),
-
-/***/ "../../node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js":
-/*!***********************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js ***!
-  \***********************************************************************************************************/
-/*! exports provided: polyfill */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "polyfill", function() { return polyfill; });
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-function componentWillMount() {
-  // Call this.constructor.gDSFP to support sub-classes.
-  var state = this.constructor.getDerivedStateFromProps(this.props, this.state);
-  if (state !== null && state !== undefined) {
-    this.setState(state);
-  }
-}
-
-function componentWillReceiveProps(nextProps) {
-  // Call this.constructor.gDSFP to support sub-classes.
-  // Use the setState() updater to ensure state isn't stale in certain edge cases.
-  function updater(prevState) {
-    var state = this.constructor.getDerivedStateFromProps(nextProps, prevState);
-    return state !== null && state !== undefined ? state : null;
-  }
-  // Binding "this" is important for shallow renderer support.
-  this.setState(updater.bind(this));
-}
-
-function componentWillUpdate(nextProps, nextState) {
-  try {
-    var prevProps = this.props;
-    var prevState = this.state;
-    this.props = nextProps;
-    this.state = nextState;
-    this.__reactInternalSnapshotFlag = true;
-    this.__reactInternalSnapshot = this.getSnapshotBeforeUpdate(
-      prevProps,
-      prevState
-    );
-  } finally {
-    this.props = prevProps;
-    this.state = prevState;
-  }
-}
-
-// React may warn about cWM/cWRP/cWU methods being deprecated.
-// Add a flag to suppress these warnings for this special case.
-componentWillMount.__suppressDeprecationWarning = true;
-componentWillReceiveProps.__suppressDeprecationWarning = true;
-componentWillUpdate.__suppressDeprecationWarning = true;
-
-function polyfill(Component) {
-  var prototype = Component.prototype;
-
-  if (!prototype || !prototype.isReactComponent) {
-    throw new Error('Can only polyfill class components');
+    const getStyles = props.getStyles;
+    const level = props.notification.level;
+    const dismissible = props.notification.dismissible;
+
+    this._noAnimation = props.noAnimation;
+
+    this._styles = {
+      notification: getStyles.byElement('notification')(level),
+      title: getStyles.byElement('title')(level),
+      dismiss: getStyles.byElement('dismiss')(level),
+      messageWrapper: getStyles.byElement('messageWrapper')(level),
+      actionWrapper: getStyles.byElement('actionWrapper')(level),
+      action: getStyles.byElement('action')(level)
+    };
+
+    if (!dismissible || dismissible === 'none' || dismissible === 'button') {
+      this._styles.notification.cursor = 'default';
+    }
+
+    this._getCssPropertyByPosition = this._getCssPropertyByPosition.bind(this);
+    this._defaultAction = this._defaultAction.bind(this);
+    this._hideNotification = this._hideNotification.bind(this);
+    this._removeNotification = this._removeNotification.bind(this);
+    this._dismiss = this._dismiss.bind(this);
+    this._showNotification = this._showNotification.bind(this);
+    this._onTransitionEnd = this._onTransitionEnd.bind(this);
+    this._handleMouseEnter = this._handleMouseEnter.bind(this);
+    this._handleMouseLeave = this._handleMouseLeave.bind(this);
+    this._handleNotificationClick = this._handleNotificationClick.bind(this);
   }
 
-  if (
-    typeof Component.getDerivedStateFromProps !== 'function' &&
-    typeof prototype.getSnapshotBeforeUpdate !== 'function'
-  ) {
-    return Component;
+  _getCssPropertyByPosition() {
+    var position = this.props.notification.position;
+    var css = {};
+
+    switch (position) {
+    case Constants.positions.tl:
+    case Constants.positions.bl:
+      css = {
+        property: 'left',
+        value: -200
+      };
+      break;
+
+    case Constants.positions.tr:
+    case Constants.positions.br:
+      css = {
+        property: 'right',
+        value: -200
+      };
+      break;
+
+    case Constants.positions.tc:
+      css = {
+        property: 'top',
+        value: -100
+      };
+      break;
+
+    case Constants.positions.bc:
+      css = {
+        property: 'bottom',
+        value: -100
+      };
+      break;
+
+    default:
+    }
+
+    return css;
   }
 
-  // If new component APIs are defined, "unsafe" lifecycles won't be called.
-  // Error if any of these lifecycles are present,
-  // Because they would work differently between older and newer (16.3+) versions of React.
-  var foundWillMountName = null;
-  var foundWillReceivePropsName = null;
-  var foundWillUpdateName = null;
-  if (typeof prototype.componentWillMount === 'function') {
-    foundWillMountName = 'componentWillMount';
-  } else if (typeof prototype.UNSAFE_componentWillMount === 'function') {
-    foundWillMountName = 'UNSAFE_componentWillMount';
-  }
-  if (typeof prototype.componentWillReceiveProps === 'function') {
-    foundWillReceivePropsName = 'componentWillReceiveProps';
-  } else if (typeof prototype.UNSAFE_componentWillReceiveProps === 'function') {
-    foundWillReceivePropsName = 'UNSAFE_componentWillReceiveProps';
-  }
-  if (typeof prototype.componentWillUpdate === 'function') {
-    foundWillUpdateName = 'componentWillUpdate';
-  } else if (typeof prototype.UNSAFE_componentWillUpdate === 'function') {
-    foundWillUpdateName = 'UNSAFE_componentWillUpdate';
-  }
-  if (
-    foundWillMountName !== null ||
-    foundWillReceivePropsName !== null ||
-    foundWillUpdateName !== null
-  ) {
-    var componentName = Component.displayName || Component.name;
-    var newApiName =
-      typeof Component.getDerivedStateFromProps === 'function'
-        ? 'getDerivedStateFromProps()'
-        : 'getSnapshotBeforeUpdate()';
+  _defaultAction(event) {
+    var notification = this.props.notification;
 
-    throw Error(
-      'Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n' +
-        componentName +
-        ' uses ' +
-        newApiName +
-        ' but also contains the following legacy lifecycles:' +
-        (foundWillMountName !== null ? '\n  ' + foundWillMountName : '') +
-        (foundWillReceivePropsName !== null
-          ? '\n  ' + foundWillReceivePropsName
-          : '') +
-        (foundWillUpdateName !== null ? '\n  ' + foundWillUpdateName : '') +
-        '\n\nThe above lifecycles should be removed. Learn more about this warning here:\n' +
-        'https://fb.me/react-async-component-lifecycle-hooks'
-    );
+    event.preventDefault();
+    this._hideNotification();
+    if (typeof notification.action.callback === 'function') {
+      notification.action.callback();
+    }
   }
 
-  // React <= 16.2 does not support static getDerivedStateFromProps.
-  // As a workaround, use cWM and cWRP to invoke the new static lifecycle.
-  // Newer versions of React will ignore these lifecycles if gDSFP exists.
-  if (typeof Component.getDerivedStateFromProps === 'function') {
-    prototype.componentWillMount = componentWillMount;
-    prototype.componentWillReceiveProps = componentWillReceiveProps;
+  _hideNotification() {
+    if (this._notificationTimer) {
+      this._notificationTimer.clear();
+    }
+
+    if (this._isMounted) {
+      this.setState({
+        visible: false,
+        removed: true
+      });
+    }
+
+    if (this._noAnimation) {
+      this._removeNotification();
+    }
   }
 
-  // React <= 16.2 does not support getSnapshotBeforeUpdate.
-  // As a workaround, use cWU to invoke the new lifecycle.
-  // Newer versions of React will ignore that lifecycle if gSBU exists.
-  if (typeof prototype.getSnapshotBeforeUpdate === 'function') {
-    if (typeof prototype.componentDidUpdate !== 'function') {
-      throw new Error(
-        'Cannot polyfill getSnapshotBeforeUpdate() for components that do not define componentDidUpdate() on the prototype'
+  _removeNotification() {
+    this.props.onRemove(this.props.notification.uid);
+  }
+
+  _dismiss() {
+    if (!this.props.notification.dismissible) {
+      return;
+    }
+
+    this._hideNotification();
+  }
+
+  _showNotification() {
+    setTimeout(() => {
+      if (this._isMounted) {
+        this.setState({
+          visible: true
+        });
+      }
+    }, 50);
+  }
+
+  _onTransitionEnd() {
+    if (this._removeCount > 0) return;
+    if (this.state.removed) {
+      this._removeCount += 1;
+      this._removeNotification();
+    }
+  }
+
+  componentDidMount() {
+    var self = this;
+    var transitionEvent = whichTransitionEvent();
+    var notification = this.props.notification;
+    var element = ReactDOM.findDOMNode(this);
+
+    this._height = element.offsetHeight;
+
+    this._isMounted = true;
+
+    // Watch for transition end
+    if (!this._noAnimation) {
+      if (transitionEvent) {
+        element.addEventListener(transitionEvent, this._onTransitionEnd);
+      } else {
+        this._noAnimation = true;
+      }
+    }
+
+    if (notification.autoDismiss) {
+      this._notificationTimer = new Helpers.Timer(function() {
+        self._hideNotification();
+      }, notification.autoDismiss * 1000);
+    }
+
+    this._showNotification();
+  }
+
+  _handleMouseEnter() {
+    var notification = this.props.notification;
+    if (notification.autoDismiss) {
+      this._notificationTimer.pause();
+    }
+  }
+
+  _handleMouseLeave() {
+    var notification = this.props.notification;
+    if (notification.autoDismiss) {
+      this._notificationTimer.resume();
+    }
+  }
+
+  _handleNotificationClick() {
+    var dismissible = this.props.notification.dismissible;
+    if (
+      dismissible === 'both' ||
+      dismissible === 'click' ||
+      dismissible === true
+    ) {
+      this._dismiss();
+    }
+  }
+
+  componentWillUnmount() {
+    var element = ReactDOM.findDOMNode(this);
+    var transitionEvent = whichTransitionEvent();
+    element.removeEventListener(transitionEvent, this._onTransitionEnd);
+    this._isMounted = false;
+  }
+
+  render() {
+    var notification = this.props.notification;
+    var className = 'notification notification-' + notification.level;
+    var notificationStyle = merge({}, this._styles.notification);
+    var cssByPos = this._getCssPropertyByPosition();
+    var dismiss = null;
+    var actionButton = null;
+    var title = null;
+    var message = null;
+
+    if (this.state.visible) {
+      className += ' notification-visible';
+    } else if (this.state.visible === false) {
+      className += ' notification-hidden';
+    }
+
+    if (notification.dismissible === 'none') {
+      className += ' notification-not-dismissible';
+    }
+
+    if (this.props.getStyles.overrideStyle) {
+      if (!this.state.visible && !this.state.removed) {
+        notificationStyle[cssByPos.property] = cssByPos.value;
+      }
+
+      if (this.state.visible && !this.state.removed) {
+        notificationStyle.height = this._height;
+        notificationStyle[cssByPos.property] = 0;
+      }
+
+      if (this.state.removed) {
+        notificationStyle.overlay = 'hidden';
+        notificationStyle.height = 0;
+        notificationStyle.marginTop = 0;
+        notificationStyle.paddingTop = 0;
+        notificationStyle.paddingBottom = 0;
+      }
+      notificationStyle.opacity = this.state.visible
+        ? this._styles.notification.isVisible.opacity
+        : this._styles.notification.isHidden.opacity;
+    }
+
+    if (notification.title) {
+      title = (
+        React.createElement("h4", {className: "notification-title", style:  this._styles.title}, 
+          notification.title
+        )
       );
     }
 
-    prototype.componentWillUpdate = componentWillUpdate;
-
-    var componentDidUpdate = prototype.componentDidUpdate;
-
-    prototype.componentDidUpdate = function componentDidUpdatePolyfill(
-      prevProps,
-      prevState,
-      maybeSnapshot
+    if (notification.message) {
+      if (this.props.allowHTML) {
+        message = (
+          React.createElement("div", {
+            className: "notification-message", 
+            style:  this._styles.messageWrapper, 
+            dangerouslySetInnerHTML:  _allowHTML(notification.message) }
+          )
+        );
+      } else {
+        message = (
+          React.createElement("div", {
+            className: "notification-message", 
+            style:  this._styles.messageWrapper
+          }, 
+            notification.message
+          )
+        );
+      }
+    }
+    if (
+      notification.dismissible === 'both' ||
+      notification.dismissible === 'button' ||
+      notification.dismissible === true
     ) {
-      // 16.3+ will not execute our will-update method;
-      // It will pass a snapshot value to did-update though.
-      // Older versions will require our polyfilled will-update value.
-      // We need to handle both cases, but can't just check for the presence of "maybeSnapshot",
-      // Because for <= 15.x versions this might be a "prevContext" object.
-      // We also can't just check "__reactInternalSnapshot",
-      // Because get-snapshot might return a falsy value.
-      // So check for the explicit __reactInternalSnapshotFlag flag to determine behavior.
-      var snapshot = this.__reactInternalSnapshotFlag
-        ? this.__reactInternalSnapshot
-        : maybeSnapshot;
+      dismiss = (
+        React.createElement("span", {
+          className: "notification-dismiss", 
+          onClick:  this._dismiss, 
+          style:  this._styles.dismiss
+        }, 
+          "×"
+        )
+      );
+    }
 
-      componentDidUpdate.call(this, prevProps, prevState, snapshot);
-    };
+    if (notification.action) {
+      actionButton = (
+        React.createElement("div", {
+          className: "notification-action-wrapper", 
+          style:  this._styles.actionWrapper
+        }, 
+          React.createElement("button", {
+            className: "notification-action-button", 
+            onClick:  this._defaultAction, 
+            style:  this._styles.action
+          }, 
+            notification.action.label
+          )
+        )
+      );
+    }
+
+    if (notification.children) {
+      actionButton = notification.children;
+    }
+
+    return (
+      React.createElement("div", {
+        className:  className, 
+        onClick:  this._handleNotificationClick, 
+        onMouseEnter:  this._handleMouseEnter, 
+        onMouseLeave:  this._handleMouseLeave, 
+        style:  notificationStyle 
+      }, 
+        title, 
+        message, 
+        dismiss, 
+        actionButton
+      )
+    );
   }
-
-  return Component;
 }
 
+NotificationItem.propTypes = {
+  notification: PropTypes.object,
+  getStyles: PropTypes.object,
+  onRemove: PropTypes.func,
+  allowHTML: PropTypes.bool,
+  noAnimation: PropTypes.bool,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
+};
 
+NotificationItem.defaultProps = {
+  noAnimation: false,
+  onRemove: function() {},
+  allowHTML: false
+};
+
+module.exports = NotificationItem;
 
 
 /***/ }),
 
-/***/ "../../node_modules/react-transition-group/CSSTransition.js":
-/*!*********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/CSSTransition.js ***!
-  \*********************************************************************************************/
+/***/ "../../node_modules/react-notification-system/dist/NotificationSystem.js":
+/*!**********************************************************************************************************!*\
+  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-notification-system/dist/NotificationSystem.js ***!
+  \**********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var React = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+var PropTypes = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+var merge = __webpack_require__(/*! object-assign */ "../../node_modules/object-assign/index.js");
+var NotificationContainer = __webpack_require__(/*! ./NotificationContainer */ "../../node_modules/react-notification-system/dist/NotificationContainer.js");
+var Constants = __webpack_require__(/*! ./constants */ "../../node_modules/react-notification-system/dist/constants.js");
+var Styles = __webpack_require__(/*! ./styles */ "../../node_modules/react-notification-system/dist/styles.js");
 
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var PropTypes = _interopRequireWildcard(__webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js"));
-
-var _addClass = _interopRequireDefault(__webpack_require__(/*! dom-helpers/class/addClass */ "../../node_modules/dom-helpers/class/addClass.js"));
-
-var _removeClass = _interopRequireDefault(__webpack_require__(/*! dom-helpers/class/removeClass */ "../../node_modules/dom-helpers/class/removeClass.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _Transition = _interopRequireDefault(__webpack_require__(/*! ./Transition */ "../../node_modules/react-transition-group/Transition.js"));
-
-var _PropTypes = __webpack_require__(/*! ./utils/PropTypes */ "../../node_modules/react-transition-group/utils/PropTypes.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
-
-var addClass = function addClass(node, classes) {
-  return node && classes && classes.split(' ').forEach(function (c) {
-    return (0, _addClass.default)(node, c);
-  });
-};
-
-var removeClass = function removeClass(node, classes) {
-  return node && classes && classes.split(' ').forEach(function (c) {
-    return (0, _removeClass.default)(node, c);
-  });
-};
-/**
- * A `Transition` component using CSS transitions and animations.
- * It's inspired by the excellent [ng-animate](http://www.nganimate.org/) library.
- *
- * `CSSTransition` applies a pair of class names during the `appear`, `enter`,
- * and `exit` stages of the transition. The first class is applied and then a
- * second "active" class in order to activate the css animation. After the animation,
- * matching `done` class names are applied to persist the animation state.
- *
- * When the `in` prop is toggled to `true` the Component will get
- * the `example-enter` CSS class and the `example-enter-active` CSS class
- * added in the next tick. This is a convention based on the `classNames` prop.
- */
-
-
-var CSSTransition =
-/*#__PURE__*/
-function (_React$Component) {
-  _inheritsLoose(CSSTransition, _React$Component);
-
-  function CSSTransition() {
-    var _this;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-
-    _this.onEnter = function (node, appearing) {
-      var _this$getClassNames = _this.getClassNames(appearing ? 'appear' : 'enter'),
-          className = _this$getClassNames.className;
-
-      _this.removeClasses(node, 'exit');
-
-      addClass(node, className);
-
-      if (_this.props.onEnter) {
-        _this.props.onEnter(node, appearing);
-      }
+class NotificationSystem extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      notifications: []
+    };
+    this.uid = 3400;
+    this._isMounted = false;
+    this.overrideWidth = null;
+    this.overrideStyle = {};
+    this.elements = {
+      notification: 'NotificationItem',
+      title: 'Title',
+      messageWrapper: 'MessageWrapper',
+      dismiss: 'Dismiss',
+      action: 'Action',
+      actionWrapper: 'ActionWrapper'
     };
 
-    _this.onEntering = function (node, appearing) {
-      var _this$getClassNames2 = _this.getClassNames(appearing ? 'appear' : 'enter'),
-          activeClassName = _this$getClassNames2.activeClassName;
+    this.setOverrideStyle = this.setOverrideStyle.bind(this);
+    this.wrapper = this.wrapper.bind(this);
+    this.container = this.container.bind(this);
+    this.byElement = this.byElement.bind(this);
+    this._didNotificationRemoved = this._didNotificationRemoved.bind(this);
+    this.addNotification = this.addNotification.bind(this);
+    this.getNotificationRef = this.getNotificationRef.bind(this);
+    this.removeNotification = this.removeNotification.bind(this);
+    this.editNotification = this.editNotification.bind(this);
+    this.clearNotifications = this.clearNotifications.bind(this);
 
-      _this.reflowAndAddClass(node, activeClassName);
-
-      if (_this.props.onEntering) {
-        _this.props.onEntering(node, appearing);
-      }
+    this._getStyles = {
+      overrideWidth: this.overrideWidth,
+      overrideStyle: this.overrideStyle,
+      elements: this.elements,
+      setOverrideStyle: this.setOverrideStyle,
+      wrapper: this.wrapper,
+      container: this.container,
+      byElement: this.byElement
     };
-
-    _this.onEntered = function (node, appearing) {
-      var _this$getClassNames3 = _this.getClassNames('enter'),
-          doneClassName = _this$getClassNames3.doneClassName;
-
-      _this.removeClasses(node, appearing ? 'appear' : 'enter');
-
-      addClass(node, doneClassName);
-
-      if (_this.props.onEntered) {
-        _this.props.onEntered(node, appearing);
-      }
-    };
-
-    _this.onExit = function (node) {
-      var _this$getClassNames4 = _this.getClassNames('exit'),
-          className = _this$getClassNames4.className;
-
-      _this.removeClasses(node, 'appear');
-
-      _this.removeClasses(node, 'enter');
-
-      addClass(node, className);
-
-      if (_this.props.onExit) {
-        _this.props.onExit(node);
-      }
-    };
-
-    _this.onExiting = function (node) {
-      var _this$getClassNames5 = _this.getClassNames('exit'),
-          activeClassName = _this$getClassNames5.activeClassName;
-
-      _this.reflowAndAddClass(node, activeClassName);
-
-      if (_this.props.onExiting) {
-        _this.props.onExiting(node);
-      }
-    };
-
-    _this.onExited = function (node) {
-      var _this$getClassNames6 = _this.getClassNames('exit'),
-          doneClassName = _this$getClassNames6.doneClassName;
-
-      _this.removeClasses(node, 'exit');
-
-      addClass(node, doneClassName);
-
-      if (_this.props.onExited) {
-        _this.props.onExited(node);
-      }
-    };
-
-    _this.getClassNames = function (type) {
-      var classNames = _this.props.classNames;
-      var className = typeof classNames !== 'string' ? classNames[type] : classNames + '-' + type;
-      var activeClassName = typeof classNames !== 'string' ? classNames[type + 'Active'] : className + '-active';
-      var doneClassName = typeof classNames !== 'string' ? classNames[type + 'Done'] : className + '-done';
-      return {
-        className: className,
-        activeClassName: activeClassName,
-        doneClassName: doneClassName
-      };
-    };
-
-    return _this;
   }
 
-  var _proto = CSSTransition.prototype;
+  componentDidMount() {
+    this.setOverrideStyle(this.props.style);
+    this._isMounted = true;
+  }
 
-  _proto.removeClasses = function removeClasses(node, type) {
-    var _this$getClassNames7 = this.getClassNames(type),
-        className = _this$getClassNames7.className,
-        activeClassName = _this$getClassNames7.activeClassName,
-        doneClassName = _this$getClassNames7.doneClassName;
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
-    className && removeClass(node, className);
-    activeClassName && removeClass(node, activeClassName);
-    doneClassName && removeClass(node, doneClassName);
-  };
+  setOverrideStyle(style) {
+    this.overrideStyle = style;
+  }
 
-  _proto.reflowAndAddClass = function reflowAndAddClass(node, className) {
-    // This is for to force a repaint,
-    // which is necessary in order to transition styles when adding a class name.
-    if (className) {
-      /* eslint-disable no-unused-expressions */
-      node && node.scrollTop;
-      /* eslint-enable no-unused-expressions */
+  wrapper() {
+    if (!this.overrideStyle) return {};
+    return merge({}, Styles.Wrapper, this.overrideStyle.Wrapper);
+  }
 
-      addClass(node, className);
+  container(position) {
+    var override = this.overrideStyle.Containers || {};
+    if (!this.overrideStyle) return {};
+
+    this.overrideWidth = Styles.Containers.DefaultStyle.width;
+
+    if (override.DefaultStyle && override.DefaultStyle.width) {
+      this.overrideWidth = override.DefaultStyle.width;
     }
-  };
 
-  _proto.render = function render() {
-    var props = _extends({}, this.props);
+    if (override[position] && override[position].width) {
+      this.overrideWidth = override[position].width;
+    }
 
-    delete props.classNames;
-    return _react.default.createElement(_Transition.default, _extends({}, props, {
-      onEnter: this.onEnter,
-      onEntered: this.onEntered,
-      onEntering: this.onEntering,
-      onExit: this.onExit,
-      onExiting: this.onExiting,
-      onExited: this.onExited
-    }));
-  };
+    return merge(
+      {},
+      Styles.Containers.DefaultStyle,
+      Styles.Containers[position],
+      override.DefaultStyle,
+      override[position]
+    );
+  }
 
-  return CSSTransition;
-}(_react.default.Component);
+  byElement(element) {
+    return (level) => {
+      var _element = this.elements[element];
+      var override = this.overrideStyle[_element] || {};
+      if (!this.overrideStyle) return {};
+      return merge(
+        {},
+        Styles[_element].DefaultStyle,
+        Styles[_element][level],
+        override.DefaultStyle,
+        override[level]
+      );
+    };
+  }
 
-CSSTransition.propTypes =  true ? _extends({}, _Transition.default.propTypes, {
-  /**
-   * The animation classNames applied to the component as it enters, exits or has finished the transition.
-   * A single name can be provided and it will be suffixed for each stage: e.g.
-   *
-   * `classNames="fade"` applies `fade-enter`, `fade-enter-active`, `fade-enter-done`,
-   * `fade-exit`, `fade-exit-active`, `fade-exit-done`, `fade-appear`, and `fade-appear-active`.
-   * Each individual classNames can also be specified independently like:
-   *
-   * ```js
-   * classNames={{
-   *  appear: 'my-appear',
-   *  appearActive: 'my-active-appear',
-   *  enter: 'my-enter',
-   *  enterActive: 'my-active-enter',
-   *  enterDone: 'my-done-enter',
-   *  exit: 'my-exit',
-   *  exitActive: 'my-active-exit',
-   *  exitDone: 'my-done-exit',
-   * }}
-   * ```
-   *
-   * If you want to set these classes using CSS Modules:
-   *
-   * ```js
-   * import styles from './styles.css';
-   * ```
-   *
-   * you might want to use camelCase in your CSS file, that way could simply spread
-   * them instead of listing them one by one:
-   *
-   * ```js
-   * classNames={{ ...styles }}
-   * ```
-   *
-   * @type {string | {
-   *  appear?: string,
-   *  appearActive?: string,
-   *  enter?: string,
-   *  enterActive?: string,
-   *  enterDone?: string,
-   *  exit?: string,
-   *  exitActive?: string,
-   *  exitDone?: string,
-   * }}
-   */
-  classNames: _PropTypes.classNamesShape,
+  _didNotificationRemoved(uid) {
+    var notification;
+    var notifications = this.state.notifications.filter(function(toCheck) {
+      if (toCheck.uid === uid) {
+        notification = toCheck;
+        return false;
+      }
+      return true;
+    });
 
-  /**
-   * A `<Transition>` callback fired immediately after the 'enter' or 'appear' class is
-   * applied.
-   *
-   * @type Function(node: HtmlElement, isAppearing: bool)
-   */
-  onEnter: PropTypes.func,
+    if (this._isMounted) {
+      this.setState({ notifications: notifications });
+    }
 
-  /**
-   * A `<Transition>` callback fired immediately after the 'enter-active' or
-   * 'appear-active' class is applied.
-   *
-   * @type Function(node: HtmlElement, isAppearing: bool)
-   */
-  onEntering: PropTypes.func,
+    if (notification && notification.onRemove) {
+      notification.onRemove(notification);
+    }
+  }
 
-  /**
-   * A `<Transition>` callback fired immediately after the 'enter' or
-   * 'appear' classes are **removed** and the `done` class is added to the DOM node.
-   *
-   * @type Function(node: HtmlElement, isAppearing: bool)
-   */
-  onEntered: PropTypes.func,
+  addNotification(notification) {
+    var _notification = merge({}, Constants.notification, notification);
+    var notifications = this.state.notifications;
+    var i;
 
-  /**
-   * A `<Transition>` callback fired immediately after the 'exit' class is
-   * applied.
-   *
-   * @type Function(node: HtmlElement)
-   */
-  onExit: PropTypes.func,
 
-  /**
-   * A `<Transition>` callback fired immediately after the 'exit-active' is applied.
-   *
-   * @type Function(node: HtmlElement)
-   */
-  onExiting: PropTypes.func,
+    if (!_notification.level) {
+      throw new Error('notification level is required.');
+    }
 
-  /**
-   * A `<Transition>` callback fired immediately after the 'exit' classes
-   * are **removed** and the `exit-done` class is added to the DOM node.
-   *
-   * @type Function(node: HtmlElement)
-   */
-  onExited: PropTypes.func
-}) : undefined;
-var _default = CSSTransition;
-exports.default = _default;
-module.exports = exports["default"];
+    if (Object.keys(Constants.levels).indexOf(_notification.level) === -1) {
+      throw new Error("'" + _notification.level + "' is not a valid level.");
+    }
+
+    // eslint-disable-next-line
+    if (isNaN(_notification.autoDismiss)) {
+      throw new Error("'autoDismiss' must be a number.");
+    }
+
+    if (
+      Object.keys(Constants.positions).indexOf(_notification.position) === -1
+    ) {
+      throw new Error("'" + _notification.position + "' is not a valid position.");
+    }
+
+    // Some preparations
+    _notification.position = _notification.position.toLowerCase();
+    _notification.level = _notification.level.toLowerCase();
+    _notification.autoDismiss = parseInt(_notification.autoDismiss, 10);
+
+    _notification.uid = _notification.uid || this.uid;
+    _notification.ref = 'notification-' + _notification.uid;
+    this.uid += 1;
+
+
+    // do not add if the notification already exists based on supplied uid
+    for (i = 0; i < notifications.length; i += 1) {
+      if (notifications[i].uid === _notification.uid) {
+        return false;
+      }
+    }
+
+    notifications.push(_notification);
+
+    if (typeof _notification.onAdd === 'function') {
+      notification.onAdd(_notification);
+    }
+
+    this.setState({
+      notifications: notifications
+    });
+
+    return _notification;
+  }
+
+  getNotificationRef(notification) {
+    var foundNotification = null;
+
+    Object.keys(this.refs).forEach((container) => {
+      if (container.indexOf('container') > -1) {
+        Object.keys(this.refs[container].refs).forEach((_notification) => {
+          var uid = notification.uid ? notification.uid : notification;
+          if (_notification === 'notification-' + uid) {
+            // NOTE: Stop iterating further and return the found notification.
+            // Since UIDs are uniques and there won't be another notification found.
+            foundNotification = this.refs[container].refs[_notification];
+          }
+        });
+      }
+    });
+
+    return foundNotification;
+  }
+
+  removeNotification(notification) {
+    var foundNotification = this.getNotificationRef(notification);
+    return foundNotification && foundNotification._hideNotification();
+  }
+
+  editNotification(notification, newNotification) {
+    var foundNotification = null;
+    // NOTE: Find state notification to update by using
+    // `setState` and forcing React to re-render the component.
+    var uid = notification.uid ? notification.uid : notification;
+
+    var newNotifications = this.state.notifications.filter(function(stateNotification) {
+      if (uid === stateNotification.uid) {
+        foundNotification = stateNotification;
+        return false;
+      }
+
+      return true;
+    });
+
+    if (!foundNotification) {
+      return;
+    }
+
+    newNotifications.push(merge({}, foundNotification, newNotification));
+
+    this.setState({
+      notifications: newNotifications
+    });
+  }
+
+  clearNotifications() {
+    Object.keys(this.refs).forEach((container) => {
+      if (container.indexOf('container') > -1) {
+        Object.keys(this.refs[container].refs).forEach((_notification) => {
+          this.refs[container].refs[_notification]._hideNotification();
+        });
+      }
+    });
+  }
+
+  render() {
+    var containers = null;
+    var notifications = this.state.notifications;
+
+    if (notifications.length) {
+      containers = Object.keys(Constants.positions).map((position) => {
+        var _notifications = notifications.filter((notification) => {
+          return position === notification.position;
+        });
+
+        if (!_notifications.length) {
+          return null;
+        }
+
+        return (
+          React.createElement(NotificationContainer, {
+            ref:  'container-' + position, 
+            key:  position, 
+            position:  position, 
+            notifications:  _notifications, 
+            getStyles:  this._getStyles, 
+            onRemove:  this._didNotificationRemoved, 
+            noAnimation:  this.props.noAnimation, 
+            allowHTML:  this.props.allowHTML}
+          )
+        );
+      });
+    }
+
+    return (
+      React.createElement("div", {className: "notifications-wrapper", style:  this.wrapper() }, 
+        containers
+      )
+    );
+  }
+}
+
+NotificationSystem.propTypes = {
+  style: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  noAnimation: PropTypes.bool,
+  allowHTML: PropTypes.bool
+};
+
+NotificationSystem.defaultProps = {
+  style: {},
+  noAnimation: false,
+  allowHTML: false
+};
+
+module.exports = NotificationSystem;
+
 
 /***/ }),
 
-/***/ "../../node_modules/react-transition-group/ReplaceTransition.js":
+/***/ "../../node_modules/react-notification-system/dist/constants.js":
 /*!*************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/ReplaceTransition.js ***!
+  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-notification-system/dist/constants.js ***!
   \*************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.default = void 0;
-
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _reactDom = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
-
-var _TransitionGroup = _interopRequireDefault(__webpack_require__(/*! ./TransitionGroup */ "../../node_modules/react-transition-group/TransitionGroup.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
-
-/**
- * The `<ReplaceTransition>` component is a specialized `Transition` component
- * that animates between two children.
- *
- * ```jsx
- * <ReplaceTransition in>
- *   <Fade><div>I appear first</div></Fade>
- *   <Fade><div>I replace the above</div></Fade>
- * </ReplaceTransition>
- * ```
- */
-var ReplaceTransition =
-/*#__PURE__*/
-function (_React$Component) {
-  _inheritsLoose(ReplaceTransition, _React$Component);
-
-  function ReplaceTransition() {
-    var _this;
-
-    for (var _len = arguments.length, _args = new Array(_len), _key = 0; _key < _len; _key++) {
-      _args[_key] = arguments[_key];
-    }
-
-    _this = _React$Component.call.apply(_React$Component, [this].concat(_args)) || this;
-
-    _this.handleEnter = function () {
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
-
-      return _this.handleLifecycle('onEnter', 0, args);
-    };
-
-    _this.handleEntering = function () {
-      for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        args[_key3] = arguments[_key3];
-      }
-
-      return _this.handleLifecycle('onEntering', 0, args);
-    };
-
-    _this.handleEntered = function () {
-      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
-      }
-
-      return _this.handleLifecycle('onEntered', 0, args);
-    };
-
-    _this.handleExit = function () {
-      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
-      }
-
-      return _this.handleLifecycle('onExit', 1, args);
-    };
-
-    _this.handleExiting = function () {
-      for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-        args[_key6] = arguments[_key6];
-      }
-
-      return _this.handleLifecycle('onExiting', 1, args);
-    };
-
-    _this.handleExited = function () {
-      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-        args[_key7] = arguments[_key7];
-      }
-
-      return _this.handleLifecycle('onExited', 1, args);
-    };
-
-    return _this;
-  }
-
-  var _proto = ReplaceTransition.prototype;
-
-  _proto.handleLifecycle = function handleLifecycle(handler, idx, originalArgs) {
-    var _child$props;
-
-    var children = this.props.children;
-
-    var child = _react.default.Children.toArray(children)[idx];
-
-    if (child.props[handler]) (_child$props = child.props)[handler].apply(_child$props, originalArgs);
-    if (this.props[handler]) this.props[handler]((0, _reactDom.findDOMNode)(this));
-  };
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        children = _this$props.children,
-        inProp = _this$props.in,
-        props = _objectWithoutPropertiesLoose(_this$props, ["children", "in"]);
-
-    var _React$Children$toArr = _react.default.Children.toArray(children),
-        first = _React$Children$toArr[0],
-        second = _React$Children$toArr[1];
-
-    delete props.onEnter;
-    delete props.onEntering;
-    delete props.onEntered;
-    delete props.onExit;
-    delete props.onExiting;
-    delete props.onExited;
-    return _react.default.createElement(_TransitionGroup.default, props, inProp ? _react.default.cloneElement(first, {
-      key: 'first',
-      onEnter: this.handleEnter,
-      onEntering: this.handleEntering,
-      onEntered: this.handleEntered
-    }) : _react.default.cloneElement(second, {
-      key: 'second',
-      onEnter: this.handleExit,
-      onEntering: this.handleExiting,
-      onEntered: this.handleExited
-    }));
-  };
-
-  return ReplaceTransition;
-}(_react.default.Component);
-
-ReplaceTransition.propTypes =  true ? {
-  in: _propTypes.default.bool.isRequired,
-  children: function children(props, propName) {
-    if (_react.default.Children.count(props[propName]) !== 2) return new Error("\"" + propName + "\" must be exactly two transition components.");
-    return null;
-  }
-} : undefined;
-var _default = ReplaceTransition;
-exports.default = _default;
-module.exports = exports["default"];
-
-/***/ }),
-
-/***/ "../../node_modules/react-transition-group/Transition.js":
-/*!******************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/Transition.js ***!
-  \******************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.default = exports.EXITING = exports.ENTERED = exports.ENTERING = exports.EXITED = exports.UNMOUNTED = void 0;
-
-var PropTypes = _interopRequireWildcard(__webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js"));
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _reactDom = _interopRequireDefault(__webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js"));
-
-var _reactLifecyclesCompat = __webpack_require__(/*! react-lifecycles-compat */ "../../node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js");
-
-var _PropTypes = __webpack_require__(/*! ./utils/PropTypes */ "../../node_modules/react-transition-group/utils/PropTypes.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
-
-var UNMOUNTED = 'unmounted';
-exports.UNMOUNTED = UNMOUNTED;
-var EXITED = 'exited';
-exports.EXITED = EXITED;
-var ENTERING = 'entering';
-exports.ENTERING = ENTERING;
-var ENTERED = 'entered';
-exports.ENTERED = ENTERED;
-var EXITING = 'exiting';
-/**
- * The Transition component lets you describe a transition from one component
- * state to another _over time_ with a simple declarative API. Most commonly
- * it's used to animate the mounting and unmounting of a component, but can also
- * be used to describe in-place transition states as well.
- *
- * By default the `Transition` component does not alter the behavior of the
- * component it renders, it only tracks "enter" and "exit" states for the components.
- * It's up to you to give meaning and effect to those states. For example we can
- * add styles to a component when it enters or exits:
- *
- * ```jsx
- * import Transition from 'react-transition-group/Transition';
- *
- * const duration = 300;
- *
- * const defaultStyle = {
- *   transition: `opacity ${duration}ms ease-in-out`,
- *   opacity: 0,
- * }
- *
- * const transitionStyles = {
- *   entering: { opacity: 0 },
- *   entered:  { opacity: 1 },
- * };
- *
- * const Fade = ({ in: inProp }) => (
- *   <Transition in={inProp} timeout={duration}>
- *     {(state) => (
- *       <div style={{
- *         ...defaultStyle,
- *         ...transitionStyles[state]
- *       }}>
- *         I'm a fade Transition!
- *       </div>
- *     )}
- *   </Transition>
- * );
- * ```
- *
- * As noted the `Transition` component doesn't _do_ anything by itself to its child component.
- * What it does do is track transition states over time so you can update the
- * component (such as by adding styles or classes) when it changes states.
- *
- * There are 4 main states a Transition can be in:
- *  - `'entering'`
- *  - `'entered'`
- *  - `'exiting'`
- *  - `'exited'`
- *
- * Transition state is toggled via the `in` prop. When `true` the component begins the
- * "Enter" stage. During this stage, the component will shift from its current transition state,
- * to `'entering'` for the duration of the transition and then to the `'entered'` stage once
- * it's complete. Let's take the following example:
- *
- * ```jsx
- * state = { in: false };
- *
- * toggleEnterState = () => {
- *   this.setState({ in: true });
- * }
- *
- * render() {
- *   return (
- *     <div>
- *       <Transition in={this.state.in} timeout={500} />
- *       <button onClick={this.toggleEnterState}>Click to Enter</button>
- *     </div>
- *   );
- * }
- * ```
- *
- * When the button is clicked the component will shift to the `'entering'` state and
- * stay there for 500ms (the value of `timeout`) before it finally switches to `'entered'`.
- *
- * When `in` is `false` the same thing happens except the state moves from `'exiting'` to `'exited'`.
- *
- * ## Timing
- *
- * Timing is often the trickiest part of animation, mistakes can result in slight delays
- * that are hard to pin down. A common example is when you want to add an exit transition,
- * you should set the desired final styles when the state is `'exiting'`. That's when the
- * transition to those styles will start and, if you matched the `timeout` prop with the
- * CSS Transition duration, it will end exactly when the state changes to `'exited'`.
- *
- * > **Note**: For simpler transitions the `Transition` component might be enough, but
- * > take into account that it's platform-agnostic, while the `CSSTransition` component
- * > [forces reflows](https://github.com/reactjs/react-transition-group/blob/5007303e729a74be66a21c3e2205e4916821524b/src/CSSTransition.js#L208-L215)
- * > in order to make more complex transitions more predictable. For example, even though
- * > classes `example-enter` and `example-enter-active` are applied immediately one after
- * > another, you can still transition from one to the other because of the forced reflow
- * > (read [this issue](https://github.com/reactjs/react-transition-group/issues/159#issuecomment-322761171)
- * > for more info). Take this into account when choosing between `Transition` and
- * > `CSSTransition`.
- */
-
-exports.EXITING = EXITING;
-
-var Transition =
-/*#__PURE__*/
-function (_React$Component) {
-  _inheritsLoose(Transition, _React$Component);
-
-  function Transition(props, context) {
-    var _this;
-
-    _this = _React$Component.call(this, props, context) || this;
-    var parentGroup = context.transitionGroup; // In the context of a TransitionGroup all enters are really appears
-
-    var appear = parentGroup && !parentGroup.isMounting ? props.enter : props.appear;
-    var initialStatus;
-    _this.appearStatus = null;
-
-    if (props.in) {
-      if (appear) {
-        initialStatus = EXITED;
-        _this.appearStatus = ENTERING;
-      } else {
-        initialStatus = ENTERED;
-      }
-    } else {
-      if (props.unmountOnExit || props.mountOnEnter) {
-        initialStatus = UNMOUNTED;
-      } else {
-        initialStatus = EXITED;
-      }
-    }
-
-    _this.state = {
-      status: initialStatus
-    };
-    _this.nextCallback = null;
-    return _this;
-  }
-
-  var _proto = Transition.prototype;
-
-  _proto.getChildContext = function getChildContext() {
-    return {
-      transitionGroup: null // allows for nested Transitions
-
-    };
-  };
-
-  Transition.getDerivedStateFromProps = function getDerivedStateFromProps(_ref, prevState) {
-    var nextIn = _ref.in;
-
-    if (nextIn && prevState.status === UNMOUNTED) {
-      return {
-        status: EXITED
-      };
-    }
-
-    return null;
-  }; // getSnapshotBeforeUpdate(prevProps) {
-  //   let nextStatus = null
-  //   if (prevProps !== this.props) {
-  //     const { status } = this.state
-  //     if (this.props.in) {
-  //       if (status !== ENTERING && status !== ENTERED) {
-  //         nextStatus = ENTERING
-  //       }
-  //     } else {
-  //       if (status === ENTERING || status === ENTERED) {
-  //         nextStatus = EXITING
-  //       }
-  //     }
-  //   }
-  //   return { nextStatus }
-  // }
-
-
-  _proto.componentDidMount = function componentDidMount() {
-    this.updateStatus(true, this.appearStatus);
-  };
-
-  _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
-    var nextStatus = null;
-
-    if (prevProps !== this.props) {
-      var status = this.state.status;
-
-      if (this.props.in) {
-        if (status !== ENTERING && status !== ENTERED) {
-          nextStatus = ENTERING;
-        }
-      } else {
-        if (status === ENTERING || status === ENTERED) {
-          nextStatus = EXITING;
-        }
-      }
-    }
-
-    this.updateStatus(false, nextStatus);
-  };
-
-  _proto.componentWillUnmount = function componentWillUnmount() {
-    this.cancelNextCallback();
-  };
-
-  _proto.getTimeouts = function getTimeouts() {
-    var timeout = this.props.timeout;
-    var exit, enter, appear;
-    exit = enter = appear = timeout;
-
-    if (timeout != null && typeof timeout !== 'number') {
-      exit = timeout.exit;
-      enter = timeout.enter;
-      appear = timeout.appear;
-    }
-
-    return {
-      exit: exit,
-      enter: enter,
-      appear: appear
-    };
-  };
-
-  _proto.updateStatus = function updateStatus(mounting, nextStatus) {
-    if (mounting === void 0) {
-      mounting = false;
-    }
-
-    if (nextStatus !== null) {
-      // nextStatus will always be ENTERING or EXITING.
-      this.cancelNextCallback();
-
-      var node = _reactDom.default.findDOMNode(this);
-
-      if (nextStatus === ENTERING) {
-        this.performEnter(node, mounting);
-      } else {
-        this.performExit(node);
-      }
-    } else if (this.props.unmountOnExit && this.state.status === EXITED) {
-      this.setState({
-        status: UNMOUNTED
-      });
-    }
-  };
-
-  _proto.performEnter = function performEnter(node, mounting) {
-    var _this2 = this;
-
-    var enter = this.props.enter;
-    var appearing = this.context.transitionGroup ? this.context.transitionGroup.isMounting : mounting;
-    var timeouts = this.getTimeouts(); // no enter animation skip right to ENTERED
-    // if we are mounting and running this it means appear _must_ be set
-
-    if (!mounting && !enter) {
-      this.safeSetState({
-        status: ENTERED
-      }, function () {
-        _this2.props.onEntered(node);
-      });
-      return;
-    }
-
-    this.props.onEnter(node, appearing);
-    this.safeSetState({
-      status: ENTERING
-    }, function () {
-      _this2.props.onEntering(node, appearing); // FIXME: appear timeout?
-
-
-      _this2.onTransitionEnd(node, timeouts.enter, function () {
-        _this2.safeSetState({
-          status: ENTERED
-        }, function () {
-          _this2.props.onEntered(node, appearing);
-        });
-      });
-    });
-  };
-
-  _proto.performExit = function performExit(node) {
-    var _this3 = this;
-
-    var exit = this.props.exit;
-    var timeouts = this.getTimeouts(); // no exit animation skip right to EXITED
-
-    if (!exit) {
-      this.safeSetState({
-        status: EXITED
-      }, function () {
-        _this3.props.onExited(node);
-      });
-      return;
-    }
-
-    this.props.onExit(node);
-    this.safeSetState({
-      status: EXITING
-    }, function () {
-      _this3.props.onExiting(node);
-
-      _this3.onTransitionEnd(node, timeouts.exit, function () {
-        _this3.safeSetState({
-          status: EXITED
-        }, function () {
-          _this3.props.onExited(node);
-        });
-      });
-    });
-  };
-
-  _proto.cancelNextCallback = function cancelNextCallback() {
-    if (this.nextCallback !== null) {
-      this.nextCallback.cancel();
-      this.nextCallback = null;
-    }
-  };
-
-  _proto.safeSetState = function safeSetState(nextState, callback) {
-    // This shouldn't be necessary, but there are weird race conditions with
-    // setState callbacks and unmounting in testing, so always make sure that
-    // we can cancel any pending setState callbacks after we unmount.
-    callback = this.setNextCallback(callback);
-    this.setState(nextState, callback);
-  };
-
-  _proto.setNextCallback = function setNextCallback(callback) {
-    var _this4 = this;
-
-    var active = true;
-
-    this.nextCallback = function (event) {
-      if (active) {
-        active = false;
-        _this4.nextCallback = null;
-        callback(event);
-      }
-    };
-
-    this.nextCallback.cancel = function () {
-      active = false;
-    };
-
-    return this.nextCallback;
-  };
-
-  _proto.onTransitionEnd = function onTransitionEnd(node, timeout, handler) {
-    this.setNextCallback(handler);
-
-    if (node) {
-      if (this.props.addEndListener) {
-        this.props.addEndListener(node, this.nextCallback);
-      }
-
-      if (timeout != null) {
-        setTimeout(this.nextCallback, timeout);
-      }
-    } else {
-      setTimeout(this.nextCallback, 0);
-    }
-  };
-
-  _proto.render = function render() {
-    var status = this.state.status;
-
-    if (status === UNMOUNTED) {
-      return null;
-    }
-
-    var _this$props = this.props,
-        children = _this$props.children,
-        childProps = _objectWithoutPropertiesLoose(_this$props, ["children"]); // filter props for Transtition
-
-
-    delete childProps.in;
-    delete childProps.mountOnEnter;
-    delete childProps.unmountOnExit;
-    delete childProps.appear;
-    delete childProps.enter;
-    delete childProps.exit;
-    delete childProps.timeout;
-    delete childProps.addEndListener;
-    delete childProps.onEnter;
-    delete childProps.onEntering;
-    delete childProps.onEntered;
-    delete childProps.onExit;
-    delete childProps.onExiting;
-    delete childProps.onExited;
-
-    if (typeof children === 'function') {
-      return children(status, childProps);
-    }
-
-    var child = _react.default.Children.only(children);
-
-    return _react.default.cloneElement(child, childProps);
-  };
-
-  return Transition;
-}(_react.default.Component);
-
-Transition.contextTypes = {
-  transitionGroup: PropTypes.object
-};
-Transition.childContextTypes = {
-  transitionGroup: function transitionGroup() {}
-};
-Transition.propTypes =  true ? {
-  /**
-   * A `function` child can be used instead of a React element.
-   * This function is called with the current transition status
-   * ('entering', 'entered', 'exiting', 'exited', 'unmounted'), which can be used
-   * to apply context specific props to a component.
-   *
-   * ```jsx
-   * <Transition timeout={150}>
-   *   {(status) => (
-   *     <MyComponent className={`fade fade-${status}`} />
-   *   )}
-   * </Transition>
-   * ```
-   */
-  children: PropTypes.oneOfType([PropTypes.func.isRequired, PropTypes.element.isRequired]).isRequired,
-
-  /**
-   * Show the component; triggers the enter or exit states
-   */
-  in: PropTypes.bool,
-
-  /**
-   * By default the child component is mounted immediately along with
-   * the parent `Transition` component. If you want to "lazy mount" the component on the
-   * first `in={true}` you can set `mountOnEnter`. After the first enter transition the component will stay
-   * mounted, even on "exited", unless you also specify `unmountOnExit`.
-   */
-  mountOnEnter: PropTypes.bool,
-
-  /**
-   * By default the child component stays mounted after it reaches the `'exited'` state.
-   * Set `unmountOnExit` if you'd prefer to unmount the component after it finishes exiting.
-   */
-  unmountOnExit: PropTypes.bool,
-
-  /**
-   * Normally a component is not transitioned if it is shown when the `<Transition>` component mounts.
-   * If you want to transition on the first mount set `appear` to `true`, and the
-   * component will transition in as soon as the `<Transition>` mounts.
-   *
-   * > Note: there are no specific "appear" states. `appear` only adds an additional `enter` transition.
-   */
-  appear: PropTypes.bool,
-
-  /**
-   * Enable or disable enter transitions.
-   */
-  enter: PropTypes.bool,
-
-  /**
-   * Enable or disable exit transitions.
-   */
-  exit: PropTypes.bool,
-
-  /**
-   * The duration of the transition, in milliseconds.
-   * Required unless `addEndListener` is provided
-   *
-   * You may specify a single timeout for all transitions like: `timeout={500}`,
-   * or individually like:
-   *
-   * ```jsx
-   * timeout={{
-   *  enter: 300,
-   *  exit: 500,
-   * }}
-   * ```
-   *
-   * @type {number | { enter?: number, exit?: number }}
-   */
-  timeout: function timeout(props) {
-    var pt =  true ? _PropTypes.timeoutsShape : undefined;;
-    if (!props.addEndListener) pt = pt.isRequired;
-
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    return pt.apply(void 0, [props].concat(args));
+/***/ (function(module, exports) {
+
+var CONSTANTS = {
+
+  // Positions
+  positions: {
+    tl: 'tl',
+    tr: 'tr',
+    tc: 'tc',
+    bl: 'bl',
+    br: 'br',
+    bc: 'bc'
   },
 
-  /**
-   * Add a custom transition end trigger. Called with the transitioning
-   * DOM node and a `done` callback. Allows for more fine grained transition end
-   * logic. **Note:** Timeouts are still used as a fallback if provided.
-   *
-   * ```jsx
-   * addEndListener={(node, done) => {
-   *   // use the css transitionend event to mark the finish of a transition
-   *   node.addEventListener('transitionend', done, false);
-   * }}
-   * ```
-   */
-  addEndListener: PropTypes.func,
+  // Levels
+  levels: {
+    success: 'success',
+    error: 'error',
+    warning: 'warning',
+    info: 'info'
+  },
 
-  /**
-   * Callback fired before the "entering" status is applied. An extra parameter
-   * `isAppearing` is supplied to indicate if the enter stage is occurring on the initial mount
-   *
-   * @type Function(node: HtmlElement, isAppearing: bool) -> void
-   */
-  onEnter: PropTypes.func,
-
-  /**
-   * Callback fired after the "entering" status is applied. An extra parameter
-   * `isAppearing` is supplied to indicate if the enter stage is occurring on the initial mount
-   *
-   * @type Function(node: HtmlElement, isAppearing: bool)
-   */
-  onEntering: PropTypes.func,
-
-  /**
-   * Callback fired after the "entered" status is applied. An extra parameter
-   * `isAppearing` is supplied to indicate if the enter stage is occurring on the initial mount
-   *
-   * @type Function(node: HtmlElement, isAppearing: bool) -> void
-   */
-  onEntered: PropTypes.func,
-
-  /**
-   * Callback fired before the "exiting" status is applied.
-   *
-   * @type Function(node: HtmlElement) -> void
-   */
-  onExit: PropTypes.func,
-
-  /**
-   * Callback fired after the "exiting" status is applied.
-   *
-   * @type Function(node: HtmlElement) -> void
-   */
-  onExiting: PropTypes.func,
-
-  /**
-   * Callback fired after the "exited" status is applied.
-   *
-   * @type Function(node: HtmlElement) -> void
-   */
-  onExited: PropTypes.func // Name the function so it is clearer in the documentation
-
-} : undefined;
-
-function noop() {}
-
-Transition.defaultProps = {
-  in: false,
-  mountOnEnter: false,
-  unmountOnExit: false,
-  appear: false,
-  enter: true,
-  exit: true,
-  onEnter: noop,
-  onEntering: noop,
-  onEntered: noop,
-  onExit: noop,
-  onExiting: noop,
-  onExited: noop
+  // Notification defaults
+  notification: {
+    title: null,
+    message: null,
+    level: null,
+    position: 'tr',
+    autoDismiss: 5,
+    dismissible: 'both',
+    action: null
+  }
 };
-Transition.UNMOUNTED = 0;
-Transition.EXITED = 1;
-Transition.ENTERING = 2;
-Transition.ENTERED = 3;
-Transition.EXITING = 4;
 
-var _default = (0, _reactLifecyclesCompat.polyfill)(Transition);
 
-exports.default = _default;
+module.exports = CONSTANTS;
+
 
 /***/ }),
 
-/***/ "../../node_modules/react-transition-group/TransitionGroup.js":
+/***/ "../../node_modules/react-notification-system/dist/helpers.js":
 /*!***********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/TransitionGroup.js ***!
+  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-notification-system/dist/helpers.js ***!
   \***********************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+var Helpers = {
+  Timer: function(callback, delay) {
+    var timerId;
+    var start;
+    var remaining = delay;
 
+    this.pause = function() {
+      clearTimeout(timerId);
+      remaining -= new Date() - start;
+    };
 
-exports.__esModule = true;
-exports.default = void 0;
+    this.resume = function() {
+      start = new Date();
+      clearTimeout(timerId);
+      timerId = setTimeout(callback, remaining);
+    };
 
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js"));
+    this.clear = function() {
+      clearTimeout(timerId);
+    };
 
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "../../node_modules/react/index.js"));
-
-var _reactLifecyclesCompat = __webpack_require__(/*! react-lifecycles-compat */ "../../node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js");
-
-var _ChildMapping = __webpack_require__(/*! ./utils/ChildMapping */ "../../node_modules/react-transition-group/utils/ChildMapping.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-var values = Object.values || function (obj) {
-  return Object.keys(obj).map(function (k) {
-    return obj[k];
-  });
-};
-
-var defaultProps = {
-  component: 'div',
-  childFactory: function childFactory(child) {
-    return child;
+    this.resume();
   }
-  /**
-   * The `<TransitionGroup>` component manages a set of transition components
-   * (`<Transition>` and `<CSSTransition>`) in a list. Like with the transition
-   * components, `<TransitionGroup>` is a state machine for managing the mounting
-   * and unmounting of components over time.
-   *
-   * Consider the example below. As items are removed or added to the TodoList the
-   * `in` prop is toggled automatically by the `<TransitionGroup>`.
-   *
-   * Note that `<TransitionGroup>`  does not define any animation behavior!
-   * Exactly _how_ a list item animates is up to the individual transition
-   * component. This means you can mix and match animations across different list
-   * items.
-   */
-
 };
 
-var TransitionGroup =
-/*#__PURE__*/
-function (_React$Component) {
-  _inheritsLoose(TransitionGroup, _React$Component);
+module.exports = Helpers;
 
-  function TransitionGroup(props, context) {
-    var _this;
-
-    _this = _React$Component.call(this, props, context) || this;
-
-    var handleExited = _this.handleExited.bind(_assertThisInitialized(_assertThisInitialized(_this))); // Initial children should all be entering, dependent on appear
-
-
-    _this.state = {
-      handleExited: handleExited,
-      firstRender: true
-    };
-    return _this;
-  }
-
-  var _proto = TransitionGroup.prototype;
-
-  _proto.getChildContext = function getChildContext() {
-    return {
-      transitionGroup: {
-        isMounting: !this.appeared
-      }
-    };
-  };
-
-  _proto.componentDidMount = function componentDidMount() {
-    this.appeared = true;
-    this.mounted = true;
-  };
-
-  _proto.componentWillUnmount = function componentWillUnmount() {
-    this.mounted = false;
-  };
-
-  TransitionGroup.getDerivedStateFromProps = function getDerivedStateFromProps(nextProps, _ref) {
-    var prevChildMapping = _ref.children,
-        handleExited = _ref.handleExited,
-        firstRender = _ref.firstRender;
-    return {
-      children: firstRender ? (0, _ChildMapping.getInitialChildMapping)(nextProps, handleExited) : (0, _ChildMapping.getNextChildMapping)(nextProps, prevChildMapping, handleExited),
-      firstRender: false
-    };
-  };
-
-  _proto.handleExited = function handleExited(child, node) {
-    var currentChildMapping = (0, _ChildMapping.getChildMapping)(this.props.children);
-    if (child.key in currentChildMapping) return;
-
-    if (child.props.onExited) {
-      child.props.onExited(node);
-    }
-
-    if (this.mounted) {
-      this.setState(function (state) {
-        var children = _extends({}, state.children);
-
-        delete children[child.key];
-        return {
-          children: children
-        };
-      });
-    }
-  };
-
-  _proto.render = function render() {
-    var _this$props = this.props,
-        Component = _this$props.component,
-        childFactory = _this$props.childFactory,
-        props = _objectWithoutPropertiesLoose(_this$props, ["component", "childFactory"]);
-
-    var children = values(this.state.children).map(childFactory);
-    delete props.appear;
-    delete props.enter;
-    delete props.exit;
-
-    if (Component === null) {
-      return children;
-    }
-
-    return _react.default.createElement(Component, props, children);
-  };
-
-  return TransitionGroup;
-}(_react.default.Component);
-
-TransitionGroup.childContextTypes = {
-  transitionGroup: _propTypes.default.object.isRequired
-};
-TransitionGroup.propTypes =  true ? {
-  /**
-   * `<TransitionGroup>` renders a `<div>` by default. You can change this
-   * behavior by providing a `component` prop.
-   * If you use React v16+ and would like to avoid a wrapping `<div>` element
-   * you can pass in `component={null}`. This is useful if the wrapping div
-   * borks your css styles.
-   */
-  component: _propTypes.default.any,
-
-  /**
-   * A set of `<Transition>` components, that are toggled `in` and out as they
-   * leave. the `<TransitionGroup>` will inject specific transition props, so
-   * remember to spread them through if you are wrapping the `<Transition>` as
-   * with our `<Fade>` example.
-   */
-  children: _propTypes.default.node,
-
-  /**
-   * A convenience prop that enables or disables appear animations
-   * for all children. Note that specifying this will override any defaults set
-   * on individual children Transitions.
-   */
-  appear: _propTypes.default.bool,
-
-  /**
-   * A convenience prop that enables or disables enter animations
-   * for all children. Note that specifying this will override any defaults set
-   * on individual children Transitions.
-   */
-  enter: _propTypes.default.bool,
-
-  /**
-   * A convenience prop that enables or disables exit animations
-   * for all children. Note that specifying this will override any defaults set
-   * on individual children Transitions.
-   */
-  exit: _propTypes.default.bool,
-
-  /**
-   * You may need to apply reactive updates to a child as it is exiting.
-   * This is generally done by using `cloneElement` however in the case of an exiting
-   * child the element has already been removed and not accessible to the consumer.
-   *
-   * If you do need to update a child as it leaves you can provide a `childFactory`
-   * to wrap every child, even the ones that are leaving.
-   *
-   * @type Function(child: ReactElement) -> ReactElement
-   */
-  childFactory: _propTypes.default.func
-} : undefined;
-TransitionGroup.defaultProps = defaultProps;
-
-var _default = (0, _reactLifecyclesCompat.polyfill)(TransitionGroup);
-
-exports.default = _default;
-module.exports = exports["default"];
 
 /***/ }),
 
-/***/ "../../node_modules/react-transition-group/index.js":
-/*!*************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/index.js ***!
-  \*************************************************************************************/
+/***/ "../../node_modules/react-notification-system/dist/styles.js":
+/*!**********************************************************************************************!*\
+  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-notification-system/dist/styles.js ***!
+  \**********************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+// Used for calculations
+var defaultWidth = 320;
+var defaultColors = {
+  success: {
+    rgb: '94, 164, 0',
+    hex: '#5ea400'
+  },
+  error: {
+    rgb: '236, 61, 61',
+    hex: '#ec3d3d'
+  },
+  warning: {
+    rgb: '235, 173, 23',
+    hex: '#ebad1a'
+  },
+  info: {
+    rgb: '54, 156, 199',
+    hex: '#369cc7'
+  }
+};
+var defaultShadowOpacity = '0.9';
 
+var STYLES = {
 
-var _CSSTransition = _interopRequireDefault(__webpack_require__(/*! ./CSSTransition */ "../../node_modules/react-transition-group/CSSTransition.js"));
+  Wrapper: {},
+  Containers: {
+    DefaultStyle: {
+      fontFamily: 'inherit',
+      position: 'fixed',
+      width: defaultWidth,
+      padding: '0 10px 10px 10px',
+      zIndex: 9998,
+      WebkitBoxSizing: 'border-box',
+      MozBoxSizing: 'border-box',
+      boxSizing: 'border-box',
+      height: 'auto'
+    },
 
-var _ReplaceTransition = _interopRequireDefault(__webpack_require__(/*! ./ReplaceTransition */ "../../node_modules/react-transition-group/ReplaceTransition.js"));
+    tl: {
+      top: '0px',
+      bottom: 'auto',
+      left: '0px',
+      right: 'auto'
+    },
 
-var _TransitionGroup = _interopRequireDefault(__webpack_require__(/*! ./TransitionGroup */ "../../node_modules/react-transition-group/TransitionGroup.js"));
+    tr: {
+      top: '0px',
+      bottom: 'auto',
+      left: 'auto',
+      right: '0px'
+    },
 
-var _Transition = _interopRequireDefault(__webpack_require__(/*! ./Transition */ "../../node_modules/react-transition-group/Transition.js"));
+    tc: {
+      top: '0px',
+      bottom: 'auto',
+      margin: '0 auto',
+      left: '50%',
+      marginLeft: -(defaultWidth / 2)
+    },
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+    bl: {
+      top: 'auto',
+      bottom: '0px',
+      left: '0px',
+      right: 'auto'
+    },
 
-module.exports = {
-  Transition: _Transition.default,
-  TransitionGroup: _TransitionGroup.default,
-  ReplaceTransition: _ReplaceTransition.default,
-  CSSTransition: _CSSTransition.default
+    br: {
+      top: 'auto',
+      bottom: '0px',
+      left: 'auto',
+      right: '0px'
+    },
+
+    bc: {
+      top: 'auto',
+      bottom: '0px',
+      margin: '0 auto',
+      left: '50%',
+      marginLeft: -(defaultWidth / 2)
+    }
+
+  },
+
+  NotificationItem: {
+    DefaultStyle: {
+      position: 'relative',
+      width: '100%',
+      cursor: 'pointer',
+      borderRadius: '2px',
+      fontSize: '13px',
+      margin: '10px 0 0',
+      padding: '10px',
+      display: 'block',
+      WebkitBoxSizing: 'border-box',
+      MozBoxSizing: 'border-box',
+      boxSizing: 'border-box',
+      opacity: 0,
+      transition: '0.3s ease-in-out',
+      WebkitTransform: 'translate3d(0, 0, 0)',
+      transform: 'translate3d(0, 0, 0)',
+      willChange: 'transform, opacity',
+
+      isHidden: {
+        opacity: 0
+      },
+
+      isVisible: {
+        opacity: 1
+      }
+    },
+
+    success: {
+      borderTop: '2px solid ' + defaultColors.success.hex,
+      backgroundColor: '#f0f5ea',
+      color: '#4b583a',
+      WebkitBoxShadow: '0 0 1px rgba(' + defaultColors.success.rgb + ',' + defaultShadowOpacity + ')',
+      MozBoxShadow: '0 0 1px rgba(' + defaultColors.success.rgb + ',' + defaultShadowOpacity + ')',
+      boxShadow: '0 0 1px rgba(' + defaultColors.success.rgb + ',' + defaultShadowOpacity + ')'
+    },
+
+    error: {
+      borderTop: '2px solid ' + defaultColors.error.hex,
+      backgroundColor: '#f4e9e9',
+      color: '#412f2f',
+      WebkitBoxShadow: '0 0 1px rgba(' + defaultColors.error.rgb + ',' + defaultShadowOpacity + ')',
+      MozBoxShadow: '0 0 1px rgba(' + defaultColors.error.rgb + ',' + defaultShadowOpacity + ')',
+      boxShadow: '0 0 1px rgba(' + defaultColors.error.rgb + ',' + defaultShadowOpacity + ')'
+    },
+
+    warning: {
+      borderTop: '2px solid ' + defaultColors.warning.hex,
+      backgroundColor: '#f9f6f0',
+      color: '#5a5343',
+      WebkitBoxShadow: '0 0 1px rgba(' + defaultColors.warning.rgb + ',' + defaultShadowOpacity + ')',
+      MozBoxShadow: '0 0 1px rgba(' + defaultColors.warning.rgb + ',' + defaultShadowOpacity + ')',
+      boxShadow: '0 0 1px rgba(' + defaultColors.warning.rgb + ',' + defaultShadowOpacity + ')'
+    },
+
+    info: {
+      borderTop: '2px solid ' + defaultColors.info.hex,
+      backgroundColor: '#e8f0f4',
+      color: '#41555d',
+      WebkitBoxShadow: '0 0 1px rgba(' + defaultColors.info.rgb + ',' + defaultShadowOpacity + ')',
+      MozBoxShadow: '0 0 1px rgba(' + defaultColors.info.rgb + ',' + defaultShadowOpacity + ')',
+      boxShadow: '0 0 1px rgba(' + defaultColors.info.rgb + ',' + defaultShadowOpacity + ')'
+    }
+  },
+
+  Title: {
+    DefaultStyle: {
+      fontSize: '14px',
+      margin: '0 0 5px 0',
+      padding: 0,
+      fontWeight: 'bold'
+    },
+
+    success: {
+      color: defaultColors.success.hex
+    },
+
+    error: {
+      color: defaultColors.error.hex
+    },
+
+    warning: {
+      color: defaultColors.warning.hex
+    },
+
+    info: {
+      color: defaultColors.info.hex
+    }
+
+  },
+
+  MessageWrapper: {
+    DefaultStyle: {
+      margin: 0,
+      padding: 0
+    }
+  },
+
+  Dismiss: {
+    DefaultStyle: {
+      cursor: 'pointer',
+      fontFamily: 'Arial',
+      fontSize: '17px',
+      position: 'absolute',
+      top: '4px',
+      right: '5px',
+      lineHeight: '15px',
+      backgroundColor: '#dededf',
+      color: '#ffffff',
+      borderRadius: '50%',
+      width: '14px',
+      height: '14px',
+      fontWeight: 'bold',
+      textAlign: 'center'
+    },
+
+    success: {
+      color: '#f0f5ea',
+      backgroundColor: '#b0ca92'
+    },
+
+    error: {
+      color: '#f4e9e9',
+      backgroundColor: '#e4bebe'
+    },
+
+    warning: {
+      color: '#f9f6f0',
+      backgroundColor: '#e1cfac'
+    },
+
+    info: {
+      color: '#e8f0f4',
+      backgroundColor: '#a4becb'
+    }
+  },
+
+  Action: {
+    DefaultStyle: {
+      background: '#ffffff',
+      borderRadius: '2px',
+      padding: '6px 20px',
+      fontWeight: 'bold',
+      margin: '10px 0 0 0',
+      border: 0
+    },
+
+    success: {
+      backgroundColor: defaultColors.success.hex,
+      color: '#ffffff'
+    },
+
+    error: {
+      backgroundColor: defaultColors.error.hex,
+      color: '#ffffff'
+    },
+
+    warning: {
+      backgroundColor: defaultColors.warning.hex,
+      color: '#ffffff'
+    },
+
+    info: {
+      backgroundColor: defaultColors.info.hex,
+      color: '#ffffff'
+    }
+  },
+
+  ActionWrapper: {
+    DefaultStyle: {
+      margin: 0,
+      padding: 0
+    }
+  }
 };
 
-/***/ }),
+module.exports = STYLES;
 
-/***/ "../../node_modules/react-transition-group/utils/ChildMapping.js":
-/*!**************************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/utils/ChildMapping.js ***!
-  \**************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.getChildMapping = getChildMapping;
-exports.mergeChildMappings = mergeChildMappings;
-exports.getInitialChildMapping = getInitialChildMapping;
-exports.getNextChildMapping = getNextChildMapping;
-
-var _react = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-
-/**
- * Given `this.props.children`, return an object mapping key to child.
- *
- * @param {*} children `this.props.children`
- * @return {object} Mapping of key to child
- */
-function getChildMapping(children, mapFn) {
-  var mapper = function mapper(child) {
-    return mapFn && (0, _react.isValidElement)(child) ? mapFn(child) : child;
-  };
-
-  var result = Object.create(null);
-  if (children) _react.Children.map(children, function (c) {
-    return c;
-  }).forEach(function (child) {
-    // run the map function here instead so that the key is the computed one
-    result[child.key] = mapper(child);
-  });
-  return result;
-}
-/**
- * When you're adding or removing children some may be added or removed in the
- * same render pass. We want to show *both* since we want to simultaneously
- * animate elements in and out. This function takes a previous set of keys
- * and a new set of keys and merges them with its best guess of the correct
- * ordering. In the future we may expose some of the utilities in
- * ReactMultiChild to make this easy, but for now React itself does not
- * directly have this concept of the union of prevChildren and nextChildren
- * so we implement it here.
- *
- * @param {object} prev prev children as returned from
- * `ReactTransitionChildMapping.getChildMapping()`.
- * @param {object} next next children as returned from
- * `ReactTransitionChildMapping.getChildMapping()`.
- * @return {object} a key set that contains all keys in `prev` and all keys
- * in `next` in a reasonable order.
- */
-
-
-function mergeChildMappings(prev, next) {
-  prev = prev || {};
-  next = next || {};
-
-  function getValueForKey(key) {
-    return key in next ? next[key] : prev[key];
-  } // For each key of `next`, the list of keys to insert before that key in
-  // the combined list
-
-
-  var nextKeysPending = Object.create(null);
-  var pendingKeys = [];
-
-  for (var prevKey in prev) {
-    if (prevKey in next) {
-      if (pendingKeys.length) {
-        nextKeysPending[prevKey] = pendingKeys;
-        pendingKeys = [];
-      }
-    } else {
-      pendingKeys.push(prevKey);
-    }
-  }
-
-  var i;
-  var childMapping = {};
-
-  for (var nextKey in next) {
-    if (nextKeysPending[nextKey]) {
-      for (i = 0; i < nextKeysPending[nextKey].length; i++) {
-        var pendingNextKey = nextKeysPending[nextKey][i];
-        childMapping[nextKeysPending[nextKey][i]] = getValueForKey(pendingNextKey);
-      }
-    }
-
-    childMapping[nextKey] = getValueForKey(nextKey);
-  } // Finally, add the keys which didn't appear before any key in `next`
-
-
-  for (i = 0; i < pendingKeys.length; i++) {
-    childMapping[pendingKeys[i]] = getValueForKey(pendingKeys[i]);
-  }
-
-  return childMapping;
-}
-
-function getProp(child, prop, props) {
-  return props[prop] != null ? props[prop] : child.props[prop];
-}
-
-function getInitialChildMapping(props, onExited) {
-  return getChildMapping(props.children, function (child) {
-    return (0, _react.cloneElement)(child, {
-      onExited: onExited.bind(null, child),
-      in: true,
-      appear: getProp(child, 'appear', props),
-      enter: getProp(child, 'enter', props),
-      exit: getProp(child, 'exit', props)
-    });
-  });
-}
-
-function getNextChildMapping(nextProps, prevChildMapping, onExited) {
-  var nextChildMapping = getChildMapping(nextProps.children);
-  var children = mergeChildMappings(prevChildMapping, nextChildMapping);
-  Object.keys(children).forEach(function (key) {
-    var child = children[key];
-    if (!(0, _react.isValidElement)(child)) return;
-    var hasPrev = key in prevChildMapping;
-    var hasNext = key in nextChildMapping;
-    var prevChild = prevChildMapping[key];
-    var isLeaving = (0, _react.isValidElement)(prevChild) && !prevChild.props.in; // item is new (entering)
-
-    if (hasNext && (!hasPrev || isLeaving)) {
-      // console.log('entering', key)
-      children[key] = (0, _react.cloneElement)(child, {
-        onExited: onExited.bind(null, child),
-        in: true,
-        exit: getProp(child, 'exit', nextProps),
-        enter: getProp(child, 'enter', nextProps)
-      });
-    } else if (!hasNext && hasPrev && !isLeaving) {
-      // item is old (exiting)
-      // console.log('leaving', key)
-      children[key] = (0, _react.cloneElement)(child, {
-        in: false
-      });
-    } else if (hasNext && hasPrev && (0, _react.isValidElement)(prevChild)) {
-      // item hasn't changed transition states
-      // copy over the last transition props;
-      // console.log('unchanged', key)
-      children[key] = (0, _react.cloneElement)(child, {
-        onExited: onExited.bind(null, child),
-        in: prevChild.props.in,
-        exit: getProp(child, 'exit', nextProps),
-        enter: getProp(child, 'enter', nextProps)
-      });
-    }
-  });
-  return children;
-}
-
-/***/ }),
-
-/***/ "../../node_modules/react-transition-group/utils/PropTypes.js":
-/*!***********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/react-transition-group/utils/PropTypes.js ***!
-  \***********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-exports.classNamesShape = exports.timeoutsShape = void 0;
-
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var timeoutsShape =  true ? _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.shape({
-  enter: _propTypes.default.number,
-  exit: _propTypes.default.number
-}).isRequired]) : undefined;
-exports.timeoutsShape = timeoutsShape;
-var classNamesShape =  true ? _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.shape({
-  enter: _propTypes.default.string,
-  exit: _propTypes.default.string,
-  active: _propTypes.default.string
-}), _propTypes.default.shape({
-  enter: _propTypes.default.string,
-  enterDone: _propTypes.default.string,
-  enterActive: _propTypes.default.string,
-  exit: _propTypes.default.string,
-  exitDone: _propTypes.default.string,
-  exitActive: _propTypes.default.string
-})]) : undefined;
-exports.classNamesShape = classNamesShape;
 
 /***/ }),
 
@@ -32892,442 +25277,6 @@ if (false) {} else {
 
 /***/ }),
 
-/***/ "../../node_modules/symbol-observable/es/index.js":
-/*!***********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/symbol-observable/es/index.js ***!
-  \***********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(global, module) {/* harmony import */ var _ponyfill_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ponyfill.js */ "../../node_modules/symbol-observable/es/ponyfill.js");
-/* global window */
-
-
-var root;
-
-if (typeof self !== 'undefined') {
-  root = self;
-} else if (typeof window !== 'undefined') {
-  root = window;
-} else if (typeof global !== 'undefined') {
-  root = global;
-} else if (true) {
-  root = module;
-} else {}
-
-var result = Object(_ponyfill_js__WEBPACK_IMPORTED_MODULE_0__["default"])(root);
-/* harmony default export */ __webpack_exports__["default"] = (result);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "../../node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../webpack/buildin/harmony-module.js */ "../../node_modules/webpack/buildin/harmony-module.js")(module)))
-
-/***/ }),
-
-/***/ "../../node_modules/symbol-observable/es/ponyfill.js":
-/*!**************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/symbol-observable/es/ponyfill.js ***!
-  \**************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return symbolObservablePonyfill; });
-function symbolObservablePonyfill(root) {
-	var result;
-	var Symbol = root.Symbol;
-
-	if (typeof Symbol === 'function') {
-		if (Symbol.observable) {
-			result = Symbol.observable;
-		} else {
-			result = Symbol('observable');
-			Symbol.observable = result;
-		}
-	} else {
-		result = '@@observable';
-	}
-
-	return result;
-};
-
-
-/***/ }),
-
-/***/ "../../node_modules/theming/dist/esm/channel.js":
-/*!*********************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/theming/dist/esm/channel.js ***!
-  \*********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ('__THEMING__');
-
-/***/ }),
-
-/***/ "../../node_modules/theming/dist/esm/create-theme-listener.js":
-/*!***********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/theming/dist/esm/create-theme-listener.js ***!
-  \***********************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createThemeListener; });
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _channel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./channel */ "../../node_modules/theming/dist/esm/channel.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-function createThemeListener() {
-  var CHANNEL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _channel__WEBPACK_IMPORTED_MODULE_1__["default"];
-
-  var contextTypes = _defineProperty({}, CHANNEL, prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.object.isRequired);
-
-  function initial(context) {
-    if (!context[CHANNEL]) {
-      throw new Error('[' + this.displayName + '] Please use ThemeProvider to be able to use WithTheme');
-    }
-
-    return context[CHANNEL].getState();
-  }
-
-  function subscribe(context, cb) {
-    if (context[CHANNEL]) {
-      return context[CHANNEL].subscribe(cb);
-    }
-  }
-
-  function unsubscribe(context, subscriptionId) {
-    if (context[CHANNEL]) {
-      context[CHANNEL].unsubscribe(subscriptionId);
-    }
-  }
-
-  return {
-    contextTypes: contextTypes,
-    initial: initial,
-    subscribe: subscribe,
-    unsubscribe: unsubscribe
-  };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/theming/dist/esm/create-theme-provider.js":
-/*!***********************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/theming/dist/esm/create-theme-provider.js ***!
-  \***********************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createThemeProvider; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var is_function__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! is-function */ "../../node_modules/is-function/index.js");
-/* harmony import */ var is_function__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(is_function__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var is_plain_object__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! is-plain-object */ "../../node_modules/is-plain-object/index.js");
-/* harmony import */ var is_plain_object__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(is_plain_object__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _channel__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./channel */ "../../node_modules/theming/dist/esm/channel.js");
-/* harmony import */ var brcast__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! brcast */ "../../node_modules/brcast/dist/brcast.es.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-
-
-
-
-/**
- * Provide a theme to an entire react component tree via context
- * and event listeners (have to do both context
- * and event emitter as pure components block context updates)
- */
-
-function createThemeProvider() {
-  var _class, _temp2;
-
-  var CHANNEL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _channel__WEBPACK_IMPORTED_MODULE_4__["default"];
-
-  return _temp2 = _class = function (_React$Component) {
-    _inherits(ThemeProvider, _React$Component);
-
-    function ThemeProvider() {
-      var _ref;
-
-      var _temp, _this, _ret;
-
-      _classCallCheck(this, ThemeProvider);
-
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ThemeProvider.__proto__ || Object.getPrototypeOf(ThemeProvider)).call.apply(_ref, [this].concat(args))), _this), _this.broadcast = Object(brcast__WEBPACK_IMPORTED_MODULE_5__["default"])(_this.getTheme()), _this.setOuterTheme = function (theme) {
-        _this.outerTheme = theme;
-      }, _temp), _possibleConstructorReturn(_this, _ret);
-    }
-
-    _createClass(ThemeProvider, [{
-      key: 'getTheme',
-
-
-      // Get the theme from the props, supporting both (outerTheme) => {} as well as object notation
-      value: function getTheme(passedTheme) {
-        var theme = passedTheme || this.props.theme;
-        if (is_function__WEBPACK_IMPORTED_MODULE_2___default()(theme)) {
-          var mergedTheme = theme(this.outerTheme);
-          if (!is_plain_object__WEBPACK_IMPORTED_MODULE_3___default()(mergedTheme)) {
-            throw new Error('[ThemeProvider] Please return an object from your theme function, i.e. theme={() => ({})}!');
-          }
-          return mergedTheme;
-        }
-        if (!is_plain_object__WEBPACK_IMPORTED_MODULE_3___default()(theme)) {
-          throw new Error('[ThemeProvider] Please make your theme prop a plain object');
-        }
-
-        if (!this.outerTheme) {
-          return theme;
-        }
-
-        return _extends({}, this.outerTheme, theme);
-      }
-    }, {
-      key: 'getChildContext',
-      value: function getChildContext() {
-        return _defineProperty({}, CHANNEL, this.broadcast);
-      }
-    }, {
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        // create a new subscription for keeping track of outer theme, if present
-        if (this.context[CHANNEL]) {
-          this.subscriptionId = this.context[CHANNEL].subscribe(this.setOuterTheme);
-        }
-      }
-
-      // set broadcast state by merging outer theme with own
-
-    }, {
-      key: 'componentWillMount',
-      value: function componentWillMount() {
-        if (this.context[CHANNEL]) {
-          this.setOuterTheme(this.context[CHANNEL].getState());
-          this.broadcast.setState(this.getTheme());
-        }
-      }
-    }, {
-      key: 'componentWillReceiveProps',
-      value: function componentWillReceiveProps(nextProps) {
-        if (this.props.theme !== nextProps.theme) {
-          this.broadcast.setState(this.getTheme(nextProps.theme));
-        }
-      }
-    }, {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        if (this.subscriptionId !== undefined) {
-          this.context[CHANNEL].unsubscribe(this.subscriptionId);
-          delete this.subscriptionId;
-        }
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        if (!this.props.children) {
-          return null;
-        }
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.Children.only(this.props.children);
-      }
-    }]);
-
-    return ThemeProvider;
-  }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component), _class.propTypes = {
-    children: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.element,
-    theme: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.oneOfType([prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.shape({}), prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func]).isRequired
-  }, _class.childContextTypes = _defineProperty({}, CHANNEL, prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.object.isRequired), _class.contextTypes = _defineProperty({}, CHANNEL, prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.object), _temp2;
-}
-
-/***/ }),
-
-/***/ "../../node_modules/theming/dist/esm/create-with-theme.js":
-/*!*******************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/theming/dist/esm/create-with-theme.js ***!
-  \*******************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createWithTheme; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _channel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./channel */ "../../node_modules/theming/dist/esm/channel.js");
-/* harmony import */ var _create_theme_listener__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./create-theme-listener */ "../../node_modules/theming/dist/esm/create-theme-listener.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-
-
-var getDisplayName = function getDisplayName(Component) {
-  return Component.displayName || Component.name || 'Component';
-};
-
-function createWithTheme() {
-  var CHANNEL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _channel__WEBPACK_IMPORTED_MODULE_1__["default"];
-
-  var themeListener = Object(_create_theme_listener__WEBPACK_IMPORTED_MODULE_2__["default"])(CHANNEL);
-  return function (Component) {
-    var _class, _temp;
-
-    return _temp = _class = function (_React$Component) {
-      _inherits(WithTheme, _React$Component);
-
-      function WithTheme(props, context) {
-        _classCallCheck(this, WithTheme);
-
-        var _this = _possibleConstructorReturn(this, (WithTheme.__proto__ || Object.getPrototypeOf(WithTheme)).call(this, props, context));
-
-        _this.state = { theme: themeListener.initial(context) };
-        _this.setTheme = function (theme) {
-          return _this.setState({ theme: theme });
-        };
-        return _this;
-      }
-
-      _createClass(WithTheme, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-          this.unsubscribe = themeListener.subscribe(this.context, this.setTheme);
-        }
-      }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {
-          if (typeof this.unsubscribe === 'function') {
-            this.unsubscribe();
-          }
-        }
-      }, {
-        key: 'render',
-        value: function render() {
-          var theme = this.state.theme;
-
-
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Component, _extends({ theme: theme }, this.props));
-        }
-      }]);
-
-      return WithTheme;
-    }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component), _class.displayName = 'WithTheme(' + getDisplayName(Component) + ')', _class.contextTypes = themeListener.contextTypes, _temp;
-  };
-}
-
-/***/ }),
-
-/***/ "../../node_modules/theming/dist/esm/index.js":
-/*!*******************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/theming/dist/esm/index.js ***!
-  \*******************************************************************************/
-/*! exports provided: channel, withTheme, ThemeProvider, themeListener, createTheming, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "channel", function() { return channel; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "withTheme", function() { return withTheme; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ThemeProvider", function() { return ThemeProvider; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "themeListener", function() { return themeListener; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTheming", function() { return createTheming; });
-/* harmony import */ var _create_theme_provider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./create-theme-provider */ "../../node_modules/theming/dist/esm/create-theme-provider.js");
-/* harmony import */ var _create_with_theme__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./create-with-theme */ "../../node_modules/theming/dist/esm/create-with-theme.js");
-/* harmony import */ var _create_theme_listener__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./create-theme-listener */ "../../node_modules/theming/dist/esm/create-theme-listener.js");
-/* harmony import */ var _channel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./channel */ "../../node_modules/theming/dist/esm/channel.js");
-
-
-
-
-
-var channel = _channel__WEBPACK_IMPORTED_MODULE_3__["default"];
-var withTheme = Object(_create_with_theme__WEBPACK_IMPORTED_MODULE_1__["default"])();
-var ThemeProvider = Object(_create_theme_provider__WEBPACK_IMPORTED_MODULE_0__["default"])();
-var themeListener = Object(_create_theme_listener__WEBPACK_IMPORTED_MODULE_2__["default"])();
-function createTheming() {
-  var customChannel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _channel__WEBPACK_IMPORTED_MODULE_3__["default"];
-
-  return {
-    channel: customChannel,
-    withTheme: Object(_create_with_theme__WEBPACK_IMPORTED_MODULE_1__["default"])(customChannel),
-    ThemeProvider: Object(_create_theme_provider__WEBPACK_IMPORTED_MODULE_0__["default"])(customChannel),
-    themeListener: Object(_create_theme_listener__WEBPACK_IMPORTED_MODULE_2__["default"])(customChannel)
-  };
-}
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  channel: _channel__WEBPACK_IMPORTED_MODULE_3__["default"],
-  withTheme: withTheme,
-  ThemeProvider: ThemeProvider,
-  themeListener: themeListener,
-  createTheming: createTheming
-});
-
-/***/ }),
-
-/***/ "../../node_modules/toetag/index.js":
-/*!*********************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/toetag/index.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-	'bootstrap': __webpack_require__(/*! ./lib/bootstrap-variables.json */ "../../node_modules/toetag/lib/bootstrap-variables.json")
-}
-
-
-/***/ }),
-
-/***/ "../../node_modules/toetag/lib/bootstrap-variables.json":
-/*!*****************************************************************************************!*\
-  !*** /home/development/ISEMS/ISEMS-UI/node_modules/toetag/lib/bootstrap-variables.json ***!
-  \*****************************************************************************************/
-/*! exports provided: grayBase, grayDarker, grayDark, gray, grayLight, grayLighter, brandPrimary, brandSuccess, brandInfo, brandWarning, brandDanger, bodyBg, textColor, linkColor, linkHoverColor, linkHoverDecoration, fontFamilySansSerif, fontFamilySerif, fontFamilyMonospace, fontFamilyBase, fontSizeBase, fontSizeLarge, fontSizeSmall, fontSizeH1, fontSizeH2, fontSizeH3, fontSizeH4, fontSizeH5, fontSizeH6, lineHeightBase, lineHeightComputed, headingsFontFamily, headingsFontWeight, headingsLineHeight, headingsColor, iconFontPath, iconFontName, iconFontSvgId, paddingBaseVertical, paddingBaseHorizontal, paddingLargeVertical, paddingLargeHorizontal, paddingSmallVertical, paddingSmallHorizontal, paddingXsVertical, paddingXsHorizontal, lineHeightLarge, lineHeightSmall, borderRadiusBase, borderRadiusLarge, borderRadiusSmall, componentActiveColor, componentActiveBg, caretWidthBase, caretWidthLarge, tableCellPadding, tableCondensedCellPadding, tableBg, tableBgAccent, tableBgHover, tableBgActive, tableBorderColor, btnFontWeight, btnDefaultColor, btnDefaultBg, btnDefaultBorder, btnPrimaryColor, btnPrimaryBg, btnPrimaryBorder, btnSuccessColor, btnSuccessBg, btnSuccessBorder, btnInfoColor, btnInfoBg, btnInfoBorder, btnWarningColor, btnWarningBg, btnWarningBorder, btnDangerColor, btnDangerBg, btnDangerBorder, btnLinkDisabledColor, btnBorderRadiusBase, btnBorderRadiusLarge, btnBorderRadiusSmall, inputBg, inputBgDisabled, inputColor, inputBorder, inputBorderRadius, inputBorderRadiusLarge, inputBorderRadiusSmall, inputBorderFocus, inputColorPlaceholder, inputHeightBase, inputHeightLarge, inputHeightSmall, formGroupMarginBottom, legendColor, legendBorderColor, inputGroupAddonBg, inputGroupAddonBorderColor, cursorDisabled, dropdownBg, dropdownBorder, dropdownFallbackBorder, dropdownDividerBg, dropdownLinkColor, dropdownLinkHoverColor, dropdownLinkHoverBg, dropdownLinkActiveColor, dropdownLinkActiveBg, dropdownLinkDisabledColor, dropdownHeaderColor, dropdownCaretColor, zindexNavbar, zindexDropdown, zindexPopover, zindexTooltip, zindexNavbarFixed, zindexModalBackground, zindexModal, screenXs, screenXsMin, screenPhone, screenSm, screenSmMin, screenTablet, screenMd, screenMdMin, screenDesktop, screenLg, screenLgMin, screenLgDesktop, screenXsMax, screenSmMax, screenMdMax, gridColumns, gridGutterWidth, gridFloatBreakpoint, gridFloatBreakpointMax, containerTablet, containerSm, containerDesktop, containerMd, containerLargeDesktop, containerLg, navbarHeight, navbarMarginBottom, navbarBorderRadius, navbarPaddingHorizontal, navbarPaddingVertical, navbarCollapseMaxHeight, navbarDefaultColor, navbarDefaultBg, navbarDefaultBorder, navbarDefaultLinkColor, navbarDefaultLinkHoverColor, navbarDefaultLinkHoverBg, navbarDefaultLinkActiveColor, navbarDefaultLinkActiveBg, navbarDefaultLinkDisabledColor, navbarDefaultLinkDisabledBg, navbarDefaultBrandColor, navbarDefaultBrandHoverColor, navbarDefaultBrandHoverBg, navbarDefaultToggleHoverBg, navbarDefaultToggleIconBarBg, navbarDefaultToggleBorderColor, navbarInverseColor, navbarInverseBg, navbarInverseBorder, navbarInverseLinkColor, navbarInverseLinkHoverColor, navbarInverseLinkHoverBg, navbarInverseLinkActiveColor, navbarInverseLinkActiveBg, navbarInverseLinkDisabledColor, navbarInverseLinkDisabledBg, navbarInverseBrandColor, navbarInverseBrandHoverColor, navbarInverseBrandHoverBg, navbarInverseToggleHoverBg, navbarInverseToggleIconBarBg, navbarInverseToggleBorderColor, navLinkPadding, navLinkHoverBg, navDisabledLinkColor, navDisabledLinkHoverColor, navTabsBorderColor, navTabsLinkHoverBorderColor, navTabsActiveLinkHoverBg, navTabsActiveLinkHoverColor, navTabsActiveLinkHoverBorderColor, navTabsJustifiedLinkBorderColor, navTabsJustifiedActiveLinkBorderColor, navPillsBorderRadius, navPillsActiveLinkHoverBg, navPillsActiveLinkHoverColor, paginationColor, paginationBg, paginationBorder, paginationHoverColor, paginationHoverBg, paginationHoverBorder, paginationActiveColor, paginationActiveBg, paginationActiveBorder, paginationDisabledColor, paginationDisabledBg, paginationDisabledBorder, pagerBg, pagerBorder, pagerBorderRadius, pagerHoverBg, pagerActiveBg, pagerActiveColor, pagerDisabledColor, jumbotronPadding, jumbotronColor, jumbotronBg, jumbotronHeadingColor, jumbotronFontSize, jumbotronHeadingFontSize, stateSuccessText, stateSuccessBg, stateSuccessBorder, stateInfoText, stateInfoBg, stateInfoBorder, stateWarningText, stateWarningBg, stateWarningBorder, stateDangerText, stateDangerBg, stateDangerBorder, tooltipMaxWidth, tooltipColor, tooltipBg, tooltipOpacity, tooltipArrowWidth, tooltipArrowColor, popoverBg, popoverMaxWidth, popoverBorderColor, popoverFallbackBorderColor, popoverTitleBg, popoverArrowWidth, popoverArrowColor, popoverArrowOuterWidth, popoverArrowOuterColor, popoverArrowOuterFallbackColor, labelDefaultBg, labelPrimaryBg, labelSuccessBg, labelInfoBg, labelWarningBg, labelDangerBg, labelColor, labelLinkHoverColor, modalInnerPadding, modalTitlePadding, modalTitleLineHeight, modalContentBg, modalContentBorderColor, modalContentFallbackBorderColor, modalBackdropBg, modalBackdropOpacity, modalHeaderBorderColor, modalFooterBorderColor, modalLg, modalMd, modalSm, alertPadding, alertBorderRadius, alertLinkFontWeight, alertSuccessBg, alertSuccessText, alertSuccessBorder, alertInfoBg, alertInfoText, alertInfoBorder, alertWarningBg, alertWarningText, alertWarningBorder, alertDangerBg, alertDangerText, alertDangerBorder, progressBg, progressBarColor, progressBorderRadius, progressBarBg, progressBarSuccessBg, progressBarWarningBg, progressBarDangerBg, progressBarInfoBg, listGroupBg, listGroupBorder, listGroupBorderRadius, listGroupHoverBg, listGroupActiveColor, listGroupActiveBg, listGroupActiveBorder, listGroupActiveTextColor, listGroupDisabledColor, listGroupDisabledBg, listGroupDisabledTextColor, listGroupLinkColor, listGroupLinkHoverColor, listGroupLinkHeadingColor, panelBg, panelBodyPadding, panelHeadingPadding, panelFooterPadding, panelBorderRadius, panelInnerBorder, panelFooterBg, panelDefaultText, panelDefaultBorder, panelDefaultHeadingBg, panelPrimaryText, panelPrimaryBorder, panelPrimaryHeadingBg, panelSuccessText, panelSuccessBorder, panelSuccessHeadingBg, panelInfoText, panelInfoBorder, panelInfoHeadingBg, panelWarningText, panelWarningBorder, panelWarningHeadingBg, panelDangerText, panelDangerBorder, panelDangerHeadingBg, thumbnailPadding, thumbnailBg, thumbnailBorder, thumbnailBorderRadius, thumbnailCaptionColor, thumbnailCaptionPadding, wellBg, wellBorder, badgeColor, badgeLinkHoverColor, badgeBg, badgeActiveColor, badgeActiveBg, badgeFontWeight, badgeLineHeight, badgeBorderRadius, breadcrumbPaddingVertical, breadcrumbPaddingHorizontal, breadcrumbBg, breadcrumbColor, breadcrumbActiveColor, breadcrumbSeparator, carouselTextShadow, carouselControlColor, carouselControlWidth, carouselControlOpacity, carouselControlFontSize, carouselIndicatorActiveBg, carouselIndicatorBorderColor, carouselCaptionColor, closeFontWeight, closeColor, closeTextShadow, codeColor, codeBg, kbdColor, kbdBg, preBg, preColor, preBorderColor, preScrollableMaxHeight, componentOffsetHorizontal, textMuted, abbrBorderColor, headingsSmallColor, blockquoteSmallColor, blockquoteFontSize, blockquoteBorderColor, pageHeaderBorderColor, dlHorizontalOffset, dlHorizontalBreakpoint, hrBorder, default */
-/***/ (function(module) {
-
-module.exports = {"grayBase":"#000000","grayDarker":"#222222","grayDark":"#333333","gray":"#555555","grayLight":"#777777","grayLighter":"#eeeeee","brandPrimary":"#337ab7","brandSuccess":"#5cb85c","brandInfo":"#5bc0de","brandWarning":"#f0ad4e","brandDanger":"#d9534f","bodyBg":"#ffffff","textColor":"#333333","linkColor":"#337ab7","linkHoverColor":"#23527c","linkHoverDecoration":"underline","fontFamilySansSerif":"\"Helvetica Neue\"","fontFamilySerif":"Georgia","fontFamilyMonospace":"Menlo","fontFamilyBase":"\"Helvetica Neue\"","fontSizeBase":"14px","fontSizeLarge":"18px","fontSizeSmall":"12px","fontSizeH1":"36px","fontSizeH2":"30px","fontSizeH3":"24px","fontSizeH4":"18px","fontSizeH5":"14px","fontSizeH6":"12px","lineHeightBase":"1.428571429","lineHeightComputed":"20px","headingsFontFamily":"inherit","headingsFontWeight":"500","headingsLineHeight":"1.1","headingsColor":"inherit","iconFontPath":"\"../fonts/\"","iconFontName":"\"glyphicons-halflings-regular\"","iconFontSvgId":"\"glyphicons_halflingsregular\"","paddingBaseVertical":"6px","paddingBaseHorizontal":"12px","paddingLargeVertical":"10px","paddingLargeHorizontal":"16px","paddingSmallVertical":"5px","paddingSmallHorizontal":"10px","paddingXsVertical":"1px","paddingXsHorizontal":"5px","lineHeightLarge":"1.3333333","lineHeightSmall":"1.5","borderRadiusBase":"4px","borderRadiusLarge":"6px","borderRadiusSmall":"3px","componentActiveColor":"#ffffff","componentActiveBg":"#337ab7","caretWidthBase":"4px","caretWidthLarge":"5px","tableCellPadding":"8px","tableCondensedCellPadding":"5px","tableBg":"transparent","tableBgAccent":"#f9f9f9","tableBgHover":"#f5f5f5","tableBgActive":"#f5f5f5","tableBorderColor":"#dddddd","btnFontWeight":"normal","btnDefaultColor":"#333333","btnDefaultBg":"#ffffff","btnDefaultBorder":"#cccccc","btnPrimaryColor":"#ffffff","btnPrimaryBg":"#337ab7","btnPrimaryBorder":"#2e6da4","btnSuccessColor":"#ffffff","btnSuccessBg":"#5cb85c","btnSuccessBorder":"#4cae4c","btnInfoColor":"#ffffff","btnInfoBg":"#5bc0de","btnInfoBorder":"#46b8da","btnWarningColor":"#ffffff","btnWarningBg":"#f0ad4e","btnWarningBorder":"#eea236","btnDangerColor":"#ffffff","btnDangerBg":"#d9534f","btnDangerBorder":"#d43f3a","btnLinkDisabledColor":"#777777","btnBorderRadiusBase":"4px","btnBorderRadiusLarge":"6px","btnBorderRadiusSmall":"3px","inputBg":"#ffffff","inputBgDisabled":"#eeeeee","inputColor":"#555555","inputBorder":"#cccccc","inputBorderRadius":"4px","inputBorderRadiusLarge":"6px","inputBorderRadiusSmall":"3px","inputBorderFocus":"#66afe9","inputColorPlaceholder":"#999999","inputHeightBase":"34px","inputHeightLarge":"46px","inputHeightSmall":"30px","formGroupMarginBottom":"15px","legendColor":"#333333","legendBorderColor":"#e5e5e5","inputGroupAddonBg":"#eeeeee","inputGroupAddonBorderColor":"#cccccc","cursorDisabled":"not-allowed","dropdownBg":"#ffffff","dropdownBorder":"rgba(0, 0, 0, 0.15)","dropdownFallbackBorder":"#cccccc","dropdownDividerBg":"#e5e5e5","dropdownLinkColor":"#333333","dropdownLinkHoverColor":"#262626","dropdownLinkHoverBg":"#f5f5f5","dropdownLinkActiveColor":"#ffffff","dropdownLinkActiveBg":"#337ab7","dropdownLinkDisabledColor":"#777777","dropdownHeaderColor":"#777777","dropdownCaretColor":"#000000","zindexNavbar":"1000","zindexDropdown":"1000","zindexPopover":"1060","zindexTooltip":"1070","zindexNavbarFixed":"1030","zindexModalBackground":"1040","zindexModal":"1050","screenXs":"480px","screenXsMin":"480px","screenPhone":"480px","screenSm":"768px","screenSmMin":"768px","screenTablet":"768px","screenMd":"992px","screenMdMin":"992px","screenDesktop":"992px","screenLg":"1200px","screenLgMin":"1200px","screenLgDesktop":"1200px","screenXsMax":"767px","screenSmMax":"991px","screenMdMax":"1199px","gridColumns":"12","gridGutterWidth":"30px","gridFloatBreakpoint":"768px","gridFloatBreakpointMax":"767px","containerTablet":"750px","containerSm":"750px","containerDesktop":"970px","containerMd":"970px","containerLargeDesktop":"1170px","containerLg":"1170px","navbarHeight":"50px","navbarMarginBottom":"20px","navbarBorderRadius":"4px","navbarPaddingHorizontal":"15px","navbarPaddingVertical":"15px","navbarCollapseMaxHeight":"340px","navbarDefaultColor":"#777777","navbarDefaultBg":"#f8f8f8","navbarDefaultBorder":"#e7e7e7","navbarDefaultLinkColor":"#777777","navbarDefaultLinkHoverColor":"#333333","navbarDefaultLinkHoverBg":"transparent","navbarDefaultLinkActiveColor":"#555555","navbarDefaultLinkActiveBg":"#e7e7e7","navbarDefaultLinkDisabledColor":"#cccccc","navbarDefaultLinkDisabledBg":"transparent","navbarDefaultBrandColor":"#777777","navbarDefaultBrandHoverColor":"#5e5e5e","navbarDefaultBrandHoverBg":"transparent","navbarDefaultToggleHoverBg":"#dddddd","navbarDefaultToggleIconBarBg":"#888888","navbarDefaultToggleBorderColor":"#dddddd","navbarInverseColor":"#9d9d9d","navbarInverseBg":"#222222","navbarInverseBorder":"#080808","navbarInverseLinkColor":"#9d9d9d","navbarInverseLinkHoverColor":"#ffffff","navbarInverseLinkHoverBg":"transparent","navbarInverseLinkActiveColor":"#ffffff","navbarInverseLinkActiveBg":"#080808","navbarInverseLinkDisabledColor":"#444444","navbarInverseLinkDisabledBg":"transparent","navbarInverseBrandColor":"#9d9d9d","navbarInverseBrandHoverColor":"#ffffff","navbarInverseBrandHoverBg":"transparent","navbarInverseToggleHoverBg":"#333333","navbarInverseToggleIconBarBg":"#ffffff","navbarInverseToggleBorderColor":"#333333","navLinkPadding":"10px 15px","navLinkHoverBg":"#eeeeee","navDisabledLinkColor":"#777777","navDisabledLinkHoverColor":"#777777","navTabsBorderColor":"#dddddd","navTabsLinkHoverBorderColor":"#eeeeee","navTabsActiveLinkHoverBg":"#ffffff","navTabsActiveLinkHoverColor":"#555555","navTabsActiveLinkHoverBorderColor":"#dddddd","navTabsJustifiedLinkBorderColor":"#dddddd","navTabsJustifiedActiveLinkBorderColor":"#ffffff","navPillsBorderRadius":"4px","navPillsActiveLinkHoverBg":"#337ab7","navPillsActiveLinkHoverColor":"#ffffff","paginationColor":"#337ab7","paginationBg":"#ffffff","paginationBorder":"#dddddd","paginationHoverColor":"#23527c","paginationHoverBg":"#eeeeee","paginationHoverBorder":"#dddddd","paginationActiveColor":"#ffffff","paginationActiveBg":"#337ab7","paginationActiveBorder":"#337ab7","paginationDisabledColor":"#777777","paginationDisabledBg":"#ffffff","paginationDisabledBorder":"#dddddd","pagerBg":"#ffffff","pagerBorder":"#dddddd","pagerBorderRadius":"15px","pagerHoverBg":"#eeeeee","pagerActiveBg":"#337ab7","pagerActiveColor":"#ffffff","pagerDisabledColor":"#777777","jumbotronPadding":"30px","jumbotronColor":"inherit","jumbotronBg":"#eeeeee","jumbotronHeadingColor":"inherit","jumbotronFontSize":"21px","jumbotronHeadingFontSize":"63px","stateSuccessText":"#3c763d","stateSuccessBg":"#dff0d8","stateSuccessBorder":"#d6e9c6","stateInfoText":"#31708f","stateInfoBg":"#d9edf7","stateInfoBorder":"#bce8f1","stateWarningText":"#8a6d3b","stateWarningBg":"#fcf8e3","stateWarningBorder":"#faebcc","stateDangerText":"#a94442","stateDangerBg":"#f2dede","stateDangerBorder":"#ebccd1","tooltipMaxWidth":"200px","tooltipColor":"#ffffff","tooltipBg":"#000000","tooltipOpacity":"0.9","tooltipArrowWidth":"5px","tooltipArrowColor":"#000000","popoverBg":"#ffffff","popoverMaxWidth":"276px","popoverBorderColor":"rgba(0, 0, 0, 0.2)","popoverFallbackBorderColor":"#cccccc","popoverTitleBg":"#f7f7f7","popoverArrowWidth":"10px","popoverArrowColor":"#ffffff","popoverArrowOuterWidth":"11px","popoverArrowOuterColor":"rgba(0, 0, 0, 0.25)","popoverArrowOuterFallbackColor":"#999999","labelDefaultBg":"#777777","labelPrimaryBg":"#337ab7","labelSuccessBg":"#5cb85c","labelInfoBg":"#5bc0de","labelWarningBg":"#f0ad4e","labelDangerBg":"#d9534f","labelColor":"#ffffff","labelLinkHoverColor":"#ffffff","modalInnerPadding":"15px","modalTitlePadding":"15px","modalTitleLineHeight":"1.428571429","modalContentBg":"#ffffff","modalContentBorderColor":"rgba(0, 0, 0, 0.2)","modalContentFallbackBorderColor":"#999999","modalBackdropBg":"#000000","modalBackdropOpacity":"0.5","modalHeaderBorderColor":"#e5e5e5","modalFooterBorderColor":"#e5e5e5","modalLg":"900px","modalMd":"600px","modalSm":"300px","alertPadding":"15px","alertBorderRadius":"4px","alertLinkFontWeight":"bold","alertSuccessBg":"#dff0d8","alertSuccessText":"#3c763d","alertSuccessBorder":"#d6e9c6","alertInfoBg":"#d9edf7","alertInfoText":"#31708f","alertInfoBorder":"#bce8f1","alertWarningBg":"#fcf8e3","alertWarningText":"#8a6d3b","alertWarningBorder":"#faebcc","alertDangerBg":"#f2dede","alertDangerText":"#a94442","alertDangerBorder":"#ebccd1","progressBg":"#f5f5f5","progressBarColor":"#ffffff","progressBorderRadius":"4px","progressBarBg":"#337ab7","progressBarSuccessBg":"#5cb85c","progressBarWarningBg":"#f0ad4e","progressBarDangerBg":"#d9534f","progressBarInfoBg":"#5bc0de","listGroupBg":"#ffffff","listGroupBorder":"#dddddd","listGroupBorderRadius":"4px","listGroupHoverBg":"#f5f5f5","listGroupActiveColor":"#ffffff","listGroupActiveBg":"#337ab7","listGroupActiveBorder":"#337ab7","listGroupActiveTextColor":"#c7ddef","listGroupDisabledColor":"#777777","listGroupDisabledBg":"#eeeeee","listGroupDisabledTextColor":"#777777","listGroupLinkColor":"#555555","listGroupLinkHoverColor":"#555555","listGroupLinkHeadingColor":"#333333","panelBg":"#ffffff","panelBodyPadding":"15px","panelHeadingPadding":"10px 15px","panelFooterPadding":"10px 15px","panelBorderRadius":"4px","panelInnerBorder":"#dddddd","panelFooterBg":"#f5f5f5","panelDefaultText":"#333333","panelDefaultBorder":"#dddddd","panelDefaultHeadingBg":"#f5f5f5","panelPrimaryText":"#ffffff","panelPrimaryBorder":"#337ab7","panelPrimaryHeadingBg":"#337ab7","panelSuccessText":"#3c763d","panelSuccessBorder":"#d6e9c6","panelSuccessHeadingBg":"#dff0d8","panelInfoText":"#31708f","panelInfoBorder":"#bce8f1","panelInfoHeadingBg":"#d9edf7","panelWarningText":"#8a6d3b","panelWarningBorder":"#faebcc","panelWarningHeadingBg":"#fcf8e3","panelDangerText":"#a94442","panelDangerBorder":"#ebccd1","panelDangerHeadingBg":"#f2dede","thumbnailPadding":"4px","thumbnailBg":"#ffffff","thumbnailBorder":"#dddddd","thumbnailBorderRadius":"4px","thumbnailCaptionColor":"#333333","thumbnailCaptionPadding":"9px","wellBg":"#f5f5f5","wellBorder":"#e3e3e3","badgeColor":"#ffffff","badgeLinkHoverColor":"#ffffff","badgeBg":"#777777","badgeActiveColor":"#337ab7","badgeActiveBg":"#ffffff","badgeFontWeight":"bold","badgeLineHeight":"1","badgeBorderRadius":"10px","breadcrumbPaddingVertical":"8px","breadcrumbPaddingHorizontal":"15px","breadcrumbBg":"#f5f5f5","breadcrumbColor":"#cccccc","breadcrumbActiveColor":"#777777","breadcrumbSeparator":"\"/\"","carouselTextShadow":"0 1px 2px rgba(0, 0, 0, 0.6)","carouselControlColor":"#ffffff","carouselControlWidth":"15%","carouselControlOpacity":"0.5","carouselControlFontSize":"20px","carouselIndicatorActiveBg":"#ffffff","carouselIndicatorBorderColor":"#ffffff","carouselCaptionColor":"#ffffff","closeFontWeight":"bold","closeColor":"#000000","closeTextShadow":"0 1px 0 #ffffff","codeColor":"#c7254e","codeBg":"#f9f2f4","kbdColor":"#ffffff","kbdBg":"#333333","preBg":"#f5f5f5","preColor":"#333333","preBorderColor":"#cccccc","preScrollableMaxHeight":"340px","componentOffsetHorizontal":"180px","textMuted":"#777777","abbrBorderColor":"#777777","headingsSmallColor":"#777777","blockquoteSmallColor":"#777777","blockquoteFontSize":"17.5px","blockquoteBorderColor":"#eeeeee","pageHeaderBorderColor":"#eeeeee","dlHorizontalOffset":"180px","dlHorizontalBreakpoint":"768px","hrBorder":"#eeeeee"};
-
-/***/ }),
-
 /***/ "../../node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -33359,41 +25308,6 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "../../node_modules/webpack/buildin/harmony-module.js":
-/*!*******************************************!*\
-  !*** (webpack)/buildin/harmony-module.js ***!
-  \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function(originalModule) {
-	if (!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-
 /***/ "./drawingAlertsMessage.jsx":
 /*!**********************************!*\
   !*** ./drawingAlertsMessage.jsx ***!
@@ -33407,13 +25321,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_bs_notifier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bs-notifier */ "../../node_modules/react-bs-notifier/es/index.js");
+/* harmony import */ var react_notification_system__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-notification-system */ "../../node_modules/react-notification-system/dist/NotificationSystem.js");
+/* harmony import */ var react_notification_system__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_notification_system__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
 /**
  * Модуль формирующий информационные сообщения на странице
  * 
- * Версия 1.0, дата релиза 16.12.2019
+ * Версия 1.1, дата релиза 25.12.2019
  */
 
 
@@ -33427,13 +25342,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 
 
@@ -33451,11 +25366,7 @@ function (_React$Component) {
     _classCallCheck(this, CreateAlert);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(CreateAlert).call(this, props));
-    _this.state = {
-      alertShow: false
-    };
-    _this.alerts = [];
-    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.notificationSystem = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
 
     _this.eventsListener();
 
@@ -33469,40 +25380,27 @@ function (_React$Component) {
 
       this.props.socketIo.on("notify information", function (data) {
         var msg = JSON.parse(data.notify);
-
-        _this2.alerts.push({
-          id: msg.id,
-          type: msg.type,
-          message: "".concat(msg.message, "  .")
+        var titleObj = {
+          "success": "Выполненное действие.",
+          "info": "Информация.",
+          "warning": "Внимание!",
+          "error": "Ошибка!!!"
+        };
+        var level = msg.type === "danger" ? "error" : msg.type;
+        var notification = _this2.notificationSystem.current;
+        notification.addNotification({
+          title: titleObj[level],
+          message: msg.message,
+          level: level,
+          autoDismiss: 5
         });
-
-        _this2.setState({
-          alertShow: true
-        });
-      });
-    }
-  }, {
-    key: "handlerClose",
-    value: function handlerClose(elem) {
-      var newAlert = [];
-      this.alerts.forEach(function (item) {
-        if (item.id !== elem.id) {
-          newAlert.push(item);
-        }
-      });
-      this.alerts = newAlert;
-      this.setState({
-        alertShow: false
       });
     }
   }, {
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bs_notifier__WEBPACK_IMPORTED_MODULE_2__["AlertList"], {
-        alerts: this.alerts,
-        dismissTitle: "закрыть",
-        onDismiss: this.handlerClose,
-        timeout: 5000
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_notification_system__WEBPACK_IMPORTED_MODULE_2___default.a, {
+        ref: this.notificationSystem
       });
     }
   }]);

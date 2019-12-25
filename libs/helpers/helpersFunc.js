@@ -11,6 +11,10 @@ module.exports.checkUserSettingsManagementUsers = function(userSettings) {
     };
     let isValide = [];
 
+    if (typeof userSettings === "undefined") {
+        return false;
+    }
+
     for (let propName in userSettings) {
         let pattern = commons.getRegularExpression(checkObj[propName]);
 

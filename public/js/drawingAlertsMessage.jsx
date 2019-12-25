@@ -1,28 +1,22 @@
 /**
  * Модуль формирующий информационные сообщения на странице
  * 
- * Версия 1.0, дата релиза 16.12.2019
+ * Версия 1.1, дата релиза 25.12.2019
  */
 
 "use strict";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { AlertList } from "react-bs-notifier";
+import NotificationSystem from "react-notification-system";
 
 import PropTypes from "prop-types";
 
 class CreateAlert extends React.Component {
     constructor(props){
         super(props);
-
-        this.state = {
-            alertShow: false,
-        };
-
-        this.alerts = [];
-        this.handlerClose = this.handlerClose.bind(this);
-        
+     
+        this.notificationSystem = React.createRef();
         this.eventsListener();
     }
 
@@ -30,34 +24,26 @@ class CreateAlert extends React.Component {
         this.props.socketIo.on("notify information", data => {
             let msg = JSON.parse(data.notify);
 
-            this.alerts.push({
-                id: msg.id,
-                type: msg.type,
-                message: `${msg.message}  .`,
+            const titleObj = {
+                "success": "Выполненное действие.",
+                "info": "Информация.",
+                "warning": "Внимание!",
+                "error": "Ошибка!!!",
+            };
+
+            const level = (msg.type === "danger")? "error": msg.type;
+            const notification = this.notificationSystem.current;
+            notification.addNotification({
+                title: titleObj[level],
+                message: msg.message,
+                level: level,
+                autoDismiss: 5,
             });
-
-            this.setState({
-                alertShow: true,
-            });
-        });
-    }
-
-    handlerClose(elem){
-        let newAlert = [];
-        this.alerts.forEach(item => {
-            if(item.id !== elem.id){
-                newAlert.push(item);
-            } 
-        });
-        this.alerts = newAlert;
-
-        this.setState({
-            alertShow: false,
-        });
+        });       
     }
 
     render(){
-        return <AlertList alerts={this.alerts} dismissTitle={"закрыть"} onDismiss={this.handlerClose} timeout={5000}/>;
+        return <NotificationSystem ref={this.notificationSystem}/>;
     }
 }
 

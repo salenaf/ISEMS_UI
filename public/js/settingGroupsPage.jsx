@@ -438,7 +438,7 @@ class CreateTable extends React.Component {
     }
 
     render() {
-        socket.on("notify information", data => {
+        /*socket.on("notify information", data => {
 
             console.log("resived MSG ---");
             console.log(data);
@@ -452,7 +452,7 @@ class CreateTable extends React.Component {
             }
 
             showNotifyMessage(data);
-        });
+        });*/
 
         return <div>
             <h4 className="text-left">Управление группами</h4>

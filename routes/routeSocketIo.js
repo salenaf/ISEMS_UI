@@ -1,7 +1,7 @@
 /*
  * Маршруты для обработки информации передаваемой через протокол socket.io
  *
- * Версия 0.1, дата релиза 14.02.2019
+ * Версия 1.1, дата релиза 25.02.2019
  * */
 
 "use strict";
@@ -17,11 +17,8 @@ const showNotify = require("../libs/showNotify");
 const writeLogFile = require("../libs/writeLogFile");
 const getSessionId = require("../libs/helpers/getSessionId");
 const checkStatusSource = require("../libs/processing/status_source/checkStatusSource");
-const handlerActionsUsers = require("./routeHandlersSocketIo/handlerActionsUsers");
 const checkUserAuthentication = require("../libs/check/checkUserAuthentication");
 //const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
-
-const managemetGroups = require("./pages/processing_socketio_request/element_settings/managementGroup");
 
 //генератор событий (обрабатывает события от внешних источников, например API)
 exports.eventGenerator = function(socketIo, object) {
@@ -148,53 +145,10 @@ module.exports.eventHandling = function(socketIo) {
     require("./routeHandlersSocketIo/handlerChangePassword")(socketIo);
 
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
-
-    // добавление новой группы
-    socketIo.on("add new group", data => {
-
-        debug("ADDITION NEW GROUP");
-        debug(data);
-
-        //проверка авторизован ли пользователь
-        checkUserAuthentication(socketIo)
-            .then(authenticationData => {
-                if (authenticationData.isAuthorization) {
-                    return false;
-                }
-
-                if (!authenticationData.document.group_settings.management_groups.element_settings.create.status) {
-                    return false;
-                }
-
-                return true;
-            }).then(isSuccess => {
-                if (!isSuccess) {
-                    showNotify(socketIo, "danger", "Невозможно добавить группу, недостаточно прав на выполнение данного действия.");
-
-                    return;
-                }
-
-                managemetGroups(data, (err, processingResult) => {
-                    if (err) throw (err);
-
-                    if (processingResult.isProcessed) {
-                        showNotify(socketIo, "success", "Группа успешно добавлена.");
-                    } else {
-                        showNotify(socketIo, "danger", processingResult.messageError);
-                    }
-                });
-            }).catch(err => {
-
-                debug(err);
-
-                showNotify(socketIo, "danger", "Ошибка сервера, выполнение действия невозможно.");
-
-                return writeLogFile("error", err.toString());
-            });
-    });
+    require("./routeHandlersSocketIo/handlerActionsGroups").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
-    handlerActionsUsers.addHandlers(socketIo);
+    require("./routeHandlersSocketIo/handlerActionsUsers").addHandlers(socketIo);
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
