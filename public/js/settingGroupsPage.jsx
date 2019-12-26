@@ -12,7 +12,6 @@ import { Alert, Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { helpers } from "./common_helpers/helpers";
-import showNotifyMessage from "./common_helpers/showNotifyMessage";
 import ModalWindowAddNewGroup from "./setting_groups_page/modalWindowAddNewGroup.jsx";
 
 //перечисление типов действий доступных для администратора
@@ -40,20 +39,18 @@ class CreateListCategory extends React.Component {
             }
 
             if (isMenuItem || moreThanTree) {
-                return (
-                    <div>
-                        {itemName}
-                        <ul style={liNoMarker}>
-                            {createCategoryValue}
-                        </ul>
-                    </div>);
+                return <div>
+                    {itemName}
+                    <ul style={liNoMarker}>
+                        {createCategoryValue}
+                    </ul>
+                </div>;
             }
 
-            return (
-                <React.Fragment>
-                    {itemName}
-                    {createCategoryValue}
-                </React.Fragment>);
+            return <React.Fragment>
+                {itemName}
+                {createCategoryValue}
+            </React.Fragment>;
         }
 
         if ((this.props.parameters.first) || isMenuItem || moreThanTree) {
@@ -148,7 +145,7 @@ class ButtonAddGroup extends React.Component {
             arguments: data
         });
 
-        this.props.changeGroup(data);
+        //this.props.changeGroup(data);
     }
 
     render() {
@@ -174,21 +171,19 @@ class ButtonAddGroup extends React.Component {
 
 ButtonAddGroup.propTypes = {
     access: PropTypes.object.isRequired,
-    changeGroup: PropTypes.func.isRequired,
+    //changeGroup: PropTypes.func.isRequired,
     groupListElement: PropTypes.object.isRequired
 };
 
 //кнопка 'сохранить изменение параметров группы'
 class ButtonEdit extends React.Component {
     render() {
-        return (
-            <Button
-                variant="outline-dark"
-                size="sm"
-                disabled={this.props.disabledEdit}>
+        return <Button
+            variant="outline-dark"
+            size="sm"
+            disabled={this.props.disabledEdit}>
                 сохранить
-            </Button>
-        );
+        </Button>;
     }
 }
 
@@ -197,14 +192,12 @@ ButtonEdit.propTypes = { disabledEdit: PropTypes.string.isRequired };
 //кнопка 'удалить группу'
 class ButtonDelete extends React.Component {
     render() {
-        return (
-            <Button
-                variant="outline-danger"
-                size="sm"
-                disabled={this.props.disabledDelete}>
+        return <Button
+            variant="outline-danger"
+            size="sm"
+            disabled={this.props.disabledDelete}>
                 удалить
-            </Button>
-        );
+        </Button>;
     }
 }
 
@@ -213,6 +206,9 @@ ButtonDelete.propTypes = { disabledDelete: PropTypes.string.isRequired };
 //перечисление групп
 class EnumGroupName extends React.Component {
     render() {
+
+        console.log("render EnumGroupName");
+
         let styleGroupName = {
             "paddingBottom": "13px"
         };
@@ -225,10 +221,10 @@ class EnumGroupName extends React.Component {
         let butAddGroup = <ButtonAddGroup
             changeGroup={this.props.changeGroup}
             access={this.props.accessRights}
-            groupListElement={this.props.list.administrator.elements} />;
+            groupListElement={this.props.listAdmin.elements} />;
 
         let arrGroup = this.props.groupsName.map(group => {
-            if (group.toLowerCase() !== "administrator") {
+            if (group.groupName.toLowerCase() !== "administrator") {
                 bDel = <ButtonDelete disabledDelete={disabledDelete} />;
                 bEdit = <ButtonEdit disabledEdit={disabledEdit} />;
                 textCenter = "text-center";
@@ -236,11 +232,10 @@ class EnumGroupName extends React.Component {
                 butAddGroup = "";
             }
 
-            return (
-                <th className={textCenter} style={styleGroupName} key={`group_name_${group}`}>
-                    {group}&nbsp;
-                    <div>{butAddGroup}&nbsp;{bEdit}&nbsp;{bDel}</div>
-                </th>);
+            return <th className={textCenter} style={styleGroupName} key={`group_name_${group.groupName}`}>
+                {group.groupName}&nbsp;
+                <div>{butAddGroup}&nbsp;{bEdit}&nbsp;{bDel}</div>
+            </th>;
         });
 
         return arrGroup;
@@ -248,34 +243,36 @@ class EnumGroupName extends React.Component {
 }
 
 EnumGroupName.propTypes = {
-    changeGroup: PropTypes.func,
-    groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
-    list: PropTypes.object.isRequired,
+    //changeGroup: PropTypes.func,
+    groupsName: PropTypes.arrayOf(PropTypes.object).isRequired,
+    listAdmin: PropTypes.object.isRequired,
     accessRights: PropTypes.object.isRequired
 };
 
 //вывод даты создания группы
 class ShowDateCreateGroup extends React.Component {
     render() {
+
+        console.log("render ShowDateCreateGroup");
+
         let dateCreate = this.props.groupsName.map(group => {
             let text = "";
             let textCenter = "text-center";
 
-            if (group === "administrator") {
+            if (group.groupName === "administrator") {
                 text = "группа создана: ";
                 textCenter = "text-left";
             }
 
-            if (typeof this.props.list[group] === "undefined") return <th></th>;
-
-            let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(" ");
+            //            if (typeof this.props.list[group] === "undefined") return <th></th>;
+            //let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(" ");
+            let [dateString,] = helpers.getDate(group.dateRegister).split(" ");
             let [year, month, day] = dateString.split("-");
             let dateCreate = `${day}.${month}.${year}`;
 
-            return (
-                <th className={textCenter} key={`date_create_${group}`}>
-                    {`${text} ${dateCreate}`}
-                </th>);
+            return <th className={textCenter} key={`date_create_${group.groupName}`}>
+                {`${text} ${dateCreate}`}
+            </th>;
         });
 
         return dateCreate;
@@ -283,43 +280,51 @@ class ShowDateCreateGroup extends React.Component {
 }
 
 ShowDateCreateGroup.propTypes = {
-    groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
-    list: PropTypes.object.isRequired,
+    groupsName: PropTypes.arrayOf(PropTypes.object).isRequired,
+    //list: PropTypes.object.isRequired,
 };
 
 class CreateBodyElement extends React.Component {
     createElement() {
-        let { groupsName, list } = this.props;
+        let { groupsName, listAdmin, list } = this.props;
 
         let arrTmp = [];
-        for (let item in list.administrator.elements) {
+        for (let item in listAdmin.elements) {
             let arrTd = groupsName.map(group => {
                 let listCategoryParameters = {
-                    "group": group,
+                    "group": group.groupName,
                     "countSend": 0,
                     "typeItem": item,
                     "first": true
                 };
 
-                return (
-                    <td key={`td_${list[group].elements[item].id}`}>
+                if(group.groupName === "administrator"){
+                    return <td key={`td_${group.groupName}_${listAdmin.elements[item].id}`}>
                         <CreateListCategory
-                            list={list[group].elements[item]}
+                            list={listAdmin.elements[item]}
                             parameters={listCategoryParameters}
-                            key={list[group].elements[item].id} />
-                    </td>);
+                            key={listAdmin.elements[item].id} />
+                    </td>;    
+                }
+
+                return <td key={`td_${group.groupName}_${list[group.groupName].elements[item].id}`}>
+                    <CreateListCategory
+                        list={list[group.groupName].elements[item]}
+                        parameters={listCategoryParameters}
+                        key={list[group.groupName].elements[item].id} />
+                </td>;
             });
 
-            arrTmp.push(
-                <tr key={`tr_${list.administrator.elements[item].id}`}>
-                    {arrTd}
-                </tr>);
+            arrTmp.push(<tr key={`tr_${listAdmin.elements[item].id}`}>{arrTd}</tr>);
         }
 
         return arrTmp;
     }
 
     render() {
+
+        console.log("render CreateBodyElement");
+
         let arrBody = this.createElement.call(this);
 
         return arrBody;
@@ -327,7 +332,8 @@ class CreateBodyElement extends React.Component {
 }
 
 CreateBodyElement.propTypes = {
-    groupsName: PropTypes.arrayOf(PropTypes.string).isRequired,
+    groupsName: PropTypes.arrayOf(PropTypes.object).isRequired,
+    listAdmin: PropTypes.object.isRequired,
     list: PropTypes.object.isRequired,
 };
 
@@ -337,157 +343,188 @@ class CreateTable extends React.Component {
         super(props);
 
         this.state = {
-            groupsName: [],
-            groupsInformation: {},
-            oldGroupsName: [],
-            oldGroupsInformation: {}
+            groupsName: this.getGroupsName(),
         };
 
-        this.groupsName;
-        //        this.groupsName = this.getGroupsName.call(this)
-        this.changeGroup = this.changeGroup.bind(this);
-        this.getGroupsName = this.getGroupsName.bind(this);
+        this.changeListGroupsInformation = this.changeListGroupsInformation.bind(this);
+
+        console.log(this.state);
+        
+        this.groupsAdministrator = this.props.mainInformation.administrator;        
+        this.listOtherGroup = this.changeListGroupsInformation(this.props.mainInformation);
+
+        //это потом нужно убрать
+        delete this.props.mainInformation.administrator;
+
+        //и это тоже, в дольнейшем использовать только this.listOtherGroup
+        this.groupsInformation = this.props.mainInformation;
+
+        //console.log(this.groupsInformation);
+
+        this.addNewGroup = this.addNewGroup.bind(this);
+        this.updateGroup = this.updateGroup.bind(this);   
+        this.deleteGroup = this.deleteGroup.bind(this);
+
+        this.addListeners();
     }
 
-    componentWillMount() {
+    addListeners(){
+        let listEvents = {
+            "add new group": newGroup => {
+                this.addNewGroup(newGroup);
+            },
+            "update group": updateGroupInfo => {
+                this.updateGroup(updateGroupInfo);
+            },
+            "del selected group": delGroup => {
+                this.deleteGroup(delGroup);
+            },
+        };
 
-        console.log("function componentWillMount");
+        for(let event in listEvents){
+            this.props.socketIo.on(event, listEvents[event]);
+        }
+    }
 
-        //        console.log(this.props.mainInformation)
+    addNewGroup(newGroup){
+        console.log("function 'addNewGroup', START...");
 
+        let newGroupObj = JSON.parse(newGroup);
         let stateCopy = Object.assign({}, this.state);
-        stateCopy.groupsInformation = Object.assign(stateCopy.groupsInformation, this.props.mainInformation);
-        this.setState(stateCopy);
+        stateCopy.groupsName.push(newGroupObj.group_name);
 
-        this.getGroupsName();
+        this.groupsInformation[newGroupObj.group_name] = {
+            "date_register": newGroupObj.date_register,
+            "elements": newGroupObj[newGroupObj.group_name],
+        };
 
-        /**  
-         * 
-         * ТЕПЕРЬ ИЗ СОСТОЯНИЯ groupsInformation МОЖНО БРАТЬ ВСЕ ДАННЫЕ В МЕСТО this.props.mainInformation
-         * 
-         */
+        console.log(stateCopy);
+        console.log(this.groupsInformation);
 
-        console.log("---- В состоянии храним ВСЮ информацию о группах ----");
-        console.log(this.state);
+        this.setState({stateCopy});
+
+        console.log("function 'addNewGroup', END...");
+    }
+
+    updateGroup(updateGroupInfo){
+        console.log("function 'updateGroup', START...");
+    }
+
+    deleteGroup(delGroup){
+        console.log("function 'deleteGroup', START...");
     }
 
     getGroupsName() {
         let groups = Object.keys(this.props.mainInformation);
         groups.sort();
 
-        console.log("function getGroupName");
-        console.log(groups);
+        let list = [{
+            groupName: "administrator",
+            dateRegister: this.props.mainInformation["administrator"].date_register,
+        }];
+        let groupsOtherAdmin = groups.filter(item => item !== "administrator");
 
-        let newGroups = groups.filter(item => item !== "administrator");
-        let finalList = ["administrator"].concat(newGroups);
+        for(let item of groupsOtherAdmin){
+            list.push({
+                groupName: item,
+                dateRegister: this.props.mainInformation[item].date_register
+            });
+        }
 
-        let stateCopy = Object.assign({}, this.state);
-        stateCopy.groupsName = Object.assign(stateCopy.groupsName, finalList);
-        this.setState(stateCopy);
+        return list;
+    }
 
-        this.groupsName = finalList;
+    changeListGroupsInformation(listOtherGroup){
+        let newListOtherGroup = {};
+
+        let obj = {};
+        let getElementObject = (groupName, listElement) => {
+            for (let key in listElement) {
+                if ((typeof listElement[key] === "string")) continue;
+                if ("status" in listElement[key]) {
+                    obj[groupName][listElement[key].id] = {
+                        keyID: listElement[key].id,
+                        status: listElement[key].status,
+                    };
+
+                    continue;
+                }
+
+                getElementObject(groupName, listElement[key]);
+            }
+        };
+
+        for(let groupName in listOtherGroup){
+            obj[groupName] = {};
+
+            getElementObject(groupName, listOtherGroup[groupName].elements);
+        }
+
+        /**
+ * Redis не хочет делать глубокое изменение состояния, говорит что привышен лимит
+ * глубины вложенности. Думаю стоит изменить структуру обрабатываемого объекта
+ * со структуры которой соответствует this.groupsAdministrator на структуру
+ * подобную:
+ * deg_group: {93d09ed8e24d78ddfa6e928261b810f1: {…}, 35149067b45b054be53c32f4bf276e83: {…}, edc74022d022fdb1022fb235968cd888: {…}, d7cab65943607950489124da18ae1826: {…}, 9f66751bed474f792b841340bb16a8ec: {…}, …}
+    deddddd: {
+        165d93a9d3abdb56495d1e7502dcea0a: { // ГДЕ ЭТОТ ХЕШ ДОЛЖЕН БЫТЬ ОДИНАКОВ У ВСЕХ ГРУПП И СООТВЕТСТВОВАТЬ ХЕШУ группы administrator (по нему будет осуществлятся поиск)
+            keyID: "165d93a9d3abdb56495d1e7502dcea0a"
+            status: false
+        }
+    }
+ * 
+ * после формирования подобного объекта надо переделать CreateListCategory для работы с ним
+ */
+
+        console.log(obj);
+
+        return newListOtherGroup;
     }
 
     showAlerts() {
-        return <Alert variant='danger'>Message</Alert>;
-    }
-
-    changeGroup(data) {
-
-        console.log("*-*-*-*-*-*-*-*-*-*-");
-        console.log(data);
-
-        let stateCopy = Object.assign({}, this.state);
-        stateCopy.oldGroupsName = Object.assign(stateCopy.oldGroupsName, stateCopy.groupsName);
-        stateCopy.oldGroupsInformation = Object.assign(stateCopy.oldGroupsInformation, stateCopy.groupsInformation);
-
-        let newGroups = stateCopy.groupsName.filter(item => item !== "administrator").concat(data.groupName);
-        newGroups.sort();
-        stateCopy.groupsName = ["administrator"].concat(newGroups);
-
-        console.log(stateCopy.groupsInformation.administrator);
-
-        let newInfo = {};
-        newInfo[data.groupName] = {};
-        newInfo = Object.assign(newInfo[data.groupName], stateCopy.groupsInformation.administrator);
-
-        /*
-        
-        НЕДОДЕЛАЛ
-        необходимо пройтись по объекту, найти объект со свойством state,
-        поичкать в альтернативном объекте 'data' совпадающий id и изменить 
-        state на значение в объекте data
-        
-        let changeStatus = listElement => {
-            for (let key in listElement) {
-                if ((typeof listElement[key] === 'string')) continue
-                if ('status' in listElement[key]) {
-
-
-                    obj[listElement[key].id] = false
-                    continue
-                }
-
-                changeStatus(listElement[key])
-            }
-        }
-
-        changeStatus(newInfo)*/
-
-        console.log(newInfo);
+        return <Alert variant="danger">Message</Alert>;
     }
 
     render() {
-        /*socket.on("notify information", data => {
-
-            console.log("resived MSG ---");
-            console.log(data);
-
-            let notify = JSON.parse(data.notify);
-
-            if (notify.type === "success") {
-                console.log("ADD GROUP SUCCESS!!!!");
-            } else {
-                console.log("ADD GROUP ___FAILURE___!!!!");
-            }
-
-            showNotifyMessage(data);
-        });*/
-
         return <div>
             <h4 className="text-left">Управление группами</h4>
             <Table striped hover>
                 <thead>
                     <tr>
-                        <ShowDateCreateGroup
-                            groupsName={this.state.groupsName}
-                            /*list={this.props.mainInformation}*/
-                            list={this.state.groupsInformation} />
+                        <ShowDateCreateGroup groupsName={this.state.groupsName} />
                     </tr>
                     <tr>
                         <EnumGroupName
-                            changeGroup={this.changeGroup}
                             groupsName={this.state.groupsName}
-                            list={this.state.groupsInformation}
+                            listAdmin={this.groupsAdministrator}
                             accessRights={this.props.accessRights} />
                     </tr>
                 </thead>
                 <tbody>
                     <CreateBodyElement
-                        /*groupsName={this.state.listGroups}*/
                         groupsName={this.state.groupsName}
-                        list={this.state.groupsInformation} />
+                        listAdmin={this.groupsAdministrator}
+                        list={this.groupsInformation} />                    
                 </tbody>
             </Table>
         </div>;
     }
 }
 
+/*
+<CreateBodyElement
+                        groupsName={this.state.groupsName}
+                        list={this.groupsInformation} />
+*/
+
 CreateTable.propTypes = {
+    socketIo: PropTypes.object.isRequired,
     mainInformation: PropTypes.object.isRequired,
     accessRights: PropTypes.object.isRequired
 };
 
-ReactDOM.render(<CreateTable mainInformation={receivedFromServerMain} accessRights={receivedFromServerAccess} />,
-    document.getElementById("field_information"));
+ReactDOM.render(<CreateTable 
+    mainInformation={receivedFromServerMain} 
+    accessRights={receivedFromServerAccess}
+    socketIo={socket} />, document.getElementById("field_information"));
 

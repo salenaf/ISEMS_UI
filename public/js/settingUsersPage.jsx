@@ -208,8 +208,6 @@ class CreateTable extends React.Component {
     constructor(props){
         super(props);
        
-        this.addListeners = this.addListeners.bind(this);
-
         this.addNewUser = this.addNewUser.bind(this);
         this.updateUser = this.updateUser.bind(this);
         this.deleteUser = this.deleteUser.bind(this);
@@ -388,8 +386,7 @@ class CreateTable extends React.Component {
                     userID={this.state.modalConfirm.userID}
                     handlerConfirm={this.sendMsgDeleteUser}
                     msgTitle={"Удаление"}
-                    msgBody={`Вы действительно хотите удалить пользователя ${this.state.modalConfirm.userLogin}?`}
-                />
+                    msgBody={`Вы действительно хотите удалить пользователя ${this.state.modalConfirm.userLogin}?`} />
             </div>
         );
     }

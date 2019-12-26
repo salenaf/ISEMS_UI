@@ -143,24 +143,39 @@ function addGroup(socketIo, data) {
             });
 
             return listElements;
-        }).then(newList => {
+        }).then(newGroup => {
 
             debug("записываем новый объект группы в БД");
 
             return new Promise((resolve, reject) => {
-                mongodbQueryProcessor.queryCreate(models.modelGroup, { document: newList }, err => {
+                mongodbQueryProcessor.queryCreate(models.modelGroup, { document: newGroup }, err => {
                     if (err) reject(err);
-                    else resolve();
+                    else resolve(newGroup);
                 });
             });
-        }).then(() => {
+        }).then(newGroup => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
-                message: "Группа пользователей успешно добавлена."
+                message: "Новая группа пользователей успешно добавлена."
             });
 
-            //socketIo.emit("add new group", JSON.stringify(newUser));
+            let groupName = newGroup.group_name;
+            let sendNewGroup = {
+                "date_register": newGroup.date_register,
+                "group_name": groupName,
+            };
+
+            delete newGroup["id"];
+            delete newGroup["group_name"];
+            delete newGroup["date_register"];
+
+            sendNewGroup[groupName] = newGroup;
+
+            debug(sendNewGroup);
+            debug("_______________________");
+
+            socketIo.emit("add new group", JSON.stringify(sendNewGroup));
         }).catch(err => {
             if (err.name === "group management") {
                 return showNotify({

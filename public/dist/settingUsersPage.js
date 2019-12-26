@@ -41329,7 +41329,6 @@ function (_React$Component5) {
     _classCallCheck(this, CreateTable);
 
     _this4 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this4.addListeners = _this4.addListeners.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.addNewUser = _this4.addNewUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.updateUser = _this4.updateUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));
     _this4.deleteUser = _this4.deleteUser.bind(_assertThisInitialized(_assertThisInitialized(_this4)));

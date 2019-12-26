@@ -40843,35 +40843,6 @@ var helpers = {
 
 /***/ }),
 
-/***/ "./common_helpers/showNotifyMessage.js":
-/*!*********************************************!*\
-  !*** ./common_helpers/showNotifyMessage.js ***!
-  \*********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/** Вывод информационного сообщения */
-/* harmony default export */ __webpack_exports__["default"] = (function (data) {
-  var notify = JSON.parse(data.notify);
-  $.notify({
-    message: notify.message
-  }, {
-    type: notify.type,
-    placement: {
-      from: "top",
-      align: "right"
-    },
-    offset: {
-      x: 10,
-      y: 10
-    }
-  });
-});
-
-/***/ }),
-
 /***/ "./commons/modalAlertMessage.jsx":
 /*!***************************************!*\
   !*** ./commons/modalAlertMessage.jsx ***!
@@ -40971,8 +40942,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
-/* harmony import */ var _common_helpers_showNotifyMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./common_helpers/showNotifyMessage */ "./common_helpers/showNotifyMessage.js");
-/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
+/* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
 /**
  * Модуль формирующий основную таблицу на странице
  * 
@@ -41005,7 +40975,6 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
 
 
 
@@ -41177,8 +41146,7 @@ function (_React$Component3) {
       socket.emit("add new group", {
         actionType: "create",
         arguments: data
-      });
-      this.props.changeGroup(data);
+      }); //this.props.changeGroup(data);
     }
   }, {
     key: "render",
@@ -41189,7 +41157,7 @@ function (_React$Component3) {
         size: "sm",
         onClick: this.handleShow.bind(this),
         disabled: disabledCreate
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
         show: this.state.modalShow,
         onHide: this.handleClose,
         listelement: this.props.groupListElement,
@@ -41203,7 +41171,7 @@ function (_React$Component3) {
 
 ButtonAddGroup.propTypes = {
   access: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  changeGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
+  //changeGroup: PropTypes.func.isRequired,
   groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //кнопка 'сохранить изменение параметров группы'
 
@@ -41279,6 +41247,7 @@ function (_React$Component6) {
   _createClass(EnumGroupName, [{
     key: "render",
     value: function render() {
+      console.log("render EnumGroupName");
       var styleGroupName = {
         "paddingBottom": "13px"
       };
@@ -41289,10 +41258,10 @@ function (_React$Component6) {
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
         changeGroup: this.props.changeGroup,
         access: this.props.accessRights,
-        groupListElement: this.props.list.administrator.elements
+        groupListElement: this.props.listAdmin.elements
       });
       var arrGroup = this.props.groupsName.map(function (group) {
-        if (group.toLowerCase() !== "administrator") {
+        if (group.groupName.toLowerCase() !== "administrator") {
           bDel = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
             disabledDelete: disabledDelete
           });
@@ -41307,8 +41276,8 @@ function (_React$Component6) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
           className: textCenter,
           style: styleGroupName,
-          key: "group_name_".concat(group)
-        }, group, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, butAddGroup, "\xA0", bEdit, "\xA0", bDel));
+          key: "group_name_".concat(group.groupName)
+        }, group.groupName, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, butAddGroup, "\xA0", bEdit, "\xA0", bDel));
       });
       return arrGroup;
     }
@@ -41318,9 +41287,9 @@ function (_React$Component6) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 EnumGroupName.propTypes = {
-  changeGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func,
-  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
-  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  //changeGroup: PropTypes.func,
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired,
+  listAdmin: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //вывод даты создания группы
 
@@ -41338,20 +41307,19 @@ function (_React$Component7) {
   _createClass(ShowDateCreateGroup, [{
     key: "render",
     value: function render() {
-      var _this2 = this;
-
+      console.log("render ShowDateCreateGroup");
       var dateCreate = this.props.groupsName.map(function (group) {
         var text = "";
         var textCenter = "text-center";
 
-        if (group === "administrator") {
+        if (group.groupName === "administrator") {
           text = "группа создана: ";
           textCenter = "text-left";
-        }
+        } //            if (typeof this.props.list[group] === "undefined") return <th></th>;
+        //let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(" ");
 
-        if (typeof _this2.props.list[group] === "undefined") return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null);
 
-        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(_this2.props.list[group].date_register).split(" "),
+        var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(group.dateRegister).split(" "),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
             dateString = _helpers$getDate$spli2[0];
 
@@ -41364,7 +41332,7 @@ function (_React$Component7) {
         var dateCreate = "".concat(day, ".").concat(month, ".").concat(year);
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
           className: textCenter,
-          key: "date_create_".concat(group)
+          key: "date_create_".concat(group.groupName)
         }, "".concat(text, " ").concat(dateCreate));
       });
       return dateCreate;
@@ -41375,8 +41343,8 @@ function (_React$Component7) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ShowDateCreateGroup.propTypes = {
-  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
-  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired //list: PropTypes.object.isRequired,
+
 };
 
 var CreateBodyElement =
@@ -41395,31 +41363,43 @@ function (_React$Component8) {
     value: function createElement() {
       var _this$props = this.props,
           groupsName = _this$props.groupsName,
+          listAdmin = _this$props.listAdmin,
           list = _this$props.list;
       var arrTmp = [];
 
       var _loop = function _loop(item) {
         var arrTd = groupsName.map(function (group) {
           var listCategoryParameters = {
-            "group": group,
+            "group": group.groupName,
             "countSend": 0,
             "typeItem": item,
             "first": true
           };
+
+          if (group.groupName === "administrator") {
+            return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
+              key: "td_".concat(group.groupName, "_").concat(listAdmin.elements[item].id)
+            }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+              list: listAdmin.elements[item],
+              parameters: listCategoryParameters,
+              key: listAdmin.elements[item].id
+            }));
+          }
+
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-            key: "td_".concat(list[group].elements[item].id)
+            key: "td_".concat(group.groupName, "_").concat(list[group.groupName].elements[item].id)
           }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
-            list: list[group].elements[item],
+            list: list[group.groupName].elements[item],
             parameters: listCategoryParameters,
-            key: list[group].elements[item].id
+            key: list[group.groupName].elements[item].id
           }));
         });
         arrTmp.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
-          key: "tr_".concat(list.administrator.elements[item].id)
+          key: "tr_".concat(listAdmin.elements[item].id)
         }, arrTd));
       };
 
-      for (var item in list.administrator.elements) {
+      for (var item in listAdmin.elements) {
         _loop(item);
       }
 
@@ -41428,6 +41408,7 @@ function (_React$Component8) {
   }, {
     key: "render",
     value: function render() {
+      console.log("render CreateBodyElement");
       var arrBody = this.createElement.call(this);
       return arrBody;
     }
@@ -41437,7 +41418,8 @@ function (_React$Component8) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateBodyElement.propTypes = {
-  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string).isRequired,
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired,
+  listAdmin: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //создание основной таблицы
 
@@ -41447,57 +41429,167 @@ function (_React$Component9) {
   _inherits(CreateTable, _React$Component9);
 
   function CreateTable(props) {
-    var _this3;
+    var _this2;
 
     _classCallCheck(this, CreateTable);
 
-    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this3.state = {
-      groupsName: [],
-      groupsInformation: {},
-      oldGroupsName: [],
-      oldGroupsInformation: {}
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this2.state = {
+      groupsName: _this2.getGroupsName()
     };
-    _this3.groupsName; //        this.groupsName = this.getGroupsName.call(this)
+    _this2.changeListGroupsInformation = _this2.changeListGroupsInformation.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
+    console.log(_this2.state);
+    _this2.groupsAdministrator = _this2.props.mainInformation.administrator;
+    _this2.listOtherGroup = _this2.changeListGroupsInformation(_this2.props.mainInformation); //это потом нужно убрать
 
-    _this3.changeGroup = _this3.changeGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
-    _this3.getGroupsName = _this3.getGroupsName.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
-    return _this3;
+    delete _this2.props.mainInformation.administrator; //и это тоже, в дольнейшем использовать только this.listOtherGroup
+
+    _this2.groupsInformation = _this2.props.mainInformation; //console.log(this.groupsInformation);
+
+    _this2.addNewGroup = _this2.addNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
+    _this2.updateGroup = _this2.updateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
+    _this2.deleteGroup = _this2.deleteGroup.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
+
+    _this2.addListeners();
+
+    return _this2;
   }
 
   _createClass(CreateTable, [{
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      console.log("function componentWillMount"); //        console.log(this.props.mainInformation)
+    key: "addListeners",
+    value: function addListeners() {
+      var _this3 = this;
 
+      var listEvents = {
+        "add new group": function addNewGroup(newGroup) {
+          _this3.addNewGroup(newGroup);
+        },
+        "update group": function updateGroup(updateGroupInfo) {
+          _this3.updateGroup(updateGroupInfo);
+        },
+        "del selected group": function delSelectedGroup(delGroup) {
+          _this3.deleteGroup(delGroup);
+        }
+      };
+
+      for (var event in listEvents) {
+        this.props.socketIo.on(event, listEvents[event]);
+      }
+    }
+  }, {
+    key: "addNewGroup",
+    value: function addNewGroup(newGroup) {
+      console.log("function 'addNewGroup', START...");
+      var newGroupObj = JSON.parse(newGroup);
       var stateCopy = Object.assign({}, this.state);
-      stateCopy.groupsInformation = Object.assign(stateCopy.groupsInformation, this.props.mainInformation);
-      this.setState(stateCopy);
-      this.getGroupsName();
-      /**  
-       * 
-       * ТЕПЕРЬ ИЗ СОСТОЯНИЯ groupsInformation МОЖНО БРАТЬ ВСЕ ДАННЫЕ В МЕСТО this.props.mainInformation
-       * 
-       */
-
-      console.log("---- В состоянии храним ВСЮ информацию о группах ----");
-      console.log(this.state);
+      stateCopy.groupsName.push(newGroupObj.group_name);
+      this.groupsInformation[newGroupObj.group_name] = {
+        "date_register": newGroupObj.date_register,
+        "elements": newGroupObj[newGroupObj.group_name]
+      };
+      console.log(stateCopy);
+      console.log(this.groupsInformation);
+      this.setState({
+        stateCopy: stateCopy
+      });
+      console.log("function 'addNewGroup', END...");
+    }
+  }, {
+    key: "updateGroup",
+    value: function updateGroup(updateGroupInfo) {
+      console.log("function 'updateGroup', START...");
+    }
+  }, {
+    key: "deleteGroup",
+    value: function deleteGroup(delGroup) {
+      console.log("function 'deleteGroup', START...");
     }
   }, {
     key: "getGroupsName",
     value: function getGroupsName() {
       var groups = Object.keys(this.props.mainInformation);
       groups.sort();
-      console.log("function getGroupName");
-      console.log(groups);
-      var newGroups = groups.filter(function (item) {
+      var list = [{
+        groupName: "administrator",
+        dateRegister: this.props.mainInformation["administrator"].date_register
+      }];
+      var groupsOtherAdmin = groups.filter(function (item) {
         return item !== "administrator";
       });
-      var finalList = ["administrator"].concat(newGroups);
-      var stateCopy = Object.assign({}, this.state);
-      stateCopy.groupsName = Object.assign(stateCopy.groupsName, finalList);
-      this.setState(stateCopy);
-      this.groupsName = finalList;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = groupsOtherAdmin[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var item = _step.value;
+          list.push({
+            groupName: item,
+            dateRegister: this.props.mainInformation[item].date_register
+          });
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return list;
+    }
+  }, {
+    key: "changeListGroupsInformation",
+    value: function changeListGroupsInformation(listOtherGroup) {
+      var newListOtherGroup = {};
+      var obj = {};
+
+      var getElementObject = function getElementObject(groupName, listElement) {
+        for (var key in listElement) {
+          if (typeof listElement[key] === "string") continue;
+
+          if ("status" in listElement[key]) {
+            obj[groupName][listElement[key].id] = {
+              keyID: listElement[key].id,
+              status: listElement[key].status
+            };
+            continue;
+          }
+
+          getElementObject(groupName, listElement[key]);
+        }
+      };
+
+      for (var groupName in listOtherGroup) {
+        obj[groupName] = {};
+        getElementObject(groupName, listOtherGroup[groupName].elements);
+      }
+      /**
+      * Redis не хочет делать глубокое изменение состояния, говорит что привышен лимит
+      * глубины вложенности. Думаю стоит изменить структуру обрабатываемого объекта
+      * со структуры которой соответствует this.groupsAdministrator на структуру
+      * подобную:
+      * deg_group: {93d09ed8e24d78ddfa6e928261b810f1: {…}, 35149067b45b054be53c32f4bf276e83: {…}, edc74022d022fdb1022fb235968cd888: {…}, d7cab65943607950489124da18ae1826: {…}, 9f66751bed474f792b841340bb16a8ec: {…}, …}
+      deddddd: {
+      165d93a9d3abdb56495d1e7502dcea0a: { // ГДЕ ЭТОТ ХЕШ ДОЛЖЕН БЫТЬ ОДИНАКОВ У ВСЕХ ГРУПП И СООТВЕТСТВОВАТЬ ХЕШУ группы administrator (по нему будет осуществлятся поиск)
+          keyID: "165d93a9d3abdb56495d1e7502dcea0a"
+          status: false
+      }
+      }
+      * 
+      * после формирования подобного объекта надо переделать CreateListCategory для работы с ним
+      */
+
+
+      console.log(obj);
+      return newListOtherGroup;
     }
   }, {
     key: "showAlerts",
@@ -41507,57 +41599,8 @@ function (_React$Component9) {
       }, "Message");
     }
   }, {
-    key: "changeGroup",
-    value: function changeGroup(data) {
-      console.log("*-*-*-*-*-*-*-*-*-*-");
-      console.log(data);
-      var stateCopy = Object.assign({}, this.state);
-      stateCopy.oldGroupsName = Object.assign(stateCopy.oldGroupsName, stateCopy.groupsName);
-      stateCopy.oldGroupsInformation = Object.assign(stateCopy.oldGroupsInformation, stateCopy.groupsInformation);
-      var newGroups = stateCopy.groupsName.filter(function (item) {
-        return item !== "administrator";
-      }).concat(data.groupName);
-      newGroups.sort();
-      stateCopy.groupsName = ["administrator"].concat(newGroups);
-      console.log(stateCopy.groupsInformation.administrator);
-      var newInfo = {};
-      newInfo[data.groupName] = {};
-      newInfo = Object.assign(newInfo[data.groupName], stateCopy.groupsInformation.administrator);
-      /*
-      
-      НЕДОДЕЛАЛ
-      необходимо пройтись по объекту, найти объект со свойством state,
-      поичкать в альтернативном объекте 'data' совпадающий id и изменить 
-      state на значение в объекте data
-      
-      let changeStatus = listElement => {
-          for (let key in listElement) {
-              if ((typeof listElement[key] === 'string')) continue
-              if ('status' in listElement[key]) {
-                    obj[listElement[key].id] = false
-                  continue
-              }
-               changeStatus(listElement[key])
-          }
-      }
-       changeStatus(newInfo)*/
-
-      console.log(newInfo);
-    }
-  }, {
     key: "render",
     value: function render() {
-      /*socket.on("notify information", data => {
-           console.log("resived MSG ---");
-          console.log(data);
-           let notify = JSON.parse(data.notify);
-           if (notify.type === "success") {
-              console.log("ADD GROUP SUCCESS!!!!");
-          } else {
-              console.log("ADD GROUP ___FAILURE___!!!!");
-          }
-           showNotifyMessage(data);
-      });*/
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", {
         className: "text-left"
       }, "\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0433\u0440\u0443\u043F\u043F\u0430\u043C\u0438"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Table"], {
@@ -41565,33 +41608,36 @@ function (_React$Component9) {
         hover: true
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("thead", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ShowDateCreateGroup, {
         groupsName: this.state.groupsName
-        /*list={this.props.mainInformation}*/
-        ,
-        list: this.state.groupsInformation
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
-        changeGroup: this.changeGroup,
         groupsName: this.state.groupsName,
-        list: this.state.groupsInformation,
+        listAdmin: this.groupsAdministrator,
         accessRights: this.props.accessRights
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement
-      /*groupsName={this.state.listGroups}*/
-      , {
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement, {
         groupsName: this.state.groupsName,
-        list: this.state.groupsInformation
+        listAdmin: this.groupsAdministrator,
+        list: this.groupsInformation
       }))));
     }
   }]);
 
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+/*
+<CreateBodyElement
+                        groupsName={this.state.groupsName}
+                        list={this.groupsInformation} />
+*/
+
 
 CreateTable.propTypes = {
+  socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 };
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
   mainInformation: receivedFromServerMain,
-  accessRights: receivedFromServerAccess
+  accessRights: receivedFromServerAccess,
+  socketIo: socket
 }), document.getElementById("field_information"));
 
 /***/ }),
@@ -41880,8 +41926,8 @@ function (_React$Component4) {
   }
 
   _createClass(ModalWindowAddNewGroup, [{
-    key: "componentWillMount",
-    value: function componentWillMount() {
+    key: "UNSAFE_componentWillMount",
+    value: function UNSAFE_componentWillMount() {
       this.setCheckboxMarked();
     }
   }, {
@@ -41949,18 +41995,18 @@ function (_React$Component4) {
   }, {
     key: "handleUserInput",
     value: function handleUserInput(groupName) {
-      if (/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
-        this.setState({
-          groupName: groupName,
-          groupNameValide: true,
-          classGroupName: "form-control is-valid"
-        });
-      } else {
-        this.setState({
+      if (!/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
+        return this.setState({
           groupNameValide: false,
           classGroupName: "form-control is-invalid"
         });
       }
+
+      this.setState({
+        groupName: groupName,
+        groupNameValide: true,
+        classGroupName: "form-control is-valid"
+      });
     }
   }, {
     key: "handleClose",

@@ -39,30 +39,27 @@ class CreateListCategory extends React.Component {
         }
 
         if (this.props.countSend === 1) {
-            return (
-                <ul className="text-left">
-                    {itemName}
-                    <ul style={liNoMarker}>
-                        {createCategoryValue}
-                    </ul>
-                </ul>);
+            return <ul className="text-left">
+                {itemName}
+                <ul style={liNoMarker}>
+                    {createCategoryValue}
+                </ul>
+            </ul>;
         }
 
         if (isMenuItem || moreThanTree) {
-            return (
-                <div>
-                    {itemName}
-                    <ul style={liNoMarker}>
-                        {createCategoryValue}
-                    </ul>
-                </div>);
+            return <div>
+                {itemName}
+                <ul style={liNoMarker}>
+                    {createCategoryValue}
+                </ul>
+            </div>;
         }
 
-        return (
-            <div>
-                {itemName}
-                {createCategoryValue}
-            </div>);
+        return <div>
+            {itemName}
+            {createCategoryValue}
+        </div>;
     }
 }
 
@@ -156,34 +153,29 @@ class CreateTable extends React.Component {
                     </td>);
             }
 
-            tableBody.push(
-                <tr key={`tr_${this.props.listelement[item].id}`}>
-                    {arrTD}
-                </tr>);
+            tableBody.push(<tr key={`tr_${this.props.listelement[item].id}`}>{arrTD}</tr>);
         }
 
         return <tbody>{tableBody}</tbody>;
     }
 
     render() {
-        return (
-            <Table striped hover>
-                <thead>
-                    <tr key="header_line">
-                        <th></th>
-                        <th className="text-right">
-                            <input
-                                className={this.props.classGroupNameValide}
-                                id="new_group_name"
-                                placeholder="новая группа"
-                                defaultValue={this.props.groupName}
-                                onChange={this.handleChangeGroupName.bind(this)} />
-                        </th>
-                    </tr>
-                </thead>
-                {this.createTableBody.call(this)}
-            </Table>
-        );
+        return <Table striped hover>
+            <thead>
+                <tr key="header_line">
+                    <th></th>
+                    <th className="text-right">
+                        <input
+                            className={this.props.classGroupNameValide}
+                            id="new_group_name"
+                            placeholder="новая группа"
+                            defaultValue={this.props.groupName}
+                            onChange={this.handleChangeGroupName.bind(this)} />
+                    </th>
+                </tr>
+            </thead>
+            {this.createTableBody.call(this)}
+        </Table>;
     }
 }
 
@@ -218,7 +210,7 @@ class ModalWindowAddNewGroup extends React.Component {
         this.changeCheckboxMarked = this.changeCheckboxMarked.bind(this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setCheckboxMarked();
     }
 
@@ -275,18 +267,18 @@ class ModalWindowAddNewGroup extends React.Component {
     }
 
     handleUserInput(groupName) {
-        if (/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
-            this.setState({
-                groupName: groupName,
-                groupNameValide: true,
-                classGroupName: "form-control is-valid"
-            });
-        } else {
-            this.setState({
+        if (!(/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName))) {
+            return this.setState({
                 groupNameValide: false,
                 classGroupName: "form-control is-invalid"
             });
         }
+        
+        this.setState({
+            groupName: groupName,
+            groupNameValide: true,
+            classGroupName: "form-control is-valid"
+        });
     }
 
     handleClose() {
@@ -303,7 +295,6 @@ class ModalWindowAddNewGroup extends React.Component {
         });
 
         if (this.state.groupNameValide && isChecked) {
-
             this.handleAddNewGroup({
                 groupName: this.state.groupName,
                 listPossibleActions: listActions
@@ -318,38 +309,34 @@ class ModalWindowAddNewGroup extends React.Component {
     render() {
         let alertMessage = "Вероятно вы забыли заполнить поле с названием группы или не выбрали ни одного из элементов перечисленных выше.";
 
-        return (
-            <Modal
-                show={this.props.show}
-                onHide={this.props.onHide}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
+        return <Modal
+            show={this.props.show}
+            onHide={this.props.onHide}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
                         Добавить группу
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-
-                    <CreateTable
-                        listelement={this.props.listelement}
-                        checkboxMarked={this.state.checkboxMarked}
-                        groupName={this.state.groupName}
-                        classGroupNameValide={this.state.classGroupName}
-                        onChangeUserInput={this.changeCheckboxMarked}
-                        onUserInput={this.handleUserInput} />
-
-                </Modal.Body>
-                <Modal.Footer>
-                    <ModalAlertDangerMessage show={this.state.showAlert} onClose={this.onCloseHandle} message={alertMessage}>
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <CreateTable
+                    listelement={this.props.listelement}
+                    checkboxMarked={this.state.checkboxMarked}
+                    groupName={this.state.groupName}
+                    classGroupNameValide={this.state.classGroupName}
+                    onChangeUserInput={this.changeCheckboxMarked}
+                    onUserInput={this.handleUserInput} />
+            </Modal.Body>
+            <Modal.Footer>
+                <ModalAlertDangerMessage show={this.state.showAlert} onClose={this.onCloseHandle} message={alertMessage}>
                             Ошибка при сохранении!
-                    </ModalAlertDangerMessage>                    
-                    <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
-                    <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
-                </Modal.Footer>
-            </Modal>
-        );
+                </ModalAlertDangerMessage>                    
+                <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
+                <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
+            </Modal.Footer>
+        </Modal>;
     }
 }
 
