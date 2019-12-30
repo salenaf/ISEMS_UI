@@ -11,8 +11,6 @@ class CreateHeaderMenu extends React.Component {
 
         this.listItems = this.props.listItems;
         this.createMenu = this.createMenu(this);
-
-        console.log(this.listItems);
     }
 
     createSubmenu(listDropDown){
@@ -26,9 +24,13 @@ class CreateHeaderMenu extends React.Component {
                 classElemIsDisable = " disabled";
             }
         
-            list.push(<NavDropdown.Item className={classElemIsDisable} href={item} key={`${item}_key`} aria-disabled={linkElemIsDisabled}>
+            list.push((<NavDropdown.Item 
+                className={classElemIsDisable} 
+                href={item} 
+                key={`${item}_key`} 
+                aria-disabled={linkElemIsDisabled}>
                 {listDropDown[item].name.toLowerCase()}
-            </NavDropdown.Item>);
+            </NavDropdown.Item>));
         }
 
         return list;

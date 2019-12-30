@@ -11,8 +11,6 @@ import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-export {ModalWindowConfirmMessage};
-
 class ModalWindowConfirmMessage extends React.Component {
     constructor(props){
         super(props);
@@ -53,3 +51,5 @@ ModalWindowConfirmMessage.propTypes = {
     userID: PropTypes.string.isRequired,
     handlerConfirm: PropTypes.func.isRequired,
 };
+
+export {ModalWindowConfirmMessage};

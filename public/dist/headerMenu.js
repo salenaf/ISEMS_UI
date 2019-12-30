@@ -40887,7 +40887,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-
 var ModalAlertDangerMessage =
 /*#__PURE__*/
 function (_React$Component) {
@@ -40922,6 +40921,7 @@ ModalAlertDangerMessage.propTypes = {
   show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
+
 
 /***/ }),
 
@@ -41193,7 +41193,6 @@ function (_React$Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(CreateHeaderMenu).call(this, props));
     _this.listItems = _this.props.listItems;
     _this.createMenu = _this.createMenu(_assertThisInitialized(_assertThisInitialized(_this)));
-    console.log(_this.listItems);
     return _this;
   }
 

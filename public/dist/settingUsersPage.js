@@ -40887,7 +40887,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-
 var ModalAlertDangerMessage =
 /*#__PURE__*/
 function (_React$Component) {
@@ -40922,6 +40921,7 @@ ModalAlertDangerMessage.propTypes = {
   show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
+
 
 /***/ }),
 
@@ -40965,7 +40965,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 
 
 
@@ -41026,6 +41025,7 @@ ModalWindowConfirmMessage.propTypes = {
   userID: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
   handlerConfirm: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
+
 
 /***/ }),
 
@@ -41579,7 +41579,6 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 
 
-
 var ModalWindowAddEdit =
 /*#__PURE__*/
 function (_React$Component) {
@@ -41885,6 +41884,7 @@ ModalWindowAddEdit.propTypes = {
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   listWorkGroup: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.array.isRequired
 };
+
 
 /***/ })
 

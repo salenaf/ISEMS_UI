@@ -40887,7 +40887,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-
 var ModalAlertDangerMessage =
 /*#__PURE__*/
 function (_React$Component) {
@@ -40922,6 +40921,7 @@ ModalAlertDangerMessage.propTypes = {
   show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
   onClose: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
+
 
 /***/ }),
 
@@ -40983,21 +40983,26 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
  //перечисление типов действий доступных для администратора
 
-var CreateListCategory =
+var CreateListCategoryMain =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(CreateListCategory, _React$Component);
+  _inherits(CreateListCategoryMain, _React$Component);
 
-  function CreateListCategory() {
-    _classCallCheck(this, CreateListCategory);
+  function CreateListCategoryMain() {
+    _classCallCheck(this, CreateListCategoryMain);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListCategory).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateListCategoryMain).apply(this, arguments));
   }
 
-  _createClass(CreateListCategory, [{
+  _createClass(CreateListCategoryMain, [{
     key: "render",
     value: function render() {
-      var itemName = typeof this.props.list.name === "undefined" ? " " : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.list.name);
+      var itemName = " ";
+
+      if (typeof this.props.list.name !== "undefined") {
+        itemName = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, this.props.list.name);
+      }
+
       var liNoMarker = {
         "listStyleType": "none"
       };
@@ -41005,6 +41010,7 @@ function (_React$Component) {
       var moreThanTree = this.props.parameters.countSend === 3;
       var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
         list: this.props.list,
+        listOtherGroup: this.props.listOtherGroup,
         parameters: this.props.parameters
       });
 
@@ -41034,11 +41040,12 @@ function (_React$Component) {
     }
   }]);
 
-  return CreateListCategory;
+  return CreateListCategoryMain;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
-CreateListCategory.propTypes = {
+CreateListCategoryMain.propTypes = {
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //перечисление значений 
 
@@ -41068,30 +41075,35 @@ function (_React$Component2) {
 
         if (typeof this.props.list[item].status === "undefined") {
           parameters.countSend = this.props.parameters.countSend + 1;
-          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategoryMain, {
             list: this.props.list[item],
+            listOtherGroup: this.props.listOtherGroup,
             parameters: parameters,
             key: "return_".concat(this.props.list[item].id)
           }));
           continue;
         }
 
-        var isDisabled = void 0,
-            description = "";
-
         if (this.props.parameters.group === "administrator") {
-          isDisabled = "disabled";
-          description = this.props.list[item].description;
+          arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+            key: "div_".concat(this.props.list[item].id)
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+            type: "checkbox",
+            disabled: "disabled",
+            defaultChecked: this.props.list[item].status,
+            name: "checkbox_administrator"
+          }), "\xA0", this.props.list[item].description));
+          continue;
         }
 
+        var groupObj = this.props.listOtherGroup[this.props.parameters.group][this.props.list[item].id];
         arrItems.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-          key: "div_".concat(this.props.list[item].id)
+          key: "div_".concat(groupObj.keyID)
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
           type: "checkbox",
-          disabled: isDisabled,
-          defaultChecked: this.props.list[item].status,
-          name: "checkbox_administrator"
-        }), "\xA0", description));
+          defaultChecked: groupObj.status,
+          name: "checkbox_".concat(this.props.parameters.group)
+        }), "\xA0"));
       }
 
       return arrItems;
@@ -41103,6 +41115,7 @@ function (_React$Component2) {
 
 CreateCategoryValue.propTypes = {
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //кнопка 'добавить' новую группу
 
@@ -41118,51 +41131,24 @@ function (_React$Component3) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ButtonAddGroup).call(this, props));
     _this.handleShow = _this.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handleClose = _this.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handleAddNewGroup = _this.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.state = {
-      modalShow: false
-    };
     return _this;
   }
 
   _createClass(ButtonAddGroup, [{
     key: "handleShow",
     value: function handleShow() {
-      this.setState({
-        modalShow: true
-      });
-    }
-  }, {
-    key: "handleClose",
-    value: function handleClose() {
-      this.setState({
-        modalShow: false
-      });
-    }
-  }, {
-    key: "handleAddNewGroup",
-    value: function handleAddNewGroup(data) {
-      socket.emit("add new group", {
-        actionType: "create",
-        arguments: data
-      }); //this.props.changeGroup(data);
+      this.props.handlerShowModal();
     }
   }, {
     key: "render",
     value: function render() {
       var disabledCreate = this.props.access.create.status ? "" : "disabled";
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
         variant: "outline-primary",
         size: "sm",
         onClick: this.handleShow.bind(this),
         disabled: disabledCreate
-      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        show: this.state.modalShow,
-        onHide: this.handleClose,
-        listelement: this.props.groupListElement,
-        handleAddNewGroup: this.handleAddNewGroup
-      }));
+      }, "\u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C");
     }
   }]);
 
@@ -41171,7 +41157,7 @@ function (_React$Component3) {
 
 ButtonAddGroup.propTypes = {
   access: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  //changeGroup: PropTypes.func.isRequired,
+  handlerShowModal: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
   groupListElement: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 }; //кнопка 'сохранить изменение параметров группы'
 
@@ -41192,6 +41178,7 @@ function (_React$Component4) {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
         variant: "outline-dark",
         size: "sm",
+        onClick: this.props.handleUpdateGroup,
         disabled: this.props.disabledEdit
       }, "\u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C");
     }
@@ -41201,7 +41188,8 @@ function (_React$Component4) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonEdit.propTypes = {
-  disabledEdit: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired
+  disabledEdit: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
+  handleUpdateGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 }; //кнопка 'удалить группу'
 
 var ButtonDelete =
@@ -41221,6 +41209,7 @@ function (_React$Component5) {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
         variant: "outline-danger",
         size: "sm",
+        onClick: this.props.handleDeleteGroup,
         disabled: this.props.disabledDelete
       }, "\u0443\u0434\u0430\u043B\u0438\u0442\u044C");
     }
@@ -41230,7 +41219,8 @@ function (_React$Component5) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ButtonDelete.propTypes = {
-  disabledDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired
+  disabledDelete: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.string.isRequired,
+  handleDeleteGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 }; //перечисление групп
 
 var EnumGroupName =
@@ -41238,16 +41228,17 @@ var EnumGroupName =
 function (_React$Component6) {
   _inherits(EnumGroupName, _React$Component6);
 
-  function EnumGroupName() {
+  function EnumGroupName(props) {
     _classCallCheck(this, EnumGroupName);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(EnumGroupName).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(EnumGroupName).call(this, props));
   }
 
   _createClass(EnumGroupName, [{
     key: "render",
     value: function render() {
-      console.log("render EnumGroupName");
+      var _this2 = this;
+
       var styleGroupName = {
         "paddingBottom": "13px"
       };
@@ -41256,17 +41247,19 @@ function (_React$Component6) {
       var bEdit, bDel;
       var textCenter = "text-left";
       var butAddGroup = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonAddGroup, {
-        changeGroup: this.props.changeGroup,
         access: this.props.accessRights,
+        handlerShowModal: this.props.handlerShowModal,
         groupListElement: this.props.listAdmin.elements
       });
       var arrGroup = this.props.groupsName.map(function (group) {
         if (group.groupName.toLowerCase() !== "administrator") {
           bDel = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
-            disabledDelete: disabledDelete
+            disabledDelete: disabledDelete,
+            handleDeleteGroup: _this2.props.handleDeleteGroup.bind(_this2, group.groupName)
           });
           bEdit = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonEdit, {
-            disabledEdit: disabledEdit
+            disabledEdit: disabledEdit,
+            handleUpdateGroup: _this2.props.handleUpdateGroup.bind(_this2, group.groupName)
           });
           textCenter = "text-center";
           styleGroupName.paddingBottom = "";
@@ -41287,10 +41280,12 @@ function (_React$Component6) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 EnumGroupName.propTypes = {
-  //changeGroup: PropTypes.func,
-  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired,
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
   listAdmin: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handlerShowModal: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
+  handleDeleteGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired,
+  handleUpdateGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 }; //вывод даты создания группы
 
 var ShowDateCreateGroup =
@@ -41307,7 +41302,6 @@ function (_React$Component7) {
   _createClass(ShowDateCreateGroup, [{
     key: "render",
     value: function render() {
-      console.log("render ShowDateCreateGroup");
       var dateCreate = this.props.groupsName.map(function (group) {
         var text = "";
         var textCenter = "text-center";
@@ -41315,9 +41309,7 @@ function (_React$Component7) {
         if (group.groupName === "administrator") {
           text = "группа создана: ";
           textCenter = "text-left";
-        } //            if (typeof this.props.list[group] === "undefined") return <th></th>;
-        //let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(" ");
-
+        }
 
         var _helpers$getDate$spli = _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__["helpers"].getDate(group.dateRegister).split(" "),
             _helpers$getDate$spli2 = _slicedToArray(_helpers$getDate$spli, 1),
@@ -41343,8 +41335,7 @@ function (_React$Component7) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 ShowDateCreateGroup.propTypes = {
-  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired //list: PropTypes.object.isRequired,
-
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired
 };
 
 var CreateBodyElement =
@@ -41364,7 +41355,7 @@ function (_React$Component8) {
       var _this$props = this.props,
           groupsName = _this$props.groupsName,
           listAdmin = _this$props.listAdmin,
-          list = _this$props.list;
+          listOtherGroup = _this$props.listOtherGroup;
       var arrTmp = [];
 
       var _loop = function _loop(item) {
@@ -41379,19 +41370,21 @@ function (_React$Component8) {
           if (group.groupName === "administrator") {
             return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
               key: "td_".concat(group.groupName, "_").concat(listAdmin.elements[item].id)
-            }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
+            }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategoryMain, {
               list: listAdmin.elements[item],
+              listOtherGroup: listOtherGroup,
               parameters: listCategoryParameters,
               key: listAdmin.elements[item].id
             }));
           }
 
           return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("td", {
-            key: "td_".concat(group.groupName, "_").concat(list[group.groupName].elements[item].id)
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategory, {
-            list: list[group.groupName].elements[item],
+            key: "td_".concat(group.groupName, "_").concat(listAdmin.elements[item].id)
+          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateListCategoryMain, {
+            list: listAdmin.elements[item],
+            listOtherGroup: listOtherGroup,
             parameters: listCategoryParameters,
-            key: list[group.groupName].elements[item].id
+            key: listAdmin.elements[item].id
           }));
         });
         arrTmp.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", {
@@ -41408,7 +41401,6 @@ function (_React$Component8) {
   }, {
     key: "render",
     value: function render() {
-      console.log("render CreateBodyElement");
       var arrBody = this.createElement.call(this);
       return arrBody;
     }
@@ -41418,9 +41410,9 @@ function (_React$Component8) {
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
 
 CreateBodyElement.propTypes = {
-  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired,
+  groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
   listAdmin: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.objectOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired
 }; //создание основной таблицы
 
 var CreateTable =
@@ -41429,46 +41421,84 @@ function (_React$Component9) {
   _inherits(CreateTable, _React$Component9);
 
   function CreateTable(props) {
-    var _this2;
+    var _this3;
 
     _classCallCheck(this, CreateTable);
 
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
-    _this2.state = {
-      groupsName: _this2.getGroupsName()
+    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
+    _this3.state = {
+      modalWindowAddShow: false,
+      groupsName: _this3.getGroupsName()
     };
-    _this2.changeListGroupsInformation = _this2.changeListGroupsInformation.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
-    console.log(_this2.state);
-    _this2.groupsAdministrator = _this2.props.mainInformation.administrator;
-    _this2.listOtherGroup = _this2.changeListGroupsInformation(_this2.props.mainInformation); //это потом нужно убрать
+    _this3.groupsAdministrator = _this3.props.mainInformation.administrator;
+    _this3.listOtherGroup = _this3.changeListGroupsInformation(_this3.props.mainInformation);
+    _this3.handleShow = _this3.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handleClose = _this3.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.addNewGroup = _this3.addNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.updateGroup = _this3.updateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.deleteGroup = _this3.deleteGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handleAddNewGroup = _this3.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handleUpdateGroup = _this3.handleUpdateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handleDeleteGroup = _this3.handleDeleteGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
 
-    delete _this2.props.mainInformation.administrator; //и это тоже, в дольнейшем использовать только this.listOtherGroup
+    _this3.addListeners();
 
-    _this2.groupsInformation = _this2.props.mainInformation; //console.log(this.groupsInformation);
-
-    _this2.addNewGroup = _this2.addNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
-    _this2.updateGroup = _this2.updateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
-    _this2.deleteGroup = _this2.deleteGroup.bind(_assertThisInitialized(_assertThisInitialized(_this2)));
-
-    _this2.addListeners();
-
-    return _this2;
+    return _this3;
   }
 
   _createClass(CreateTable, [{
+    key: "handleShow",
+    value: function handleShow() {
+      this.setState({
+        modalWindowAddShow: true
+      });
+    }
+  }, {
+    key: "handleClose",
+    value: function handleClose() {
+      this.setState({
+        modalWindowAddShow: false
+      });
+    }
+  }, {
+    key: "handleAddNewGroup",
+    value: function handleAddNewGroup(data) {
+      this.props.socketIo.emit("add new group", {
+        actionType: "create",
+        arguments: data
+      });
+    }
+  }, {
+    key: "handleDeleteGroup",
+    value: function handleDeleteGroup(groupName) {
+      this.props.socketIo.emit("delete group", {
+        actionType: "create",
+        arguments: {
+          groupName: groupName
+        }
+      });
+    }
+  }, {
+    key: "handleUpdateGroup",
+    value: function handleUpdateGroup(data) {
+      console.log("func 'handleUpdateGroup', START...");
+      console.log("update information for group: ".concat(data));
+      console.log("нужны еще данные по параметрам которые будут изменены");
+    }
+  }, {
     key: "addListeners",
     value: function addListeners() {
-      var _this3 = this;
+      var _this4 = this;
 
       var listEvents = {
         "add new group": function addNewGroup(newGroup) {
-          _this3.addNewGroup(newGroup);
+          _this4.addNewGroup(newGroup);
         },
         "update group": function updateGroup(updateGroupInfo) {
-          _this3.updateGroup(updateGroupInfo);
+          _this4.updateGroup(updateGroupInfo);
         },
         "del selected group": function delSelectedGroup(delGroup) {
-          _this3.deleteGroup(delGroup);
+          _this4.deleteGroup(delGroup);
         }
       };
 
@@ -41481,14 +41511,22 @@ function (_React$Component9) {
     value: function addNewGroup(newGroup) {
       console.log("function 'addNewGroup', START...");
       var newGroupObj = JSON.parse(newGroup);
-      var stateCopy = Object.assign({}, this.state);
-      stateCopy.groupsName.push(newGroupObj.group_name);
-      this.groupsInformation[newGroupObj.group_name] = {
-        "date_register": newGroupObj.date_register,
-        "elements": newGroupObj[newGroupObj.group_name]
+      var groupName = newGroupObj.group_name;
+      var newObj = {};
+      newObj[groupName] = {
+        "date_register": newGroupObj["date_register"],
+        "elements": newGroupObj[groupName]
       };
+      var convertObj = this.changeListGroupsInformation(newObj);
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.groupsName.push({
+        groupName: groupName,
+        dateRegister: newGroupObj["date_register"]
+      });
+      console.log("GROUP NAME: ".concat(groupName));
       console.log(stateCopy);
-      console.log(this.groupsInformation);
+      this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
+      console.log(this.listOtherGroup);
       this.setState({
         stateCopy: stateCopy
       });
@@ -41548,48 +41586,31 @@ function (_React$Component9) {
   }, {
     key: "changeListGroupsInformation",
     value: function changeListGroupsInformation(listOtherGroup) {
-      var newListOtherGroup = {};
       var obj = {};
 
-      var getElementObject = function getElementObject(groupName, listElement) {
-        for (var key in listElement) {
-          if (typeof listElement[key] === "string") continue;
+      var getElementObject = function getElementObject(groupName, listElement, listAdmin) {
+        for (var key in listAdmin) {
+          if (typeof listAdmin[key] === "string" || typeof listAdmin[key] === "number") continue;
 
-          if ("status" in listElement[key]) {
-            obj[groupName][listElement[key].id] = {
+          if ("status" in listAdmin[key]) {
+            obj[groupName][listAdmin[key].id] = {
               keyID: listElement[key].id,
               status: listElement[key].status
             };
             continue;
           }
 
-          getElementObject(groupName, listElement[key]);
+          getElementObject(groupName, listElement[key], listAdmin[key]);
         }
       };
 
       for (var groupName in listOtherGroup) {
         obj[groupName] = {};
-        getElementObject(groupName, listOtherGroup[groupName].elements);
+        if (groupName === "administrator") continue;
+        getElementObject(groupName, listOtherGroup[groupName].elements, this.groupsAdministrator.elements);
       }
-      /**
-      * Redis не хочет делать глубокое изменение состояния, говорит что привышен лимит
-      * глубины вложенности. Думаю стоит изменить структуру обрабатываемого объекта
-      * со структуры которой соответствует this.groupsAdministrator на структуру
-      * подобную:
-      * deg_group: {93d09ed8e24d78ddfa6e928261b810f1: {…}, 35149067b45b054be53c32f4bf276e83: {…}, edc74022d022fdb1022fb235968cd888: {…}, d7cab65943607950489124da18ae1826: {…}, 9f66751bed474f792b841340bb16a8ec: {…}, …}
-      deddddd: {
-      165d93a9d3abdb56495d1e7502dcea0a: { // ГДЕ ЭТОТ ХЕШ ДОЛЖЕН БЫТЬ ОДИНАКОВ У ВСЕХ ГРУПП И СООТВЕТСТВОВАТЬ ХЕШУ группы administrator (по нему будет осуществлятся поиск)
-          keyID: "165d93a9d3abdb56495d1e7502dcea0a"
-          status: false
-      }
-      }
-      * 
-      * после формирования подобного объекта надо переделать CreateListCategory для работы с ним
-      */
 
-
-      console.log(obj);
-      return newListOtherGroup;
+      return obj;
     }
   }, {
     key: "showAlerts",
@@ -41611,23 +41632,25 @@ function (_React$Component9) {
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tr", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(EnumGroupName, {
         groupsName: this.state.groupsName,
         listAdmin: this.groupsAdministrator,
-        accessRights: this.props.accessRights
+        accessRights: this.props.accessRights,
+        handleDeleteGroup: this.handleDeleteGroup,
+        handleUpdateGroup: this.handleUpdateGroup,
+        handlerShowModal: this.handleShow
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement, {
         groupsName: this.state.groupsName,
         listAdmin: this.groupsAdministrator,
-        list: this.groupsInformation
-      }))));
+        listOtherGroup: this.listOtherGroup
+      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        show: this.state.modalWindowAddShow,
+        onHide: this.handleClose,
+        listelement: this.props.mainInformation.administrator.elements,
+        handleAddNewGroup: this.handleAddNewGroup
+      }));
     }
   }]);
 
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-/*
-<CreateBodyElement
-                        groupsName={this.state.groupsName}
-                        list={this.groupsInformation} />
-*/
-
 
 CreateTable.propTypes = {
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
@@ -41660,7 +41683,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Модуль формирования модального окна добавления новой рабочей группы пользователей
  * 
- * Версия 0.11, дата релиза 11.02.2019
+ * Версия 0.2, дата релиза 30.12.2019
  */
 
 
@@ -41874,26 +41897,41 @@ function (_React$Component3) {
         key: "header_line"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("th", {
         className: "text-right"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-        className: this.props.classGroupNameValide,
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Form"].Control, {
+        control: "text",
         id: "new_group_name",
         placeholder: "\u043D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
-        defaultValue: this.props.groupName,
+        isValid: this.props.isValidGroupName,
+        isInvalid: this.props.isInvalidGroupName,
         onChange: this.handleChangeGroupName.bind(this)
-      })))), this.createTableBody.call(this));
+      }))))), this.createTableBody.call(this));
     }
   }]);
 
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+/**
+ * <input
+                            className={this.props.classGroupNameValide}
+                            id="new_group_name"
+                            placeholder="новая группа"
+                            isValid={this.props.isValidGroupName}
+                            isInvalid={this.props.isInvalidGroupName}
+                            //defaultValue={this.props.groupName}
+                            onChange={this.handleChangeGroupName.bind(this)} />
+                        />
+ */
+
 
 CreateTable.propTypes = {
+  groupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  onUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
   listelement: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
   checkboxMarked: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object.isRequired,
-  onUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
   onChangeUserInput: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
-  groupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  classGroupNameValide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string
+  classGroupNameValide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string,
+  isValidGroupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool,
+  isInvalidGroupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool
 };
 
 var ModalWindowAddNewGroup =
@@ -41901,41 +41939,39 @@ var ModalWindowAddNewGroup =
 function (_React$Component4) {
   _inherits(ModalWindowAddNewGroup, _React$Component4);
 
-  function ModalWindowAddNewGroup() {
+  function ModalWindowAddNewGroup(props) {
     var _this;
 
     _classCallCheck(this, ModalWindowAddNewGroup);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowAddNewGroup).call(this, props));
     _this.state = {
       showAlert: false,
       groupName: "",
+      isValidGroupName: false,
+      isInvalidGroupName: false,
       groupNameValide: false,
-      classGroupName: "form-control",
-      checkboxMarked: {}
+      checkboxMarked: _this.setCheckboxMarkeds()
     };
+    _this.checkboxMarkedList;
+    _this.modalClose = _this.modalClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleSave = _this.handleSave.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleClose = _this.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.clearElements = _this.clearElements.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.onCloseHandle = _this.onCloseHandle.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleUserInput = _this.handleUserInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.setCheckboxMarked = _this.setCheckboxMarked.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handleAddNewGroup = _this.props.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.changeCheckboxMarked = _this.changeCheckboxMarked.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;
   }
 
   _createClass(ModalWindowAddNewGroup, [{
-    key: "UNSAFE_componentWillMount",
-    value: function UNSAFE_componentWillMount() {
-      this.setCheckboxMarked();
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProp) {
-      if (!prevProp.show) {
-        this.clearElements();
-      }
+    key: "modalClose",
+    value: function modalClose() {
+      this.props.onHide();
+      this.setState({
+        isValidGroupName: false,
+        isInvalidGroupName: false
+      });
     }
   }, {
     key: "clearElements",
@@ -41944,7 +41980,8 @@ function (_React$Component4) {
       stateCopy.showAlert = false;
       stateCopy.groupName = "";
       stateCopy.groupNameValide = false;
-      stateCopy.classGroupName = "form-control";
+      stateCopy.isValidGroupName = false;
+      stateCopy.isInvalidGroupName = false;
 
       for (var id in stateCopy.checkboxMarked) {
         stateCopy.checkboxMarked[id] = false;
@@ -41960,8 +41997,8 @@ function (_React$Component4) {
       });
     }
   }, {
-    key: "setCheckboxMarked",
-    value: function setCheckboxMarked() {
+    key: "setCheckboxMarkeds",
+    value: function setCheckboxMarkeds() {
       var obj = {};
 
       var getElementObject = function getElementObject(listElement) {
@@ -41978,9 +42015,7 @@ function (_React$Component4) {
       };
 
       getElementObject(this.props.listelement);
-      this.setState({
-        checkboxMarked: obj
-      });
+      return obj;
     }
   }, {
     key: "changeCheckboxMarked",
@@ -41998,20 +42033,22 @@ function (_React$Component4) {
       if (!/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
         return this.setState({
           groupNameValide: false,
-          classGroupName: "form-control is-invalid"
+          isValidGroupName: false,
+          isInvalidGroupName: true
         });
       }
 
       this.setState({
         groupName: groupName,
         groupNameValide: true,
-        classGroupName: "form-control is-valid"
+        isValidGroupName: true,
+        isInvalidGroupName: false
       });
     }
   }, {
     key: "handleClose",
     value: function handleClose() {
-      this.props.onHide();
+      this.modalClose();
       this.clearElements();
     }
   }, {
@@ -42023,7 +42060,7 @@ function (_React$Component4) {
       });
 
       if (this.state.groupNameValide && isChecked) {
-        this.handleAddNewGroup({
+        this.props.handleAddNewGroup({
           groupName: this.state.groupName,
           listPossibleActions: listActions
         });
@@ -42038,9 +42075,10 @@ function (_React$Component4) {
     key: "render",
     value: function render() {
       var alertMessage = "Вероятно вы забыли заполнить поле с названием группы или не выбрали ни одного из элементов перечисленных выше.";
+      this.checkboxMarkedList = this.setCheckboxMarkeds();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
         show: this.props.show,
-        onHide: this.props.onHide,
+        onHide: this.modalClose,
         size: "lg",
         "aria-labelledby": "contained-modal-title-vcenter",
         centered: true
@@ -42049,9 +42087,12 @@ function (_React$Component4) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, {
         id: "contained-modal-title-vcenter"
       }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0433\u0440\u0443\u043F\u043F\u0443")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
-        listelement: this.props.listelement,
-        checkboxMarked: this.state.checkboxMarked,
+        listelement: this.props.listelement //checkboxMarked={this.state.checkboxMarked}
+        ,
+        checkboxMarked: this.checkboxMarkedList,
         groupName: this.state.groupName,
+        isValidGroupName: this.state.isValidGroupName,
+        isInvalidGroupName: this.state.isInvalidGroupName,
         classGroupNameValide: this.state.classGroupName,
         onChangeUserInput: this.changeCheckboxMarked,
         onUserInput: this.handleUserInput

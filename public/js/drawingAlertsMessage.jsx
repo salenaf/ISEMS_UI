@@ -1,7 +1,7 @@
 /**
  * Модуль формирующий информационные сообщения на странице
  * 
- * Версия 1.1, дата релиза 25.12.2019
+ * Версия 1.2, дата релиза 30.12.2019
  */
 
 "use strict";
@@ -43,7 +43,15 @@ class CreateAlert extends React.Component {
     }
 
     render(){
-        return <NotificationSystem ref={this.notificationSystem}/>;
+        let style = {
+            NotificationItem: {
+                DefaultStyle: {
+                    lineHeight: "16px",
+                },
+            }
+        };
+
+        return <NotificationSystem ref={this.notificationSystem} style={style}/>;
     }
 }
 

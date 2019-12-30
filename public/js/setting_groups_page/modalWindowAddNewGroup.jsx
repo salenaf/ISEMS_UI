@@ -1,13 +1,13 @@
 /**
  * Модуль формирования модального окна добавления новой рабочей группы пользователей
  * 
- * Версия 0.11, дата релиза 11.02.2019
+ * Версия 0.2, дата релиза 30.12.2019
  */
 
 "use strict";
 
 import React from "react";
-import { Button, Modal, Table } from "react-bootstrap";
+import { Button, Form, Modal, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { ModalAlertDangerMessage } from "../commons/modalAlertMessage.jsx";
@@ -165,12 +165,15 @@ class CreateTable extends React.Component {
                 <tr key="header_line">
                     <th></th>
                     <th className="text-right">
-                        <input
-                            className={this.props.classGroupNameValide}
-                            id="new_group_name"
-                            placeholder="новая группа"
-                            defaultValue={this.props.groupName}
-                            onChange={this.handleChangeGroupName.bind(this)} />
+                        <Form>
+                            <Form.Control
+                                control="text" 
+                                id="new_group_name"
+                                placeholder="новая группа"
+                                isValid={this.props.isValidGroupName}
+                                isInvalid={this.props.isInvalidGroupName}
+                                onChange={this.handleChangeGroupName.bind(this)} />
+                        </Form>
                     </th>
                 </tr>
             </thead>
@@ -179,45 +182,60 @@ class CreateTable extends React.Component {
     }
 }
 
+/**
+ * <input
+                            className={this.props.classGroupNameValide}
+                            id="new_group_name"
+                            placeholder="новая группа"
+                            isValid={this.props.isValidGroupName}
+                            isInvalid={this.props.isInvalidGroupName}
+                            //defaultValue={this.props.groupName}
+                            onChange={this.handleChangeGroupName.bind(this)} />
+                        />
+ */
+
 CreateTable.propTypes = {
+    groupName: PropTypes.string.isRequired,
+    onUserInput: PropTypes.func.isRequired,
     listelement: PropTypes.object.isRequired,
     checkboxMarked: PropTypes.object.isRequired,
-    onUserInput: PropTypes.func.isRequired,
     onChangeUserInput: PropTypes.func.isRequired,
-    groupName: PropTypes.string.isRequired,
-    classGroupNameValide: PropTypes.string
+    classGroupNameValide: PropTypes.string,
+    isValidGroupName: PropTypes.bool,
+    isInvalidGroupName: PropTypes.bool,
 };
 
 class ModalWindowAddNewGroup extends React.Component {
-    constructor() {
-        super(...arguments);
+    constructor(props) {
+        super(props);
 
         this.state = {
             showAlert: false,
             groupName: "",
+            isValidGroupName: false,
+            isInvalidGroupName: false,
             groupNameValide: false,
-            classGroupName: "form-control",
-            checkboxMarked: {}
+            checkboxMarked: this.setCheckboxMarkeds(),
         };
 
+        this.checkboxMarkedList;
+
+        this.modalClose = this.modalClose.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.clearElements = this.clearElements.bind(this);
         this.onCloseHandle = this.onCloseHandle.bind(this);
         this.handleUserInput = this.handleUserInput.bind(this);
-        this.setCheckboxMarked = this.setCheckboxMarked.bind(this);
-        this.handleAddNewGroup = this.props.handleAddNewGroup.bind(this);
         this.changeCheckboxMarked = this.changeCheckboxMarked.bind(this);
     }
+    
+    modalClose(){
+        this.props.onHide();
 
-    UNSAFE_componentWillMount() {
-        this.setCheckboxMarked();
-    }
-
-    componentDidUpdate(prevProp) {
-        if (!prevProp.show) {
-            this.clearElements();
-        }
+        this.setState({
+            isValidGroupName: false,
+            isInvalidGroupName: false,
+        });
     }
 
     clearElements() {
@@ -226,7 +244,8 @@ class ModalWindowAddNewGroup extends React.Component {
         stateCopy.showAlert = false;
         stateCopy.groupName = "";
         stateCopy.groupNameValide = false;
-        stateCopy.classGroupName = "form-control";
+        stateCopy.isValidGroupName = false;
+        stateCopy.isInvalidGroupName = false;
 
         for (let id in stateCopy.checkboxMarked) {
             stateCopy.checkboxMarked[id] = false;
@@ -239,7 +258,7 @@ class ModalWindowAddNewGroup extends React.Component {
         this.setState({ showAlert: false });
     }
 
-    setCheckboxMarked() {
+    setCheckboxMarkeds(){
         let obj = {};
         let getElementObject = listElement => {
             for (let key in listElement) {
@@ -254,8 +273,8 @@ class ModalWindowAddNewGroup extends React.Component {
         };
 
         getElementObject(this.props.listelement);
-
-        this.setState({ checkboxMarked: obj });
+    
+        return obj;
     }
 
     changeCheckboxMarked(event) {
@@ -270,20 +289,21 @@ class ModalWindowAddNewGroup extends React.Component {
         if (!(/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName))) {
             return this.setState({
                 groupNameValide: false,
-                classGroupName: "form-control is-invalid"
+                isValidGroupName: false,
+                isInvalidGroupName: true,
             });
         }
         
         this.setState({
             groupName: groupName,
             groupNameValide: true,
-            classGroupName: "form-control is-valid"
+            isValidGroupName: true,
+            isInvalidGroupName: false,
         });
     }
 
     handleClose() {
-        this.props.onHide();
-
+        this.modalClose();
         this.clearElements();
     }
 
@@ -295,9 +315,9 @@ class ModalWindowAddNewGroup extends React.Component {
         });
 
         if (this.state.groupNameValide && isChecked) {
-            this.handleAddNewGroup({
+            this.props.handleAddNewGroup({
                 groupName: this.state.groupName,
-                listPossibleActions: listActions
+                listPossibleActions: listActions,
             });
 
             this.handleClose();
@@ -308,10 +328,11 @@ class ModalWindowAddNewGroup extends React.Component {
 
     render() {
         let alertMessage = "Вероятно вы забыли заполнить поле с названием группы или не выбрали ни одного из элементов перечисленных выше.";
+        this.checkboxMarkedList = this.setCheckboxMarkeds();
 
         return <Modal
             show={this.props.show}
-            onHide={this.props.onHide}
+            onHide={this.modalClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered >
@@ -323,8 +344,11 @@ class ModalWindowAddNewGroup extends React.Component {
             <Modal.Body>
                 <CreateTable
                     listelement={this.props.listelement}
-                    checkboxMarked={this.state.checkboxMarked}
+                    //checkboxMarked={this.state.checkboxMarked}
+                    checkboxMarked={this.checkboxMarkedList}
                     groupName={this.state.groupName}
+                    isValidGroupName={this.state.isValidGroupName}
+                    isInvalidGroupName={this.state.isInvalidGroupName}
                     classGroupNameValide={this.state.classGroupName}
                     onChangeUserInput={this.changeCheckboxMarked}
                     onUserInput={this.handleUserInput} />

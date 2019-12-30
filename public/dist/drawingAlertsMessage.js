@@ -25328,7 +25328,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Модуль формирующий информационные сообщения на странице
  * 
- * Версия 1.1, дата релиза 25.12.2019
+ * Версия 1.2, дата релиза 30.12.2019
  */
 
 
@@ -25399,8 +25399,16 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
+      var style = {
+        NotificationItem: {
+          DefaultStyle: {
+            lineHeight: "16px"
+          }
+        }
+      };
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_notification_system__WEBPACK_IMPORTED_MODULE_2___default.a, {
-        ref: this.notificationSystem
+        ref: this.notificationSystem,
+        style: style
       });
     }
   }]);

@@ -15,9 +15,13 @@ import { helpers } from "./common_helpers/helpers";
 import ModalWindowAddNewGroup from "./setting_groups_page/modalWindowAddNewGroup.jsx";
 
 //перечисление типов действий доступных для администратора
-class CreateListCategory extends React.Component {
+class CreateListCategoryMain extends React.Component {
     render() {
-        let itemName = (typeof this.props.list.name === "undefined") ? " " : <strong>{this.props.list.name}</strong>;
+        let itemName = " ";
+        if(typeof this.props.list.name !== "undefined"){
+            itemName = <strong>{this.props.list.name}</strong>;
+        }
+
         let liNoMarker = { "listStyleType": "none" };
 
         let isMenuItem = this.props.parameters.typeItem === "menu_items";
@@ -25,17 +29,17 @@ class CreateListCategory extends React.Component {
 
         let createCategoryValue = <CreateCategoryValue
             list={this.props.list}
+            listOtherGroup={this.props.listOtherGroup}
             parameters={this.props.parameters} />;
 
         if (this.props.parameters.group === "administrator") {
             if (this.props.parameters.first) {
-                return (
-                    <ul className="text-left">
-                        {itemName}
-                        <ul style={liNoMarker}>
-                            {createCategoryValue}
-                        </ul>
-                    </ul>);
+                return <ul className="text-left">
+                    {itemName}
+                    <ul style={liNoMarker}>
+                        {createCategoryValue}
+                    </ul>
+                </ul>;
             }
 
             if (isMenuItem || moreThanTree) {
@@ -61,8 +65,9 @@ class CreateListCategory extends React.Component {
     }
 }
 
-CreateListCategory.propTypes = {
+CreateListCategoryMain.propTypes = {
     list: PropTypes.object.isRequired,
+    listOtherGroup: PropTypes.object.isRequired,
     parameters: PropTypes.object.isRequired
 };
 
@@ -83,28 +88,36 @@ class CreateCategoryValue extends React.Component {
                 parameters.countSend = this.props.parameters.countSend + 1;
 
                 arrItems.push(
-                    <CreateListCategory
+                    <CreateListCategoryMain
                         list={this.props.list[item]}
+                        listOtherGroup={this.props.listOtherGroup}
                         parameters={parameters}
                         key={`return_${this.props.list[item].id}`} />);
 
                 continue;
             }
 
-            let isDisabled, description = "";
             if (this.props.parameters.group === "administrator") {
-                isDisabled = "disabled";
-                description = this.props.list[item].description;
+                arrItems.push(
+                    <div key={`div_${this.props.list[item].id}`}>
+                        <input
+                            type="checkbox"
+                            disabled="disabled"
+                            defaultChecked={this.props.list[item].status}
+                            name="checkbox_administrator" />&nbsp;
+                        {this.props.list[item].description}
+                    </div>);
+
+                continue;
             }
 
+            let groupObj = this.props.listOtherGroup[this.props.parameters.group][this.props.list[item].id];
             arrItems.push(
-                <div key={`div_${this.props.list[item].id}`}>
+                <div key={`div_${groupObj.keyID}`}>
                     <input
                         type="checkbox"
-                        disabled={isDisabled}
-                        defaultChecked={this.props.list[item].status}
-                        name="checkbox_administrator" />&nbsp;
-                    {description}
+                        defaultChecked={groupObj.status}
+                        name={`checkbox_${this.props.parameters.group}`} />&nbsp;
                 </div>);
         }
 
@@ -114,6 +127,7 @@ class CreateCategoryValue extends React.Component {
 
 CreateCategoryValue.propTypes = {
     list: PropTypes.object.isRequired,
+    listOtherGroup: PropTypes.object.isRequired,
     parameters: PropTypes.object.isRequired
 };
 
@@ -123,55 +137,28 @@ class ButtonAddGroup extends React.Component {
         super(props);
 
         this.handleShow = this.handleShow.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-        this.handleAddNewGroup = this.handleAddNewGroup.bind(this);
-
-        this.state = {
-            modalShow: false
-        };
     }
 
     handleShow() {
-        this.setState({ modalShow: true });
-    }
-
-    handleClose() {
-        this.setState({ modalShow: false });
-    }
-
-    handleAddNewGroup(data) {
-        socket.emit("add new group", {
-            actionType: "create",
-            arguments: data
-        });
-
-        //this.props.changeGroup(data);
+        this.props.handlerShowModal();
     }
 
     render() {
         let disabledCreate = (this.props.access.create.status) ? "" : "disabled";
 
-        return (<>
-            <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={this.handleShow.bind(this)}
-                disabled={disabledCreate} >
+        return <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={this.handleShow.bind(this)}
+            disabled={disabledCreate} >
                 добавить
-            </Button>
-
-            <ModalWindowAddNewGroup
-                show={this.state.modalShow}
-                onHide={this.handleClose}
-                listelement={this.props.groupListElement}
-                handleAddNewGroup={this.handleAddNewGroup} />
-        </>);
+        </Button>;
     }
 }
 
 ButtonAddGroup.propTypes = {
     access: PropTypes.object.isRequired,
-    //changeGroup: PropTypes.func.isRequired,
+    handlerShowModal: PropTypes.func.isRequired,
     groupListElement: PropTypes.object.isRequired
 };
 
@@ -181,13 +168,17 @@ class ButtonEdit extends React.Component {
         return <Button
             variant="outline-dark"
             size="sm"
+            onClick={this.props.handleUpdateGroup}
             disabled={this.props.disabledEdit}>
                 сохранить
         </Button>;
     }
 }
 
-ButtonEdit.propTypes = { disabledEdit: PropTypes.string.isRequired };
+ButtonEdit.propTypes = { 
+    disabledEdit: PropTypes.string.isRequired,
+    handleUpdateGroup: PropTypes.func.isRequired,
+};
 
 //кнопка 'удалить группу'
 class ButtonDelete extends React.Component {
@@ -195,20 +186,25 @@ class ButtonDelete extends React.Component {
         return <Button
             variant="outline-danger"
             size="sm"
+            onClick={this.props.handleDeleteGroup}
             disabled={this.props.disabledDelete}>
                 удалить
         </Button>;
     }
 }
 
-ButtonDelete.propTypes = { disabledDelete: PropTypes.string.isRequired };
+ButtonDelete.propTypes = { 
+    disabledDelete: PropTypes.string.isRequired,
+    handleDeleteGroup: PropTypes.func.isRequired,
+};
 
 //перечисление групп
 class EnumGroupName extends React.Component {
+    constructor(props){
+        super(props);
+    }
+
     render() {
-
-        console.log("render EnumGroupName");
-
         let styleGroupName = {
             "paddingBottom": "13px"
         };
@@ -219,14 +215,14 @@ class EnumGroupName extends React.Component {
         let bEdit, bDel;
         let textCenter = "text-left";
         let butAddGroup = <ButtonAddGroup
-            changeGroup={this.props.changeGroup}
             access={this.props.accessRights}
+            handlerShowModal={this.props.handlerShowModal}
             groupListElement={this.props.listAdmin.elements} />;
 
         let arrGroup = this.props.groupsName.map(group => {
             if (group.groupName.toLowerCase() !== "administrator") {
-                bDel = <ButtonDelete disabledDelete={disabledDelete} />;
-                bEdit = <ButtonEdit disabledEdit={disabledEdit} />;
+                bDel = <ButtonDelete disabledDelete={disabledDelete} handleDeleteGroup={this.props.handleDeleteGroup.bind(this, group.groupName)} />;
+                bEdit = <ButtonEdit disabledEdit={disabledEdit} handleUpdateGroup={this.props.handleUpdateGroup.bind(this, group.groupName)} />;
                 textCenter = "text-center";
                 styleGroupName.paddingBottom = "";
                 butAddGroup = "";
@@ -243,18 +239,17 @@ class EnumGroupName extends React.Component {
 }
 
 EnumGroupName.propTypes = {
-    //changeGroup: PropTypes.func,
-    groupsName: PropTypes.arrayOf(PropTypes.object).isRequired,
+    groupsName: PropTypes.array.isRequired,
     listAdmin: PropTypes.object.isRequired,
-    accessRights: PropTypes.object.isRequired
+    accessRights: PropTypes.object.isRequired,
+    handlerShowModal: PropTypes.func.isRequired,
+    handleDeleteGroup: PropTypes.func.isRequired,
+    handleUpdateGroup: PropTypes.func.isRequired,
 };
 
 //вывод даты создания группы
 class ShowDateCreateGroup extends React.Component {
     render() {
-
-        console.log("render ShowDateCreateGroup");
-
         let dateCreate = this.props.groupsName.map(group => {
             let text = "";
             let textCenter = "text-center";
@@ -264,8 +259,6 @@ class ShowDateCreateGroup extends React.Component {
                 textCenter = "text-left";
             }
 
-            //            if (typeof this.props.list[group] === "undefined") return <th></th>;
-            //let [dateString,] = helpers.getDate(this.props.list[group].date_register).split(" ");
             let [dateString,] = helpers.getDate(group.dateRegister).split(" ");
             let [year, month, day] = dateString.split("-");
             let dateCreate = `${day}.${month}.${year}`;
@@ -280,16 +273,16 @@ class ShowDateCreateGroup extends React.Component {
 }
 
 ShowDateCreateGroup.propTypes = {
-    groupsName: PropTypes.arrayOf(PropTypes.object).isRequired,
-    //list: PropTypes.object.isRequired,
+    groupsName: PropTypes.array.isRequired,
 };
 
 class CreateBodyElement extends React.Component {
     createElement() {
-        let { groupsName, listAdmin, list } = this.props;
+        let { groupsName, listAdmin, listOtherGroup } = this.props;
+
 
         let arrTmp = [];
-        for (let item in listAdmin.elements) {
+        for (let item in listAdmin.elements) {           
             let arrTd = groupsName.map(group => {
                 let listCategoryParameters = {
                     "group": group.groupName,
@@ -300,18 +293,20 @@ class CreateBodyElement extends React.Component {
 
                 if(group.groupName === "administrator"){
                     return <td key={`td_${group.groupName}_${listAdmin.elements[item].id}`}>
-                        <CreateListCategory
+                        <CreateListCategoryMain
                             list={listAdmin.elements[item]}
+                            listOtherGroup={listOtherGroup}
                             parameters={listCategoryParameters}
                             key={listAdmin.elements[item].id} />
                     </td>;    
                 }
 
-                return <td key={`td_${group.groupName}_${list[group.groupName].elements[item].id}`}>
-                    <CreateListCategory
-                        list={list[group.groupName].elements[item]}
+                return <td key={`td_${group.groupName}_${listAdmin.elements[item].id}`}>
+                    <CreateListCategoryMain
+                        list={listAdmin.elements[item]}
+                        listOtherGroup={listOtherGroup}
                         parameters={listCategoryParameters}
-                        key={list[group.groupName].elements[item].id} />
+                        key={listAdmin.elements[item].id} />
                 </td>;
             });
 
@@ -322,9 +317,6 @@ class CreateBodyElement extends React.Component {
     }
 
     render() {
-
-        console.log("render CreateBodyElement");
-
         let arrBody = this.createElement.call(this);
 
         return arrBody;
@@ -332,9 +324,9 @@ class CreateBodyElement extends React.Component {
 }
 
 CreateBodyElement.propTypes = {
-    groupsName: PropTypes.arrayOf(PropTypes.object).isRequired,
+    groupsName: PropTypes.array.isRequired,
     listAdmin: PropTypes.object.isRequired,
-    list: PropTypes.object.isRequired,
+    listOtherGroup: PropTypes.objectOf(PropTypes.object).isRequired,
 };
 
 //создание основной таблицы
@@ -343,29 +335,54 @@ class CreateTable extends React.Component {
         super(props);
 
         this.state = {
+            modalWindowAddShow: false,
             groupsName: this.getGroupsName(),
         };
 
-        this.changeListGroupsInformation = this.changeListGroupsInformation.bind(this);
-
-        console.log(this.state);
-        
         this.groupsAdministrator = this.props.mainInformation.administrator;        
         this.listOtherGroup = this.changeListGroupsInformation(this.props.mainInformation);
 
-        //это потом нужно убрать
-        delete this.props.mainInformation.administrator;
-
-        //и это тоже, в дольнейшем использовать только this.listOtherGroup
-        this.groupsInformation = this.props.mainInformation;
-
-        //console.log(this.groupsInformation);
-
+        this.handleShow = this.handleShow.bind(this);
+        this.handleClose= this.handleClose.bind(this);
         this.addNewGroup = this.addNewGroup.bind(this);
         this.updateGroup = this.updateGroup.bind(this);   
         this.deleteGroup = this.deleteGroup.bind(this);
+        this.handleAddNewGroup = this.handleAddNewGroup.bind(this);
+        this.handleUpdateGroup = this.handleUpdateGroup.bind(this);
+        this.handleDeleteGroup = this.handleDeleteGroup.bind(this);
 
         this.addListeners();
+    }
+
+    handleShow() {
+        this.setState({ modalWindowAddShow: true });
+    }
+
+    handleClose() {
+        this.setState({ modalWindowAddShow: false });
+    }
+
+    handleAddNewGroup(data) {
+        this.props.socketIo.emit("add new group", {
+            actionType: "create",
+            arguments: data
+        });
+    }
+
+    handleDeleteGroup(groupName){
+        this.props.socketIo.emit("delete group", {
+            actionType: "create",
+            arguments: {
+                groupName: groupName,
+            },
+        });
+    }
+
+    handleUpdateGroup(data){
+        console.log("func 'handleUpdateGroup', START...");
+        console.log(`update information for group: ${data}`);
+        console.log("нужны еще данные по параметрам которые будут изменены");
+
     }
 
     addListeners(){
@@ -390,16 +407,27 @@ class CreateTable extends React.Component {
         console.log("function 'addNewGroup', START...");
 
         let newGroupObj = JSON.parse(newGroup);
-        let stateCopy = Object.assign({}, this.state);
-        stateCopy.groupsName.push(newGroupObj.group_name);
+        let groupName = newGroupObj.group_name;
 
-        this.groupsInformation[newGroupObj.group_name] = {
-            "date_register": newGroupObj.date_register,
-            "elements": newGroupObj[newGroupObj.group_name],
+        let newObj = {};
+        newObj[groupName]={
+            "date_register": newGroupObj["date_register"],
+            "elements": newGroupObj[groupName],
         };
+        let convertObj = this.changeListGroupsInformation(newObj);
 
+        let stateCopy = Object.assign({}, this.state);
+        stateCopy.groupsName.push({
+            groupName: groupName,
+            dateRegister: newGroupObj["date_register"],
+        });
+
+        console.log(`GROUP NAME: ${groupName}`);
         console.log(stateCopy);
-        console.log(this.groupsInformation);
+
+        this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
+
+        console.log(this.listOtherGroup);
 
         this.setState({stateCopy});
 
@@ -427,7 +455,7 @@ class CreateTable extends React.Component {
         for(let item of groupsOtherAdmin){
             list.push({
                 groupName: item,
-                dateRegister: this.props.mainInformation[item].date_register
+                dateRegister: this.props.mainInformation[item].date_register,
             });
         }
 
@@ -435,14 +463,12 @@ class CreateTable extends React.Component {
     }
 
     changeListGroupsInformation(listOtherGroup){
-        let newListOtherGroup = {};
-
         let obj = {};
-        let getElementObject = (groupName, listElement) => {
-            for (let key in listElement) {
-                if ((typeof listElement[key] === "string")) continue;
-                if ("status" in listElement[key]) {
-                    obj[groupName][listElement[key].id] = {
+        let getElementObject = (groupName, listElement, listAdmin) => {
+            for (let key in listAdmin) {              
+                if ((typeof listAdmin[key] === "string") || (typeof listAdmin[key] === "number")) continue;
+                if ("status" in listAdmin[key]) {
+                    obj[groupName][listAdmin[key].id] = {
                         keyID: listElement[key].id,
                         status: listElement[key].status,
                     };
@@ -450,35 +476,19 @@ class CreateTable extends React.Component {
                     continue;
                 }
 
-                getElementObject(groupName, listElement[key]);
+                getElementObject(groupName, listElement[key], listAdmin[key]);
             }
         };
 
         for(let groupName in listOtherGroup){
             obj[groupName] = {};
 
-            getElementObject(groupName, listOtherGroup[groupName].elements);
+            if(groupName === "administrator") continue;
+
+            getElementObject(groupName, listOtherGroup[groupName].elements, this.groupsAdministrator.elements);
         }
 
-        /**
- * Redis не хочет делать глубокое изменение состояния, говорит что привышен лимит
- * глубины вложенности. Думаю стоит изменить структуру обрабатываемого объекта
- * со структуры которой соответствует this.groupsAdministrator на структуру
- * подобную:
- * deg_group: {93d09ed8e24d78ddfa6e928261b810f1: {…}, 35149067b45b054be53c32f4bf276e83: {…}, edc74022d022fdb1022fb235968cd888: {…}, d7cab65943607950489124da18ae1826: {…}, 9f66751bed474f792b841340bb16a8ec: {…}, …}
-    deddddd: {
-        165d93a9d3abdb56495d1e7502dcea0a: { // ГДЕ ЭТОТ ХЕШ ДОЛЖЕН БЫТЬ ОДИНАКОВ У ВСЕХ ГРУПП И СООТВЕТСТВОВАТЬ ХЕШУ группы administrator (по нему будет осуществлятся поиск)
-            keyID: "165d93a9d3abdb56495d1e7502dcea0a"
-            status: false
-        }
-    }
- * 
- * после формирования подобного объекта надо переделать CreateListCategory для работы с ним
- */
-
-        console.log(obj);
-
-        return newListOtherGroup;
+        return obj;
     }
 
     showAlerts() {
@@ -497,25 +507,27 @@ class CreateTable extends React.Component {
                         <EnumGroupName
                             groupsName={this.state.groupsName}
                             listAdmin={this.groupsAdministrator}
-                            accessRights={this.props.accessRights} />
+                            accessRights={this.props.accessRights}
+                            handleDeleteGroup={this.handleDeleteGroup}
+                            handleUpdateGroup={this.handleUpdateGroup} 
+                            handlerShowModal={this.handleShow}/>
                     </tr>
                 </thead>
                 <tbody>
                     <CreateBodyElement
                         groupsName={this.state.groupsName}
                         listAdmin={this.groupsAdministrator}
-                        list={this.groupsInformation} />                    
+                        listOtherGroup={this.listOtherGroup}/>                    
                 </tbody>
             </Table>
+            <ModalWindowAddNewGroup
+                show={this.state.modalWindowAddShow}
+                onHide={this.handleClose}
+                listelement={this.props.mainInformation.administrator.elements}
+                handleAddNewGroup={this.handleAddNewGroup} />
         </div>;
     }
 }
-
-/*
-<CreateBodyElement
-                        groupsName={this.state.groupsName}
-                        list={this.groupsInformation} />
-*/
 
 CreateTable.propTypes = {
     socketIo: PropTypes.object.isRequired,

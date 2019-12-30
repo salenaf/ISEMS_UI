@@ -10,8 +10,6 @@ import React from "react";
 import { Alert } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-export { ModalAlertDangerMessage };
-
 class ModalAlertDangerMessage extends React.Component {
     render() {
         return (<>
@@ -29,3 +27,5 @@ ModalAlertDangerMessage.propTypes = {
     show: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
 };
+
+export { ModalAlertDangerMessage };

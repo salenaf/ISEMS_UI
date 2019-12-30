@@ -13,8 +13,6 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import { ModalAlertDangerMessage } from "../commons/modalAlertMessage.jsx";
 
-export { ModalWindowAddEdit };
-
 class ModalWindowAddEdit extends React.Component {
     constructor(props){
         super(props);
@@ -99,7 +97,7 @@ class ModalWindowAddEdit extends React.Component {
     }
 
     alertClose(){
-        this.setState({alertShow: false});
+        this.setState({ alertShow: false });
     }
    
     handlerClose(){
@@ -109,7 +107,7 @@ class ModalWindowAddEdit extends React.Component {
         for(let elem in objUpdate.formElements){
             if (elem === "workGroup") continue;
             objUpdate.formElements[elem].isValid = false;
-            objUpdate.formElements[elem].isInvalid =false;    
+            objUpdate.formElements[elem].isInvalid = false;    
         }
         objUpdate.alertShow = false;
         this.setState( objUpdate );
@@ -142,7 +140,7 @@ class ModalWindowAddEdit extends React.Component {
         if(!this.props.isAddUser){
             if(userInputs.userName.value.length === 0){
                 if(!firstPasswdIsInvalide || !passwdIsEqual){
-                    this.setState({alertShow: true});
+                    this.setState({ alertShow: true });
 
                     return;
                 }
@@ -150,7 +148,7 @@ class ModalWindowAddEdit extends React.Component {
                 transferObject.user_name = this.props.userSettings.name;
             } else {
                 if(!userInputs.userName.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
-                    this.setState({alertShow: true});
+                    this.setState({ alertShow: true });
 
                     return;
                 }            
@@ -161,7 +159,7 @@ class ModalWindowAddEdit extends React.Component {
             at = "edit";
         } else {
             if(!userInputs.userName.isValid || !userInputs.login.isValid || !firstPasswdIsInvalide || !passwdIsEqual){
-                this.setState({alertShow: true});
+                this.setState({ alertShow: true });
     
                 return;
             }
@@ -286,4 +284,6 @@ ModalWindowAddEdit.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listWorkGroup: PropTypes.array.isRequired,
 };
+
+export { ModalWindowAddEdit };
 
