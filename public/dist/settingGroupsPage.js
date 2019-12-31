@@ -40822,7 +40822,7 @@ var helpers = {
       "countProcess": new RegExp("^[0-9]{1}$"),
       "intervalTransmission": new RegExp("^[0-9]{1,}$"),
       "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
-      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
+      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),
       "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
     };
     var pattern = objSettings[elem.name];
@@ -40925,6 +40925,110 @@ ModalAlertDangerMessage.propTypes = {
 
 /***/ }),
 
+/***/ "./commons/modalWindowConfirmMessage.jsx":
+/*!***********************************************!*\
+  !*** ./commons/modalWindowConfirmMessage.jsx ***!
+  \***********************************************/
+/*! exports provided: ModalWindowConfirmMessage */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModalWindowConfirmMessage", function() { return ModalWindowConfirmMessage; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "../../node_modules/react-bootstrap/es/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "../../node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
+/**
+ * Модуль формирования модального окна для дольнейшего
+ * подтверждения или отклонения действия по УДАЛЕНИЮ
+ * 
+ * Версия 0.1. дата релиза 10.12.2019
+ */
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+
+
+
+
+var ModalWindowConfirmMessage =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(ModalWindowConfirmMessage, _React$Component);
+
+  function ModalWindowConfirmMessage(props) {
+    var _this;
+
+    _classCallCheck(this, ModalWindowConfirmMessage);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ModalWindowConfirmMessage).call(this, props));
+    _this.handlerClose = _this.handlerClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handlerConfirm = _this.handlerConfirm.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    return _this;
+  }
+
+  _createClass(ModalWindowConfirmMessage, [{
+    key: "handlerClose",
+    value: function handlerClose() {
+      this.props.onHide();
+    }
+  }, {
+    key: "handlerConfirm",
+    value: function handlerConfirm() {
+      this.props.handlerConfirm(this.props.nameDel);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"], {
+        show: this.props.show,
+        onHide: this.handlerClose
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Header, {
+        closeButton: true
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, this.props.msgTitle)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, this.props.msgBody), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-secondary",
+        onClick: this.handlerClose
+      }, "\u043E\u0442\u043C\u0435\u043D\u0430"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+        variant: "outline-primary",
+        onClick: this.handlerConfirm
+      }, "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044C")));
+    }
+  }]);
+
+  return ModalWindowConfirmMessage;
+}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
+
+ModalWindowConfirmMessage.propTypes = {
+  show: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.bool.isRequired,
+  onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
+  msgBody: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  msgTitle: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  nameDel: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  handlerConfirm: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
+};
+
+
+/***/ }),
+
 /***/ "./settingGroupsPage.jsx":
 /*!*******************************!*\
   !*** ./settingGroupsPage.jsx ***!
@@ -40943,6 +41047,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _common_helpers_helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common_helpers/helpers */ "./common_helpers/helpers.js");
 /* harmony import */ var _setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./setting_groups_page/modalWindowAddNewGroup.jsx */ "./setting_groups_page/modalWindowAddNewGroup.jsx");
+/* harmony import */ var _commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./commons/modalWindowConfirmMessage.jsx */ "./commons/modalWindowConfirmMessage.jsx");
 /**
  * Модуль формирующий основную таблицу на странице
  * 
@@ -40975,6 +41080,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 
 
 
@@ -41427,6 +41533,10 @@ function (_React$Component9) {
 
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(CreateTable).call(this, props));
     _this3.state = {
+      modalConfirm: {
+        show: false,
+        groupName: ""
+      },
       modalWindowAddShow: false,
       groupsName: _this3.getGroupsName()
     };
@@ -41440,6 +41550,8 @@ function (_React$Component9) {
     _this3.handleAddNewGroup = _this3.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleUpdateGroup = _this3.handleUpdateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleDeleteGroup = _this3.handleDeleteGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handlerModalConfirmShow = _this3.handlerModalConfirmShow.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handlerModalConfirmClose = _this3.handlerModalConfirmClose.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
 
     _this3.addListeners();
 
@@ -41470,13 +41582,14 @@ function (_React$Component9) {
     }
   }, {
     key: "handleDeleteGroup",
-    value: function handleDeleteGroup(groupName) {
+    value: function handleDeleteGroup() {
       this.props.socketIo.emit("delete group", {
-        actionType: "create",
+        actionType: "delete",
         arguments: {
-          groupName: groupName
+          groupName: this.state.modalConfirm.groupName
         }
       });
+      this.handlerModalConfirmClose();
     }
   }, {
     key: "handleUpdateGroup",
@@ -41484,6 +41597,28 @@ function (_React$Component9) {
       console.log("func 'handleUpdateGroup', START...");
       console.log("update information for group: ".concat(data));
       console.log("нужны еще данные по параметрам которые будут изменены");
+    }
+  }, {
+    key: "handlerModalConfirmShow",
+    value: function handlerModalConfirmShow(groupName) {
+      console.log("OPEN MODAL WINDOW DELETE GROUP");
+      console.log(groupName);
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.modalConfirm.show = true;
+      stateCopy.modalConfirm.groupName = groupName;
+      this.setState({
+        stateCopy: stateCopy
+      });
+    }
+  }, {
+    key: "handlerModalConfirmClose",
+    value: function handlerModalConfirmClose() {
+      var stateCopy = Object.assign({}, this.state);
+      stateCopy.modalConfirm.show = false;
+      stateCopy.modalConfirm.groupName = "";
+      this.setState({
+        stateCopy: stateCopy
+      });
     }
   }, {
     key: "addListeners",
@@ -41509,7 +41644,6 @@ function (_React$Component9) {
   }, {
     key: "addNewGroup",
     value: function addNewGroup(newGroup) {
-      console.log("function 'addNewGroup', START...");
       var newGroupObj = JSON.parse(newGroup);
       var groupName = newGroupObj.group_name;
       var newObj = {};
@@ -41523,24 +41657,27 @@ function (_React$Component9) {
         groupName: groupName,
         dateRegister: newGroupObj["date_register"]
       });
-      console.log("GROUP NAME: ".concat(groupName));
-      console.log(stateCopy);
       this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
-      console.log(this.listOtherGroup);
       this.setState({
         stateCopy: stateCopy
       });
-      console.log("function 'addNewGroup', END...");
     }
   }, {
     key: "updateGroup",
     value: function updateGroup(updateGroupInfo) {
       console.log("function 'updateGroup', START...");
+      console.log(updateGroupInfo);
+      console.log("function 'updateGroup', END...");
     }
   }, {
     key: "deleteGroup",
     value: function deleteGroup(delGroup) {
-      console.log("function 'deleteGroup', START...");
+      var groupInfo = JSON.parse(delGroup);
+      this.setState({
+        groupsName: this.state.groupsName.filter(function (item) {
+          return item.groupName !== groupInfo.groupName;
+        })
+      });
     }
   }, {
     key: "getGroupsName",
@@ -41633,7 +41770,7 @@ function (_React$Component9) {
         groupsName: this.state.groupsName,
         listAdmin: this.groupsAdministrator,
         accessRights: this.props.accessRights,
-        handleDeleteGroup: this.handleDeleteGroup,
+        handleDeleteGroup: this.handlerModalConfirmShow,
         handleUpdateGroup: this.handleUpdateGroup,
         handlerShowModal: this.handleShow
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement, {
@@ -41645,6 +41782,13 @@ function (_React$Component9) {
         onHide: this.handleClose,
         listelement: this.props.mainInformation.administrator.elements,
         handleAddNewGroup: this.handleAddNewGroup
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_6__["ModalWindowConfirmMessage"], {
+        show: this.state.modalConfirm.show,
+        onHide: this.handlerModalConfirmClose,
+        nameDel: this.state.modalConfirm.groupName,
+        handlerConfirm: this.handleDeleteGroup,
+        msgTitle: "Удаление",
+        msgBody: "\u0412\u044B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u0433\u0440\u0443\u043F\u043F\u0443 '".concat(this.state.modalConfirm.groupName, "'?")
       }));
     }
   }]);
@@ -41910,18 +42054,6 @@ function (_React$Component3) {
 
   return CreateTable;
 }(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-/**
- * <input
-                            className={this.props.classGroupNameValide}
-                            id="new_group_name"
-                            placeholder="новая группа"
-                            isValid={this.props.isValidGroupName}
-                            isInvalid={this.props.isInvalidGroupName}
-                            //defaultValue={this.props.groupName}
-                            onChange={this.handleChangeGroupName.bind(this)} />
-                        />
- */
-
 
 CreateTable.propTypes = {
   groupName: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
@@ -42030,7 +42162,7 @@ function (_React$Component4) {
   }, {
     key: "handleUserInput",
     value: function handleUserInput(groupName) {
-      if (!/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName)) {
+      if (!/\b^[a-zA-Z0-9_-]{4,}$\b/.test(groupName)) {
         return this.setState({
           groupNameValide: false,
           isValidGroupName: false,
@@ -42087,8 +42219,7 @@ function (_React$Component4) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, {
         id: "contained-modal-title-vcenter"
       }, "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0433\u0440\u0443\u043F\u043F\u0443")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
-        listelement: this.props.listelement //checkboxMarked={this.state.checkboxMarked}
-        ,
+        listelement: this.props.listelement,
         checkboxMarked: this.checkboxMarkedList,
         groupName: this.state.groupName,
         isValidGroupName: this.state.isValidGroupName,

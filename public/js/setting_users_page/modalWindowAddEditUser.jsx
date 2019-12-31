@@ -106,6 +106,7 @@ class ModalWindowAddEdit extends React.Component {
         let objUpdate = Object.assign({}, this.state);
         for(let elem in objUpdate.formElements){
             if (elem === "workGroup") continue;
+            
             objUpdate.formElements[elem].isValid = false;
             objUpdate.formElements[elem].isInvalid = false;    
         }

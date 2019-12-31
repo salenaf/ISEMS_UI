@@ -137,20 +137,19 @@ class CreateTable extends React.Component {
             let arrTD = [];
 
             for (let i = 1; i <= 2; i++) {
-                arrTD.push(
-                    <td
-                        key={`td_${this.props.listelement[item].id}_${i}`}
-                        className={(i === 2) ? "text-center" : ""} >
+                arrTD.push(<td
+                    key={`td_${this.props.listelement[item].id}_${i}`}
+                    className={(i === 2) ? "text-center" : ""} >
 
-                        <CreateListCategory
-                            listelement={this.props.listelement[item]}
-                            checkboxMarked={this.props.checkboxMarked}
-                            itemName={item}
-                            countSend={1}
-                            isListName={(i % 2) ? true : false}
-                            onChangeUserInput={this.props.onChangeUserInput}
-                            key={`${this.props.listelement[item].id}_${i}`} />
-                    </td>);
+                    <CreateListCategory
+                        listelement={this.props.listelement[item]}
+                        checkboxMarked={this.props.checkboxMarked}
+                        itemName={item}
+                        countSend={1}
+                        isListName={(i % 2) ? true : false}
+                        onChangeUserInput={this.props.onChangeUserInput}
+                        key={`${this.props.listelement[item].id}_${i}`} />
+                </td>);
             }
 
             tableBody.push(<tr key={`tr_${this.props.listelement[item].id}`}>{arrTD}</tr>);
@@ -181,18 +180,6 @@ class CreateTable extends React.Component {
         </Table>;
     }
 }
-
-/**
- * <input
-                            className={this.props.classGroupNameValide}
-                            id="new_group_name"
-                            placeholder="новая группа"
-                            isValid={this.props.isValidGroupName}
-                            isInvalid={this.props.isInvalidGroupName}
-                            //defaultValue={this.props.groupName}
-                            onChange={this.handleChangeGroupName.bind(this)} />
-                        />
- */
 
 CreateTable.propTypes = {
     groupName: PropTypes.string.isRequired,
@@ -286,7 +273,7 @@ class ModalWindowAddNewGroup extends React.Component {
     }
 
     handleUserInput(groupName) {
-        if (!(/\b^[a-zA-Z0-9]{4,}$\b/.test(groupName))) {
+        if (!(/\b^[a-zA-Z0-9_-]{4,}$\b/.test(groupName))) {
             return this.setState({
                 groupNameValide: false,
                 isValidGroupName: false,
@@ -344,7 +331,6 @@ class ModalWindowAddNewGroup extends React.Component {
             <Modal.Body>
                 <CreateTable
                     listelement={this.props.listelement}
-                    //checkboxMarked={this.state.checkboxMarked}
                     checkboxMarked={this.checkboxMarkedList}
                     groupName={this.state.groupName}
                     isValidGroupName={this.state.isValidGroupName}

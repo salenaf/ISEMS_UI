@@ -13,6 +13,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "./common_helpers/helpers";
 import ModalWindowAddNewGroup from "./setting_groups_page/modalWindowAddNewGroup.jsx";
+import { ModalWindowConfirmMessage } from "./commons/modalWindowConfirmMessage.jsx";
 
 //перечисление типов действий доступных для администратора
 class CreateListCategoryMain extends React.Component {
@@ -335,6 +336,10 @@ class CreateTable extends React.Component {
         super(props);
 
         this.state = {
+            modalConfirm: {
+                show: false,
+                groupName: "",
+            },
             modalWindowAddShow: false,
             groupsName: this.getGroupsName(),
         };
@@ -350,6 +355,9 @@ class CreateTable extends React.Component {
         this.handleAddNewGroup = this.handleAddNewGroup.bind(this);
         this.handleUpdateGroup = this.handleUpdateGroup.bind(this);
         this.handleDeleteGroup = this.handleDeleteGroup.bind(this);
+
+        this.handlerModalConfirmShow = this.handlerModalConfirmShow.bind(this);
+        this.handlerModalConfirmClose = this.handlerModalConfirmClose.bind(this);
 
         this.addListeners();
     }
@@ -369,13 +377,15 @@ class CreateTable extends React.Component {
         });
     }
 
-    handleDeleteGroup(groupName){
+    handleDeleteGroup(){
         this.props.socketIo.emit("delete group", {
-            actionType: "create",
+            actionType: "delete",
             arguments: {
-                groupName: groupName,
+                groupName: this.state.modalConfirm.groupName,
             },
         });
+
+        this.handlerModalConfirmClose();
     }
 
     handleUpdateGroup(data){
@@ -383,6 +393,27 @@ class CreateTable extends React.Component {
         console.log(`update information for group: ${data}`);
         console.log("нужны еще данные по параметрам которые будут изменены");
 
+    }
+
+    handlerModalConfirmShow(groupName){
+        console.log("OPEN MODAL WINDOW DELETE GROUP");
+        console.log(groupName);
+
+        let stateCopy = Object.assign({}, this.state);
+ 
+        stateCopy.modalConfirm.show = true;
+        stateCopy.modalConfirm.groupName = groupName;
+ 
+        this.setState({stateCopy});
+    }
+
+    handlerModalConfirmClose(){
+        let stateCopy = Object.assign({}, this.state);
+ 
+        stateCopy.modalConfirm.show = false;
+        stateCopy.modalConfirm.groupName = "";
+ 
+        this.setState({stateCopy});
     }
 
     addListeners(){
@@ -404,8 +435,6 @@ class CreateTable extends React.Component {
     }
 
     addNewGroup(newGroup){
-        console.log("function 'addNewGroup', START...");
-
         let newGroupObj = JSON.parse(newGroup);
         let groupName = newGroupObj.group_name;
 
@@ -422,24 +451,22 @@ class CreateTable extends React.Component {
             dateRegister: newGroupObj["date_register"],
         });
 
-        console.log(`GROUP NAME: ${groupName}`);
-        console.log(stateCopy);
-
         this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
-
-        console.log(this.listOtherGroup);
-
         this.setState({stateCopy});
-
-        console.log("function 'addNewGroup', END...");
     }
 
     updateGroup(updateGroupInfo){
         console.log("function 'updateGroup', START...");
+        console.log(updateGroupInfo);
+        console.log("function 'updateGroup', END...");
     }
 
     deleteGroup(delGroup){
-        console.log("function 'deleteGroup', START...");
+        let groupInfo = JSON.parse(delGroup);
+
+        this.setState({ 
+            groupsName: this.state.groupsName.filter(item => item.groupName !== groupInfo.groupName), 
+        });
     }
 
     getGroupsName() {
@@ -508,7 +535,7 @@ class CreateTable extends React.Component {
                             groupsName={this.state.groupsName}
                             listAdmin={this.groupsAdministrator}
                             accessRights={this.props.accessRights}
-                            handleDeleteGroup={this.handleDeleteGroup}
+                            handleDeleteGroup={this.handlerModalConfirmShow}
                             handleUpdateGroup={this.handleUpdateGroup} 
                             handlerShowModal={this.handleShow}/>
                     </tr>
@@ -525,6 +552,13 @@ class CreateTable extends React.Component {
                 onHide={this.handleClose}
                 listelement={this.props.mainInformation.administrator.elements}
                 handleAddNewGroup={this.handleAddNewGroup} />
+            <ModalWindowConfirmMessage
+                show={this.state.modalConfirm.show} 
+                onHide={this.handlerModalConfirmClose}
+                nameDel={this.state.modalConfirm.groupName}
+                handlerConfirm={this.handleDeleteGroup}
+                msgTitle={"Удаление"}
+                msgBody={`Вы действительно хотите удалить группу '${this.state.modalConfirm.groupName}'?`} />
         </div>;
     }
 }

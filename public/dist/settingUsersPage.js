@@ -40822,7 +40822,7 @@ var helpers = {
       "countProcess": new RegExp("^[0-9]{1}$"),
       "intervalTransmission": new RegExp("^[0-9]{1,}$"),
       "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
-      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
+      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),
       "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
     };
     var pattern = objSettings[elem.name];
@@ -40994,7 +40994,7 @@ function (_React$Component) {
   }, {
     key: "handlerConfirm",
     value: function handlerConfirm() {
-      this.props.handlerConfirm(this.props.userID);
+      this.props.handlerConfirm(this.props.nameDel);
     }
   }, {
     key: "render",
@@ -41022,7 +41022,7 @@ ModalWindowConfirmMessage.propTypes = {
   onHide: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
   msgBody: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
   msgTitle: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
-  userID: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
+  nameDel: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.string.isRequired,
   handlerConfirm: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
 };
 
@@ -41505,10 +41505,10 @@ function (_React$Component5) {
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowConfirmMessage_jsx__WEBPACK_IMPORTED_MODULE_5__["ModalWindowConfirmMessage"], {
         show: this.state.modalConfirm.show,
         onHide: this.handlerModalConfirmClose,
-        userID: this.state.modalConfirm.userID,
+        nameDel: this.state.modalConfirm.userID,
         handlerConfirm: this.sendMsgDeleteUser,
         msgTitle: "Удаление",
-        msgBody: "\u0412\u044B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F ".concat(this.state.modalConfirm.userLogin, "?")
+        msgBody: "\u0412\u044B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F '".concat(this.state.modalConfirm.userLogin, "'?")
       }));
     }
   }]);

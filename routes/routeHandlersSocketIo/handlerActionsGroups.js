@@ -70,7 +70,7 @@ function addGroup(socketIo, data) {
                 throw new MyError("group management", "Невозможно добавить новоую группу пользователей. Недостаточно прав на выполнение данного действия.");
             }
 
-            if (!(/\b^[a-zA-Z0-9]+$\b/.test(groupName))) {
+            if (!(/\b^[a-zA-Z0-9_-]+$\b/.test(groupName))) {
                 throw new MyError("group management", "Невозможно добавить новоую группу пользователей. Задано неверное имя группы.");
             }
 
@@ -88,7 +88,6 @@ function addGroup(socketIo, data) {
                     reject(new MyError("group management", "Невозможно добавить новоую группу пользователей. Группа с таким именем уже существует."));
                 });
             });
-
         }).then(() => {
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.querySelect(models.modelGroup, {
@@ -195,13 +194,11 @@ function addGroup(socketIo, data) {
 }
 
 function updateGroup(socketIo, data) {
-
+    debug("func 'updateGroup', START...");
+    debug(data);
 }
 
 function deleteGroup(socketIo, data) {
-    debug("func 'deleteGroup', START...");
-    debug(data);
-
     const errMsg = "Невозможно удалить группу пользователей. Получены некорректные данные.";
     if(typeof data.arguments === "undefined"){
         showNotify({
@@ -233,30 +230,70 @@ function deleteGroup(socketIo, data) {
     checkUserAuthentication(socketIo)
         .then(authData => {
             //авторизован ли пользователь
-            if (!authData.isAuthentication) {
+            if(!authData.isAuthentication) {
                 throw new MyError("group management", "Пользователь не авторизован.");
             }
 
-            //может ли пользователь создавать новоую группу пользователей
-            if (!authData.document.groupSettings.management_groups.element_settings.delete.status) {
-                throw new MyError("group management", "Невозможно добавить новоую группу пользователей. Недостаточно прав на выполнение данного действия.");
+            //может ли пользователь удалять группу пользователей
+            if(!authData.document.groupSettings.management_groups.element_settings.delete.status) {
+                throw new MyError("group management", "Невозможно удалить группу пользователей. Недостаточно прав на выполнение данного действия.");
             }
 
-            if (!(/\b^[a-zA-Z0-9]+$\b/.test(groupName))) {
-                throw new MyError("group management", "Невозможно добавить новоую группу пользователей. Задано неверное имя группы.");
+            if(!(/\b^[a-zA-Z0-9_-]+$\b/.test(groupName))) {
+                throw new MyError("group management", "Невозможно удалить группу пользователей. Задано неверное имя группы.");
             }
 
+            if(groupName.toLowerCase() === "administrator"){
+                throw new MyError("group management", "Невозможно удалить группу пользователей с именем 'administrator'.");
+            }
         }).then(() => {
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(models.modelGroup, {
+                    query: { group_name: groupName },
+                    select: { _id: 0, __v: 0, date_register: 0, group_name: 0 }
+                }, (err, results) => {
+                    if (err) reject(err);
+                    if(!results){
+                        reject(new MyError("group management", "Невозможно удалить группу пользователей. Группы с таким именем не существует."));
+                    }
 
+                    resolve();
+                });
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(models.modelUser, { isMany: true, select: { 
+                    _id: 0, 
+                    login: 1,
+                    group: 1,
+                }}, (err, users) => {
+                    if(err) reject(err);
+                    else resolve(users);
+                });
+            });
+        }).then(userList => {
+            for(let item of userList){
+                if(item.group === groupName.toLowerCase()){
+                    throw new MyError("group management", `Невозможно удалить группу пользователей. Есть пользователи входящие в состав группы '${groupName}'.`);
+                }
+            }
+        }).then(() => {
+            return new Promise((resolve,reject) => {
+                mongodbQueryProcessor.queryDelete(models.modelGroup, { query: { group_name: groupName } }, err => {
+                    if (err) reject(err);
+                    resolve();
+                });
+            });
+        }).then(() => {
+            socketIo.emit("del selected group", JSON.stringify({
+                groupName: groupName,
+            }));
 
-            /**
-     * Нужно сделать удаление группы
-     * 
-     * 1. Проверить есть ли такая группа
-     * 2. Удаляемая группа не является группой 'administrator'
-     * 3. Выполнить удаление группы
-     */
-
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: `Группа с именем '${groupName}' была успешно удалена.`,
+            });
         }).catch(err => {
             if (err.name === "group management") {
                 return showNotify({

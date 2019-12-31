@@ -24,7 +24,7 @@ class ModalWindowConfirmMessage extends React.Component {
     }
 
     handlerConfirm(){
-        this.props.handlerConfirm(this.props.userID);
+        this.props.handlerConfirm(this.props.nameDel);
     }
 
     render(){
@@ -48,7 +48,7 @@ ModalWindowConfirmMessage.propTypes = {
     onHide: PropTypes.func.isRequired,
     msgBody: PropTypes.string.isRequired,
     msgTitle: PropTypes.string.isRequired,
-    userID: PropTypes.string.isRequired,
+    nameDel: PropTypes.string.isRequired,
     handlerConfirm: PropTypes.func.isRequired,
 };
 

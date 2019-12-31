@@ -383,10 +383,10 @@ class CreateTable extends React.Component {
                 <ModalWindowConfirmMessage
                     show={this.state.modalConfirm.show} 
                     onHide={this.handlerModalConfirmClose}
-                    userID={this.state.modalConfirm.userID}
+                    nameDel={this.state.modalConfirm.userID}
                     handlerConfirm={this.sendMsgDeleteUser}
                     msgTitle={"Удаление"}
-                    msgBody={`Вы действительно хотите удалить пользователя ${this.state.modalConfirm.userLogin}?`} />
+                    msgBody={`Вы действительно хотите удалить пользователя '${this.state.modalConfirm.userLogin}'?`} />
             </div>
         );
     }

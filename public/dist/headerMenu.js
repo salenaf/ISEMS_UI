@@ -40822,7 +40822,7 @@ var helpers = {
       "countProcess": new RegExp("^[0-9]{1}$"),
       "intervalTransmission": new RegExp("^[0-9]{1,}$"),
       "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
-      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_]{4,}$"),
+      "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),
       "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$")
     };
     var pattern = objSettings[elem.name];
