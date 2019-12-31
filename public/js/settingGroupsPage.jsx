@@ -1,7 +1,7 @@
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.1, дата релиза 31.01.2019
+ * Версия 0.2, дата релиза 31.01.2019
  */
 
 "use strict";
@@ -31,7 +31,8 @@ class CreateListCategoryMain extends React.Component {
         let createCategoryValue = <CreateCategoryValue
             list={this.props.list}
             listOtherGroup={this.props.listOtherGroup}
-            parameters={this.props.parameters} />;
+            parameters={this.props.parameters} 
+            handleCheckedItem={this.props.handleCheckedItem} />;
 
         if (this.props.parameters.group === "administrator") {
             if (this.props.parameters.first) {
@@ -69,7 +70,8 @@ class CreateListCategoryMain extends React.Component {
 CreateListCategoryMain.propTypes = {
     list: PropTypes.object.isRequired,
     listOtherGroup: PropTypes.object.isRequired,
-    parameters: PropTypes.object.isRequired
+    parameters: PropTypes.object.isRequired,
+    handleCheckedItem: PropTypes.func.isRequired,
 };
 
 //перечисление значений 
@@ -93,6 +95,7 @@ class CreateCategoryValue extends React.Component {
                         list={this.props.list[item]}
                         listOtherGroup={this.props.listOtherGroup}
                         parameters={parameters}
+                        handleCheckedItem={this.props.handleCheckedItem}
                         key={`return_${this.props.list[item].id}`} />);
 
                 continue;
@@ -118,6 +121,11 @@ class CreateCategoryValue extends React.Component {
                     <input
                         type="checkbox"
                         defaultChecked={groupObj.status}
+                        onClick={this.props.handleCheckedItem.bind(null, {
+                            groupName: this.props.parameters.group,
+                            id: this.props.list[item].id,
+                            keyID: groupObj.keyID,
+                        })}
                         name={`checkbox_${this.props.parameters.group}`} />&nbsp;
                 </div>);
         }
@@ -129,7 +137,8 @@ class CreateCategoryValue extends React.Component {
 CreateCategoryValue.propTypes = {
     list: PropTypes.object.isRequired,
     listOtherGroup: PropTypes.object.isRequired,
-    parameters: PropTypes.object.isRequired
+    parameters: PropTypes.object.isRequired,
+    handleCheckedItem: PropTypes.func.isRequired,
 };
 
 //кнопка 'добавить' новую группу
@@ -278,9 +287,12 @@ ShowDateCreateGroup.propTypes = {
 };
 
 class CreateBodyElement extends React.Component {
-    createElement() {
-        let { groupsName, listAdmin, listOtherGroup } = this.props;
+    constructor(props){
+        super(props);
+    }
 
+    createElement() {
+        let { groupsName, listAdmin, listOtherGroup, handleCheckedItem } = this.props;
 
         let arrTmp = [];
         for (let item in listAdmin.elements) {           
@@ -298,6 +310,7 @@ class CreateBodyElement extends React.Component {
                             list={listAdmin.elements[item]}
                             listOtherGroup={listOtherGroup}
                             parameters={listCategoryParameters}
+                            handleCheckedItem={handleCheckedItem}
                             key={listAdmin.elements[item].id} />
                     </td>;    
                 }
@@ -307,6 +320,7 @@ class CreateBodyElement extends React.Component {
                         list={listAdmin.elements[item]}
                         listOtherGroup={listOtherGroup}
                         parameters={listCategoryParameters}
+                        handleCheckedItem={handleCheckedItem}
                         key={listAdmin.elements[item].id} />
                 </td>;
             });
@@ -318,9 +332,7 @@ class CreateBodyElement extends React.Component {
     }
 
     render() {
-        let arrBody = this.createElement.call(this);
-
-        return arrBody;
+        return this.createElement.call(this);
     }
 }
 
@@ -328,6 +340,7 @@ CreateBodyElement.propTypes = {
     groupsName: PropTypes.array.isRequired,
     listAdmin: PropTypes.object.isRequired,
     listOtherGroup: PropTypes.objectOf(PropTypes.object).isRequired,
+    handleCheckedItem: PropTypes.func.isRequired,
 };
 
 //создание основной таблицы
@@ -344,8 +357,10 @@ class CreateTable extends React.Component {
             groupsName: this.getGroupsName(),
         };
 
-        this.groupsAdministrator = this.props.mainInformation.administrator;        
+        this.groupsAdministrator = this.props.mainInformation.administrator;
         this.listOtherGroup = this.changeListGroupsInformation(this.props.mainInformation);
+
+        this.handleCheckedItem = this.handleCheckedItem.bind(this);
 
         this.handleShow = this.handleShow.bind(this);
         this.handleClose= this.handleClose.bind(this);
@@ -388,17 +403,44 @@ class CreateTable extends React.Component {
         this.handlerModalConfirmClose();
     }
 
-    handleUpdateGroup(data){
+    handleUpdateGroup(groupName){
         console.log("func 'handleUpdateGroup', START...");
-        console.log(`update information for group: ${data}`);
-        console.log("нужны еще данные по параметрам которые будут изменены");
+        console.log(`update information for group: ${groupName}`);
+        
+        let numIsTrue =0;
+        let numIsFalse = 0;
+        let listOtherGroup = this.listOtherGroup[groupName];
+        for(let item in listOtherGroup){
+            if(listOtherGroup[item].status) numIsTrue++;
+            else numIsFalse++;
+        }
+        
+        console.log(`Выделенных элементов: ${numIsTrue}, не выделенных: ${numIsFalse}`);
 
+        this.props.socketIo.emit("update group", {
+            actionType: "update",
+            arguments: {
+                groupName: groupName,
+                listPossibleActions: listOtherGroup,
+            },
+        });
+    }
+
+    handleCheckedItem(data, e){
+        for(let item in this.listOtherGroup){
+            if(item !== data.groupName) continue;
+            
+            for(let ID in this.listOtherGroup[item]){
+                if((ID === data.id) && (this.listOtherGroup[item][ID].keyID === data.keyID)){
+                    this.listOtherGroup[item][ID].status = e.target.checked;
+
+                    return;
+                }
+            }   
+        }
     }
 
     handlerModalConfirmShow(groupName){
-        console.log("OPEN MODAL WINDOW DELETE GROUP");
-        console.log(groupName);
-
         let stateCopy = Object.assign({}, this.state);
  
         stateCopy.modalConfirm.show = true;
@@ -537,14 +579,15 @@ class CreateTable extends React.Component {
                             accessRights={this.props.accessRights}
                             handleDeleteGroup={this.handlerModalConfirmShow}
                             handleUpdateGroup={this.handleUpdateGroup} 
-                            handlerShowModal={this.handleShow}/>
+                            handlerShowModal={this.handleShow} />
                     </tr>
                 </thead>
                 <tbody>
                     <CreateBodyElement
                         groupsName={this.state.groupsName}
                         listAdmin={this.groupsAdministrator}
-                        listOtherGroup={this.listOtherGroup}/>                    
+                        listOtherGroup={this.listOtherGroup}
+                        handleCheckedItem={this.handleCheckedItem} />
                 </tbody>
             </Table>
             <ModalWindowAddNewGroup
@@ -565,8 +608,8 @@ class CreateTable extends React.Component {
 
 CreateTable.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    accessRights: PropTypes.object.isRequired,
     mainInformation: PropTypes.object.isRequired,
-    accessRights: PropTypes.object.isRequired
 };
 
 ReactDOM.render(<CreateTable 

@@ -41051,7 +41051,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.1, дата релиза 31.01.2019
+ * Версия 0.2, дата релиза 31.01.2019
  */
 
 
@@ -41117,7 +41117,8 @@ function (_React$Component) {
       var createCategoryValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateCategoryValue, {
         list: this.props.list,
         listOtherGroup: this.props.listOtherGroup,
-        parameters: this.props.parameters
+        parameters: this.props.parameters,
+        handleCheckedItem: this.props.handleCheckedItem
       });
 
       if (this.props.parameters.group === "administrator") {
@@ -41152,7 +41153,8 @@ function (_React$Component) {
 CreateListCategoryMain.propTypes = {
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handleCheckedItem: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 }; //перечисление значений 
 
 var CreateCategoryValue =
@@ -41185,6 +41187,7 @@ function (_React$Component2) {
             list: this.props.list[item],
             listOtherGroup: this.props.listOtherGroup,
             parameters: parameters,
+            handleCheckedItem: this.props.handleCheckedItem,
             key: "return_".concat(this.props.list[item].id)
           }));
           continue;
@@ -41208,6 +41211,11 @@ function (_React$Component2) {
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
           type: "checkbox",
           defaultChecked: groupObj.status,
+          onClick: this.props.handleCheckedItem.bind(null, {
+            groupName: this.props.parameters.group,
+            id: this.props.list[item].id,
+            keyID: groupObj.keyID
+          }),
           name: "checkbox_".concat(this.props.parameters.group)
         }), "\xA0"));
       }
@@ -41222,7 +41230,8 @@ function (_React$Component2) {
 CreateCategoryValue.propTypes = {
   list: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
   listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  parameters: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  handleCheckedItem: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 }; //кнопка 'добавить' новую группу
 
 var ButtonAddGroup =
@@ -41449,10 +41458,10 @@ var CreateBodyElement =
 function (_React$Component8) {
   _inherits(CreateBodyElement, _React$Component8);
 
-  function CreateBodyElement() {
+  function CreateBodyElement(props) {
     _classCallCheck(this, CreateBodyElement);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(CreateBodyElement).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(CreateBodyElement).call(this, props));
   }
 
   _createClass(CreateBodyElement, [{
@@ -41461,7 +41470,8 @@ function (_React$Component8) {
       var _this$props = this.props,
           groupsName = _this$props.groupsName,
           listAdmin = _this$props.listAdmin,
-          listOtherGroup = _this$props.listOtherGroup;
+          listOtherGroup = _this$props.listOtherGroup,
+          handleCheckedItem = _this$props.handleCheckedItem;
       var arrTmp = [];
 
       var _loop = function _loop(item) {
@@ -41480,6 +41490,7 @@ function (_React$Component8) {
               list: listAdmin.elements[item],
               listOtherGroup: listOtherGroup,
               parameters: listCategoryParameters,
+              handleCheckedItem: handleCheckedItem,
               key: listAdmin.elements[item].id
             }));
           }
@@ -41490,6 +41501,7 @@ function (_React$Component8) {
             list: listAdmin.elements[item],
             listOtherGroup: listOtherGroup,
             parameters: listCategoryParameters,
+            handleCheckedItem: handleCheckedItem,
             key: listAdmin.elements[item].id
           }));
         });
@@ -41507,8 +41519,7 @@ function (_React$Component8) {
   }, {
     key: "render",
     value: function render() {
-      var arrBody = this.createElement.call(this);
-      return arrBody;
+      return this.createElement.call(this);
     }
   }]);
 
@@ -41518,7 +41529,8 @@ function (_React$Component8) {
 CreateBodyElement.propTypes = {
   groupsName: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.array.isRequired,
   listAdmin: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.objectOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired
+  listOtherGroup: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.objectOf(prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object).isRequired,
+  handleCheckedItem: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.func.isRequired
 }; //создание основной таблицы
 
 var CreateTable =
@@ -41542,6 +41554,7 @@ function (_React$Component9) {
     };
     _this3.groupsAdministrator = _this3.props.mainInformation.administrator;
     _this3.listOtherGroup = _this3.changeListGroupsInformation(_this3.props.mainInformation);
+    _this3.handleCheckedItem = _this3.handleCheckedItem.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleShow = _this3.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleClose = _this3.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.addNewGroup = _this3.addNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
@@ -41593,16 +41606,43 @@ function (_React$Component9) {
     }
   }, {
     key: "handleUpdateGroup",
-    value: function handleUpdateGroup(data) {
+    value: function handleUpdateGroup(groupName) {
       console.log("func 'handleUpdateGroup', START...");
-      console.log("update information for group: ".concat(data));
-      console.log("нужны еще данные по параметрам которые будут изменены");
+      console.log("update information for group: ".concat(groupName));
+      var numIsTrue = 0;
+      var numIsFalse = 0;
+      var listOtherGroup = this.listOtherGroup[groupName];
+
+      for (var item in listOtherGroup) {
+        if (listOtherGroup[item].status) numIsTrue++;else numIsFalse++;
+      }
+
+      console.log("\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432: ".concat(numIsTrue, ", \u043D\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445: ").concat(numIsFalse));
+      this.props.socketIo.emit("update group", {
+        actionType: "update",
+        arguments: {
+          groupName: groupName,
+          listPossibleActions: listOtherGroup
+        }
+      });
+    }
+  }, {
+    key: "handleCheckedItem",
+    value: function handleCheckedItem(data, e) {
+      for (var item in this.listOtherGroup) {
+        if (item !== data.groupName) continue;
+
+        for (var ID in this.listOtherGroup[item]) {
+          if (ID === data.id && this.listOtherGroup[item][ID].keyID === data.keyID) {
+            this.listOtherGroup[item][ID].status = e.target.checked;
+            return;
+          }
+        }
+      }
     }
   }, {
     key: "handlerModalConfirmShow",
     value: function handlerModalConfirmShow(groupName) {
-      console.log("OPEN MODAL WINDOW DELETE GROUP");
-      console.log(groupName);
       var stateCopy = Object.assign({}, this.state);
       stateCopy.modalConfirm.show = true;
       stateCopy.modalConfirm.groupName = groupName;
@@ -41776,7 +41816,8 @@ function (_React$Component9) {
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("tbody", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateBodyElement, {
         groupsName: this.state.groupsName,
         listAdmin: this.groupsAdministrator,
-        listOtherGroup: this.listOtherGroup
+        listOtherGroup: this.listOtherGroup,
+        handleCheckedItem: this.handleCheckedItem
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_setting_groups_page_modalWindowAddNewGroup_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
         show: this.state.modalWindowAddShow,
         onHide: this.handleClose,
@@ -41798,8 +41839,8 @@ function (_React$Component9) {
 
 CreateTable.propTypes = {
   socketIo: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
-  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
+  accessRights: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired,
+  mainInformation: prop_types__WEBPACK_IMPORTED_MODULE_3___default.a.object.isRequired
 };
 react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(CreateTable, {
   mainInformation: receivedFromServerMain,
