@@ -41554,11 +41554,11 @@ function (_React$Component9) {
     };
     _this3.groupsAdministrator = _this3.props.mainInformation.administrator;
     _this3.listOtherGroup = _this3.changeListGroupsInformation(_this3.props.mainInformation);
+    _this3.listOtherGroupBefore = Object.assign({}, _this3.listOtherGroup);
     _this3.handleCheckedItem = _this3.handleCheckedItem.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleShow = _this3.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleClose = _this3.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.addNewGroup = _this3.addNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
-    _this3.updateGroup = _this3.updateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.deleteGroup = _this3.deleteGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleAddNewGroup = _this3.handleAddNewGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleUpdateGroup = _this3.handleUpdateGroup.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
@@ -41609,19 +41609,51 @@ function (_React$Component9) {
     value: function handleUpdateGroup(groupName) {
       console.log("func 'handleUpdateGroup', START...");
       console.log("update information for group: ".concat(groupName));
-      var numIsTrue = 0;
-      var numIsFalse = 0;
+
+      var getCountSelectedItem = function getCountSelectedItem(listElem) {
+        var result = {
+          itemNumIsTrue: 0,
+          itemNumIsFalse: 0
+        };
+
+        for (var item in listElem) {
+          if (listElem[item].status) result.itemNumIsTrue++;else result.itemNumIsFalse++;
+        }
+
+        return result;
+      };
+
       var listOtherGroup = this.listOtherGroup[groupName];
 
-      for (var item in listOtherGroup) {
-        if (listOtherGroup[item].status) numIsTrue++;else numIsFalse++;
-      }
+      var _getCountSelectedItem = getCountSelectedItem(this.listOtherGroupBefore[groupName]),
+          numIsTrueB = _getCountSelectedItem.itemNumIsTrue,
+          numIsFalseB = _getCountSelectedItem.itemNumIsFalse;
 
-      console.log("\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432: ".concat(numIsTrue, ", \u043D\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445: ").concat(numIsFalse));
+      var _getCountSelectedItem2 = getCountSelectedItem(listOtherGroup),
+          numIsTrueA = _getCountSelectedItem2.itemNumIsTrue,
+          numIsFalseA = _getCountSelectedItem2.itemNumIsFalse;
+
+      console.log("\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432: ".concat(numIsTrueB, ", \u043D\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445: ").concat(numIsFalseB, " (\u0414\u041E)\n\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432: ").concat(numIsTrueA, ", \u043D\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445: ").concat(numIsFalseA, " (\u041F\u041E\u0421\u041B\u0415)"));
+      /**
+      * Не могу проверить измененые данные
+      * почему то при изменении обекта this.listOtherGroup[groupName]
+      * меняется и обект  this.listOtherGroupBefore[groupName]
+      */
+
       this.props.socketIo.emit("update group", {
         actionType: "update",
         arguments: {
           groupName: groupName,
+          countSelectedElement: {
+            before: {
+              numIsTrue: numIsTrueB,
+              numIsFalse: numIsFalseB
+            },
+            after: {
+              numIsTrue: numIsTrueA,
+              numIsFalse: numIsFalseA
+            }
+          },
           listPossibleActions: listOtherGroup
         }
       });
@@ -41634,7 +41666,9 @@ function (_React$Component9) {
 
         for (var ID in this.listOtherGroup[item]) {
           if (ID === data.id && this.listOtherGroup[item][ID].keyID === data.keyID) {
+            console.log(this.listOtherGroupBefore[item][ID].status);
             this.listOtherGroup[item][ID].status = e.target.checked;
+            console.log(this.listOtherGroupBefore[item][ID].status);
             return;
           }
         }
@@ -41669,9 +41703,6 @@ function (_React$Component9) {
         "add new group": function addNewGroup(newGroup) {
           _this4.addNewGroup(newGroup);
         },
-        "update group": function updateGroup(updateGroupInfo) {
-          _this4.updateGroup(updateGroupInfo);
-        },
         "del selected group": function delSelectedGroup(delGroup) {
           _this4.deleteGroup(delGroup);
         }
@@ -41698,16 +41729,10 @@ function (_React$Component9) {
         dateRegister: newGroupObj["date_register"]
       });
       this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
+      this.listOtherGroupBefore = Object.assign(this.listOtherGroupBefore, this.listOtherGroup);
       this.setState({
         stateCopy: stateCopy
       });
-    }
-  }, {
-    key: "updateGroup",
-    value: function updateGroup(updateGroupInfo) {
-      console.log("function 'updateGroup', START...");
-      console.log(updateGroupInfo);
-      console.log("function 'updateGroup', END...");
     }
   }, {
     key: "deleteGroup",

@@ -200,6 +200,14 @@ function updateGroup(socketIo, data) {
     debug("func 'updateGroup', START...");
     debug(data);
 
+    const checkSelectedElement = function(obj){
+        if (typeof obj === "undefined") return false;
+        if((typeof obj.before === "undefined") || (typeof obj.after === "undefined")) return false;
+        if((obj.before.numIsTrue === obj.after.numIsTrue) && (obj.before.numIsFalse === obj.after.numIsFalse)) return false;
+
+        return true;
+    };
+
     const errMsg = "Невозможно изменить информацию о группе. Получены некорректные данные.";
     if(typeof data.arguments === "undefined"){
         showNotify({
@@ -225,6 +233,16 @@ function updateGroup(socketIo, data) {
         return;
     }
 
+    if(!checkSelectedElement(data.arguments.countSelectedElement)){
+        showNotify({
+            socketIo: socketIo,
+            type: "warning",
+            message: `Информация о группе '${data.arguments.groupName}' не изменялась, запись в базу данных не осуществляется.`,
+        });
+
+        return;
+    }
+
     let groupName = data.arguments.groupName;
     let listPossibleActions = data.arguments.listPossibleActions;
 
@@ -241,7 +259,7 @@ function updateGroup(socketIo, data) {
 
             debug("может ли пользователь создавать новоую группу пользователей");
 
-            //может ли пользователь создавать новоую группу пользователей
+            //может ли пользователь редактировать информацию о группе пользователей
             if (!authData.document.groupSettings.management_groups.element_settings.edit.status) {
                 throw new MyError("group management", "Невозможно изменить информацию о группе. Недостаточно прав на выполнение данного действия.");
             }
@@ -274,7 +292,7 @@ function updateGroup(socketIo, data) {
                 let countIsTrue = 0;
                 let countIsFalse = 0;
 
-                let rangeElem = (list)=>{
+                let rangeElem = (list) => {
                     for(let item in list){
                         if(typeof list[item] !== "object") continue;
             
@@ -349,28 +367,24 @@ function updateGroup(socketIo, data) {
         }).then(listElements => {
 
             debug("получаем измененный объект и записываем его в БД");
-            //debug(listElements);
-            return new Promise((resolve, reject) => {
-                /*mongodbQueryProcessor.queryUpdate(models.modelUser, {
-        id: userInfo.id,
-        update: userInfoUpdate,
-    }, err => {
-        if (err) reject(err);
-        else resolve(updateUser);
-    });*/
-
-                /**
- * 
- * Доделать изменение информации о группе.
- * Статусы объекте listElements изменил, нужно записать информацию в БД!!!
- * Функция testCountElemStatus тестовая, она показывает количество
- * элементов со занчениями TRUE и FALSE.
- * 
- */
-            });
+            debug(listElements);
             
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.queryUpdate(models.modelGroup, {
+                    id: listElements.id,
+                    update: listElements,
+                }, err => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });           
         }).then(() => {
-
+            //отправляем информационное сообщение о выполненной задаче
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: `Информация о группе пользователей '${groupName}' была успешно изменена.`
+            });
         }).catch(err => {
 
             debug(err);

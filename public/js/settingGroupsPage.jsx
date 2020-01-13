@@ -359,13 +359,13 @@ class CreateTable extends React.Component {
 
         this.groupsAdministrator = this.props.mainInformation.administrator;
         this.listOtherGroup = this.changeListGroupsInformation(this.props.mainInformation);
+        this.listOtherGroupBefore = Object.assign({}, this.listOtherGroup);
 
         this.handleCheckedItem = this.handleCheckedItem.bind(this);
 
         this.handleShow = this.handleShow.bind(this);
         this.handleClose= this.handleClose.bind(this);
         this.addNewGroup = this.addNewGroup.bind(this);
-        this.updateGroup = this.updateGroup.bind(this);   
         this.deleteGroup = this.deleteGroup.bind(this);
         this.handleAddNewGroup = this.handleAddNewGroup.bind(this);
         this.handleUpdateGroup = this.handleUpdateGroup.bind(this);
@@ -407,20 +407,47 @@ class CreateTable extends React.Component {
         console.log("func 'handleUpdateGroup', START...");
         console.log(`update information for group: ${groupName}`);
         
-        let numIsTrue =0;
-        let numIsFalse = 0;
+        let getCountSelectedItem = function(listElem){
+            let result = {
+                itemNumIsTrue: 0,
+                itemNumIsFalse: 0, 
+            };
+
+            for(let item in listElem){
+                if(listElem[item].status) result.itemNumIsTrue++;
+                else result.itemNumIsFalse++;
+            }
+
+            return result;
+        };
+
         let listOtherGroup = this.listOtherGroup[groupName];
-        for(let item in listOtherGroup){
-            if(listOtherGroup[item].status) numIsTrue++;
-            else numIsFalse++;
-        }
-        
-        console.log(`Выделенных элементов: ${numIsTrue}, не выделенных: ${numIsFalse}`);
+
+        let { itemNumIsTrue:numIsTrueB, itemNumIsFalse:numIsFalseB } = getCountSelectedItem(this.listOtherGroupBefore[groupName]);
+        let { itemNumIsTrue:numIsTrueA, itemNumIsFalse:numIsFalseA } = getCountSelectedItem(listOtherGroup);
+
+        console.log(`Выделенных элементов: ${numIsTrueB}, не выделенных: ${numIsFalseB} (ДО)\nВыделенных элементов: ${numIsTrueA}, не выделенных: ${numIsFalseA} (ПОСЛЕ)`);
+
+        /**
+ * Не могу проверить измененые данные
+ * почему то при изменении обекта this.listOtherGroup[groupName]
+ * меняется и обект  this.listOtherGroupBefore[groupName]
+ */
 
         this.props.socketIo.emit("update group", {
             actionType: "update",
             arguments: {
                 groupName: groupName,
+                countSelectedElement: {
+                    before: {
+                        numIsTrue: numIsTrueB,
+                        numIsFalse: numIsFalseB,
+                    },
+                    after: {
+                        numIsTrue: numIsTrueA,
+                        numIsFalse: numIsFalseA,
+                    },
+                },
                 listPossibleActions: listOtherGroup,
             },
         });
@@ -432,7 +459,11 @@ class CreateTable extends React.Component {
             
             for(let ID in this.listOtherGroup[item]){
                 if((ID === data.id) && (this.listOtherGroup[item][ID].keyID === data.keyID)){
+                    console.log(this.listOtherGroupBefore[item][ID].status);
+
                     this.listOtherGroup[item][ID].status = e.target.checked;
+
+                    console.log(this.listOtherGroupBefore[item][ID].status);
 
                     return;
                 }
@@ -463,9 +494,6 @@ class CreateTable extends React.Component {
             "add new group": newGroup => {
                 this.addNewGroup(newGroup);
             },
-            "update group": updateGroupInfo => {
-                this.updateGroup(updateGroupInfo);
-            },
             "del selected group": delGroup => {
                 this.deleteGroup(delGroup);
             },
@@ -494,13 +522,9 @@ class CreateTable extends React.Component {
         });
 
         this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
-        this.setState({stateCopy});
-    }
+        this.listOtherGroupBefore = Object.assign(this.listOtherGroupBefore, this.listOtherGroup);
 
-    updateGroup(updateGroupInfo){
-        console.log("function 'updateGroup', START...");
-        console.log(updateGroupInfo);
-        console.log("function 'updateGroup', END...");
+        this.setState({stateCopy});
     }
 
     deleteGroup(delGroup){
