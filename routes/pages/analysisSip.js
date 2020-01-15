@@ -4,11 +4,11 @@
  * Верися 0.1, дата релиза 17.01.2019
  * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const async = require("async");
 
-const writeLogFile = require('../../libs/writeLogFile');
+const writeLogFile = require("../../libs/writeLogFile");
 
 /*
  const informationForHeader = require('../../libs/informationForHeader');
@@ -24,10 +24,10 @@ module.exports = function(req, res, objHeader) {
         }
     }, function(err) {
         if (err) {
-            writeLogFile('error', err.toString());
-            res.render('menu/analysis_sip', {});
+            writeLogFile("error", err.toString());
+            res.render("menu/analysis_sip", {});
         } else {
-            res.render('menu/analysis_sip', {
+            res.render("menu/analysis_sip", {
                 header: objHeader
             });
         }

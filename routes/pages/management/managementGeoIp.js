@@ -4,15 +4,33 @@
  * Верися 0.1, дата релиза 27.07.2017
  * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const async = require("async");
 
-const writeLogFile = require('../../../libs/writeLogFile');
+const writeLogFile = require("../../../libs/writeLogFile");
 
-const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
+//const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
 //const informationForPageManagementIpsRules = require('../../../libs/management_settings/informationForPageManagementSources');
 
+module.exports = function(req, res, objHeader) {
+    async.parallel({
+        test: function(callback) {
+            callback(null, {});
+        }
+    }, function(err) {
+        if (err) {
+            writeLogFile("error", err.toString());
+            res.render("menu/settings/setting_geoip", {});
+        } else {
+            res.render("menu/settings/setting_geoip", {
+                header: objHeader
+            });
+        }
+    });
+};
+
+/*
 module.exports = function(req, res, objHeader, socketIo) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
@@ -27,7 +45,7 @@ module.exports = function(req, res, objHeader, socketIo) {
             /*informationForPageManagementIpsRules(function (err, result) {
              if(err) callback(err);
              else callback(null, result);
-             });*/
+             });
             callback(null, {});
         }
     }, function(err, result) {
@@ -49,3 +67,4 @@ module.exports = function(req, res, objHeader, socketIo) {
         }
     });
 };
+*/

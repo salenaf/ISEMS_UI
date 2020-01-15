@@ -1,7 +1,7 @@
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.2, дата релиза 31.01.2019
+ * Версия 0.3, дата релиза 14.01.2020
  */
 
 "use strict";
@@ -219,7 +219,6 @@ class EnumGroupName extends React.Component {
             "paddingBottom": "13px"
         };
 
-        let disabledEdit = (!this.props.accessRights.edit.status) ? "disabled" : "";
         let disabledDelete = (!this.props.accessRights.delete.status) ? "disabled" : "";
 
         let bEdit, bDel;
@@ -230,6 +229,8 @@ class EnumGroupName extends React.Component {
             groupListElement={this.props.listAdmin.elements} />;
 
         let arrGroup = this.props.groupsName.map(group => {
+            let disabledEdit = (this.props.accessRights.edit.status && group.allowChange) ? "":"disabled";
+
             if (group.groupName.toLowerCase() !== "administrator") {
                 bDel = <ButtonDelete disabledDelete={disabledDelete} handleDeleteGroup={this.props.handleDeleteGroup.bind(this, group.groupName)} />;
                 bEdit = <ButtonEdit disabledEdit={disabledEdit} handleUpdateGroup={this.props.handleUpdateGroup.bind(this, group.groupName)} />;
@@ -359,7 +360,7 @@ class CreateTable extends React.Component {
 
         this.groupsAdministrator = this.props.mainInformation.administrator;
         this.listOtherGroup = this.changeListGroupsInformation(this.props.mainInformation);
-        this.listOtherGroupBefore = Object.assign({}, this.listOtherGroup);
+        this.mapCountSelected = this.countCheckItem();
 
         this.handleCheckedItem = this.handleCheckedItem.bind(this);
 
@@ -404,66 +405,40 @@ class CreateTable extends React.Component {
     }
 
     handleUpdateGroup(groupName){
-        console.log("func 'handleUpdateGroup', START...");
-        console.log(`update information for group: ${groupName}`);
-        
-        let getCountSelectedItem = function(listElem){
-            let result = {
-                itemNumIsTrue: 0,
-                itemNumIsFalse: 0, 
-            };
+        //обновляем количество выбранных элементов
+        this.mapCountSelected.set(groupName, this.getCountSelectedItem(this.listOtherGroup[groupName]));
 
-            for(let item in listElem){
-                if(listElem[item].status) result.itemNumIsTrue++;
-                else result.itemNumIsFalse++;
-            }
-
-            return result;
-        };
-
-        let listOtherGroup = this.listOtherGroup[groupName];
-
-        let { itemNumIsTrue:numIsTrueB, itemNumIsFalse:numIsFalseB } = getCountSelectedItem(this.listOtherGroupBefore[groupName]);
-        let { itemNumIsTrue:numIsTrueA, itemNumIsFalse:numIsFalseA } = getCountSelectedItem(listOtherGroup);
-
-        console.log(`Выделенных элементов: ${numIsTrueB}, не выделенных: ${numIsFalseB} (ДО)\nВыделенных элементов: ${numIsTrueA}, не выделенных: ${numIsFalseA} (ПОСЛЕ)`);
-
-        /**
- * Не могу проверить измененые данные
- * почему то при изменении обекта this.listOtherGroup[groupName]
- * меняется и обект  this.listOtherGroupBefore[groupName]
- */
+        //устанавливаем кнопку Edit как не активную
+        this.chageStateEditButton(groupName, false);
 
         this.props.socketIo.emit("update group", {
             actionType: "update",
             arguments: {
                 groupName: groupName,
-                countSelectedElement: {
-                    before: {
-                        numIsTrue: numIsTrueB,
-                        numIsFalse: numIsFalseB,
-                    },
-                    after: {
-                        numIsTrue: numIsTrueA,
-                        numIsFalse: numIsFalseA,
-                    },
-                },
-                listPossibleActions: listOtherGroup,
+                listPossibleActions: this.listOtherGroup[groupName],
             },
         });
     }
 
     handleCheckedItem(data, e){
-        for(let item in this.listOtherGroup){
-            if(item !== data.groupName) continue;
+        for(let groupName in this.listOtherGroup){
+            if(groupName !== data.groupName) continue;
             
-            for(let ID in this.listOtherGroup[item]){
-                if((ID === data.id) && (this.listOtherGroup[item][ID].keyID === data.keyID)){
-                    console.log(this.listOtherGroupBefore[item][ID].status);
+            for(let ID in this.listOtherGroup[groupName]){
+                if((ID === data.id) && (this.listOtherGroup[groupName][ID].keyID === data.keyID)){
+                    this.listOtherGroup[groupName][ID].status = e.target.checked;
 
-                    this.listOtherGroup[item][ID].status = e.target.checked;
+                    let countSelectedBefore = this.getCountSelectedItem(this.listOtherGroup[groupName]);
+                    let countSelectedAfter = this.mapCountSelected.get(groupName);
 
-                    console.log(this.listOtherGroupBefore[item][ID].status);
+                    if(countSelectedAfter === "undefined") return;
+                    if(countSelectedAfter === countSelectedBefore){
+                        //Кнопка Edit неактивна
+                        this.chageStateEditButton(groupName, false);
+                    } else {
+                        //Кнопка Edit активна
+                        this.chageStateEditButton(groupName, true);
+                    }
 
                     return;
                 }
@@ -519,10 +494,11 @@ class CreateTable extends React.Component {
         stateCopy.groupsName.push({
             groupName: groupName,
             dateRegister: newGroupObj["date_register"],
+            allowChange: false,
         });
 
         this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
-        this.listOtherGroupBefore = Object.assign(this.listOtherGroupBefore, this.listOtherGroup);
+        this.mapCountSelected = this.countCheckItem();
 
         this.setState({stateCopy});
     }
@@ -542,6 +518,7 @@ class CreateTable extends React.Component {
         let list = [{
             groupName: "administrator",
             dateRegister: this.props.mainInformation["administrator"].date_register,
+            allowChange: false,
         }];
         let groupsOtherAdmin = groups.filter(item => item !== "administrator");
 
@@ -549,10 +526,47 @@ class CreateTable extends React.Component {
             list.push({
                 groupName: item,
                 dateRegister: this.props.mainInformation[item].date_register,
+                allowChange: false,
             });
         }
 
         return list;
+    }
+
+    getCountSelectedItem(listElem){
+        let itemNumIsTrue = 0;
+
+        for(let item in listElem){
+            if(listElem[item].status) itemNumIsTrue++;
+        }
+
+        return itemNumIsTrue;
+    }
+
+    countCheckItem(){
+        let resultMap = new Map();
+
+        for(let groupName in this.listOtherGroup){
+            if(groupName === "administrator") continue;
+
+            let countSelected = this.getCountSelectedItem(this.listOtherGroup[groupName]);
+            resultMap.set(groupName, countSelected);
+        }
+
+        return resultMap;
+    }
+
+    chageStateEditButton(groupName, state){
+        let stateCopy = Object.assign({}, this.state);
+        for(let i = 0; i < stateCopy.groupsName.length; i++){
+            if(stateCopy.groupsName[i].groupName === groupName){
+                stateCopy.groupsName[i].allowChange = state;
+
+                break;
+            }
+        }
+
+        this.setState({stateCopy});
     }
 
     changeListGroupsInformation(listOtherGroup){

@@ -41051,7 +41051,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Модуль формирующий основную таблицу на странице
  * 
- * Версия 0.2, дата релиза 31.01.2019
+ * Версия 0.3, дата релиза 14.01.2020
  */
 
 
@@ -41357,7 +41357,6 @@ function (_React$Component6) {
       var styleGroupName = {
         "paddingBottom": "13px"
       };
-      var disabledEdit = !this.props.accessRights.edit.status ? "disabled" : "";
       var disabledDelete = !this.props.accessRights.delete.status ? "disabled" : "";
       var bEdit, bDel;
       var textCenter = "text-left";
@@ -41367,6 +41366,8 @@ function (_React$Component6) {
         groupListElement: this.props.listAdmin.elements
       });
       var arrGroup = this.props.groupsName.map(function (group) {
+        var disabledEdit = _this2.props.accessRights.edit.status && group.allowChange ? "" : "disabled";
+
         if (group.groupName.toLowerCase() !== "administrator") {
           bDel = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ButtonDelete, {
             disabledDelete: disabledDelete,
@@ -41554,7 +41555,7 @@ function (_React$Component9) {
     };
     _this3.groupsAdministrator = _this3.props.mainInformation.administrator;
     _this3.listOtherGroup = _this3.changeListGroupsInformation(_this3.props.mainInformation);
-    _this3.listOtherGroupBefore = Object.assign({}, _this3.listOtherGroup);
+    _this3.mapCountSelected = _this3.countCheckItem();
     _this3.handleCheckedItem = _this3.handleCheckedItem.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleShow = _this3.handleShow.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleClose = _this3.handleClose.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
@@ -41607,68 +41608,39 @@ function (_React$Component9) {
   }, {
     key: "handleUpdateGroup",
     value: function handleUpdateGroup(groupName) {
-      console.log("func 'handleUpdateGroup', START...");
-      console.log("update information for group: ".concat(groupName));
+      //обновляем количество выбранных элементов
+      this.mapCountSelected.set(groupName, this.getCountSelectedItem(this.listOtherGroup[groupName])); //устанавливаем кнопку Edit как не активную
 
-      var getCountSelectedItem = function getCountSelectedItem(listElem) {
-        var result = {
-          itemNumIsTrue: 0,
-          itemNumIsFalse: 0
-        };
-
-        for (var item in listElem) {
-          if (listElem[item].status) result.itemNumIsTrue++;else result.itemNumIsFalse++;
-        }
-
-        return result;
-      };
-
-      var listOtherGroup = this.listOtherGroup[groupName];
-
-      var _getCountSelectedItem = getCountSelectedItem(this.listOtherGroupBefore[groupName]),
-          numIsTrueB = _getCountSelectedItem.itemNumIsTrue,
-          numIsFalseB = _getCountSelectedItem.itemNumIsFalse;
-
-      var _getCountSelectedItem2 = getCountSelectedItem(listOtherGroup),
-          numIsTrueA = _getCountSelectedItem2.itemNumIsTrue,
-          numIsFalseA = _getCountSelectedItem2.itemNumIsFalse;
-
-      console.log("\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432: ".concat(numIsTrueB, ", \u043D\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445: ").concat(numIsFalseB, " (\u0414\u041E)\n\u0412\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432: ").concat(numIsTrueA, ", \u043D\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043D\u044B\u0445: ").concat(numIsFalseA, " (\u041F\u041E\u0421\u041B\u0415)"));
-      /**
-      * Не могу проверить измененые данные
-      * почему то при изменении обекта this.listOtherGroup[groupName]
-      * меняется и обект  this.listOtherGroupBefore[groupName]
-      */
-
+      this.chageStateEditButton(groupName, false);
       this.props.socketIo.emit("update group", {
         actionType: "update",
         arguments: {
           groupName: groupName,
-          countSelectedElement: {
-            before: {
-              numIsTrue: numIsTrueB,
-              numIsFalse: numIsFalseB
-            },
-            after: {
-              numIsTrue: numIsTrueA,
-              numIsFalse: numIsFalseA
-            }
-          },
-          listPossibleActions: listOtherGroup
+          listPossibleActions: this.listOtherGroup[groupName]
         }
       });
     }
   }, {
     key: "handleCheckedItem",
     value: function handleCheckedItem(data, e) {
-      for (var item in this.listOtherGroup) {
-        if (item !== data.groupName) continue;
+      for (var groupName in this.listOtherGroup) {
+        if (groupName !== data.groupName) continue;
 
-        for (var ID in this.listOtherGroup[item]) {
-          if (ID === data.id && this.listOtherGroup[item][ID].keyID === data.keyID) {
-            console.log(this.listOtherGroupBefore[item][ID].status);
-            this.listOtherGroup[item][ID].status = e.target.checked;
-            console.log(this.listOtherGroupBefore[item][ID].status);
+        for (var ID in this.listOtherGroup[groupName]) {
+          if (ID === data.id && this.listOtherGroup[groupName][ID].keyID === data.keyID) {
+            this.listOtherGroup[groupName][ID].status = e.target.checked;
+            var countSelectedBefore = this.getCountSelectedItem(this.listOtherGroup[groupName]);
+            var countSelectedAfter = this.mapCountSelected.get(groupName);
+            if (countSelectedAfter === "undefined") return;
+
+            if (countSelectedAfter === countSelectedBefore) {
+              //Кнопка Edit неактивна
+              this.chageStateEditButton(groupName, false);
+            } else {
+              //Кнопка Edit активна
+              this.chageStateEditButton(groupName, true);
+            }
+
             return;
           }
         }
@@ -41726,10 +41698,11 @@ function (_React$Component9) {
       var stateCopy = Object.assign({}, this.state);
       stateCopy.groupsName.push({
         groupName: groupName,
-        dateRegister: newGroupObj["date_register"]
+        dateRegister: newGroupObj["date_register"],
+        allowChange: false
       });
       this.listOtherGroup = Object.assign(this.listOtherGroup, convertObj);
-      this.listOtherGroupBefore = Object.assign(this.listOtherGroupBefore, this.listOtherGroup);
+      this.mapCountSelected = this.countCheckItem();
       this.setState({
         stateCopy: stateCopy
       });
@@ -41751,7 +41724,8 @@ function (_React$Component9) {
       groups.sort();
       var list = [{
         groupName: "administrator",
-        dateRegister: this.props.mainInformation["administrator"].date_register
+        dateRegister: this.props.mainInformation["administrator"].date_register,
+        allowChange: false
       }];
       var groupsOtherAdmin = groups.filter(function (item) {
         return item !== "administrator";
@@ -41765,7 +41739,8 @@ function (_React$Component9) {
           var item = _step.value;
           list.push({
             groupName: item,
-            dateRegister: this.props.mainInformation[item].date_register
+            dateRegister: this.props.mainInformation[item].date_register,
+            allowChange: false
           });
         }
       } catch (err) {
@@ -41784,6 +41759,46 @@ function (_React$Component9) {
       }
 
       return list;
+    }
+  }, {
+    key: "getCountSelectedItem",
+    value: function getCountSelectedItem(listElem) {
+      var itemNumIsTrue = 0;
+
+      for (var item in listElem) {
+        if (listElem[item].status) itemNumIsTrue++;
+      }
+
+      return itemNumIsTrue;
+    }
+  }, {
+    key: "countCheckItem",
+    value: function countCheckItem() {
+      var resultMap = new Map();
+
+      for (var groupName in this.listOtherGroup) {
+        if (groupName === "administrator") continue;
+        var countSelected = this.getCountSelectedItem(this.listOtherGroup[groupName]);
+        resultMap.set(groupName, countSelected);
+      }
+
+      return resultMap;
+    }
+  }, {
+    key: "chageStateEditButton",
+    value: function chageStateEditButton(groupName, state) {
+      var stateCopy = Object.assign({}, this.state);
+
+      for (var i = 0; i < stateCopy.groupsName.length; i++) {
+        if (stateCopy.groupsName[i].groupName === groupName) {
+          stateCopy.groupsName[i].allowChange = state;
+          break;
+        }
+      }
+
+      this.setState({
+        stateCopy: stateCopy
+      });
     }
   }, {
     key: "changeListGroupsInformation",

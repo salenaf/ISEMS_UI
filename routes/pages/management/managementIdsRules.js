@@ -4,15 +4,33 @@
  * Верися 0.1, дата релиза 26.07.2017
  * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const async = require("async");
 
-const writeLogFile = require('../../../libs/writeLogFile');
+const writeLogFile = require("../../../libs/writeLogFile");
 
-const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
-const informationForPageManagementIdsRules = require('../../../libs/management_settings/informationForPageManagementIdsRules');
+//const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
+//const informationForPageManagementIdsRules = require('../../../libs/management_settings/informationForPageManagementIdsRules');
 
+module.exports = function(req, res, objHeader) {
+    async.parallel({
+        test: function(callback) {
+            callback(null, {});
+        }
+    }, function(err) {
+        if (err) {
+            writeLogFile("error", err.toString());
+            res.render("menu/settings/setting_ids_rules", {});
+        } else {
+            res.render("menu/settings/setting_ids_rules", {
+                header: objHeader
+            });
+        }
+    });
+};
+
+/*
 module.exports = function(req, res, objHeader, socketIo) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
@@ -45,4 +63,4 @@ module.exports = function(req, res, objHeader, socketIo) {
             });
         }
     });
-};
+};*/
