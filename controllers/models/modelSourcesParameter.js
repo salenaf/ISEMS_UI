@@ -21,7 +21,7 @@ const connection = globalObject.getData("descriptionDB", "MongoDB", "connection"
  *   type_architecture_client_server - тип клиент серверной архитектуры (источник работает в режиме клиент или сервер)
  *   transmission_telemetry - отправка телеметрии
  *   maximum_number_simultaneous_filtering_processes - максимальное количество одновременных процессов фильтрации
- *   type_channel_layer_protocol - тип протокола канального уровня
+ *   type_channel_layer_protocol - тип протокола канального уровня (ip/pppoe)
  *   list_directories_with_file_network_traffic - список директорий с файлами сетевого трафика
  * description - дополнительное описание
  * information_about_app - информация о приложении

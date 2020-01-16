@@ -332,7 +332,7 @@ function parseJSON(stringJSON, callback){
  *  type_architecture_client_server - server/client (default value = "client")
  *  transmission_telemetry - true/false (default value = "false")
  *  maximum_number_simultaneous_filtering_processes - от 1 до 10 (default value = 3)
- *  type_channel_layer_protocol - tcp/udp/any (default value = any)
+ *  type_channel_layer_protocol - ip/pppoe (default value = ip)
  * 
  * Объект однозначно признается невалидным если некорректны или не заполненные следующие параметры:
  *  - list_directories_with_file_network_traffic

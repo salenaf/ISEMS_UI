@@ -6,19 +6,19 @@
 
 
 //странита аутентификации
-exports.authenticate = require('./authenticate');
+exports.authenticate = require("./authenticate");
 
 //главная страница
-exports.mainPage = require('./mainPage');
+exports.mainPage = require("./mainPage");
 
 //анализ пакетов информационной безопасности
-exports.analysisSIP = require('./analysisSip');
+exports.analysisSIP = require("./analysisSip");
 
 //управление событиями информационной безопасности
-exports.securityEventManagement = require('./securityEventManagement');
+exports.securityEventManagement = require("./securityEventManagement");
 
 //сетевые взаимодействия
-exports.networkInteraction = require('./networkInteraction');
+exports.networkInteraction = require("./networkInteraction");
 
 /**
  * набор инструментов
@@ -26,8 +26,8 @@ exports.networkInteraction = require('./networkInteraction');
  * - инструменты декодирования
  */
 
-exports.toolsDecode = require('./tools/toolsDecode');
-exports.toolsSearch = require('./tools/toolsSearch');
+exports.toolsDecode = require("./tools/toolsDecode");
+exports.toolsSearch = require("./tools/toolsSearch");
 
 /**  
  * управление настройками приложения
@@ -40,10 +40,10 @@ exports.toolsSearch = require('./tools/toolsSearch');
  * - репутационными списками
  * - событими
  */
-exports.managementGroups = require('./management/managementGroups');
-exports.managementUsers = require('./management/managementUsers');
-exports.managementObjectsAndSubjects = require('./management/managementObjectsAndSubjects');
-exports.managementIdsRules = require('./management/managementIdsRules');
-exports.managementSearchRules = require('./management/managementSearchRules');
-exports.managementGeoIp = require('./management/managementGeoIp');
-exports.managementReputationalLists = require('./management/managementReputationalLists');
+exports.managementGroups = require("./management/managementGroups");
+exports.managementUsers = require("./management/managementUsers");
+exports.managementOrganizationsAndSources = require("./management/managementOrganizationsAndSources");
+exports.managementIdsRules = require("./management/managementIdsRules");
+exports.managementSearchRules = require("./management/managementSearchRules");
+exports.managementGeoIp = require("./management/managementGeoIp");
+exports.managementReputationalLists = require("./management/managementReputationalLists");

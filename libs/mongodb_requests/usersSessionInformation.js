@@ -27,7 +27,8 @@ module.exports.create = function(login, passportID, isDefault, cb) {
     }).then(userData => {
         return new Promise((resolve, reject) => {
             mongodbQueryProcessor.querySelect(models.modelGroup, {
-                query: { group_name: userData.group }
+                query: { group_name: userData.group },
+                select: { _id: 0, __v: 0, date_register: 0, group_name: 0 }
             }, (err, doc) => {
                 if (err) reject(err);
                 else resolve({ userData: userData, groupData: doc });
@@ -44,24 +45,16 @@ module.exports.create = function(login, passportID, isDefault, cb) {
                         sourceMainPage: objData.userData.settings.sourceMainPage
                     },
                     group_name: objData.userData.group,
-                    group_settings: {
-                        menu_items: objData.groupData.menu_items,
-                        management_analysis_sip: objData.groupData.management_analysis_sip,
-                        management_security_event_management: objData.groupData.management_security_event_management,
-                        management_network_interaction: objData.groupData.management_network_interaction,
-                        management_users: objData.groupData.management_users,
-                        management_groups: objData.groupData.management_groups,
-                        management_objects_and_subjects: objData.groupData.management_objects_and_subjects,
-                        management_ids_rules: objData.groupData.management_ids_rules,
-                        management_geoip: objData.groupData.management_geoip,
-                        management_search_rules: objData.groupData.management_search_rules,
-                        management_reputational_lists: objData.groupData.management_reputational_lists
-                    },
+                    group_settings: objData.groupData,
                     isPasswordDefaultAdministrator: isDefault,
                     dateCreate: +(new Date())
                 }
             }, err => {
-                if (err) reject(err);
+                if (err) {
+                    console.log(err);
+
+                    reject(err);
+                }
                 else resolve(null);
             });
         });

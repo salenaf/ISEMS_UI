@@ -19,19 +19,7 @@ let sessionUserInformation = new connection.Schema({
         sourceMainPage: Array
     },
     group_name: String,
-    group_settings: {
-        menu_items: {},
-        management_analysis_sip: {},
-        management_security_event_management: {},
-        management_network_interaction: {},
-        management_users: {},
-        management_groups: {},
-        management_objects_and_subjects: {},
-        management_ids_rules: {},
-        management_search_rules: {},
-        management_geoip: {},
-        management_reputational_lists: {}
-    },
+    group_settings: {},
     isPasswordDefaultAdministrator: { type: Boolean, default: false },
     dateCreate: Number
 });

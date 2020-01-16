@@ -1,14 +1,15 @@
 /*
- * Формирование страницы сетевых взаимодействий с удаленными источниками
+ * Формирование страницы управления организациями, ее подразделениями
+ * и источниками
  *
- * Верися 0.1, дата релиза 17.01.2019
+ * Верися 0.1, дата релиза 16.01.2020
  * */
 
 "use strict";
 
 const async = require("async");
 
-const writeLogFile = require("../../libs/writeLogFile");
+const writeLogFile = require("../../../libs/writeLogFile");
 
 /*
  const informationForHeader = require('../../libs/informationForHeader');
@@ -25,9 +26,9 @@ module.exports = function(req, res, objHeader) {
     }, function(err) {
         if (err) {
             writeLogFile("error", err.toString());
-            res.render("menu/network_interaction", {});
+            res.render("menu/settings/setting_organizations_and_sources", {});
         } else {
-            res.render("menu/network_interaction", {
+            res.render("menu/settings/setting_organizations_and_sources", {
                 header: objHeader
             });
         }

@@ -29,7 +29,7 @@ let groupSchema = new connection.Schema({
             name: String,
             setting_groups: { id: String, status: Boolean, description: String },
             setting_users: { id: String, status: Boolean, description: String },
-            setting_objects_and_subjects: { id: String, status: Boolean, description: String },
+            setting_organizations_and_sources: { id: String, status: Boolean, description: String },
             setting_ids_rules: { id: String, status: Boolean, description: String },
             setting_geoip: { id: String, status: Boolean, description: String },
             setting_search_rules: { id: String, status: Boolean, description: String },
@@ -105,14 +105,38 @@ let groupSchema = new connection.Schema({
             delete: { id: String, status: Boolean, description: String }
         }
     },
-    management_objects_and_subjects: {
+    management_organizations_and_sources: {
         id: String,
         name: String,
         element_settings: {
-            create: { id: String, status: Boolean, description: String },
-            edit: { id: String, status: Boolean, description: String },
-            delete: { id: String, status: Boolean, description: String }
-        }
+            management_organizations: {
+                id: String,
+                name: String,
+                element_settings: {
+                    create: { id: String, status: Boolean, description: String },
+                    edit: { id: String, status: Boolean, description: String },
+                    delete: { id: String, status: Boolean, description: String }
+                }
+            },
+            management_division: {
+                id: String,
+                name: String,
+                element_settings: {
+                    create: { id: String, status: Boolean, description: String },
+                    edit: { id: String, status: Boolean, description: String },
+                    delete: { id: String, status: Boolean, description: String }
+                }
+            },
+            management_sources: {
+                id: String,
+                name: String,
+                element_settings: {
+                    create: { id: String, status: Boolean, description: String },
+                    edit: { id: String, status: Boolean, description: String },
+                    delete: { id: String, status: Boolean, description: String }
+                }
+            },
+        },
     },
     management_ids_rules: {
         id: String,

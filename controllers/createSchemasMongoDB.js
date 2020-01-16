@@ -21,7 +21,6 @@ module.exports = function(cb) {
     //подключаем модели данных
     let modelUser = require("./models").modelUser;
     let modelGroup = require("./models").modelGroup;
-    let modelSource = require("./models").modelSource;
     let modelIdsRules = require("./models").modelRulesIDS;
     let modelAdditionalInformation = require("./models").modelAdditionalInformation;
 
@@ -41,12 +40,12 @@ module.exports = function(cb) {
             });
         },
         //создание модели для хранения информации об источниках
-        callback => {
+        /*callback => {
             createModelSource(modelSource, err => {
                 if (err) callback(err);
                 else callback(null);
             });
-        },
+        },*/
         //создание модели для хранения решающих правил СОА
         callback => {
             createModelRulesIDS(modelIdsRules, err => {
@@ -62,7 +61,11 @@ module.exports = function(cb) {
             });
         }
     ], err => {
-        if (err) cb(err);
+        if (err) {
+            debug(err);
+            
+            cb(err);
+        }
         else cb(null);
     });
 };
@@ -159,6 +162,11 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_users"),
                         status: true,
                         description: "пользователи"
+                    },
+                    setting_organizations_and_sources: {
+                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_organizations_and_sources"),
+                        status: true,
+                        description: "организации, подразделения и источники"
                     },
                     setting_objects_and_subjects: {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_objects_and_subjects"),
@@ -340,6 +348,75 @@ function createModelGroups(modelGroup, next) {
                     }
                 }
             },
+            management_organizations_and_sources: {
+                id: createUniqID.getMD5("administrator_management_organizations_and_source"),
+                name: "организации, подразделения и источники",
+                element_settings: {
+                    management_organizations: {
+                        id: createUniqID.getMD5("administrator_management_organizations_and_source_organization"),
+                        name: "управление организациями",
+                        element_settings: {
+                            create: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_create"), 
+                                status: true, 
+                                description: "создание" 
+                            },
+                            edit: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_edit"),  
+                                status: true, 
+                                description: "редактирование" 
+                            },
+                            delete: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_delete"), 
+                                status: true, 
+                                description: "удаление" 
+                            }
+                        }
+                    },
+                    management_division: {
+                        id: createUniqID.getMD5("administrator_management_organizations_and_source_division"),
+                        name: "управление подразделениями",
+                        element_settings: {
+                            create: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_create"), 
+                                status: true, 
+                                description: "создание" 
+                            },
+                            edit: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_edit"),  
+                                status: true, 
+                                description: "редактирование" 
+                            },
+                            delete: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_delete"), 
+                                status: true, 
+                                description: "удаление" 
+                            }
+                        }
+                    },
+                    management_sources: {
+                        id: createUniqID.getMD5("administrator_management_organizations_and_source_sources"),
+                        name: "управление источниками",
+                        element_settings: {
+                            create: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_create"), 
+                                status: true, 
+                                description: "создание" 
+                            },
+                            edit: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_edit"),  
+                                status: true, 
+                                description: "редактирование" 
+                            },
+                            delete: { 
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_delete"), 
+                                status: true, 
+                                description: "удаление" 
+                            }
+                        }
+                    },
+                },
+            },
             management_objects_and_subjects: {
                 id: createUniqID.getMD5("administrator_management_objects_and_subjects"),
                 name: "объекты и субъекты",
@@ -439,7 +516,7 @@ function createModelGroups(modelGroup, next) {
 
         /**
          * ТЕСТОВАЯ ГРУППА
-         */
+        
         new modelGroup({
             group_name: "all_users",
             date_register: +(new Date()),
@@ -767,7 +844,7 @@ function createModelGroups(modelGroup, next) {
 
         /**
          * ТЕСТОВАЯ ГРУППА
-         */
+        
         new modelGroup({
             group_name: "deg_group",
             date_register: +(new Date()),
@@ -1092,6 +1169,7 @@ function createModelGroups(modelGroup, next) {
                 }
             }
         }).save();
+        */
 
         next(null);
     });

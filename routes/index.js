@@ -55,9 +55,9 @@ module.exports = function(app, socketIo) {
             access: "menuSettings.element_settings.submenu.setting_groups.status",
             handler: pages.managementGroups,
         },
-        "/setting_objects_and_subjects": {
-            access: "menuSettings.element_settings.submenu.setting_objects_and_subjects.status",
-            handler: pages.managementObjectsAndSubjects,
+        "/setting_organizations_and_sources": {
+            access: "menuSettings.element_settings.submenu.setting_organizations_and_sources.status",
+            handler: pages.managementOrganizationsAndSources,
         },
         "/setting_ids_rules": {
             access: "menuSettings.element_settings.submenu.setting_ids_rules.status",
