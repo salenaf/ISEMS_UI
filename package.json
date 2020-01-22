@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "async": "~2.1.5",
+        "babel": "^6.23.0",
         "body-parser": "^1.18.3",
         "bootstrap-datetimepicker": "0.0.7",
         "bootstrap-notify": "~3.1.3",

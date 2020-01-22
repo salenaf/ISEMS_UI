@@ -1,0 +1,21 @@
+/*
+* Custom css style
+**/
+
+.my_circle_red {
+    width: 8px;
+    height: 8px;
+    background: #C78888;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.my_circle_green {
+    width: 8px;
+    height: 8px;
+    background: #9FD783;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
