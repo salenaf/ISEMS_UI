@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Table } from "react-bootstrap";
+import { Button, Form, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateTableSources extends React.Component {
@@ -48,15 +48,25 @@ export default class CreateTableSources extends React.Component {
                     {this.props.listSourcesInformation[sourceID].releaseApp}
                 </td>
                 <td key={`td_${sourceID}_${this.props.listSourcesInformation[sourceID].id}_checkbox`} className="text-right">
-                    <Form>
-                        <Form.Check 
-                            custom 
-                            onChange={this.props.changeCheckboxMarked.bind(this, sourceID)}
-                            type="checkbox" 
-                            id={`checkbox-${sourceID}`}
-                            label=""
-                        />
-                    </Form>
+                    <OverlayTrigger
+                        key={this.props.listSourcesInformation[sourceID].id}
+                        placement="right"
+                        overlay={
+                            <Tooltip id={`tooltip-${this.props.listSourcesInformation[sourceID].id}`}>
+                                отметить для удаления
+                            </Tooltip>
+                        }
+                    >
+                        <Form>
+                            <Form.Check 
+                                custom 
+                                onChange={this.props.changeCheckboxMarked.bind(this, sourceID)}
+                                type="checkbox" 
+                                id={`checkbox-${sourceID}`}
+                                label=""
+                            />
+                        </Form>
+                    </OverlayTrigger>
                 </td>
             </tr>);
         });
