@@ -253,19 +253,22 @@ let listSourcesFullInformation = {
         "shortName": "RosAtom COD 1",
         "dateRegister": "2019-08-13 14:39:08",
         "dateChange": "2020-01-02 10:45:43",
+        "description": "какие то замечания или описание об источнике...",
         "division": {
             "name": "Центр обработки данных №1",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
             "physicalAddress": "г.Москва, ул. Удальцова, д.3",
-            "description": "какие то замечания или описание...",
+            "description": "какие то замечания или описание по подразделению...",
+            "countSources": 1,
         },
         "organization": {
             "name": "Государственная корпорация атомной энергии Росатом",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 03:15:43",
             "fieldActivity": "атомная промышленность",
-            "legalAddress": "123482 г. Москва, Дмитровское шоссе, д. 67, к. 3" 
+            "legalAddress": "123482 г. Москва, Дмитровское шоссе, д. 67, к. 3",
+            "countDivision": 1,
         },
         "networkSettings": { 
             "ip": "12.63.55.9", 
@@ -289,19 +292,22 @@ let listSourcesFullInformation = {
         "shortName": "RosAtom COD 2",
         "dateRegister": "2020-01-13 10:13:00",
         "dateChange": "2020-01-02 10:45:43",
+        "description": "какие то замечания или описание об источнике...",
         "division": {
             "name": "Центр обработки данных №2",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
             "physicalAddress": "г.Москва, ул. Щербаковская, д.13",
-            "description": "какие то замечания или описание...",
+            "description": "какие то замечания или описание по подразделению...",
+            "countSources": 3,
         },
         "organization": {
             "name": "Государственная корпорация атомной энергии Росатом",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 03:15:43",
             "fieldActivity": "атомная промышленность",
-            "legalAddress": "123482 г. Москва, Дмитровское шоссе, д. 67, к. 3" 
+            "legalAddress": "123482 г. Москва, Дмитровское шоссе, д. 67, к. 3",
+            "countDivision": 1,
         },
         "networkSettings": { 
             "ip": "235.163.50.19", 
@@ -325,19 +331,22 @@ let listSourcesFullInformation = {
         "shortName": "RosCosmos COD 1",
         "dateRegister": "2019-01-12 13:13:13",
         "dateChange": "2020-01-01 08:15:43",
+        "description": "какие то замечания или описание об источнике...",
         "division": {
             "name": "Центр обработки данных №1",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
             "physicalAddress": "г.Москва, ул. Удальцова, д.3",
-            "description": "какие то замечания или описание...",
+            "description": "какие то замечания или описание по подразделению...",
+            "countSources": 1,
         },
         "organization": {
             "name": "Государственная корпорация по космической деятельности \"РОСКОСМОС\"",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 03:15:43",
             "fieldActivity": "космическая промышленность",
-            "legalAddress": "123482 г. Москва, Ленинский пр., д. 100, к. 1" 
+            "legalAddress": "123482 г. Москва, Ленинский пр., д. 100, к. 1",
+            "countDivision": 2, 
         },
         "networkSettings": { 
             "ip": "89.13.115.129", 
@@ -361,19 +370,22 @@ let listSourcesFullInformation = {
         "shortName": "UMCHS Belgorod",
         "dateRegister": "2019-12-16 18:03:20",
         "dateChange": "2020-01-01 08:15:43",
+        "description": "какие то замечания или описание об источнике...",
         "division": {
             "name": "Управление МЧС России по Белгородской области",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
             "physicalAddress": "г.Белгород, ул. Ленина, д.3",
-            "description": "какие то замечания или описание...",
+            "description": "какие то замечания или описание по подразделению...",
+            "countSources": 2,
         },
         "organization": {
             "name": "МЧС России",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 03:15:43",
             "fieldActivity": "органы безопасности",
-            "legalAddress": "123482 г. Москва, пр. Мира, д. 4, к. 1" 
+            "legalAddress": "123482 г. Москва, пр. Мира, д. 4, к. 1",
+            "countDivision": 3,
         },
         "networkSettings": { 
             "ip": "32.56.4.44", 
@@ -397,19 +409,22 @@ let listSourcesFullInformation = {
         "shortName": "UMCHS Tambov",
         "dateRegister": "2019-08-13 16:19:59",
         "dateChange": "2020-01-01 08:15:43",
+        "description": "какие то замечания или описание об источнике...",
         "division": {
             "name": "Управление МЧС России по Тамбовской области",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
             "physicalAddress": "г.Тамбов, ул. 1-ого Мая, д.13",
-            "description": "какие то замечания или описание...",
+            "description": "какие то замечания или описание по подразделению...",
+            "countSources": 1,
         },
         "organization": {
             "name": "МЧС России",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 03:15:43",
             "fieldActivity": "органы безопасности",
-            "legalAddress": "123482 г. Москва, пр. Мира, д. 4, к. 1" 
+            "legalAddress": "123482 г. Москва, пр. Мира, д. 4, к. 1",
+            "countDivision": 1,
         },
         "networkSettings": { 
             "ip": "56.123.3.11", 
@@ -433,19 +448,22 @@ let listSourcesFullInformation = {
         "shortName": "DZO Briansk",
         "dateRegister": "2019-02-30 07:49:48",
         "dateChange": "2020-01-01 08:15:43",
+        "description": "какие то замечания или описание об источнике...",
         "division": {
             "name": "Департамент здравоохранения Брянской области",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
             "physicalAddress": "г.Брянск, ул. Возраждения, д.20",
-            "description": "какие то замечания или описание...",
+            "description": "какие то замечания или описание по подразделению...",
+            "countSources": 2,
         },
         "organization": {
             "name": "Департамент здравоохранения",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 03:15:43",
             "fieldActivity": "государственные органы",
-            "legalAddress": "123482 г. Москва, ул. Зорге, д. 14" 
+            "legalAddress": "123482 г. Москва, ул. Зорге, д. 14",
+            "countDivision": 2, 
         },
         "networkSettings": { 
             "ip": "56.123.3.11", 

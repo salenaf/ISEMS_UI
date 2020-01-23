@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Form, Modal, Spinner } from "react-bootstrap";
+import { Accordion, Card, Button, Col, Form, Modal, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class ModalWindowSourceInfo extends React.Component {
@@ -61,23 +61,87 @@ export default class ModalWindowSourceInfo extends React.Component {
 
         return (
             <React.Fragment>
-                <div className="col-md-12 text-center">Источник № {sid} ({sourceInfo[sid].shortName})</div>
-                <Form>              
-                    <Form.Row>
-                        <div className="col-sm-3">
-                            <Form.Label column>Краткое название:</Form.Label>
-                        </div>
-                        <div className="col-sm-9">
-                            <Form.Control size="sm" plaintext readOnly defaultValue={sourceInfo[sid].shortName} />
-                        </div>
-                        <div className="col-sm-12">
-                            <Form.Label column>Установлен: {sourceInfo[sid].dateRegister}, настройки изменены: {sourceInfo[sid].dateChange}</Form.Label>
-                        </div>
-                    </Form.Row>
-                </Form>
-  
-                <div className="col-md-12">{JSON.stringify(this.props.sourceInfoForTest[this.props.settings.id])}</div>
-                
+                <div className="col-md-12 text-center"><strong>Источник № {sid} ({sourceInfo[sid].shortName})</strong></div>
+                <Accordion defaultActiveKey="2">
+                    <Card>
+                        <Accordion.Toggle as={Card.Header} eventKey="0">
+                            Информация об организации
+                        </Accordion.Toggle>
+                        <Accordion.Collapse eventKey="0">
+                            <Card.Body>
+                                <div className="col-md-12 text-center"><strong>{sourceInfo[sid].organization.name}</strong></div>
+                                <div className="row">
+                                    <div className="col-md-12 text-left">
+                                        <h6>Добавлена: {sourceInfo[sid].organization.dateRegister.split(" ")[0]}, последнее изменение: {sourceInfo[sid].organization.dateChange}</h6>
+                                    </div>
+                                    <div className="col-md-4 text-right">Подразделений:</div>
+                                    <div className="col-md-8 text-left">
+                                        {sourceInfo[sid].organization.countDivision}
+                                    </div>
+                                    <div className="col-md-4 text-right">Вид деятельности:</div>
+                                    <div className="col-md-8 text-left">
+                                        {sourceInfo[sid].organization.fieldActivity}
+                                    </div>        
+                                    <div className="col-md-4 text-right">Юридический адрес:</div>
+                                    <div className="col-md-8 text-left">
+                                        {sourceInfo[sid].organization.legalAddress}
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                    <Card>
+                        <Accordion.Toggle as={Card.Header} eventKey="1">
+                            Информация о подразделении, филиале организации
+                        </Accordion.Toggle>
+                        <Accordion.Collapse eventKey="1">
+                            <Card.Body>
+                                <div className="col-md-12 text-center"><strong>{sourceInfo[sid].division.name}</strong></div>
+                                <div className="row">
+                                    <div className="col-md-12 text-left">
+                                        <h6>Добавлена: {sourceInfo[sid].division.dateRegister.split(" ")[0]}, последнее изменение: {sourceInfo[sid].division.dateChange}</h6>
+                                    </div>
+                                    <div className="col-md-4 text-right">Установленных источников:</div>
+                                    <div className="col-md-8 text-left">
+                                        {sourceInfo[sid].division.countSources}
+                                    </div>
+                                    <div className="col-md-4 text-right">Физический адрес:</div>
+                                    <div className="col-md-8 text-left">
+                                        {sourceInfo[sid].division.physicalAddress}
+                                    </div>
+                                    <div className="col-md-4 text-right">Примечание:</div>
+                                    <div className="col-md-8 text-left">
+                                        {sourceInfo[sid].division.description}
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                    <Card>
+                        <Accordion.Toggle as={Card.Header} eventKey="2">
+                            Информация по источнику № {sid}
+                        </Accordion.Toggle>
+                        <Accordion.Collapse eventKey="2">
+                            <Card.Body>
+                                Hello! Source body
+
+                                <Form>              
+                                    <Form.Row>
+                                        <div className="col-sm-3">
+                                            <Form.Label column>Краткое название:</Form.Label>
+                                        </div>
+                                        <div className="col-sm-9">
+                                            <Form.Control size="sm" plaintext readOnly defaultValue={sourceInfo[sid].shortName} />
+                                        </div>
+                                        <div className="col-sm-12">
+                                            <Form.Label column>Установлен: {sourceInfo[sid].dateRegister}, настройки изменены: {sourceInfo[sid].dateChange}</Form.Label>
+                                        </div>
+                                    </Form.Row>
+                                </Form>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                </Accordion>
             </React.Fragment>
         );
     }

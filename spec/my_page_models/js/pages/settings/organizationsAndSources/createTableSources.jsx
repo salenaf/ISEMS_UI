@@ -81,7 +81,7 @@ export default class CreateTableSources extends React.Component {
             <Table size="sm" striped hover>
                 <thead>
                     <tr>
-                        <th>Статус</th>
+                        <th></th>
                         <th>ID</th>
                         <th>Краткое название</th>
                         <th>Деятельность</th>
