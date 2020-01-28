@@ -23,7 +23,7 @@ export default class ModalWindowSourceInfo extends React.Component {
     }
 
     /*
-        только для эмууляции загрузки (delete in production)
+        только для эмуляции загрузки (delete in production)
     */
     emulatorDownloading(){
         if(!this.props.show) return;
@@ -72,17 +72,19 @@ export default class ModalWindowSourceInfo extends React.Component {
                                 <div className="col-md-12 text-center"><strong>{sourceInfo[sid].organization.name}</strong></div>
                                 <div className="row">
                                     <div className="col-md-12 text-left">
-                                        <h6>Добавлена: {sourceInfo[sid].organization.dateRegister.split(" ")[0]}, последнее изменение: {sourceInfo[sid].organization.dateChange}</h6>
+                                        Добавлено: <em>{sourceInfo[sid].organization.dateRegister.split(" ")[0]}</em>,&nbsp;
+                                        последнее изменение: <em>{sourceInfo[sid].organization.dateChange.split(" ")[0]}</em>&nbsp;
+                                        в <em>{sourceInfo[sid].organization.dateChange.split(" ")[1]}</em>
                                     </div>
-                                    <div className="col-md-4 text-right">Подразделений:</div>
+                                    <div className="col-md-4 text-right"><small>Подразделений:</small></div>
                                     <div className="col-md-8 text-left">
                                         {sourceInfo[sid].organization.countDivision}
                                     </div>
-                                    <div className="col-md-4 text-right">Вид деятельности:</div>
+                                    <div className="col-md-4 text-right"><small>Вид деятельности:</small></div>
                                     <div className="col-md-8 text-left">
                                         {sourceInfo[sid].organization.fieldActivity}
                                     </div>        
-                                    <div className="col-md-4 text-right">Юридический адрес:</div>
+                                    <div className="col-md-4 text-right"><small>Юридический адрес:</small></div>
                                     <div className="col-md-8 text-left">
                                         {sourceInfo[sid].organization.legalAddress}
                                     </div>
@@ -92,24 +94,26 @@ export default class ModalWindowSourceInfo extends React.Component {
                     </Card>
                     <Card>
                         <Accordion.Toggle as={Card.Header} eventKey="1">
-                            Информация о подразделении, филиале организации
+                            Информация о подразделении или филиале организации
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey="1">
                             <Card.Body>
                                 <div className="col-md-12 text-center"><strong>{sourceInfo[sid].division.name}</strong></div>
                                 <div className="row">
                                     <div className="col-md-12 text-left">
-                                        <h6>Добавлена: {sourceInfo[sid].division.dateRegister.split(" ")[0]}, последнее изменение: {sourceInfo[sid].division.dateChange}</h6>
+                                        Добавлено: <em>{sourceInfo[sid].division.dateRegister.split(" ")[0]}</em>,&nbsp;
+                                        последнее изменение: <em>{sourceInfo[sid].division.dateChange.split(" ")[0]}</em>&nbsp;
+                                        в <em>{sourceInfo[sid].division.dateChange.split(" ")[1]}</em>
                                     </div>
-                                    <div className="col-md-4 text-right">Установленных источников:</div>
+                                    <div className="col-md-4 text-right"><small>Установленных источников:</small></div>
                                     <div className="col-md-8 text-left">
                                         {sourceInfo[sid].division.countSources}
                                     </div>
-                                    <div className="col-md-4 text-right">Физический адрес:</div>
+                                    <div className="col-md-4 text-right"><small>Физический адрес:</small></div>
                                     <div className="col-md-8 text-left">
                                         {sourceInfo[sid].division.physicalAddress}
                                     </div>
-                                    <div className="col-md-4 text-right">Примечание:</div>
+                                    <div className="col-md-4 text-right"><small>Примечание:</small></div>
                                     <div className="col-md-8 text-left">
                                         {sourceInfo[sid].division.description}
                                     </div>
@@ -123,18 +127,46 @@ export default class ModalWindowSourceInfo extends React.Component {
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey="2">
                             <Card.Body>
-                                Hello! Source body
-
                                 <Form>              
                                     <Form.Row>
-                                        <div className="col-sm-3">
-                                            <Form.Label column>Краткое название:</Form.Label>
+                                        <div className="col-md-12 text-left">
+                                        Установлен: <em>{sourceInfo[sid].dateRegister.split(" ")[0]}</em>,&nbsp;
+                                        последнее изменение: <em>{sourceInfo[sid].dateChange.split(" ")[0]}</em>&nbsp;
+                                        в <em>{sourceInfo[sid].dateChange.split(" ")[1]}</em>
                                         </div>
-                                        <div className="col-sm-9">
-                                            <Form.Control size="sm" plaintext readOnly defaultValue={sourceInfo[sid].shortName} />
+                                        <div className="col-md-12 text-left">Сетевые настройки:</div>
+                                        <div className="col-md-3 text-right"><small>ip адрес:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].networkSettings.ip}
                                         </div>
-                                        <div className="col-sm-12">
-                                            <Form.Label column>Установлен: {sourceInfo[sid].dateRegister}, настройки изменены: {sourceInfo[sid].dateChange}</Form.Label>
+                                        <div className="col-md-3 text-right"><small>сетевой порт:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].networkSettings.port}
+                                        </div>
+                                        <div className="col-md-3 text-right"><small>токен:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].networkSettings.tokenID}
+                                        </div>
+                                        <div className="col-md-12 text-left">Общие настройки:</div>
+                                        <div className="col-md-3 text-right"><small>архитектура:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].sourceSettings.architecture}
+                                        </div>
+                                        <div className="col-md-3 text-right"><small>телеметрия:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {(sourceInfo[sid].sourceSettings.telemetry) ? "включена": <span className="text-danger">выключена</span>}
+                                        </div>
+                                        <div className="col-md-3 text-right"><small>количество задач:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].sourceSettings.maxNumFilter}
+                                        </div>
+                                        <div className="col-md-3 text-right"><small>тип сетевого канала:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].sourceSettings.typeChannelLayerProto}
+                                        </div>
+                                        <div className="col-md-3 text-right"><small>Примечание:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {sourceInfo[sid].description}
                                         </div>
                                     </Form.Row>
                                 </Form>
@@ -142,9 +174,14 @@ export default class ModalWindowSourceInfo extends React.Component {
                         </Accordion.Collapse>
                     </Card>
                 </Accordion>
+                <br />
+                <div className="col-md-12 text-right">
+                    <Button variant="outline-primary" onClick={this.windowClose}>Закрыть</Button>
+                </div>
             </React.Fragment>
         );
     }
+
     /**
      * 
      * <Form.Group controlId="formPlaintextEmail">
@@ -205,7 +242,7 @@ export default class ModalWindowSourceInfo extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Информация и редактирование</h5>
+                        <h5>Информация</h5>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>{this.createBodyElement()}</Modal.Body>

@@ -5,8 +5,9 @@ import PropTypes from "prop-types";
 
 import CreateTableSources from "./createTableSources.jsx";
 import CreateTableDivision from "./createTableDivision.jsx";
+import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
 import ModalWindowSourceInfo from "../../modalwindows/modalWindowSourceInfo.jsx";
-import ModalWindowAddition from "../../modalwindows/modalWindowAddition.jsx";
+import ModalWindowChangeOrganizationOrSource from "../../modalwindows/modalWindowChangeOrganizationOrSource.jsx";
 import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
 
 class CreatePageOrganizationAndSources extends React.Component {
@@ -16,12 +17,13 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.state = {
             "modalWindowSourceInfo": false,
             "modalWindowSourceDel": false,
-            "modalWindowAddition": false,
+            "modalWindowChangeOrganizationOrSource": false,
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
         };
 
         this.modalWindowSourceInfoSettings = {
             id: 0,
+            typeElem: "",
         };
 
         this.listSourceDelete = [];
@@ -30,8 +32,8 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowSourceDel = this.showModalWindowSourceDel.bind(this);
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
-        this.showModalWindowAddition = this.showModalWindowAddition.bind(this);
-        this.closeModalWindowAddition = this.closeModalWindowAddition.bind(this);
+        this.showModalWindowChangeOrganizationOrSource = this.showModalWindowChangeOrganizationOrSource.bind(this);
+        this.closeModalWindowChangeOrganizationOrSource = this.closeModalWindowChangeOrganizationOrSource.bind(this);
 
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
@@ -65,12 +67,15 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({"modalWindowSourceInfo": false});
     }
 
-    showModalWindowAddition(){
-        this.setState({"modalWindowAddition": true});
+    showModalWindowChangeOrganizationOrSource(sourceID, typeElem){
+        this.modalWindowSourceInfoSettings.id = sourceID;
+        this.modalWindowSourceInfoSettings.typeElem = typeElem;
+
+        this.setState({"modalWindowChangeOrganizationOrSource": true});
     }
 
-    closeModalWindowAddition(){
-        this.setState({"modalWindowAddition": false});
+    closeModalWindowChangeOrganizationOrSource(){
+        this.setState({"modalWindowChangeOrganizationOrSource": false});
     }
 
     showModalWindowSourceDel(){
@@ -130,12 +135,8 @@ class CreatePageOrganizationAndSources extends React.Component {
                     <Tab eventKey="sources" title="Источники">
                         <br/>
                         <div className="row">
-                            <div className="col-md-10 text-left">Всего источников: {Object.keys(this.state.checkboxMarkedSourceDel).length}</div>
-                            <div className="col-md-2 text-right">
-                                <Button 
-                                    variant="outline-primary" 
-                                    onClick={this.showModalWindowAddition}
-                                    size="sm">добавить</Button>&nbsp;
+                            <div className="col-md-9 text-left">Всего источников: {Object.keys(this.state.checkboxMarkedSourceDel).length}</div>
+                            <div className="col-md-3 text-right">
                                 <Button 
                                     variant="outline-danger" 
                                     onClick={this.showModalWindowSourceDel}
@@ -146,14 +147,20 @@ class CreatePageOrganizationAndSources extends React.Component {
                         <CreateTableSources 
                             changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
                             handlerShowInfoWindow={this.showModalWindowSourceInfo}
+                            handlerShowChangeInfo={this.showModalWindowChangeOrganizationOrSource}
                             listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
                     <Tab eventKey="division" title="Подразделения">
-                        <div>Division</div>
                         <CreateTableDivision listDivisionInformation={this.props.listDivisionInformation}/>
                     </Tab>
                     <Tab eventKey="organization" title="Организации">
                         <div>Organization</div>
+                    </Tab>
+                    <Tab eventKey="addElement" title="Новая сущность">
+                        
+                        {/** Затенять и делать не активным при запрете группе добавлять новые сущности */}
+                        
+                        <CreateBodyNewEntity listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
                 </Tabs>
                 <ModalWindowSourceInfo 
@@ -161,9 +168,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                     onHide={this.closeModalWindowSourceInfo}
                     settings={this.modalWindowSourceInfoSettings} 
                     sourceInfoForTest={this.props.listSourcesFullInformation} />
-                <ModalWindowAddition                     
-                    show={this.state.modalWindowAddition}
-                    onHide={this.closeModalWindowAddition}
+                <ModalWindowChangeOrganizationOrSource                     
+                    show={this.state.modalWindowChangeOrganizationOrSource}
+                    onHide={this.closeModalWindowChangeOrganizationOrSource}
                     settings={this.modalWindowSourceInfoSettings} />
                 <ModalWindowConfirmMessage 
                     show={this.state.modalWindowSourceDel}
@@ -186,7 +193,9 @@ CreatePageOrganizationAndSources.propTypes ={
 
 let listSourcesInformation = {
     100: {
-        "id": "ffeo0393f94h8884h494g4g",
+        "sid": "ffeo0393f94h8884h494g4g",
+        "did": "dnjdjdnuw82hd8h882h82h8h",
+        "oid": "cnw9w9dj93d8383d8h38d83f4",
         "shortName": "RosAtom COD 1",
         "dateRegister": "2019-08-13 14:39:08",
         "fieldActivity": "атомная промышленность",
@@ -196,7 +205,9 @@ let listSourcesInformation = {
         "releaseApp": "12.12.2019",
     },
     102: {
-        "id": "bmfomr94jbv4nrb949gh94g994",
+        "sid": "bmfomr94jbv4nrb949gh94g994",
+        "did": "vm93j9939f9933993uf9rrrrr",
+        "oid": "cnw9w9dj93d8383d8h38d83f4",
         "shortName": "RosAtom COD 2",
         "dateRegister": "2020-01-13 10:13:00",
         "fieldActivity": "атомная промышленность",
@@ -206,7 +217,9 @@ let listSourcesInformation = {
         "releaseApp": "12.12.2019",
     },
     106: {
-        "id": "nx0j29jf993h88v84g84gf8asa",
+        "sid": "nx0j29jf993h88v84g84gf8asa",
+        "did": "vievieivihf83h38f838hfh3f8",
+        "oid": "cne8h8h828882yfd337fg3g838",
         "shortName": "RosCosmos COD 1",
         "fieldActivity": "космическая промышленность",
         "dateRegister": "2019-11-12 01:35:18",
@@ -216,27 +229,33 @@ let listSourcesInformation = {
         "releaseApp": "12.12.2019",
     },
     103: {
-        "id": "xjn99393ru93ru9439r93ur933",
-        "shortName": "USFB Belgorod",
+        "sid": "xjn99393ru93ru9439r93ur933",
+        "did": "nwc99983883h8hrf38fh83f383",
+        "oid": "cnw89h8dh38h8h38fhd838f83",
+        "shortName": "UMCHS Belgorod",
         "dateRegister": "2019-12-16 18:03:20",
         "fieldActivity": "органы безопасности",
-        "division": "УФСБ России по Белгородской области",
-        "organization": "ФСБ России",
+        "division": "Управление МЧС России по Белгородской области",
+        "organization": "МЧС России",
         "versionApp": "v1.4.4",
         "releaseApp": "12.12.2019",
     },
     104: {
-        "id": "n9j0j349849ur8u8488384833",
-        "shortName": "UFSB Tambov",
+        "sid": "n9j0j349849ur8u8488384833",
+        "did": "xaja9ja9j9j93j380aj016d25",
+        "oid": "cnw89h8dh38h8h38fhd838f83",
+        "shortName": "UMCHS Tambov",
         "dateRegister": "2019-08-13 16:19:59",
         "fieldActivity": "органы безопасности",
-        "division": "УФСБ России по Тамбовской области",
-        "organization": "ФСБ России",
+        "division": "Управление МЧС России по Тамбовской области",
+        "organization": "МЧС России",
         "versionApp": "v1.4.4",
         "releaseApp": "12.12.2019",
     },
     1015: {
-        "id": "vm0pc0fff3933030jr0i34344",
+        "sid": "vm0pc0fff3933030jr0i34344",
+        "did": "dwj289j38838r8r8838r3r393",
+        "oid": "dj929d29euu93438r84r49392",
         "shortName": "DZO Briansk",
         "dateRegister": "2019-02-30 07:49:48",
         "fieldActivity": "государственные органы",

@@ -67,19 +67,23 @@ export default class CreateTableDivision extends React.Component {
 
     render() {
         return (
-            <Table size="sm" striped hover>
-                <thead>
-                    <tr>
-                        <th>№</th>
-                        <th>Подразделение</th>
-                        <th>Организация</th>
-                        <th>Дата создания</th>
-                        <th>Источников</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                {this.createTableBody()}
-            </Table>
+            <React.Fragment>
+                <br/>
+                <h3>Наверное в место таблицы для органицаций и подразделений надо сделать выпадающий список выбора объекта а под ним подробное описание</h3>
+                <Table size="sm" striped hover>
+                    <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Подразделение</th>
+                            <th>Организация</th>
+                            <th>Дата создания</th>
+                            <th>Источников</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {this.createTableBody()}
+                </Table>
+            </React.Fragment>
         );
     }
 }

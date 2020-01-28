@@ -2,9 +2,11 @@ import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-export default class ModalWindowAddition extends React.Component {
+export default class ModalWindowOrganizationOrSource extends React.Component {
     constructor(props){
         super(props);
+
+        console.log(props);
 
         this.windowClose = this.windowClose.bind(this); 
     }
@@ -23,17 +25,17 @@ export default class ModalWindowAddition extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Добавить</h5>
+                        <h5>Редактировать источник №{this.props.settings.id}</h5>
                     </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>...</Modal.Body>
+                <Modal.Body>... type: {this.props.settings.typeElem}</Modal.Body>
             </Modal>
         );
     }
 }
 
-ModalWindowAddition.propTypes = {
-    settings: PropTypes.object,
+ModalWindowOrganizationOrSource.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func,
+    settings: PropTypes.object,
 };
