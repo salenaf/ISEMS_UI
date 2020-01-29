@@ -40901,14 +40901,14 @@ function (_React$Component) {
   _createClass(ModalAlertDangerMessage, [{
     key: "render",
     value: function render() {
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"], {
         dismissible: true,
         variant: "danger",
         show: this.props.show,
         onClose: this.props.onClose
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Alert"].Heading, {
         className: "text-center"
-      }, this.props.children), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.message)));
+      }, this.props.children), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.message));
     }
   }]);
 

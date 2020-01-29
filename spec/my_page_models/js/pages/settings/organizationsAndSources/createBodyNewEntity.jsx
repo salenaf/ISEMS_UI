@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Button, Breadcrumb, Card, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
@@ -34,14 +34,21 @@ export default class CreateBodyNewEntity extends React.Component {
             chosenOrganizationID: null,
             listOrganizationName: this.createListOrganization.call(this),
             listDivisionName: this.createListDivision.call(this),
+            listNewEntity: [],
         };
 
         this.modalWindowSettings = {
             listFieldActivity: this.getListFieldActivity.call(this),
         };
 
+
+        this.handlerAddEntity = this.handlerAddEntity.bind(this);
         this.handelrButtonAdd = this.handelrButtonAdd.bind(this);
         this.closeModalWindow = this.closeModalWindow.bind(this);
+
+        this.createNewDivision = this.createNewDivision.bind(this);
+        this.createNewOrganization = this.createNewOrganization.bind(this);
+        
         this.createListElementDivision = this.createListElementDivision.bind(this);
         this.createListElementOrganization = this.createListElementOrganization.bind(this);
     }
@@ -160,7 +167,7 @@ export default class CreateBodyNewEntity extends React.Component {
         selectForm = <Form.Group onChange={this.selectedOrganization.bind(this)} controlId={"select_list_organization"}>
             <Form.Label>Организация</Form.Label>
             <Form.Control as="select" size="sm">
-                <option value="all" key={"select_organization_option_none"}>...</option>
+                <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
                 {listOptions}
             </Form.Control>
         </Form.Group>;
@@ -194,7 +201,7 @@ export default class CreateBodyNewEntity extends React.Component {
         selectForm = <Form.Group onChange={this.selectedDivision.bind(this)} controlId={"select_list_division"}>
             <Form.Label>Подразделение или филиал организации</Form.Label>
             <Form.Control as="select" size="sm">
-                <option value={null} key={"select_division_option_none"}>...</option>
+                <option value={null} key={"select_division_option_none"}>добавить подразделение</option>
                 {listOptions}
             </Form.Control>
         </Form.Group>;
@@ -202,12 +209,106 @@ export default class CreateBodyNewEntity extends React.Component {
         return selectForm;
     }
 
+    handlerAddEntity(objInfo){
+        console.log("func 'handlerAddButton', START...");
+        console.log(objInfo);
+
+        switch(objInfo.windowType){
+        case "organization":
+            this.createNewOrganization(objInfo.options);
+            
+            break;
+
+        case "division":
+            this.createNewDivision(objInfo.options);
+
+            break;
+
+        case "source":
+
+        }
+
+        console.log("func 'handlerAddButton', END...");
+    }
+
+    createNewOrganization(options){
+        /**
+  windowType: this.props.settings.type,
+                options: {
+                    id: helpers.tokenRand(),
+                    organizationName: settings.organizationSettings.organizationName.value,
+                    legalAddress: settings.organizationSettings.legalAddress.value,
+                    fieldActivity: settings.organizationSettings.fieldActivity.value,
+                }, 
+ */
+
+        //обновляем список организаций
+        let updateOrgName = this.state.listOrganizationName;
+        updateOrgName[options.organizationName] = options.id;
+        this.setState({ listOrganizationName: updateOrgName });
+
+        let listNewEntity = this.state.listNewEntity;
+        listNewEntity.push({
+            name: options.organizationName, // название организации (String) а-Я0-9"'.,()-
+            legal_address: options.legalAddress, // юридический адрес (String) а-Я0-9.,
+            field_activity: options.fieldActivity, // род деятельности (String) из заданных значений или значение по умолчанию
+            division_or_branch_list_id: [] // массив с объектами типа addDivision            
+        });
+        this.setState({ listNewEntity: listNewEntity });
+    }
+
     sendInfoNewEntity(){
         console.log("Отправляем информацию о новых сущностях");
     }
 
+    createNewDivision(options){
+        console.log("func 'createNewDivision', START...");
+        console.log(options);
+    }
+
     resultBody(){
-        return "сюда будут добавлятся новые сущности !!! МОЖЕТ СДЕЛАТЬ ОДНУ КНОПКУ КОТОРАЯ В ЗАВИСИМОСТИ ОТ ВЫБРАННОГО ЭЛЕМЕНТА В СПИСКАХ БУДЕТ ОТКРЫВАТь СООТВЕТСТВУЮЩЕЕ ОКНО ???";
+        /*
+    Examlpe object:
+
+        "Описание организации": {
+            name: "", // название организации (String) а-Я0-9"'.,()-
+            legal_address: "", // юридический адрес (String) а-Я0-9.,
+            field_activity: "", // род деятельности (String) из заданных значений или значение по умолчанию
+            division_or_branch_list_id: [] // массив с объектами типа addDivision
+        }
+
+        "Описание филиала или подразделения организации": {
+            id_organization: "", // уникальный идентификатор организации (String) a-Z0-9
+            name: "", // название филиала или подразделения организации (String) а-Я0-9"'.,()-
+            physical_address: "", // физический адрес (String) а-Я0-9.,
+            description: "", // дополнительное описание (String) а-Я0-9"'.()-
+            source_list: [], // массив с объектами типа addSource
+        }
+
+        "Описание источника обработки файлов, установленного в филиала или подразделения организации": {
+            id_division: "", // уникальный идентификатор филиала или подразделения организации (String) a-Z0-9
+            source_id: "", // уникальный идентификатор источника (Number) 0-9
+            short_name: "", // краткое название источника (String) a-Z-_0-9
+            network_settings: { // сетевые настройки для доступа к источнику
+                ipaddress: "", // ip адрес (String) Проверка ip адреса на корректность
+                port: 0, // сетевой порт (Number) 0-9 и диапазон 1024-65565
+                token_id: "", // идентификационный токен (String) a-Z0-9
+            },
+            source_settings: { // настройки источника 
+                type_architecture_client_server: "", // тип клиент серверной архитектуры (источник работает в режиме клиент или сервер) (String) a-z
+                transmission_telemetry: false, // отправка телеметрии (Bool) BOOL
+                maximum_number_simultaneous_filtering_processes: 0, // максимальное количество одновременных процессов фильтрации (Number) 0-9 и диапазон 1-10
+                type_channel_layer_protocol: "", // тип протокола канального уровня (String) tcp/udp/any
+                list_directories_with_file_network_traffic: [], // список директорий с файлами сетевого трафика, длинна массива не должна быть 0, массив
+                 содержит сторки с символами /\_a-Z0-9
+            },
+            description: "", // дополнительное описание (String) а-Я0-9"'.,()-
+        }
+    */
+
+        return this.state.listNewEntity.map((item) => {
+            return <div key={`new_org_id_${item.id}`}>{item.name}<div>{JSON.stringify(item.division_or_branch_list_id)}</div></div>;
+        });
     }
 
     render(){
@@ -230,35 +331,7 @@ export default class CreateBodyNewEntity extends React.Component {
                 <div className="row">
                     <br/>
                     {this.resultBody()}
-                    <br/>
-                    <Accordion>
-                        <Card>
-                            <Card.Header>
-                                <Accordion.Toggle as={Button} variant="link" eventKey="0">
-      Государственная корпорация атомной энергии Росатом
-                                </Accordion.Toggle>
-                            </Card.Header>
-                            <Accordion.Collapse eventKey="0">
-                                <Card.Body>Hello! I'm the body</Card.Body>
-                            </Accordion.Collapse>
-                        </Card>
-                        <Card>
-                            <Card.Header>
-                                <Accordion.Toggle as={Button} variant="link" eventKey="1">
-      Центр обработки данных №2
-                                </Accordion.Toggle>
-                            </Card.Header>
-                            <Accordion.Collapse eventKey="1">
-                                <Card.Body>Hello! I'm another body</Card.Body>
-                            </Accordion.Collapse>
-                        </Card>
-                    </Accordion>
-                    <br/>
-                    <Breadcrumb>
-                        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
-                        <Breadcrumb.Item href="#">Library</Breadcrumb.Item>
-                        <Breadcrumb.Item active>Data</Breadcrumb.Item>
-                    </Breadcrumb>
+                    
                 </div>
                 <div className="row">
                     <div className="col-md-12 text-right">
@@ -269,7 +342,8 @@ export default class CreateBodyNewEntity extends React.Component {
                 <ModalWindowAddEntity 
                     show={this.state.showModalWindow}
                     onHide={this.closeModalWindow}
-                    settings={this.modalWindowSettings} />
+                    settings={this.modalWindowSettings} 
+                    handlerAddButton={this.handlerAddEntity} />
             </React.Fragment>
         );
     }

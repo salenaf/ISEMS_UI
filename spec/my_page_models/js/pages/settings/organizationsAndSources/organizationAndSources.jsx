@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Tab, Tabs, Table } from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateTableSources from "./createTableSources.jsx";
