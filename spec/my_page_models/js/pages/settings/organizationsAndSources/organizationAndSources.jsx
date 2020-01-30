@@ -158,7 +158,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                     </Tab>
                     <Tab eventKey="addElement" title="Новая сущность">
                         
-                        {/** Затенять и делать не активным при запрете группе добавлять новые сущности */}
+                        {/** Затенять и делать не активным, при запрете группе добавлять новые сущности */}
                         
                         <CreateBodyNewEntity listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>

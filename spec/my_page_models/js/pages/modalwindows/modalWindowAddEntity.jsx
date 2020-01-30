@@ -67,7 +67,7 @@ class CreateBodyDivision extends React.Component {
     constructor(props){
         super(props);
     }
-
+    
     render(){
         return (
             <Form>
@@ -77,7 +77,7 @@ class CreateBodyDivision extends React.Component {
                         type="text" 
                         id="division_name"
                         isValid={this.props.storageInput.divisionName.isValid}
-                        isInvalid={this.props.storageInput.legalAddress.isInvalid}
+                        isInvalid={this.props.storageInput.divisionName.isInvalid}
                         onChange={this.props.handlerInput.bind(this,"division")} />
                 </Form.Group>
                 <Form.Group>
@@ -87,7 +87,7 @@ class CreateBodyDivision extends React.Component {
                         id="division_physical_address" 
                         rows="2"
                         isValid={this.props.storageInput.physicalAddress.isValid}
-                        isInvalid={this.props.storageInput.legalAddress.isInvalid}
+                        isInvalid={this.props.storageInput.physicalAddress.isInvalid}
                         onChange={this.props.handlerInput.bind(this,"division")} />
                 </Form.Group>
                 <Form.Group>
@@ -222,7 +222,7 @@ export default class ModalWindowAddEntity extends React.Component {
     constructor(props){
         super(props);
 
-        this.objState = {
+        this.state = {
             alertMessage: "",
             alertMessageShow: false,
             modalBodySettings: {
@@ -246,19 +246,19 @@ export default class ModalWindowAddEntity extends React.Component {
                 },
                 divisionSettings: {
                     divisionName: {
-                        name: "Название подразделения или филиала",
+                        name: "название подразделения или филиала",
                         value: "",
                         isValid: false,
                         isInvalid: false,
                     },
                     physicalAddress: {
-                        name: "Физический адрес",
+                        name: "физический адрес",
                         value: "",
                         isValid: false,
                         isInvalid: false,
                     },
                     description: {
-                        name: "Примечание",
+                        name: "примечание",
                         value: "",
                     },
                 },
@@ -267,8 +267,6 @@ export default class ModalWindowAddEntity extends React.Component {
                 },
             },
         };
-
-        this.state = this.objState;
 
         this.alertShow = this.alertShow.bind(this);
         this.alertClose = this.alertClose.bind(this);
@@ -284,8 +282,26 @@ export default class ModalWindowAddEntity extends React.Component {
 
         console.log(`закрыть модальное окно для типа ${JSON.stringify(this.props.settings.type)}`);
 
+        let pattern = {
+            "organization": "organizationSettings",
+            "division": "divisionSettings",
+            "source": "sourceSettings",
+        };
+
         //очищаем всю информацию из состояния
-        this.setState(this.objState);
+        let modalBodySettings = this.state.modalBodySettings;
+        for(let name in modalBodySettings[pattern[this.props.settings.type]]){
+            for(let key in modalBodySettings[pattern[this.props.settings.type]][name]){
+                if(key === "isValid" || key === "isInvalid"){
+                    modalBodySettings[pattern[this.props.settings.type]][name][key] = false;
+                } else {
+                    modalBodySettings[pattern[this.props.settings.type]][name][key] = "";
+                }
+            }
+        }
+        this.setState({ alertMessage: "" });
+        this.setState({ alertMessageShow: false });
+        this.setState({ modalBodySettings: modalBodySettings });
 
         this.props.onHide();
     }
@@ -307,7 +323,11 @@ export default class ModalWindowAddEntity extends React.Component {
         let patternOrganization = {
             organizationName: "isValid",
             legalAddress: "isValid",
-            fieldActivity: "length"
+            fieldActivity: "length",
+        };
+        let patternDivision = {
+            divisionName: "isValid",
+            physicalAddress: "isValid",
         };
         let settings = this.state.modalBodySettings;
 
@@ -318,7 +338,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 this.setState({ alertMessageShow: false });
                 
                 if((settings.organizationSettings[name].value).length === 0){
-                    this.setState({alertMessage: `Значение поля ${settings.organizationSettings[name].name} не задано.`});
+                    this.setState({alertMessage: `Значение поля '${settings.organizationSettings[name].name}' не задано.`});
                     this.alertShow();
 
                     return;
@@ -326,7 +346,7 @@ export default class ModalWindowAddEntity extends React.Component {
 
                 if(patternOrganization[name] === "isValid"){
                     if(!settings.organizationSettings[name].isValid){
-                        this.setState({alertMessage: `Значение поля ${settings.organizationSettings[name].name} некорректно.`});
+                        this.setState({alertMessage: `Значение поля '${settings.organizationSettings[name].name}' некорректно.`});
                         this.alertShow();
 
                         return;
@@ -347,11 +367,46 @@ export default class ModalWindowAddEntity extends React.Component {
             break;
 
         case "division":
+            for(let name in settings.divisionSettings){
+                this.setState({ alertMessage: "" });
+                this.setState({ alertMessageShow: false });
+
+                if((name !== "description") && ((settings.divisionSettings[name].value).length === 0)){
+                    this.setState({alertMessage: `Значение поля '${settings.divisionSettings[name].name}' не задано.`});
+                    this.alertShow();
+
+                    return;
+                }
+
+                if(patternDivision[name] === "isValid"){
+                    if(!settings.divisionSettings[name].isValid){
+                        this.setState({alertMessage: `Значение поля '${settings.divisionSettings[name].name}' некорректно.`});
+                        this.alertShow();
+
+                        return;
+                    }
+                }
+            }
+
+            this.props.handlerAddButton({
+                windowType: this.props.settings.type,
+                options: {
+                    id: helpers.tokenRand(),
+                    parentID: this.props.parentOrganizationID,
+                    divisionName: settings.divisionSettings.divisionName.value,
+                    physicalAddress: settings.divisionSettings.physicalAddress.value,
+                    description: settings.divisionSettings.description.value,
+                },
+            });
 
             break;
 
         case "source":
-
+/**
+ * parents id 
+ * parentDivisionID
+ * parentOrganizationID
+ */
 
         }
 
@@ -389,11 +444,12 @@ export default class ModalWindowAddEntity extends React.Component {
        
         let objUpdate = Object.assign({}, this.state);
 
+        /**
+        * Пока проверяем только на длину
+        */
+
         switch(elementName){
         case "organization_name":
-            /**
-            * Пока проверяем только на длину
-            */
             objUpdate.modalBodySettings.organizationSettings.organizationName.value = value;
             if(value.length < 5){
                 objUpdate.modalBodySettings.organizationSettings.organizationName.isInvalid = true;
@@ -406,9 +462,6 @@ export default class ModalWindowAddEntity extends React.Component {
             break;
 
         case "legal_address":
-            /**
-            * Пока проверяем только на длину
-            */
             objUpdate.modalBodySettings.organizationSettings.legalAddress.value = value;
             if(value.length < 5){
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isInvalid = true;
@@ -429,9 +482,54 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     divisionInput(elementName, value){
+        /**
+        * Выполняем проверку параметров вводимых пользователем
+        * для макета выполняется простая проверка на длинну
+        * проверка поля 'Примечание'
+        * Для продакшена надо прикрутить RegExp
+        
+        
         console.log("func 'divisionInput', START...");
         console.log(`element name: ${elementName}`);
         console.log(`value: ${value}`);
+        */
+
+        let objUpdate = Object.assign({}, this.state);
+
+        /**
+        * Пока проверяем только на длину
+        */
+        switch(elementName){
+        case "division_name":
+            objUpdate.modalBodySettings.divisionSettings.divisionName.value = value;
+            if(value.length < 5){
+                objUpdate.modalBodySettings.divisionSettings.divisionName.isInvalid = true;
+                objUpdate.modalBodySettings.divisionSettings.divisionName.isValid = false;
+            } else {
+                objUpdate.modalBodySettings.divisionSettings.divisionName.isInvalid = false;
+                objUpdate.modalBodySettings.divisionSettings.divisionName.isValid = true;
+            }
+
+            break;
+
+        case "division_physical_address":
+            objUpdate.modalBodySettings.divisionSettings.physicalAddress.value = value;
+            if(value.length < 5){
+                objUpdate.modalBodySettings.divisionSettings.physicalAddress.isInvalid = true;
+                objUpdate.modalBodySettings.divisionSettings.physicalAddress.isValid = false;
+            } else {
+                objUpdate.modalBodySettings.divisionSettings.physicalAddress.isInvalid = false;
+                objUpdate.modalBodySettings.divisionSettings.physicalAddress.isValid = true;
+            }
+            
+            break;
+
+        case "division_description":
+            objUpdate.modalBodySettings.divisionSettings.description.value = value;
+
+        }
+
+        this.setState( objUpdate );
     }
 
     render(){
@@ -469,5 +567,7 @@ ModalWindowAddEntity.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func,
     settings: PropTypes.object,
+    parentDivisionID: PropTypes.string,
+    parentOrganizationID: PropTypes.string,
     handlerAddButton: PropTypes.func,
 };

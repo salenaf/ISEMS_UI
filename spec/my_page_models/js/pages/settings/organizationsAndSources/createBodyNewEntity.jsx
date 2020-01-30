@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
@@ -38,6 +38,8 @@ export default class CreateBodyNewEntity extends React.Component {
         };
 
         this.modalWindowSettings = {
+            type: "",
+            name: "",
             listFieldActivity: this.getListFieldActivity.call(this),
         };
 
@@ -194,9 +196,7 @@ export default class CreateBodyNewEntity extends React.Component {
         let listName = Object.keys(lsi);
         listName.sort();
 
-        let listOptions = listName.map((name) => {
-            return <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>;
-        });
+        let listOptions = listName.map((name) => <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>);
 
         selectForm = <Form.Group onChange={this.selectedDivision.bind(this)} controlId={"select_list_division"}>
             <Form.Label>Подразделение или филиал организации</Form.Label>
@@ -232,6 +232,9 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewOrganization(options){
+        console.log("func 'createNewOrganization', START...");
+        console.log(options);
+
         /**
   windowType: this.props.settings.type,
                 options: {
@@ -249,21 +252,64 @@ export default class CreateBodyNewEntity extends React.Component {
 
         let listNewEntity = this.state.listNewEntity;
         listNewEntity.push({
+            id_organization: options.id,
             name: options.organizationName, // название организации (String) а-Я0-9"'.,()-
             legal_address: options.legalAddress, // юридический адрес (String) а-Я0-9.,
             field_activity: options.fieldActivity, // род деятельности (String) из заданных значений или значение по умолчанию
             division_or_branch_list_id: [] // массив с объектами типа addDivision            
         });
         this.setState({ listNewEntity: listNewEntity });
-    }
 
-    sendInfoNewEntity(){
-        console.log("Отправляем информацию о новых сущностях");
+        //говорим что добавилась новая организация (отображение кнопки "Сохранить")
+        this.setState({ addedNewEntity: true });
     }
 
     createNewDivision(options){
         console.log("func 'createNewDivision', START...");
         console.log(options);
+
+        let isExist = false;
+        let newRecord = {
+            id_organization: options.parentID, // уникальный идентификатор организации (String) a-Z0-9
+            id_division: options.id, // уникальный идентификатор подразделения
+            name: options.divisionName, // название филиала или подразделения организации (String) а-Я0-9"'.,()-
+            physical_address: options.physicalAddress, // физический адрес (String) а-Я0-9.,
+            description: options.description, // дополнительное описание (String) а-Я0-9"'.()-
+            source_list: [], // массив с объектами типа addSource
+        };
+
+        //обновляем список организаций
+        let updateDiviName = this.state.listDivisionName;
+        updateDiviName[options.divisionName] = {
+            did: options.id,
+            oid: options.parentID,
+        };
+        this.setState({ listDivisionName: updateDiviName });
+
+        let listNewEntity = this.state.listNewEntity;
+
+        for(let i = 0; i < listNewEntity.length; i++){
+
+            console.log(`id organization: ${listNewEntity[i].id_organization} === ${options.parentID} (parent ID)`);
+
+            //ищем объект организации в listNewEntity
+            if(listNewEntity[i].id_organization === options.parentID){
+                listNewEntity[i].division_or_branch_list_id.push(newRecord);
+                isExist = true;
+
+                break;
+            }
+        }
+
+        //если не нашли организацию просто добавляе в массив
+        if(!isExist){
+            listNewEntity.push(newRecord);
+        }
+
+        this.setState({ listNewEntity: listNewEntity });
+
+        //говорим что добавилась новая организация (отображение кнопки "Сохранить")
+        this.setState({ addedNewEntity: true });
     }
 
     resultBody(){
@@ -304,11 +350,39 @@ export default class CreateBodyNewEntity extends React.Component {
             },
             description: "", // дополнительное описание (String) а-Я0-9"'.,()-
         }
+
+
+                                            !!!!
+
+                    ВИДИМО ДЛЯ ВИЗУАЛИЗАЦИИ ПРИДЕТСЯ ДЕЛАТЬ ОТДЕЛЬНЫЙ ОБЪЕКТ
+
+                                            !!!!
     */
 
-        return this.state.listNewEntity.map((item) => {
-            return <div key={`new_org_id_${item.id}`}>{item.name}<div>{JSON.stringify(item.division_or_branch_list_id)}</div></div>;
+        let num = 0;
+        let listNewEntity = this.state.listNewEntity.map((item) => {
+            return (
+                <React.Fragment key={`toast_id_${num++}`}>
+                    <Card>
+                        <Card.Header as="h5">Featured</Card.Header>
+                        <Card.Body className="text-left">
+                            <Card.Title>Special title treatment</Card.Title>
+                            <Card.Text>
+                                {JSON.stringify(item)}
+                            </Card.Text>
+                            <Button size="sm" variant="outline-danger">удалить</Button>
+                        </Card.Body>
+                    </Card>
+                    <br/>
+                </React.Fragment>
+            );
         });
+
+        return listNewEntity;
+    }
+
+    sendInfoNewEntity(){
+        console.log("Отправляем информацию о новых сущностях");
     }
 
     render(){
@@ -331,7 +405,7 @@ export default class CreateBodyNewEntity extends React.Component {
                 <div className="row">
                     <br/>
                     {this.resultBody()}
-                    
+                    <br/>
                 </div>
                 <div className="row">
                     <div className="col-md-12 text-right">
@@ -342,7 +416,9 @@ export default class CreateBodyNewEntity extends React.Component {
                 <ModalWindowAddEntity 
                     show={this.state.showModalWindow}
                     onHide={this.closeModalWindow}
-                    settings={this.modalWindowSettings} 
+                    settings={this.modalWindowSettings}
+                    parentDivisionID={this.state.chosenDivisionID}
+                    parentOrganizationID={this.state.chosenOrganizationID}
                     handlerAddButton={this.handlerAddEntity} />
             </React.Fragment>
         );
