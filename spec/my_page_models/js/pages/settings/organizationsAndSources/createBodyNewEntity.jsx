@@ -48,6 +48,7 @@ export default class CreateBodyNewEntity extends React.Component {
         this.handelrButtonAdd = this.handelrButtonAdd.bind(this);
         this.closeModalWindow = this.closeModalWindow.bind(this);
 
+        this.createNewSource = this.createNewSource.bind(this);
         this.createNewDivision = this.createNewDivision.bind(this);
         this.createNewOrganization = this.createNewOrganization.bind(this);
         
@@ -225,7 +226,7 @@ export default class CreateBodyNewEntity extends React.Component {
             break;
 
         case "source":
-
+            this.createNewSource(objInfo.options);
         }
 
         console.log("func 'handlerAddButton', END...");
@@ -307,8 +308,54 @@ export default class CreateBodyNewEntity extends React.Component {
         }
 
         this.setState({ listNewEntity: listNewEntity });
+        this.setState({ addedNewEntity: true });
+    }
 
-        //говорим что добавилась новая организация (отображение кнопки "Сохранить")
+    createNewSource(options){
+        console.log("func 'createNewSource', START...");
+        console.log(options);
+
+        let isExist = false;
+        let newRecord = {
+            id_division: options.parentID, // уникальный идентификатор подразделения
+            id_source: options.id, // уникальный идентификатор источника
+            source_id: options.sourceID, // уникальный идентификатор источника (Number) 0-9
+            short_name: options.shortName, // краткое название источника (String) a-Z-_0-9
+            network_settings: { // сетевые настройки для доступа к источнику
+                ipaddress: options.ipAddress, // ip адрес (String) Проверка ip адреса на корректность
+                port: options.port, // сетевой порт (Number) 0-9 и диапазон 1024-65565
+                token_id: options.token, // идентификационный токен (String) a-Z0-9
+            },
+            source_settings: { // настройки источника 
+                type_architecture_client_server: options.architecture, // тип клиент серверной архитектуры (источник работает в режиме клиент или сервер) (String) a-z
+                transmission_telemetry: options.telemetry, // отправка телеметрии (Bool) BOOL
+                maximum_number_simultaneous_filtering_processes: options.maxSimultaneousProc, // максимальное количество одновременных процессов фильтрации (Number) 0-9 и диапазон 1-10
+                type_channel_layer_protocol: options.networkChannel, // тип протокола канального уровня (String) tcp/udp/any
+                list_directories_with_file_network_traffic: options.directoriesNetworkTraffic, // список директорий с файлами сетевого трафика, длинна массива не должна быть 0, массив содержит сторки с символами /\_a-Z0-9
+            },
+            description: options.description, // дополнительное описание (String) а-Я0-9"'.,()-
+        };
+
+        let listNewEntity = this.state.listNewEntity;
+        for(let i = 0; i < listNewEntity.length; i++){
+
+            console.log(`id division: ${listNewEntity[i].id_division} === ${options.parentID} (parent ID)`);
+
+            //ищем объект организации в listNewEntity
+            if(listNewEntity[i].id_division === options.parentID){
+                listNewEntity[i].source_list.push(newRecord);
+                isExist = true;
+
+                break;
+            }
+        }
+
+        //если не нашли организацию просто добавляе в массив
+        if(!isExist){
+            listNewEntity.push(newRecord);
+        }
+
+        this.setState({ listNewEntity: listNewEntity });
         this.setState({ addedNewEntity: true });
     }
 
@@ -351,12 +398,6 @@ export default class CreateBodyNewEntity extends React.Component {
             description: "", // дополнительное описание (String) а-Я0-9"'.,()-
         }
 
-
-                                            !!!!
-
-                    ВИДИМО ДЛЯ ВИЗУАЛИЗАЦИИ ПРИДЕТСЯ ДЕЛАТЬ ОТДЕЛЬНЫЙ ОБЪЕКТ
-
-                                            !!!!
     */
 
         let num = 0;

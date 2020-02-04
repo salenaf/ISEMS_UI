@@ -17,8 +17,9 @@ class ListFolder extends React.Component {
     }
 
     listFolders(){
-        return this.props.directoriesNetworkTraffic.map(item => {
-            return <li key={`new_folder_${item}`}>
+        return this.props.directoriesNetworkTraffic.map((item) => {
+            let num = 0;
+            return <li key={`new_folder_${item}_${num++}`}>
                 {item}&nbsp;
                 <button onClick={this.deleteNewFolder.bind(this, item)} type="button" className="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -53,6 +54,8 @@ class CreateBodyOrganization extends React.Component {
                 <Form.Control 
                     as="select" 
                     id="organization_field_selector" 
+                    isValid={this.props.storageInput.fieldActivity.isValid}
+                    isInvalid={this.props.storageInput.fieldActivity.isInvalid} 
                     onChange={this.props.handlerInput.bind(this, "organization")} >
                     <option value="" key="list_field_activity_0">...</option>
                     {list.map((item) => <option value={item} key={`list_field_activity_${num++}`}>{item}</option>)}
@@ -143,50 +146,6 @@ CreateBodyDivision.propTypes = {
 class CreateBodySource extends React.Component {
     constructor(props){
         super(props);
-
-        this.state = {
-            newFolder: "",
-            isValid: false,
-            isInvalid: false,
-        };
-
-        this.handlerInput = this.handlerInput.bind(this);
-        this.handlerNewFolder = this.handlerNewFolder.bind(this);
-    }
-
-    handlerInput(e){
-        let value = e.target.value;
-
-        /* 
-                Внимание!!!
-        пока проверяем только длинну RegExp в production
-        */
-
-        /*if(value.length < 5){
-            this.setState({ isValid: false });
-            this.setState({ isInvalid: true });
-        } else {
-            this.setState({ isValid: true });
-            this.setState({ isInvalid: false });
-        }*/
-
-        this.setState({ newFolder: value });
-
-        this.props.handlerInput.call(e, "source");
-    }
-
-    handlerNewFolder(){
-
-        //        let nf = this.state.newFolder;
-
-        //        this.setState({ newFolder: "" });
-        //this.setState({ isValid: false });
-        //this.setState({ isInvalid: false });
-
-        //очищаем поле ввода
-        document.getElementById("input_folder").value = "";
-
-        this.props.addNewFolder(this.state.newFolder);
     }
 
     render(){
@@ -229,14 +188,26 @@ class CreateBodySource extends React.Component {
                 <Form.Row>
                     <Form.Group as={Col}>
                         <Form.Label>Архитектура</Form.Label>
-                        <Form.Control id="source_architecture" as="select" defaultValue="client">
+                        <Form.Control 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.architecture.isValid}
+                            isInvalid={this.props.storageInput.architecture.isInvalid}
+                            id="source_architecture" 
+                            as="select" 
+                            defaultValue="client">
                             <option value="client">клиент</option>
                             <option value="server">сервер</option>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col}>
                         <Form.Label>Параллельные задачи фильтрации</Form.Label>
-                        <Form.Control id="source_max_simultaneous_proc" as="select" defaultValue="5">
+                        <Form.Control 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.maxSimultaneousProc.isValid}
+                            isInvalid={this.props.storageInput.maxSimultaneousProc.isInvalid}
+                            id="source_max_simultaneous_proc" 
+                            as="select" 
+                            defaultValue="5">
                             {(() => {
                                 let list = [];
                                 for(let i = 1; i <= 10; i++){
@@ -252,21 +223,30 @@ class CreateBodySource extends React.Component {
                 <Form.Row>
                     <Form.Group as={Col}>
                         <Form.Label>Тип сетевого канала</Form.Label>
-                        <Form.Control id="source_network_channel" as="select" defaultValue="ip">
+                        <Form.Control 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.networkChannel.isValid}
+                            isInvalid={this.props.storageInput.networkChannel.isInvalid}
+                            id="source_network_channel"
+                            as="select" 
+                            defaultValue="ip">
                             <option value="ip">ip/vlan</option>
                             <option value="pppoe">pppoe</option>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col}>
                         <Form.Label>Идентификационный токен</Form.Label>
-                        <Form.Control id="source_token" type="text" readOnly defaultValue={helpers.tokenRand()} />
+                        <Form.Control id="source_token" type="text" readOnly defaultValue={this.props.storageInput.token.value} />
                     </Form.Group>
                 </Form.Row>
                 <Row>
                     <Col lg={4}>
                         <Form.Check 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.telemetry.isValid}
+                            isInvalid={this.props.storageInput.telemetry.isInvalid}
                             type="switch"
-                            id="source_telemetry"
+                            id="source_telemetry" 
                             label="телеметрия"
                         />
                     </Col>
@@ -294,20 +274,19 @@ class CreateBodySource extends React.Component {
                 </Row>
                 <Form.Group>
                     <Form.Label>Примечание</Form.Label>
-                    <Form.Control id="source_description" as="textarea" rows="3" />
+                    <Form.Control 
+                        onChange={this.props.handlerInput.bind(this, "source")}
+                        isValid={this.props.storageInput.description.isValid}
+                        isInvalid={this.props.storageInput.description.isInvalid}
+                        id="source_description" 
+                        as="textarea" 
+                        rows="3" />
                 </Form.Group>
             </Form>
         );
     }
 }
-/**
- *                                 onChange={this.handlerInput}
- * 
- *                                 isValid={this.state.isValid}
-                                isInvalid={this.state.isInvalid}
-                                  isValid={this.props.storageInput.directoriesNetworkTraffic.isValid}
-                    isInvalid={this.props.storageInput.directoriesNetworkTraffic.isInvalid}
- */
+
 CreateBodySource.propTypes = {
     addNewFolder: PropTypes.func.isRequired,
     handlerInput: PropTypes.func.isRequired, 
@@ -360,8 +339,6 @@ export default class ModalWindowAddEntity extends React.Component {
         super(props);
 
         this.state = {
-            alertMessage: "",
-            alertMessageShow: false,
             modalBodySettings: {
                 organizationSettings: {
                     organizationName: {
@@ -379,6 +356,8 @@ export default class ModalWindowAddEntity extends React.Component {
                     fieldActivity: {
                         name: "вид деятельности",
                         value: "",
+                        isValid: false,
+                        isInvalid: false,
                     },
                 },
                 divisionSettings: {
@@ -438,7 +417,7 @@ export default class ModalWindowAddEntity extends React.Component {
                     },
                     token: {
                         name: "идентификационный токен",
-                        value: "",
+                        value: helpers.tokenRand(),
                     },
                     telemetry: {
                         name: "телеметрия",
@@ -458,9 +437,6 @@ export default class ModalWindowAddEntity extends React.Component {
                 },
             },
         };
-
-        this.alertShow = this.alertShow.bind(this);
-        this.alertClose = this.alertClose.bind(this);
         this.buttonAdd = this.buttonAdd.bind(this);
         this.windowClose = this.windowClose.bind(this); 
         this.handlerInput = this.handlerInput.bind(this);
@@ -485,27 +461,24 @@ export default class ModalWindowAddEntity extends React.Component {
         //очищаем всю информацию из состояния
         let modalBodySettings = this.state.modalBodySettings;
         for(let name in modalBodySettings[pattern[this.props.settings.type]]){
-            for(let key in modalBodySettings[pattern[this.props.settings.type]][name]){
+            for(let key in modalBodySettings[pattern[this.props.settings.type]][name]){              
                 if(key === "isValid" || key === "isInvalid"){
                     modalBodySettings[pattern[this.props.settings.type]][name][key] = false;
+                } else if(name === "directoriesNetworkTraffic" && key === "value"){
+                    modalBodySettings[pattern[this.props.settings.type]][name][key] = [];
                 } else {
                     modalBodySettings[pattern[this.props.settings.type]][name][key] = "";
                 }
             }
         }
+
+        modalBodySettings.sourceSettings.token.value = helpers.tokenRand();
+
         this.setState({ alertMessage: "" });
         this.setState({ alertMessageShow: false });
         this.setState({ modalBodySettings: modalBodySettings });
 
         this.props.onHide();
-    }
-
-    alertShow(){
-        this.setState({ alertMessageShow: true });
-    }
-
-    alertClose(){
-        this.setState({ alertMessageShow: false });
     }
 
     buttonAdd(){
@@ -514,72 +487,71 @@ export default class ModalWindowAddEntity extends React.Component {
         /**
          * проверяем корректность значений и их наличие
          */
-        let patternOrganization = {
-            organizationName: "isValid",
-            legalAddress: "isValid",
-            fieldActivity: "length",
-        };
-        let patternDivision = {
-            divisionName: "isValid",
-            physicalAddress: "isValid",
-        };
+        let valueIsEmpty = false;       
         let settings = this.state.modalBodySettings;
+        let listElem = [ "sourceID",
+            "shortName",
+            "ipAddress",
+            "port" ];
+
+        let objUpdate = Object.assign({}, this.state);        
 
         switch(this.props.settings.type){
         case "organization":
-            for(let name in settings.organizationSettings){
-                this.setState({ alertMessage: "" });
-                this.setState({ alertMessageShow: false });
-                
+            for(let name in settings.organizationSettings){               
                 if((settings.organizationSettings[name].value).length === 0){
-                    this.setState({alertMessage: `Значение поля '${settings.organizationSettings[name].name}' не задано.`});
-                    this.alertShow();
+                    valueIsEmpty = true;
 
-                    return;
+                    objUpdate.modalBodySettings.organizationSettings[name].isValid = false;
+                    objUpdate.modalBodySettings.organizationSettings[name].isInvalid = true;
                 }
+            }
 
-                if(patternOrganization[name] === "isValid"){
-                    if(!settings.organizationSettings[name].isValid){
-                        this.setState({alertMessage: `Значение поля '${settings.organizationSettings[name].name}' некорректно.`});
-                        this.alertShow();
-
-                        return;
-                    }
-                }
+            if(valueIsEmpty){
+                this.setState( objUpdate );
+                
+                return;
             }
 
             this.props.handlerAddButton({
                 windowType: this.props.settings.type,
                 options: {
                     id: helpers.tokenRand(),
-                    organizationName: settings.organizationSettings.organizationName.value,
-                    legalAddress: settings.organizationSettings.legalAddress.value,
-                    fieldActivity: settings.organizationSettings.fieldActivity.value,
+                    organizationName: objUpdate.modalBodySettings.organizationSettings.organizationName.value,
+                    legalAddress: objUpdate.modalBodySettings.organizationSettings.legalAddress.value,
+                    fieldActivity: objUpdate.modalBodySettings.organizationSettings.fieldActivity.value,
                 },
             });
+
+            for(let name in settings.organizationSettings){
+                objUpdate.modalBodySettings.organizationSettings[name].value = "";
+
+                objUpdate.modalBodySettings.organizationSettings[name].isValid = false;
+                objUpdate.modalBodySettings.organizationSettings[name].isInvalid = false;
+            }
+
+            this.setState( objUpdate );
 
             break;
 
         case "division":
             for(let name in settings.divisionSettings){
-                this.setState({ alertMessage: "" });
-                this.setState({ alertMessageShow: false });
-
-                if((name !== "description") && ((settings.divisionSettings[name].value).length === 0)){
-                    this.setState({alertMessage: `Значение поля '${settings.divisionSettings[name].name}' не задано.`});
-                    this.alertShow();
-
-                    return;
+                if(name === "description"){
+                    continue;
                 }
 
-                if(patternDivision[name] === "isValid"){
-                    if(!settings.divisionSettings[name].isValid){
-                        this.setState({alertMessage: `Значение поля '${settings.divisionSettings[name].name}' некорректно.`});
-                        this.alertShow();
+                if((settings.divisionSettings[name].value).length === 0){
+                    valueIsEmpty = true;
 
-                        return;
-                    }
+                    objUpdate.modalBodySettings.divisionSettings[name].isValid = false;
+                    objUpdate.modalBodySettings.divisionSettings[name].isInvalid = true;
                 }
+            }
+
+            if(valueIsEmpty){
+                this.setState( objUpdate );
+                
+                return;
             }
 
             this.props.handlerAddButton({
@@ -587,24 +559,80 @@ export default class ModalWindowAddEntity extends React.Component {
                 options: {
                     id: helpers.tokenRand(),
                     parentID: this.props.parentOrganizationID,
-                    divisionName: settings.divisionSettings.divisionName.value,
-                    physicalAddress: settings.divisionSettings.physicalAddress.value,
-                    description: settings.divisionSettings.description.value,
+                    divisionName: objUpdate.modalBodySettings.divisionSettings.divisionName.value,
+                    physicalAddress: objUpdate.modalBodySettings.divisionSettings.physicalAddress.value,
+                    description: objUpdate.modalBodySettings.divisionSettings.description.value,
                 },
             });
+
+            for(let name in settings.divisionSettings){
+                if(name === "description"){
+                    continue;
+                }
+
+                objUpdate.modalBodySettings.divisionSettings[name].value = "";                    
+
+                objUpdate.modalBodySettings.divisionSettings[name].isValid = false;
+                objUpdate.modalBodySettings.divisionSettings[name].isInvalid = false;
+            }
+
+            this.setState( objUpdate );
 
             break;
 
         case "source":
-            /**
- * parents id 
- * parentDivisionID
- * parentOrganizationID
- */
+            listElem.forEach((item) => {
+                if(settings.sourceSettings[item].value.length === 0){
+                    valueIsEmpty = true;
 
-            console.log("Validation input parameters...");
+                    objUpdate.modalBodySettings.sourceSettings[item].isValid = false;
+                    objUpdate.modalBodySettings.sourceSettings[item].isInvalid = true;
+                }
+            });
 
-            return;
+            if(settings.sourceSettings.directoriesNetworkTraffic.value.length === 0){
+                valueIsEmpty = true; 
+
+                objUpdate.modalBodySettings.sourceSettings.directoriesNetworkTraffic.isValid = false;
+                objUpdate.modalBodySettings.sourceSettings.directoriesNetworkTraffic.isInvalid = true;
+            }
+
+            if(valueIsEmpty){
+                this.setState( objUpdate );
+                
+                return;
+            }
+
+            this.props.handlerAddButton({
+                windowType: this.props.settings.type,
+                options: {
+                    id: helpers.tokenRand(),                   
+                    parentID: this.props.parentDivisionID,
+                    sourceID: objUpdate.modalBodySettings.sourceSettings.sourceID.value,                    
+                    shortName: objUpdate.modalBodySettings.sourceSettings.shortName.value,
+                    ipAddress: objUpdate.modalBodySettings.sourceSettings.ipAddress.value,
+                    port: objUpdate.modalBodySettings.sourceSettings.port.value,
+                    architecture: objUpdate.modalBodySettings.sourceSettings.architecture.value,
+                    maxSimultaneousProc: objUpdate.modalBodySettings.sourceSettings.maxSimultaneousProc.value,
+                    networkChannel: objUpdate.modalBodySettings.sourceSettings.networkChannel.value,
+                    token: objUpdate.modalBodySettings.sourceSettings.token.value,
+                    telemetry: objUpdate.modalBodySettings.sourceSettings.telemetry.value,
+                    directoriesNetworkTraffic: objUpdate.modalBodySettings.sourceSettings.directoriesNetworkTraffic.value,
+                    description: objUpdate.modalBodySettings.sourceSettings.description.value,
+                },
+            });
+
+            listElem.forEach((item) => {
+                objUpdate.modalBodySettings.sourceSettings[item].value = "";
+
+                objUpdate.modalBodySettings.sourceSettings[item].isValid = false;
+                objUpdate.modalBodySettings.sourceSettings[item].isInvalid = false;
+            });
+            objUpdate.modalBodySettings.sourceSettings.directoriesNetworkTraffic.value = [];
+            objUpdate.modalBodySettings.sourceSettings.directoriesNetworkTraffic.isValid = false;
+            objUpdate.modalBodySettings.sourceSettings.directoriesNetworkTraffic.isInvalid = false;
+
+            this.setState( objUpdate );
 
         }
 
@@ -618,12 +646,6 @@ export default class ModalWindowAddEntity extends React.Component {
         const value = event.target.value;
         const elementName = event.target.id;
 
-        /*
-        console.log(`value: ${value}`);
-        console.log(`element name: ${elementName}`);
-        console.log(`type input: ${typeInput}`);
-        */
-
         if(typeInput === "organization"){
             this.organizationInput(elementName, value);
         }
@@ -636,15 +658,24 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     handlerNewFolder(){
-        let newFolder = this.state.modalBodySettings.sourceSettings.newFolder;
-        if(this.state.modalBodySettings.sourceSettings.directoriesNetworkTraffic.isInvalid){
+        let newFolder = this.state.modalBodySettings.sourceSettings.newFolder.trim();
+        let dirNetTraff = this.state.modalBodySettings.sourceSettings.directoriesNetworkTraffic;
+        if(dirNetTraff.isInvalid){
             return;
         }
 
-        console.log("|||||||| "+newFolder+" ||||||||");
+        if(newFolder.length < 2){
+
+            return;
+        }
 
         if(newFolder[0] !== "/"){
             newFolder = "/"+newFolder;
+        }
+
+        //ищем подобный элемент
+        if(dirNetTraff.value.includes(newFolder)){
+            return;
         }
 
         let objUpdate = Object.assign({}, this.state);        
@@ -708,7 +739,8 @@ export default class ModalWindowAddEntity extends React.Component {
 
         case "organization_field_selector":
             objUpdate.modalBodySettings.organizationSettings.fieldActivity.value = value;
-
+            objUpdate.modalBodySettings.organizationSettings.fieldActivity.isInvalid = false;
+            objUpdate.modalBodySettings.organizationSettings.fieldActivity.isValid = true;
         }
 
         this.setState( objUpdate );
@@ -718,7 +750,7 @@ export default class ModalWindowAddEntity extends React.Component {
         /**
         * Выполняем проверку параметров вводимых пользователем
         * для макета выполняется простая проверка на длинну
-        * проверка поля 'Примечание'
+        * проверка поля 'Примечание' не выполняется
         * Для продакшена надо прикрутить RegExp
         
         
@@ -796,19 +828,56 @@ export default class ModalWindowAddEntity extends React.Component {
             "input_folder": {
                 name: "directoriesNetworkTraffic",
                 pattern: "",
+            },
+            "source_description": {
+                name: "description",
+                pattern: "",
+            },
+            "source_telemetry": {
+                name: "telemetry",
+                pattern: "",
+            },
+            "source_network_channel": {
+                name: "networkChannel",
+                pattern: "",
+            },
+            "source_architecture": {
+                name: "architecture",
+                pattern: "",
+            },
+            "source_max_simultaneous_proc": {
+                name: "maxSimultaneousProc",
+                pattern: "",
             }, 
         };
 
+        let listSelectors = [
+            "source_description",
+            "source_telemetry",
+            "source_network_channel",
+            "source_architecture",
+            "source_max_simultaneous_proc", 
+        ];
+
         let objUpdate = Object.assign({}, this.state);
 
-        if(elementName === "input_folder"){
-            objUpdate.modalBodySettings.sourceSettings.newFolder = value;        
+        if(listSelectors.includes(elementName)){
+            objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;    
+            this.setState( objUpdate );
+    
+            return;
         }
 
         if(value.length < 5) {
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isValid = false;
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isInvalid = true;
         } else {
+            if(elementName === "input_folder"){
+                objUpdate.modalBodySettings.sourceSettings.newFolder = value;        
+            } else {
+                objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;
+            }
+
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isValid = true;
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isInvalid = false;
         }
@@ -836,9 +905,6 @@ export default class ModalWindowAddEntity extends React.Component {
                         typeModalBody={this.props.settings.type}
                         listFieldActivity={this.props.settings.listFieldActivity} 
                         handelerFolderDelete={this.handelerFolderDelete} />
-                    <ModalAlertDangerMessage show={this.state.alertMessageShow} onClose={this.alertClose} message={this.state.alertMessage}>
-                        Ошибка!
-                    </ModalAlertDangerMessage>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.windowClose} variant="outline-secondary">закрыть</Button>
