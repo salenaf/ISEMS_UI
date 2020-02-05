@@ -121,14 +121,26 @@ export default class CreateBodyNewEntity extends React.Component {
 
         console.log(`Была выбрана организация с ID: ${e.target.value}`);
 
-        this.setState({ chosenOrganizationID: e.target.value });
+        let v = (e.target.value === "all") ? null: e.target.value;
+
+        this.setState({ chosenOrganizationID: v });
+
+        if(e.target.value === "all"){
+            this.setState({ chosenDivisionID: null });
+        }
+        /**
+         *         this.setState({ chosenDivisionID: null });
+        this.setState({ chosenOrganizationID: null });
+         */
     }
 
     selectedDivision(e){
 
         console.log(`Была выбрано подразделение с ID: ${e.target.value}`);
 
-        this.setState({ chosenDivisionID: e.target.value });
+        let v = (e.target.value === "all") ? null: e.target.value;
+
+        this.setState({ chosenDivisionID: v });
     }
 
     createListOrganization(){
@@ -202,7 +214,7 @@ export default class CreateBodyNewEntity extends React.Component {
         selectForm = <Form.Group onChange={this.selectedDivision.bind(this)} controlId={"select_list_division"}>
             <Form.Label>Подразделение или филиал организации</Form.Label>
             <Form.Control as="select" size="sm">
-                <option value={null} key={"select_division_option_none"}>добавить подразделение</option>
+                <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
                 {listOptions}
             </Form.Control>
         </Form.Group>;
@@ -235,16 +247,6 @@ export default class CreateBodyNewEntity extends React.Component {
     createNewOrganization(options){
         console.log("func 'createNewOrganization', START...");
         console.log(options);
-
-        /**
-  windowType: this.props.settings.type,
-                options: {
-                    id: helpers.tokenRand(),
-                    organizationName: settings.organizationSettings.organizationName.value,
-                    legalAddress: settings.organizationSettings.legalAddress.value,
-                    fieldActivity: settings.organizationSettings.fieldActivity.value,
-                }, 
- */
 
         //обновляем список организаций
         let updateOrgName = this.state.listOrganizationName;
@@ -336,19 +338,25 @@ export default class CreateBodyNewEntity extends React.Component {
             description: options.description, // дополнительное описание (String) а-Я0-9"'.,()-
         };
 
-        let listNewEntity = this.state.listNewEntity;
-        for(let i = 0; i < listNewEntity.length; i++){
+        let addNewSource = function(listNewEntity){
+            for(let i = 0; i < listNewEntity.length; i++){
+                //ищем объект организации в listNewEntity
+                if(listNewEntity[i].id_division === options.parentID){
+                    listNewEntity[i].source_list.push(newRecord);
+                    isExist = true;
+    
+                    break;
+                }
 
-            console.log(`id division: ${listNewEntity[i].id_division} === ${options.parentID} (parent ID)`);
-
-            //ищем объект организации в listNewEntity
-            if(listNewEntity[i].id_division === options.parentID){
-                listNewEntity[i].source_list.push(newRecord);
-                isExist = true;
-
-                break;
+                if((typeof listNewEntity[i].division_or_branch_list_id !== "undefined") || Array.isArray(listNewEntity[i].division_or_branch_list_id)){
+                    addNewSource(listNewEntity[i].division_or_branch_list_id);
+                }
             }
-        }
+        };
+        let listNewEntity = this.state.listNewEntity;
+        addNewSource(listNewEntity);
+
+
 
         //если не нашли организацию просто добавляе в массив
         if(!isExist){
@@ -401,16 +409,98 @@ export default class CreateBodyNewEntity extends React.Component {
     */
 
         let num = 0;
+        let createCard = function(listNewEntity){
+            return listNewEntity.map((item) => {
+
+                console.log("-----");
+                console.log(item);
+                console.log("-----");
+
+                let text = "";
+                let header = "Новая организация";
+                let title = (typeof item.name !== "undefined") ? item.name: `${item.source_id} (${item.short_name})`;
+
+                if(item.legal_address){
+                    text = `Вид деятельности: ${item.field_activity}, Юридический адрес: ${item.legal_address}`;
+                }
+
+                console.log(item.division_or_branch_list_id);
+
+                if(typeof item.division_or_branch_list_id !== "undefined"){
+                    console.log(`division_or_branch_list_id IS ARRAY ${Array.isArray(item.division_or_branch_list_id)}, length = ${item.division_or_branch_list_id.length}`);
+                    if(Array.isArray(item.division_or_branch_list_id) && item.division_or_branch_list_id.length > 0){
+                        
+                        console.log("DIVISION");
+    
+                        return createCard(item.division_or_branch_list_id);
+                    }
+                }
+
+                if(typeof item.source_list !== "undefined"){
+                    console.log(`division_or_branch_list_id IS ARRAY ${Array.isArray(item.source_list)}, length = ${item.source_list.length}`);
+                    if(Array.isArray(item.source_list) && item.source_list.length > 0){
+                    
+                        console.log("SOURCES");
+
+                        return createCard(item.source_list);
+                    }
+                }
+
+                if(typeof item.id_division !== "undefined"){
+                    header = "Новое подразделение или филиал";
+                    text = `Физический адрес: ${item.physical_address}`;
+                } else if(typeof item.id_source !== "undefined"){
+                    header = "Новый источник";
+                    text = `ip адрес: ${item.ipaddress}, сетевой порт: ${item.port}\n
+            директории с файлами: ${item.list_directories_with_file_network_traffic.map((folder) => folder)}`;
+                }
+
+                //JSON.stringify(item)
+
+                return (
+                    <React.Fragment key={`toast_id_${num++}`}>
+                        <Card>
+                            <Card.Header as="h5">{header}</Card.Header>
+                            <Card.Body className="text-left">
+                                <Card.Title>{title}</Card.Title>
+                                <Card.Text>{JSON.stringify(item)}</Card.Text>
+                                <Button size="sm" variant="outline-danger">удалить</Button>
+                            </Card.Body>
+                        </Card>
+                        <br/>
+                    </React.Fragment>
+                );
+            });
+        };
+
+        /*
         let listNewEntity = this.state.listNewEntity.map((item) => {
+            let text = "";
+            let header = "Новая организация";
+            let title = (typeof item.name !== "undefined") ? item.name: `${item.source_id} (${item.short_name})`;
+
+            if(item.legal_address){
+                text = `Вид деятельности: ${item.field_activity}, Юридический адрес: ${item.legal_address}`;
+            }
+
+            if(typeof item.id_division !== "undefined"){
+                header = "Новое подразделение или филиал";
+                text = `Физический адрес: ${item.physical_address}`;
+            } else if(typeof item.id_source !== "undefined"){
+                header = "Новый источник";
+                text = `ip адрес: ${item.ipaddress}, сетевой порт: ${item.port}\n
+                директории с файлами: ${item.list_directories_with_file_network_traffic.map((folder) => folder)}`;
+            }
+
+            //JSON.stringify(item)
+
             return (
                 <React.Fragment key={`toast_id_${num++}`}>
                     <Card>
-                        <Card.Header as="h5">Featured</Card.Header>
+                        <Card.Header as="h5">{header}</Card.Header>
                         <Card.Body className="text-left">
-                            <Card.Title>Special title treatment</Card.Title>
-                            <Card.Text>
-                                {JSON.stringify(item)}
-                            </Card.Text>
+                            <Card.Title>{title}</Card.Title>
+                            <Card.Text>{text}</Card.Text>
                             <Button size="sm" variant="outline-danger">удалить</Button>
                         </Card.Body>
                     </Card>
@@ -418,8 +508,8 @@ export default class CreateBodyNewEntity extends React.Component {
                 </React.Fragment>
             );
         });
-
-        return listNewEntity;
+*/
+        return createCard(this.state.listNewEntity);
     }
 
     sendInfoNewEntity(){
@@ -443,11 +533,13 @@ export default class CreateBodyNewEntity extends React.Component {
                         <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>добавить</Button>
                     </div>
                 </div>
+                <br/>
                 <div className="row">
-                    <br/>
-                    {this.resultBody()}
-                    <br/>
+                    <div className="col-md-12">
+                        {this.resultBody()}
+                    </div>
                 </div>
+                <br/>
                 <div className="row">
                     <div className="col-md-12 text-right">
                         <ButtonSaveNewEntity handler={this.sendInfoNewEntity} showButton={this.state.addedNewEntity} />

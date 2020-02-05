@@ -640,9 +640,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     handlerInput(typeInput, event){
-        console.log(typeInput);
-        console.log(event);
-
         const value = event.target.value;
         const elementName = event.target.id;
 
