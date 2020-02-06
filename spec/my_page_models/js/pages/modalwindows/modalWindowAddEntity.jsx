@@ -795,10 +795,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     sourcesInput(elementName, value){
-
-        console.log("func 'this.sourcesInput'");
-        console.log(`element name: ${elementName}, value: ${value}`);
-
         /**
          * Здесь сделать обработку параметров ввода на основе RegExp
          * пока пусть будет только по длинне

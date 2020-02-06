@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button, Card, CardDeck, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
+import { forEach } from "async";
 
 class ButtonSaveNewEntity extends React.Component {
     constructor(props){
@@ -409,108 +410,96 @@ export default class CreateBodyNewEntity extends React.Component {
     */
 
         let num = 0;
-        let createCard = function(listNewEntity){
-            return listNewEntity.map((item) => {
 
-                console.log("-----");
-                console.log(item);
-                console.log("-----");
 
-                let text = "";
-                let header = "Новая организация";
-                let title = (typeof item.name !== "undefined") ? item.name: `${item.source_id} (${item.short_name})`;
+        let i = 0;
+        let getTextBody = function(listEmtity, textResult, child){   
+            
+            console.log("func 'getTextBody'");
+            console.log(listEmtity);
 
-                if(item.legal_address){
-                    text = `Вид деятельности: ${item.field_activity}, Юридический адрес: ${item.legal_address}`;
+            if(listEmtity.legal_address){
+                textResult.push(<p key={`org_l_${i}`}>Новая организация: {listEmtity.name}</p>);
+                //textResult += `<p key="org_l_${i}>Новая организация: ${listEmtity.name}</p>`;
+                //textResult.push(<ul key={`org_l_${i}`}>Новая организация: {listEmtity.name}</ul>);
+            }
+
+            if((typeof listEmtity.id_division !== "undefined") && (typeof listEmtity.id_source === "undefined")){
+                //textResult += `<p key="div_l_${i}">${separator} Новое подразделение или филиал: ${listEmtity.name}</p>`;
+                textResult.push(<li key={`div_l_${i}`}>{"\t"}Новое подразделение или филиал: {listEmtity.name}</li>);
+            } 
+            
+            if(typeof listEmtity.id_source !== "undefined"){
+                textResult.push(<li key={`sour_l_${i}`}>{"\t\t"}Новый источник: {listEmtity.source_id} {listEmtity.short_name}</li>);
+            }
+            /*
+            if(textResult.length > 0 || child){
+                if(typeof listEmtity.id_division !== "undefined"){
+                    //textResult += `<p key="div_l_${i}">${separator} Новое подразделение или филиал: ${listEmtity.name}</p>`;
+                    textResult.push(<li key={`div_l_${i}`}>Новое подразделение или филиал: {listEmtity.name}</li>);
+                } else if(typeof listEmtity.id_source !== "undefined"){
+                    textResult.push(<li key={`sour_l_${i}`}>Новый источник: ${listEmtity.source_id} ${listEmtity.short_name}</li>);
                 }
-
-                console.log(item.division_or_branch_list_id);
-
-                if(typeof item.division_or_branch_list_id !== "undefined"){
-                    console.log(`division_or_branch_list_id IS ARRAY ${Array.isArray(item.division_or_branch_list_id)}, length = ${item.division_or_branch_list_id.length}`);
-                    if(Array.isArray(item.division_or_branch_list_id) && item.division_or_branch_list_id.length > 0){
-                        
-                        console.log("DIVISION");
-    
-                        return createCard(item.division_or_branch_list_id);
-                    }
+            } else {
+                if(typeof listEmtity.id_division !== "undefined"){
+                    //textResult += `<p key="div_l_${i}">${separator} Новое подразделение или филиал: ${listEmtity.name}</p>`;
+                    textResult.push(<ul key={`div_l_${i}`}>Новое подразделение или филиал: {listEmtity.name}</ul>);
+                } else if(typeof listEmtity.id_source !== "undefined"){
+                    textResult.push(<ul key={`sour_l_${i}`}>Новый источник: ${listEmtity.source_id} ${listEmtity.short_name}</ul>);
                 }
-
-                if(typeof item.source_list !== "undefined"){
-                    console.log(`division_or_branch_list_id IS ARRAY ${Array.isArray(item.source_list)}, length = ${item.source_list.length}`);
-                    if(Array.isArray(item.source_list) && item.source_list.length > 0){
+            }
+*/
+            if(Array.isArray(listEmtity.division_or_branch_list_id) && listEmtity.division_or_branch_list_id.length > 0){
                     
-                        console.log("SOURCES");
+                console.log("DIVISION");
 
-                        return createCard(item.source_list);
-                    }
-                }
+                textResult.push(listEmtity.division_or_branch_list_id.map((item) => {
+                    return getTextBody(item, [], true);
+                }));
+            }
 
-                if(typeof item.id_division !== "undefined"){
-                    header = "Новое подразделение или филиал";
-                    text = `Физический адрес: ${item.physical_address}`;
-                } else if(typeof item.id_source !== "undefined"){
-                    header = "Новый источник";
-                    text = `ip адрес: ${item.ipaddress}, сетевой порт: ${item.port}\n
-            директории с файлами: ${item.list_directories_with_file_network_traffic.map((folder) => folder)}`;
-                }
+            if(Array.isArray(listEmtity.source_list) && listEmtity.source_list.length > 0){
+                
+                console.log("SOURCES");
 
-                //JSON.stringify(item)
+                textResult.push(listEmtity.source_list.map((item) => {
+                    return getTextBody(item, [], true);
+                }));
+            }
 
-                return (
-                    <React.Fragment key={`toast_id_${num++}`}>
-                        <Card>
-                            <Card.Header as="h5">{header}</Card.Header>
-                            <Card.Body className="text-left">
-                                <Card.Title>{title}</Card.Title>
-                                <Card.Text>{JSON.stringify(item)}</Card.Text>
-                                <Button size="sm" variant="outline-danger">удалить</Button>
-                            </Card.Body>
-                        </Card>
-                        <br/>
-                    </React.Fragment>
-                );
-            });
+            console.log(`length text result: ${textResult.length}, child: ${child}, (${textResult})`);
+            console.log(textResult);
+
+            return textResult;
         };
-
-        /*
-        let listNewEntity = this.state.listNewEntity.map((item) => {
-            let text = "";
-            let header = "Новая организация";
-            let title = (typeof item.name !== "undefined") ? item.name: `${item.source_id} (${item.short_name})`;
-
-            if(item.legal_address){
-                text = `Вид деятельности: ${item.field_activity}, Юридический адрес: ${item.legal_address}`;
-            }
-
-            if(typeof item.id_division !== "undefined"){
-                header = "Новое подразделение или филиал";
-                text = `Физический адрес: ${item.physical_address}`;
-            } else if(typeof item.id_source !== "undefined"){
-                header = "Новый источник";
-                text = `ip адрес: ${item.ipaddress}, сетевой порт: ${item.port}\n
-                директории с файлами: ${item.list_directories_with_file_network_traffic.map((folder) => folder)}`;
-            }
+        
+        return this.state.listNewEntity.map((item) => {
 
             //JSON.stringify(item)
 
             return (
                 <React.Fragment key={`toast_id_${num++}`}>
                     <Card>
-                        <Card.Header as="h5">{header}</Card.Header>
-                        <Card.Body className="text-left">
-                            <Card.Title>{title}</Card.Title>
-                            <Card.Text>{text}</Card.Text>
-                            <Button size="sm" variant="outline-danger">удалить</Button>
-                        </Card.Body>
+                        <blockquote className="text-left blockquote mb-0 card-body">
+                            {getTextBody(item, [], false)}
+                            <footer>
+                                <br/><Button size="sm" variant="outline-danger">удалить</Button>
+                            </footer>
+                        </blockquote>
                     </Card>
                     <br/>
                 </React.Fragment>
             );
         });
-*/
-        return createCard(this.state.listNewEntity);
     }
+
+    /**
+ *                         <Card.Header as="h5">Добавлена новая сущность</Card.Header>
+                        <Card.Body className="text-left">
+                            <Card.Text>{getTextBody(item, [], false)}</Card.Text>
+                            <Button size="sm" variant="outline-danger">удалить</Button>
+                        </Card.Body>
+ */
 
     sendInfoNewEntity(){
         console.log("Отправляем информацию о новых сущностях");
