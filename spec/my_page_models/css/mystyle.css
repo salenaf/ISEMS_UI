@@ -19,3 +19,23 @@
     -webkit-border-radius: 4px;
     border-radius: 4px;
 }
+
+.clickable_icon {
+    /*    float: right; */
+    /*    font-size: 1.5rem; */
+    /*    font-weight: 700; */
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .5;
+}
+
+.clickable_icon:hover {
+    color: #000;
+    text-decoration: none;
+}
+
+.clickable_icon:not(:disabled):not(.disabled):hover,
+.clickable_icon:not(:disabled):not(.disabled):focus {
+    opacity: .75;
+}

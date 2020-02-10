@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateTableSources extends React.Component {

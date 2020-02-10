@@ -1,9 +1,8 @@
 import React from "react";
-import { Button, Card, CardDeck, Form } from "react-bootstrap";
+import { Button, Badge, Card, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
-import { forEach } from "async";
 
 class ButtonSaveNewEntity extends React.Component {
     constructor(props){
@@ -80,6 +79,8 @@ export default class CreateBodyNewEntity extends React.Component {
     handelrButtonAdd(){
         let typeEntity = "source";
 
+        console.log(`organization id: ${this.state.chosenOrganizationID}, division id: ${this.state.chosenDivisionID}`);
+
         if(this.state.chosenOrganizationID === null){
             typeEntity = "organization";
         } else if(this.state.chosenOrganizationID !== null && this.state.chosenDivisionID === null){
@@ -125,14 +126,7 @@ export default class CreateBodyNewEntity extends React.Component {
         let v = (e.target.value === "all") ? null: e.target.value;
 
         this.setState({ chosenOrganizationID: v });
-
-        if(e.target.value === "all"){
-            this.setState({ chosenDivisionID: null });
-        }
-        /**
-         *         this.setState({ chosenDivisionID: null });
-        this.setState({ chosenOrganizationID: null });
-         */
+        this.setState({ chosenDivisionID: null });
     }
 
     selectedDivision(e){
@@ -253,7 +247,7 @@ export default class CreateBodyNewEntity extends React.Component {
         let updateOrgName = this.state.listOrganizationName;
         updateOrgName[options.organizationName] = options.id;
         this.setState({ listOrganizationName: updateOrgName });
-
+        
         let listNewEntity = this.state.listNewEntity;
         listNewEntity.push({
             id_organization: options.id,
@@ -282,7 +276,7 @@ export default class CreateBodyNewEntity extends React.Component {
             source_list: [], // массив с объектами типа addSource
         };
 
-        //обновляем список организаций
+        //обновляем список подразделений
         let updateDiviName = this.state.listDivisionName;
         updateDiviName[options.divisionName] = {
             did: options.id,
@@ -369,121 +363,81 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     resultBody(){
-        /*
-    Examlpe object:
-
-        "Описание организации": {
-            name: "", // название организации (String) а-Я0-9"'.,()-
-            legal_address: "", // юридический адрес (String) а-Я0-9.,
-            field_activity: "", // род деятельности (String) из заданных значений или значение по умолчанию
-            division_or_branch_list_id: [] // массив с объектами типа addDivision
-        }
-
-        "Описание филиала или подразделения организации": {
-            id_organization: "", // уникальный идентификатор организации (String) a-Z0-9
-            name: "", // название филиала или подразделения организации (String) а-Я0-9"'.,()-
-            physical_address: "", // физический адрес (String) а-Я0-9.,
-            description: "", // дополнительное описание (String) а-Я0-9"'.()-
-            source_list: [], // массив с объектами типа addSource
-        }
-
-        "Описание источника обработки файлов, установленного в филиала или подразделения организации": {
-            id_division: "", // уникальный идентификатор филиала или подразделения организации (String) a-Z0-9
-            source_id: "", // уникальный идентификатор источника (Number) 0-9
-            short_name: "", // краткое название источника (String) a-Z-_0-9
-            network_settings: { // сетевые настройки для доступа к источнику
-                ipaddress: "", // ip адрес (String) Проверка ip адреса на корректность
-                port: 0, // сетевой порт (Number) 0-9 и диапазон 1024-65565
-                token_id: "", // идентификационный токен (String) a-Z0-9
-            },
-            source_settings: { // настройки источника 
-                type_architecture_client_server: "", // тип клиент серверной архитектуры (источник работает в режиме клиент или сервер) (String) a-z
-                transmission_telemetry: false, // отправка телеметрии (Bool) BOOL
-                maximum_number_simultaneous_filtering_processes: 0, // максимальное количество одновременных процессов фильтрации (Number) 0-9 и диапазон 1-10
-                type_channel_layer_protocol: "", // тип протокола канального уровня (String) tcp/udp/any
-                list_directories_with_file_network_traffic: [], // список директорий с файлами сетевого трафика, длинна массива не должна быть 0, массив
-                 содержит сторки с символами /\_a-Z0-9
-            },
-            description: "", // дополнительное описание (String) а-Я0-9"'.,()-
-        }
-
-    */
-
-        let num = 0;
-
-
         let i = 0;
-        let getTextBody = function(listEmtity, textResult, child){   
-            
-            console.log("func 'getTextBody'");
-            console.log(listEmtity);
-
-            if(listEmtity.legal_address){
-                textResult.push(<p key={`org_l_${i}`}>Новая организация: {listEmtity.name}</p>);
-                //textResult += `<p key="org_l_${i}>Новая организация: ${listEmtity.name}</p>`;
-                //textResult.push(<ul key={`org_l_${i}`}>Новая организация: {listEmtity.name}</ul>);
+        let getTextBody = (listEmtity, textResult, parents) => {
+            if((typeof listEmtity.id_organization !== "undefined") && (typeof listEmtity.id_division === "undefined")){
+                textResult.push(<div key={`org_l_${i}`}>Организация:&nbsp;<Badge variant="info">{listEmtity.name}</Badge></div>);
+                parents = "organization";
             }
 
-            if((typeof listEmtity.id_division !== "undefined") && (typeof listEmtity.id_source === "undefined")){
-                //textResult += `<p key="div_l_${i}">${separator} Новое подразделение или филиал: ${listEmtity.name}</p>`;
-                textResult.push(<li key={`div_l_${i}`}>{"\t"}Новое подразделение или филиал: {listEmtity.name}</li>);
-            } 
-            
-            if(typeof listEmtity.id_source !== "undefined"){
-                textResult.push(<li key={`sour_l_${i}`}>{"\t\t"}Новый источник: {listEmtity.source_id} {listEmtity.short_name}</li>);
-            }
-            /*
-            if(textResult.length > 0 || child){
-                if(typeof listEmtity.id_division !== "undefined"){
-                    //textResult += `<p key="div_l_${i}">${separator} Новое подразделение или филиал: ${listEmtity.name}</p>`;
-                    textResult.push(<li key={`div_l_${i}`}>Новое подразделение или филиал: {listEmtity.name}</li>);
-                } else if(typeof listEmtity.id_source !== "undefined"){
-                    textResult.push(<li key={`sour_l_${i}`}>Новый источник: ${listEmtity.source_id} ${listEmtity.short_name}</li>);
-                }
+            if(parents === "none") {
+                if((typeof listEmtity.id_division !== "undefined") && (typeof listEmtity.id_source === "undefined")){                
+                    textResult.push(<div key={`div_l_${i}`}>Подразделение или филиал:&nbsp;<Badge variant="info">{listEmtity.name}</Badge></div>);
+                } 
+    
+                if(typeof listEmtity.id_source !== "undefined"){
+                    textResult.push(<div key={`sour_l_${i}`}>Источник:&nbsp;<Badge variant="info">{listEmtity.source_id} - {listEmtity.short_name}</Badge></div>);
+                } 
             } else {
-                if(typeof listEmtity.id_division !== "undefined"){
-                    //textResult += `<p key="div_l_${i}">${separator} Новое подразделение или филиал: ${listEmtity.name}</p>`;
-                    textResult.push(<ul key={`div_l_${i}`}>Новое подразделение или филиал: {listEmtity.name}</ul>);
-                } else if(typeof listEmtity.id_source !== "undefined"){
-                    textResult.push(<ul key={`sour_l_${i}`}>Новый источник: ${listEmtity.source_id} ${listEmtity.short_name}</ul>);
+                if((typeof listEmtity.id_division !== "undefined") && (typeof listEmtity.id_source === "undefined")){                
+                    textResult.push(<div key={`div_l_${i}`}>
+                        &#8195;Подразделение или филиал:&nbsp;<Badge variant="dark">{listEmtity.name}</Badge>
+                        &nbsp;<a onClick={this.delAddedElem.bind(this, listEmtity.id_division)} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                    </div>);
+                } 
+    
+                if(parents === "organization"){
+                    if(typeof listEmtity.id_source !== "undefined"){
+                        textResult.push(<div key={`sour_l_${i}`}>
+                            &#8195;&#8195;Источник:&nbsp;<Badge variant="dark">{listEmtity.source_id} - {listEmtity.short_name}</Badge>
+                            &nbsp;<a onClick={this.delAddedElem.bind(this, listEmtity.id_source)} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                        </div>);
+                    }
+                } else {
+                    if(typeof listEmtity.id_source !== "undefined"){
+                        textResult.push(<div key={`sour_l_${i}`}>
+                            &#8195;Источник:&nbsp;<Badge variant="dark">{listEmtity.source_id} - {listEmtity.short_name}</Badge>
+                            &nbsp;<a onClick={this.delAddedElem.bind(this, listEmtity.id_source)} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                        </div>);
+                    }
                 }
-            }
-*/
-            if(Array.isArray(listEmtity.division_or_branch_list_id) && listEmtity.division_or_branch_list_id.length > 0){
-                    
-                console.log("DIVISION");
+                
+            }                
 
-                textResult.push(listEmtity.division_or_branch_list_id.map((item) => {
-                    return getTextBody(item, [], true);
-                }));
+            if(parents !== "organization") {
+                parents = "division";
+            }
+
+            if(Array.isArray(listEmtity.division_or_branch_list_id) && listEmtity.division_or_branch_list_id.length > 0){
+                textResult.push(listEmtity.division_or_branch_list_id.map((item) => getTextBody(item, [], parents)));
             }
 
             if(Array.isArray(listEmtity.source_list) && listEmtity.source_list.length > 0){
-                
-                console.log("SOURCES");
-
-                textResult.push(listEmtity.source_list.map((item) => {
-                    return getTextBody(item, [], true);
-                }));
+                textResult.push(listEmtity.source_list.map((item) => getTextBody(item, [], parents)));
             }
-
-            console.log(`length text result: ${textResult.length}, child: ${child}, (${textResult})`);
-            console.log(textResult);
 
             return textResult;
         };
-        
-        return this.state.listNewEntity.map((item) => {
 
-            //JSON.stringify(item)
+        let num = 0;
+        return this.state.listNewEntity.map((item) => {
+            let delForID = "";
+
+            if(typeof item.id_organization !== "undefined"){
+                delForID = item.id_organization;
+            } else if ((typeof item.id_division !== "undefined") && (typeof item.id_source === "undefined")) {
+                delForID = item.id_division;
+            } else if (typeof item.id_source !== "undefined") {
+                delForID = item.id_source;
+            }
 
             return (
                 <React.Fragment key={`toast_id_${num++}`}>
                     <Card>
                         <blockquote className="text-left blockquote mb-0 card-body">
-                            {getTextBody(item, [], false)}
+                            {getTextBody(item, [], "none")}
                             <footer>
-                                <br/><Button size="sm" variant="outline-danger">удалить</Button>
+                                <br/><Button onClick={this.delAddedElem.bind(this, delForID)} size="sm" variant="outline-danger">удалить</Button>
                             </footer>
                         </blockquote>
                     </Card>
@@ -493,13 +447,69 @@ export default class CreateBodyNewEntity extends React.Component {
         });
     }
 
-    /**
- *                         <Card.Header as="h5">Добавлена новая сущность</Card.Header>
-                        <Card.Body className="text-left">
-                            <Card.Text>{getTextBody(item, [], false)}</Card.Text>
-                            <Button size="sm" variant="outline-danger">удалить</Button>
-                        </Card.Body>
+    delAddedElem(elemID){
+        console.log(`удалить элемент с ID ${elemID} и всех его дочерних потомков`);
+
+        let searchID = (list, id) => {
+            let listNameID = ["id_organization", "id_division", "id_source"];
+
+            listNameID.forEach((name) => {
+                if(list[name] && list[name] === id){
+                    console.log("____ Found _____");
+                    console.log(list);
+                    console.log("_______");
+                }
+            });
+
+            for(let n in list){
+                if(Array.isArray(list[n]) && list[n].length > 0){
+                    searchID(list[n], id);
+                }
+            }
+        };
+
+        /**
+ * //обновляем список организаций
+        let updateOrgName = this.state.listOrganizationName;
+        updateOrgName[options.organizationName] = options.id;
+        this.setState({ listOrganizationName: updateOrgName });
+
+//обновляем список подразделений
+let updateDiviName = this.state.listDivisionName;
+updateDiviName[options.divisionName] = {
+    did: options.id,
+    oid: options.parentID,
+};
+this.setState({ listDivisionName: updateDiviName });
+
+let listNewEntity = this.state.listNewEntity;
+
+        let listNewEntity = this.state.listNewEntity;
+        listNewEntity.push({
+            id_organization: options.id,
+            name: options.organizationName, // название организации (String) а-Я0-9"'.,()-
+            legal_address: options.legalAddress, // юридический адрес (String) а-Я0-9.,
+            field_activity: options.fieldActivity, // род деятельности (String) из заданных значений или значение по умолчанию
+            division_or_branch_list_id: [] // массив с объектами типа addDivision            
+        });
+        this.setState({ listNewEntity: listNewEntity });
+
+        //говорим что добавилась новая организация (отображение кнопки "Сохранить")
+        this.setState({ addedNewEntity: true });
  */
+
+        let listNewEntity = this.state.listNewEntity;
+
+        //console.log(listNewEntity);
+        
+        for(let i = 0; i < listNewEntity.length; i++){
+            searchID(listNewEntity[i], elemID);
+        }
+        
+
+        this.setState({ listNewEntity: listNewEntity });
+
+    }
 
     sendInfoNewEntity(){
         console.log("Отправляем информацию о новых сущностях");

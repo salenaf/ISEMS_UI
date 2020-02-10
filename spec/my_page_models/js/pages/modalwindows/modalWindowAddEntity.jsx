@@ -3,7 +3,6 @@ import { Button, Col, Form, FormControl, Row, Modal, InputGroup } from "react-bo
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
-import { ModalAlertDangerMessage } from "../../common/modalAlertMessage.jsx";
 
 class ListFolder extends React.Component {
     constructor(props){
@@ -21,9 +20,7 @@ class ListFolder extends React.Component {
             let num = 0;
             return <li key={`new_folder_${item}_${num++}`}>
                 {item}&nbsp;
-                <button onClick={this.deleteNewFolder.bind(this, item)} type="button" className="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
             </li>;
         });
     }

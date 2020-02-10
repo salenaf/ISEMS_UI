@@ -13,6 +13,7 @@ export default class ModalWindowSourceInfo extends React.Component {
         this.fullInformationAboutSource = {},
 
         this.windowClose = this.windowClose.bind(this);
+        this.getListDirectory = this.getListDirectory.bind(this);
         this.createBodyElement = this.createBodyElement.bind(this);
         
         this.listenerSocketIoConnect.call(this);
@@ -37,6 +38,14 @@ export default class ModalWindowSourceInfo extends React.Component {
         //Пока что эмулируем загрузку информации по сети
     }
 
+    getListDirectory(){
+        return (
+            <ul>{this.props.sourceInfoForTest[this.props.settings.id].sourceSettings.listDirWithFileNetworkTraffic.map((item) => {
+                return <li type="1" key={`lf_${item}`}>{item}</li>;
+            })}</ul>
+        );
+    }
+
     createBodyElement(){
         let isAnotherSource = this.emulatorDownloadingTestSource !== this.props.settings.id;
         if(!this.state.receivedInformation && isAnotherSource){
@@ -56,8 +65,6 @@ export default class ModalWindowSourceInfo extends React.Component {
 
         let sid = this.props.settings.id;
         let sourceInfo = this.props.sourceInfoForTest;
-
-        console.log(sourceInfo[sid]);
 
         return (
             <React.Fragment>
@@ -164,6 +171,10 @@ export default class ModalWindowSourceInfo extends React.Component {
                                         <div className="col-md-9 text-left">
                                             {sourceInfo[sid].sourceSettings.typeChannelLayerProto}
                                         </div>
+                                        <div className="col-md-3 text-right"><small>список директорий:</small></div>
+                                        <div className="col-md-9 text-left">
+                                            {this.getListDirectory()}
+                                        </div>
                                         <div className="col-md-3 text-right"><small>Примечание:</small></div>
                                         <div className="col-md-9 text-left">
                                             {sourceInfo[sid].description}
@@ -183,6 +194,7 @@ export default class ModalWindowSourceInfo extends React.Component {
     }
 
     /**
+     * listDirWithFileNetworkTraffic
      * 
      * <Form.Group controlId="formPlaintextEmail">
                         <Form.Label column sm="2">
