@@ -79,7 +79,7 @@ export default class CreateBodyNewEntity extends React.Component {
     handelrButtonAdd(){
         let typeEntity = "source";
 
-        console.log(`organization id: ${this.state.chosenOrganizationID}, division id: ${this.state.chosenDivisionID}`);
+        //console.log(`organization id: ${this.state.chosenOrganizationID}, division id: ${this.state.chosenDivisionID}`);
 
         if(this.state.chosenOrganizationID === null){
             typeEntity = "organization";
@@ -92,7 +92,7 @@ export default class CreateBodyNewEntity extends React.Component {
 
     showModalWindow(typeEntity){
 
-        console.log(`Открыто модальное окно для сущности '${typeEntity}'`);
+        //console.log(`Открыто модальное окно для сущности '${typeEntity}'`);
 
         const listTypeEntity = {
             "organization": {
@@ -121,7 +121,7 @@ export default class CreateBodyNewEntity extends React.Component {
 
     selectedOrganization(e){
 
-        console.log(`Была выбрана организация с ID: ${e.target.value}`);
+        //console.log(`Была выбрана организация с ID: ${e.target.value}`);
 
         let v = (e.target.value === "all") ? null: e.target.value;
 
@@ -131,15 +131,27 @@ export default class CreateBodyNewEntity extends React.Component {
 
     selectedDivision(e){
 
-        console.log(`Была выбрано подразделение с ID: ${e.target.value}`);
+        //console.log(`Было выбрано подразделение с ID: ${e.target.value}`);
 
+        let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
-
         this.setState({ chosenDivisionID: v });
+
+        for(let key in this.state.listDivisionName){   
+            if(this.state.listDivisionName[key].did === v){   
+                oid = this.state.listDivisionName[key].oid;
+    
+                break;
+            }
+        }                
+        
+        if(this.state.chosenOrganizationID === null){
+            this.setState({ chosenOrganizationID: oid });
+        }
     }
 
     createListOrganization(){
-        console.log("createListOrganization START...");
+        //console.log("createListOrganization START...");
 
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
@@ -150,7 +162,7 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListDivision(){
-        console.log("createListDivision START...");
+        //console.log("createListDivision START...");
 
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
@@ -190,14 +202,11 @@ export default class CreateBodyNewEntity extends React.Component {
         let lsi = {};
        
         for(let nameDivision in this.state.listDivisionName){
-            if(this.state.chosenOrganizationID === null || this.state.chosenOrganizationID === "all"){
+            let isEqual = this.state.chosenOrganizationID === this.state.listDivisionName[nameDivision].oid;
+            if(isEqual || this.state.chosenOrganizationID === null || this.state.chosenOrganizationID === "all"){
                 lsi[nameDivision] = this.state.listDivisionName[nameDivision].did;
 
                 continue;
-            }
-
-            if(this.state.chosenOrganizationID === this.state.listDivisionName[nameDivision].oid){
-                lsi[nameDivision] = this.state.listDivisionName[nameDivision].did;
             }
         }        
 
@@ -218,9 +227,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     handlerAddEntity(objInfo){
-        console.log("func 'handlerAddButton', START...");
-        console.log(objInfo);
-
         switch(objInfo.windowType){
         case "organization":
             this.createNewOrganization(objInfo.options);
@@ -235,13 +241,11 @@ export default class CreateBodyNewEntity extends React.Component {
         case "source":
             this.createNewSource(objInfo.options);
         }
-
-        console.log("func 'handlerAddButton', END...");
     }
 
     createNewOrganization(options){
-        console.log("func 'createNewOrganization', START...");
-        console.log(options);
+        //console.log("func 'createNewOrganization', START...");
+        //console.log(options);
 
         //обновляем список организаций
         let updateOrgName = this.state.listOrganizationName;
@@ -263,8 +267,8 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewDivision(options){
-        console.log("func 'createNewDivision', START...");
-        console.log(options);
+        //console.log("func 'createNewDivision', START...");
+        //console.log(options);
 
         let isExist = false;
         let newRecord = {
@@ -287,9 +291,6 @@ export default class CreateBodyNewEntity extends React.Component {
         let listNewEntity = this.state.listNewEntity;
 
         for(let i = 0; i < listNewEntity.length; i++){
-
-            console.log(`id organization: ${listNewEntity[i].id_organization} === ${options.parentID} (parent ID)`);
-
             //ищем объект организации в listNewEntity
             if(listNewEntity[i].id_organization === options.parentID){
                 listNewEntity[i].division_or_branch_list_id.push(newRecord);
@@ -309,8 +310,8 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewSource(options){
-        console.log("func 'createNewSource', START...");
-        console.log(options);
+        //console.log("func 'createNewSource', START...");
+        //console.log(options);
 
         let isExist = false;
         let newRecord = {
@@ -448,66 +449,77 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     delAddedElem(elemID){
-        console.log(`удалить элемент с ID ${elemID} и всех его дочерних потомков`);
+        //console.log(`удалить элемент с ID ${elemID} и всех его дочерних потомков`);
 
-        let searchID = (list, id) => {
+        function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
+            let iterator = (obj, func) => {
+                let newObj = {};
+                for(let key in obj){
+                    if(func(obj[key])){
+                        newObj[key] = obj[key];
+                    }
+                }
+
+                return newObj;
+            };
+
             let listNameID = ["id_organization", "id_division", "id_source"];
+            let searchIDAndDel = (listEntity, id) => {      
+                for(let i = 0; i < listEntity.length; i++){
+                    for(let name in listEntity[i]){
+                        if(listNameID.includes(name)){   
+                            if(listEntity[i][name] && listEntity[i][name] === id){   
+                                listEntity.splice(i, 1);
 
-            listNameID.forEach((name) => {
-                if(list[name] && list[name] === id){
-                    console.log("____ Found _____");
-                    console.log(list);
-                    console.log("_______");
-                }
-            });
-
-            for(let n in list){
-                if(Array.isArray(list[n]) && list[n].length > 0){
-                    searchID(list[n], id);
-                }
-            }
-        };
-
-        /**
- * //обновляем список организаций
-        let updateOrgName = this.state.listOrganizationName;
-        updateOrgName[options.organizationName] = options.id;
-        this.setState({ listOrganizationName: updateOrgName });
-
-//обновляем список подразделений
-let updateDiviName = this.state.listDivisionName;
-updateDiviName[options.divisionName] = {
-    did: options.id,
-    oid: options.parentID,
-};
-this.setState({ listDivisionName: updateDiviName });
-
-let listNewEntity = this.state.listNewEntity;
-
-        let listNewEntity = this.state.listNewEntity;
-        listNewEntity.push({
-            id_organization: options.id,
-            name: options.organizationName, // название организации (String) а-Я0-9"'.,()-
-            legal_address: options.legalAddress, // юридический адрес (String) а-Я0-9.,
-            field_activity: options.fieldActivity, // род деятельности (String) из заданных значений или значение по умолчанию
-            division_or_branch_list_id: [] // массив с объектами типа addDivision            
-        });
-        this.setState({ listNewEntity: listNewEntity });
-
-        //говорим что добавилась новая организация (отображение кнопки "Сохранить")
-        this.setState({ addedNewEntity: true });
- */
-
-        let listNewEntity = this.state.listNewEntity;
-
-        //console.log(listNewEntity);
+                                if(name === "id_organization"){
+                                    listOrg = iterator(listOrg, (value) => value !== id);
+                                    listDiv = iterator(listDiv, (value) => value.oid !== id);
+                                } 
+                                if(name === "id_division"){
+                                    listDiv = iterator(listDiv, (value) => value.did !== id);
+                                }
+    
+                                return;
+                            }   
+                        }
         
-        for(let i = 0; i < listNewEntity.length; i++){
-            searchID(listNewEntity[i], elemID);
+                        if(Array.isArray(listEntity[i][name]) && listEntity[i][name].length > 0){
+                            searchIDAndDel(listEntity[i][name], id);
+                        }
+                    }
+                }
+            };
+
+            searchIDAndDel(listEntity, id);
+
+            return {
+                listEntity: listEntity,
+                listOrganization: listOrg, 
+                listDivision: listDiv,
+            };
         }
-        
 
-        this.setState({ listNewEntity: listNewEntity });
+        const COUNT_ORGANIZATION_NAME = Object.keys(this.state.listOrganizationName).length;
+        const COUNT_DIVISION_NAME = Object.keys(this.state.listDivisionName).length;
+
+        let modifiedObject = findAndDeleteItemByID(this.state.listNewEntity, this.state.listOrganizationName, this.state.listDivisionName, elemID);
+
+        //изменяем тип открываемого модального окна если были изменения в объектах-списках 
+        if(COUNT_ORGANIZATION_NAME > Object.keys(modifiedObject.listOrganization).length){
+            this.setState({ chosenOrganizationID: null });
+        }
+        if(COUNT_DIVISION_NAME > Object.keys(modifiedObject.listDivision).length){
+            this.setState({ chosenDivisionID: null });
+        }
+
+        this.setState({ listNewEntity: modifiedObject.listEntity });
+        this.setState({ listOrganizationName: modifiedObject.listOrganization });
+        this.setState({ listDivisionName: modifiedObject.listDivision });
+
+        //убираем кнопку 'сохранить'
+        if(modifiedObject.listEntity.length === 0){
+            this.setState({ addedNewEntity: false });
+        }
 
     }
 

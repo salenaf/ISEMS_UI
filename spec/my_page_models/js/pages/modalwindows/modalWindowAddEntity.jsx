@@ -434,6 +434,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 },
             },
         };
+        
         this.buttonAdd = this.buttonAdd.bind(this);
         this.windowClose = this.windowClose.bind(this); 
         this.handlerInput = this.handlerInput.bind(this);

@@ -7,8 +7,10 @@ import CreateTableSources from "./createTableSources.jsx";
 import CreateTableDivision from "./createTableDivision.jsx";
 import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
 import ModalWindowSourceInfo from "../../modalwindows/modalWindowSourceInfo.jsx";
-import ModalWindowChangeOrganizationOrSource from "../../modalwindows/modalWindowChangeOrganizationOrSource.jsx";
+import ModalWindowChangeSource from "../../modalwindows/modalWindowChangeSource.jsx";
 import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
+
+import { helpers } from "../../../common_helpers/helpers.js";
 
 class CreatePageOrganizationAndSources extends React.Component {
     constructor(props){
@@ -17,8 +19,65 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.state = {
             "modalWindowSourceInfo": false,
             "modalWindowSourceDel": false,
-            "modalWindowChangeOrganizationOrSource": false,
+            "modalWindowChangeSource": false,
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
+            sourceSettings: {
+                sourceID: {
+                    name: "цифровой идентификатор",
+                    value: "",
+                    isValid: false,
+                    isInvalid: false,
+                },                    
+                shortName: {
+                    name: "краткое название источника",
+                    value: "",
+                    isValid: false,
+                    isInvalid: false,
+                },
+                ipAddress: {
+                    name: "ip адрес",
+                    value: "",
+                    isValid: false,
+                    isInvalid: false,
+                },
+                port: {
+                    name: "сетевой порт",
+                    value: "",
+                    isValid: false,
+                    isInvalid: false,
+                },
+                architecture: {
+                    name: "архитектура",
+                    value: "client",
+                },
+                maxSimultaneousProc: {
+                    name: "параллельные задачи фильтрации",
+                    value: 5,
+                },
+                networkChannel: {
+                    name: "тип сетевого канала",
+                    value: "ip",
+                },
+                token: {
+                    name: "идентификационный токен",
+                    value: helpers.tokenRand(),
+                },
+                telemetry: {
+                    name: "телеметрия",
+                    value: false,
+                },
+                directoriesNetworkTraffic: {
+                    name: "директории с файлами",
+                    isValid: false,
+                    isInvalid: false,
+                    value: [],
+                },
+                description: {
+                    name: "примечание",
+                    value: "",
+                },
+                newFolder: "",
+            },
         };
 
         this.modalWindowSourceInfoSettings = {
@@ -28,12 +87,15 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         this.listSourceDelete = [];
 
+        this.handlerInput = this.handlerInput.bind(this);
+        this.handlerNewFolder = this.handlerNewFolder.bind(this);
+        this.handelerFolderDelete = this.handelerFolderDelete.bind(this);
         this.showModalWindowSourceInfo = this.showModalWindowSourceInfo.bind(this);
         this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowSourceDel = this.showModalWindowSourceDel.bind(this);
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
-        this.showModalWindowChangeOrganizationOrSource = this.showModalWindowChangeOrganizationOrSource.bind(this);
-        this.closeModalWindowChangeOrganizationOrSource = this.closeModalWindowChangeOrganizationOrSource.bind(this);
+        this.showModalWindowChangeSource = this.showModalWindowChangeSource.bind(this);
+        this.closeModalWindowChangeSource = this.closeModalWindowChangeSource.bind(this);
 
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
@@ -67,15 +129,15 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({"modalWindowSourceInfo": false});
     }
 
-    showModalWindowChangeOrganizationOrSource(sourceID, typeElem){
+    showModalWindowChangeSource(sourceID, typeElem){
         this.modalWindowSourceInfoSettings.id = sourceID;
         this.modalWindowSourceInfoSettings.typeElem = typeElem;
 
-        this.setState({"modalWindowChangeOrganizationOrSource": true});
+        this.setState({"modalWindowChangeSource": true});
     }
 
-    closeModalWindowChangeOrganizationOrSource(){
-        this.setState({"modalWindowChangeOrganizationOrSource": false});
+    closeModalWindowChangeSource(){
+        this.setState({"modalWindowChangeSource": false});
     }
 
     showModalWindowSourceDel(){
@@ -128,6 +190,51 @@ class CreatePageOrganizationAndSources extends React.Component {
         return (isChecked) ? "" : "disabled";
     }
 
+    handlerInput(){
+        console.log("func 'handlerInput', START...");
+    }
+
+    handlerNewFolder(){
+        let newFolder = this.state.sourceSettings.newFolder.trim();
+        let dirNetTraff = this.state.sourceSettings.directoriesNetworkTraffic;
+        if(dirNetTraff.isInvalid){
+            return;
+        }
+
+        if(newFolder.length < 2){
+
+            return;
+        }
+
+        if(newFolder[0] !== "/"){
+            newFolder = "/"+newFolder;
+        }
+
+        //ищем подобный элемент
+        if(dirNetTraff.value.includes(newFolder)){
+            return;
+        }
+
+        let objUpdate = Object.assign({}, this.state);        
+
+        objUpdate.sourceSettings.directoriesNetworkTraffic.value.push(newFolder);
+        objUpdate.sourceSettings.newFolder = "";
+        objUpdate.sourceSettings.directoriesNetworkTraffic.isValid = false;
+        objUpdate.sourceSettings.directoriesNetworkTraffic.isInvalid = false;
+
+        this.setState( objUpdate );
+
+        document.getElementById("input_folder").value = "";
+    }
+
+    handelerFolderDelete(nameFolder){
+        let objUpdate = Object.assign({}, this.state);        
+        let list = objUpdate.sourceSettings.directoriesNetworkTraffic.value;
+        objUpdate.sourceSettings.directoriesNetworkTraffic.value = list.filter((item) => (item !== nameFolder));
+
+        this.setState( objUpdate );
+    }
+
     render(){
         return (
             <React.Fragment>
@@ -147,7 +254,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                         <CreateTableSources 
                             changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
                             handlerShowInfoWindow={this.showModalWindowSourceInfo}
-                            handlerShowChangeInfo={this.showModalWindowChangeOrganizationOrSource}
+                            handlerShowChangeInfo={this.showModalWindowChangeSource}
                             listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
                     <Tab eventKey="division" title="Подразделения">
@@ -168,10 +275,14 @@ class CreatePageOrganizationAndSources extends React.Component {
                     onHide={this.closeModalWindowSourceInfo}
                     settings={this.modalWindowSourceInfoSettings} 
                     sourceInfoForTest={this.props.listSourcesFullInformation} />
-                <ModalWindowChangeOrganizationOrSource                     
-                    show={this.state.modalWindowChangeOrganizationOrSource}
-                    onHide={this.closeModalWindowChangeOrganizationOrSource}
-                    settings={this.modalWindowSourceInfoSettings} />
+                <ModalWindowChangeSource                     
+                    show={this.state.modalWindowChangeSource}
+                    onHide={this.closeModalWindowChangeSource}
+                    settings={this.modalWindowSourceInfoSettings} 
+                    addNewFolder={this.handlerNewFolder}
+                    handlerInput={this.handlerInput} 
+                    storageInput={this.state.sourceSettings}
+                    handelerFolderDelete={this.handelerFolderDelete} />
                 <ModalWindowConfirmMessage 
                     show={this.state.modalWindowSourceDel}
                     onHide={this.closeModalWindowSourceDel}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Card, Button, Col, Form, Modal, Spinner } from "react-bootstrap";
+import { Accordion, Badge, Button, Card, Form, Modal, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class ModalWindowSourceInfo extends React.Component {
@@ -157,11 +157,11 @@ export default class ModalWindowSourceInfo extends React.Component {
                                         <div className="col-md-12 text-left">Общие настройки:</div>
                                         <div className="col-md-3 text-right"><small>архитектура:</small></div>
                                         <div className="col-md-9 text-left">
-                                            {sourceInfo[sid].sourceSettings.architecture}
+                                            {(sourceInfo[sid].sourceSettings.architecture === "client") ? <Badge variant="dark">{sourceInfo[sid].sourceSettings.architecture}</Badge> : <Badge variant="primary">{sourceInfo[sid].sourceSettings.architecture}</Badge>}
                                         </div>
                                         <div className="col-md-3 text-right"><small>телеметрия:</small></div>
                                         <div className="col-md-9 text-left">
-                                            {(sourceInfo[sid].sourceSettings.telemetry) ? "включена": <span className="text-danger">выключена</span>}
+                                            {(sourceInfo[sid].sourceSettings.telemetry) ? <Badge variant="primary">включена</Badge> : <Badge variant="danger">выключена</Badge>}
                                         </div>
                                         <div className="col-md-3 text-right"><small>количество задач:</small></div>
                                         <div className="col-md-9 text-left">
