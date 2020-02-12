@@ -22,74 +22,87 @@ class CreatePageOrganizationAndSources extends React.Component {
             "modalWindowChangeSource": false,
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
             sourceSettings: {
+                id: "",
+                idDivision: "",
                 sourceID: {
                     name: "цифровой идентификатор",
                     value: "",
                     isValid: false,
                     isInvalid: false,
+                    onChange: false,
                 },                    
                 shortName: {
                     name: "краткое название источника",
                     value: "",
                     isValid: false,
                     isInvalid: false,
+                    onChange: false,
                 },
                 ipAddress: {
                     name: "ip адрес",
                     value: "",
                     isValid: false,
                     isInvalid: false,
+                    onChange: false,
                 },
                 port: {
                     name: "сетевой порт",
                     value: "",
                     isValid: false,
                     isInvalid: false,
+                    onChange: false,
+                },
+                token: {
+                    name: "идентификационный токен",
+                    value: "",
+                    onChange: false,
                 },
                 architecture: {
                     name: "архитектура",
                     value: "client",
+                    onChange: false,
                 },
                 maxSimultaneousProc: {
                     name: "параллельные задачи фильтрации",
                     value: 5,
+                    onChange: false,
                 },
                 networkChannel: {
                     name: "тип сетевого канала",
-                    value: "ip",
-                },
-                token: {
-                    name: "идентификационный токен",
-                    value: helpers.tokenRand(),
+                    value: "",
+                    onChange: false,
                 },
                 telemetry: {
                     name: "телеметрия",
                     value: false,
+                    onChange: false,
                 },
                 directoriesNetworkTraffic: {
                     name: "директории с файлами",
                     isValid: false,
                     isInvalid: false,
                     value: [],
+                    onChange: false,
                 },
                 description: {
                     name: "примечание",
                     value: "",
+                    onChange: false,
                 },
                 newFolder: "",
             },
         };
 
-        this.modalWindowSourceInfoSettings = {
-            id: 0,
-            typeElem: "",
-        };
+        this.modalWindowSourceInfoSettings = { sourceID: 0 };
 
         this.listSourceDelete = [];
 
+
         this.handlerInput = this.handlerInput.bind(this);
         this.handlerNewFolder = this.handlerNewFolder.bind(this);
+        this.generatingNewToken = this.generatingNewToken.bind(this);
         this.handelerFolderDelete = this.handelerFolderDelete.bind(this);
+        this.handlerSaveInformation = this.handlerSaveInformation.bind(this);
         this.showModalWindowSourceInfo = this.showModalWindowSourceInfo.bind(this);
         this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowSourceDel = this.showModalWindowSourceDel.bind(this);
@@ -115,12 +128,13 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 
     showModalWindowSourceInfo(sourceID){
-        this.modalWindowSourceInfoSettings.id = sourceID;
-
         /**
+         *          В продакшине нужно
          * отправить через socketIo запрос на получение
          * полной информации об источнике 
          */
+
+        this.modalWindowSourceInfoSettings.sourceID = sourceID;
 
         this.setState({"modalWindowSourceInfo": true});
     }
@@ -129,9 +143,39 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({"modalWindowSourceInfo": false});
     }
 
-    showModalWindowChangeSource(sourceID, typeElem){
-        this.modalWindowSourceInfoSettings.id = sourceID;
-        this.modalWindowSourceInfoSettings.typeElem = typeElem;
+    showModalWindowChangeSource(sourceID){
+        /**
+         *          В продакшине нужно
+         * отправить через socketIo запрос на получение
+         * полной информации об источнике 
+         * 
+         */
+
+        /** ТАКОЙ СПОСОБ ТОЛЬКО ДЛЯ ТЕСТОВ!!! В продакшене нужны socketio запросы  */
+        let sourceInfo = this.props.listSourcesFullInformation[sourceID];
+        if(typeof sourceInfo === "undefined"){
+            return console.log(`Информация по источнику с ID ${sourceID} не найдена`);
+        }
+
+        this.modalWindowSourceInfoSettings.sourceID = sourceID;
+
+        let stateCopy = Object.assign({}, this.state);
+        
+        stateCopy.sourceSettings.id = sourceInfo.id;
+        stateCopy.sourceSettings.idDivision = "в тестовом объекте нет такого поля (в документе из БД есть)";
+        stateCopy.sourceSettings.sourceID.value = sourceID;
+        stateCopy.sourceSettings.shortName.value = sourceInfo.shortName;
+        stateCopy.sourceSettings.ipAddress.value = sourceInfo.networkSettings.ip;
+        stateCopy.sourceSettings.port.value = sourceInfo.networkSettings.port;
+        stateCopy.sourceSettings.token.value = sourceInfo.networkSettings.tokenID;
+        stateCopy.sourceSettings.architecture.value = sourceInfo.sourceSettings.architecture;
+        stateCopy.sourceSettings.maxSimultaneousProc.value = sourceInfo.sourceSettings.maxNumFilter;
+        stateCopy.sourceSettings.networkChannel.value = sourceInfo.sourceSettings.typeChannelLayerProto;
+        stateCopy.sourceSettings.telemetry.value = sourceInfo.sourceSettings.telemetry;
+        stateCopy.sourceSettings.directoriesNetworkTraffic.value = sourceInfo.sourceSettings.listDirWithFileNetworkTraffic;
+        stateCopy.sourceSettings.description.value = sourceInfo.description;
+
+        this.setState({ stateCopy });
 
         this.setState({"modalWindowChangeSource": true});
     }
@@ -190,8 +234,102 @@ class CreatePageOrganizationAndSources extends React.Component {
         return (isChecked) ? "" : "disabled";
     }
 
-    handlerInput(){
-        console.log("func 'handlerInput', START...");
+    generatingNewToken(){
+        let stateCopy = Object.assign({}, this.state);
+        stateCopy.sourceSettings.token.value = helpers.tokenRand();
+
+        this.setState({ stateCopy });
+    }
+
+    handlerInput(e){
+        /**
+         * Здесь сделать обработку параметров ввода на основе RegExp
+         * пока пусть будет только по длинне
+         * 
+         */
+        
+        let elementName = e.target.id;
+        let value = e.target.value;
+
+        console.log(`elemID: ${elementName}, elemValue: ${value}`);
+
+        const listElem = {
+            "source_id": {
+                name: "sourceID",
+                pattern: "",
+            },
+            "source_short_name": {
+                name: "shortName",
+                pattern: "",
+            }, 
+            "source_ip": {
+                name: "ipAddress",
+                pattern: "",
+            },
+            "source_port": {
+                name: "port",
+                pattern: "",
+            }, 
+            "input_folder": {
+                name: "directoriesNetworkTraffic",
+                pattern: "",
+            },
+            "source_description": {
+                name: "description",
+                pattern: "",
+            },
+            "source_telemetry": {
+                name: "telemetry",
+                pattern: "",
+            },
+            "source_network_channel": {
+                name: "networkChannel",
+                pattern: "",
+            },
+            "source_architecture": {
+                name: "architecture",
+                pattern: "",
+            },
+            "source_max_simultaneous_proc": {
+                name: "maxSimultaneousProc",
+                pattern: "",
+            }, 
+        };
+
+        let listSelectors = [
+            "source_description",
+            "source_telemetry",
+            "source_network_channel",
+            "source_architecture",
+            "source_max_simultaneous_proc", 
+        ];
+
+        let objUpdate = Object.assign({}, this.state);
+
+        if(listSelectors.includes(elementName)){
+            objUpdate.sourceSettings[listElem[elementName].name].value = value;    
+            objUpdate.sourceSettings[listElem[elementName].name].onChange = true;    
+            this.setState( objUpdate );
+    
+            return;
+        }
+
+        if(value.length < 5) {
+            objUpdate.sourceSettings[listElem[elementName].name].isValid = false;
+            objUpdate.sourceSettings[listElem[elementName].name].isInvalid = true;
+        } else {
+            if(elementName === "input_folder"){
+                objUpdate.sourceSettings.newFolder = value;        
+            } else {
+                objUpdate.sourceSettings[listElem[elementName].name].value = value;
+                objUpdate.sourceSettings[listElem[elementName].name].onChange = true;
+            }
+
+            objUpdate.sourceSettings[listElem[elementName].name].isValid = true;
+            objUpdate.sourceSettings[listElem[elementName].name].isInvalid = false;
+        }
+
+        this.setState( objUpdate );
     }
 
     handlerNewFolder(){
@@ -225,6 +363,17 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState( objUpdate );
 
         document.getElementById("input_folder").value = "";
+    }
+
+    handlerSaveInformation(){
+        console.log("func 'handlerSaveInformation', START...");
+        console.log("Здесь надо сделать проверку параметров isValid на валидность значений и параметра onChange на то что было ли изменение значений ВСЕ ЭТО В this.state.sourceSettings");
+
+        /**
+         * Здесь надо сделать проверку параметров isValid на валидность значений
+        * и параметра onChange на то что было ли изменение значений
+        * ВСЕ ЭТО В this.state.sourceSettings
+        */
     }
 
     handelerFolderDelete(nameFolder){
@@ -282,7 +431,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                     addNewFolder={this.handlerNewFolder}
                     handlerInput={this.handlerInput} 
                     storageInput={this.state.sourceSettings}
-                    handelerFolderDelete={this.handelerFolderDelete} />
+                    generatingNewToken={this.generatingNewToken}
+                    handelerFolderDelete={this.handelerFolderDelete}
+                    handlerSaveInformation={this.handlerSaveInformation} />
                 <ModalWindowConfirmMessage 
                     show={this.state.modalWindowSourceDel}
                     onHide={this.closeModalWindowSourceDel}

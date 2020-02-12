@@ -53,7 +53,7 @@ export default class CreateTableSources extends React.Component {
                         placement="top"
                         overlay={<Tooltip>редактировать информацию</Tooltip>}
                     >
-                        <a href="#" onClick={this.props.handlerShowChangeInfo.bind(this, sourceID, "sources")}><img src="./images/icons8-edit-16.png" alt="редактировать"></img></a>
+                        <a href="#" onClick={this.props.handlerShowChangeInfo.bind(this, sourceID)}><img src="./images/icons8-edit-16.png" alt="редактировать"></img></a>
                     </OverlayTrigger>
                 </td>
                 <td key={`td_${sourceID}_${this.props.listSourcesInformation[sourceID].sid}_checkbox`} className="text-right">              

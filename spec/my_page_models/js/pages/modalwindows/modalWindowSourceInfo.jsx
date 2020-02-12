@@ -40,19 +40,19 @@ export default class ModalWindowSourceInfo extends React.Component {
 
     getListDirectory(){
         return (
-            <ul>{this.props.sourceInfoForTest[this.props.settings.id].sourceSettings.listDirWithFileNetworkTraffic.map((item) => {
+            <ul>{this.props.sourceInfoForTest[this.props.settings.sourceID].sourceSettings.listDirWithFileNetworkTraffic.map((item) => {
                 return <li type="1" key={`lf_${item}`}>{item}</li>;
             })}</ul>
         );
     }
 
     createBodyElement(){
-        let isAnotherSource = this.emulatorDownloadingTestSource !== this.props.settings.id;
+        let isAnotherSource = this.emulatorDownloadingTestSource !== this.props.settings.sourceID;
         if(!this.state.receivedInformation && isAnotherSource){
             return (
                 <div className="row">
                     <div className="col-md-12 text-center">
-                        Источник №{this.props.settings.id}, загрузка информации...
+                        Источник №{this.props.settings.sourceID}, загрузка информации...
                     </div>
                     <div className="col-md-12 text-center">
                         <Spinner animation="border" role="status">
@@ -63,7 +63,7 @@ export default class ModalWindowSourceInfo extends React.Component {
             );
         }
 
-        let sid = this.props.settings.id;
+        let sid = this.props.settings.sourceID;
         let sourceInfo = this.props.sourceInfoForTest;
 
         return (

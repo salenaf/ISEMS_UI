@@ -218,7 +218,7 @@ class CreateBodySource extends React.Component {
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
-                    <Form.Group as={Col}>
+                    <Form.Group as={Col} lg={3}>
                         <Form.Label>Тип сетевого канала</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this, "source")}
@@ -231,7 +231,7 @@ class CreateBodySource extends React.Component {
                             <option value="pppoe">pppoe</option>
                         </Form.Control>
                     </Form.Group>
-                    <Form.Group as={Col}>
+                    <Form.Group as={Col} lg={9}>
                         <Form.Label>Идентификационный токен</Form.Label>
                         <Form.Control id="source_token" type="text" readOnly defaultValue={this.props.storageInput.token.value} />
                     </Form.Group>
@@ -434,7 +434,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 },
             },
         };
-        
+
         this.buttonAdd = this.buttonAdd.bind(this);
         this.windowClose = this.windowClose.bind(this); 
         this.handlerInput = this.handlerInput.bind(this);

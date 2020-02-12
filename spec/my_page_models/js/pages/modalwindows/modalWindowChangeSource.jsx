@@ -47,16 +47,16 @@ class CreateBodySource extends React.Component {
                     </InputGroup.Prepend>
                     <FormControl 
                         id="source_id" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
+                        onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.sourceID.isValid}
                         isInvalid={this.props.storageInput.sourceID.isInvalid}
-                        placeholder="цифровой идентификатор" />
+                        defaultValue={this.props.storageInput.sourceID.value} />
                     <FormControl 
                         id="source_short_name" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
+                        onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.shortName.isValid}
                         isInvalid={this.props.storageInput.shortName.isInvalid}
-                        placeholder="краткое название (анг. алфавит)" />               
+                        defaultValue={this.props.storageInput.shortName.value} />               
                 </InputGroup>
                 <InputGroup className="mb-3">
                     <InputGroup.Prepend>
@@ -64,27 +64,25 @@ class CreateBodySource extends React.Component {
                     </InputGroup.Prepend>
                     <FormControl 
                         id="source_ip" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
+                        onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.ipAddress.isValid}
                         isInvalid={this.props.storageInput.ipAddress.isInvalid}
-                        placeholder="ip адрес" />
+                        defaultValue={this.props.storageInput.ipAddress.value} />
                     <FormControl 
                         id="source_port" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
+                        onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.port.isValid}
                         isInvalid={this.props.storageInput.port.isInvalid}
-                        placeholder="сетевой порт" />
+                        defaultValue={this.props.storageInput.port.value} />
                 </InputGroup>
                 <Form.Row>
                     <Form.Group as={Col}>
                         <Form.Label>Архитектура</Form.Label>
                         <Form.Control 
-                            onChange={this.props.handlerInput.bind(this, "source")}
-                            isValid={this.props.storageInput.architecture.isValid}
-                            isInvalid={this.props.storageInput.architecture.isInvalid}
+                            onChange={this.props.handlerInput.bind(this)}
                             id="source_architecture" 
                             as="select" 
-                            defaultValue="client">
+                            defaultValue={this.props.storageInput.architecture.value}>
                             <option value="client">клиент</option>
                             <option value="server">сервер</option>
                         </Form.Control>
@@ -92,12 +90,10 @@ class CreateBodySource extends React.Component {
                     <Form.Group as={Col}>
                         <Form.Label>Параллельные задачи фильтрации</Form.Label>
                         <Form.Control 
-                            onChange={this.props.handlerInput.bind(this, "source")}
-                            isValid={this.props.storageInput.maxSimultaneousProc.isValid}
-                            isInvalid={this.props.storageInput.maxSimultaneousProc.isInvalid}
+                            onChange={this.props.handlerInput.bind(this)}
                             id="source_max_simultaneous_proc" 
                             as="select" 
-                            defaultValue="5">
+                            defaultValue={this.props.storageInput.maxSimultaneousProc.value}>
                             {(() => {
                                 let list = [];
                                 for(let i = 1; i <= 10; i++){
@@ -111,30 +107,30 @@ class CreateBodySource extends React.Component {
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
-                    <Form.Group as={Col}>
+                    <Form.Group as={Col} lg={3}>
                         <Form.Label>Тип сетевого канала</Form.Label>
                         <Form.Control 
-                            onChange={this.props.handlerInput.bind(this, "source")}
-                            isValid={this.props.storageInput.networkChannel.isValid}
-                            isInvalid={this.props.storageInput.networkChannel.isInvalid}
+                            onChange={this.props.handlerInput.bind(this)}
                             id="source_network_channel"
                             as="select" 
-                            defaultValue="ip">
+                            defaultValue={this.props.storageInput.networkChannel.value}>
                             <option value="ip">ip/vlan</option>
                             <option value="pppoe">pppoe</option>
                         </Form.Control>
                     </Form.Group>
-                    <Form.Group as={Col}>
+                    <Form.Group as={Col} lg={9}>
                         <Form.Label>Идентификационный токен</Form.Label>
-                        <Form.Control id="source_token" type="text" readOnly defaultValue={this.props.storageInput.token.value} />
+                        <InputGroup.Append>
+                            <Form.Control id="source_token" type="text" value={this.props.storageInput.token.value} readOnly />
+                            <Button onClick={this.props.generatingNewToken} variant="outline-primary">новый</Button>
+                        </InputGroup.Append>
                     </Form.Group>
                 </Form.Row>
                 <Row>
                     <Col lg={4}>
                         <Form.Check 
-                            onChange={this.props.handlerInput.bind(this, "source")}
-                            isValid={this.props.storageInput.telemetry.isValid}
-                            isInvalid={this.props.storageInput.telemetry.isInvalid}
+                            onChange={this.props.handlerInput.bind(this)}
+                            defaultChecked={this.props.storageInput.telemetry.value}
                             type="switch"
                             id="source_telemetry" 
                             label="телеметрия"
@@ -144,7 +140,7 @@ class CreateBodySource extends React.Component {
                         <InputGroup className="mb-3">
                             <FormControl
                                 id="input_folder"
-                                onChange={this.props.handlerInput.bind(this, "source")}
+                                onChange={this.props.handlerInput.bind(this)}
                                 isValid={this.props.storageInput.directoriesNetworkTraffic.isValid}
                                 isInvalid={this.props.storageInput.directoriesNetworkTraffic.isInvalid}
                                 placeholder="полный путь до директории с файлами" />
@@ -165,9 +161,8 @@ class CreateBodySource extends React.Component {
                 <Form.Group>
                     <Form.Label>Примечание</Form.Label>
                     <Form.Control 
-                        onChange={this.props.handlerInput.bind(this, "source")}
-                        isValid={this.props.storageInput.description.isValid}
-                        isInvalid={this.props.storageInput.description.isInvalid}
+                        onChange={this.props.handlerInput.bind(this)}
+                        defaultValue={this.props.storageInput.description.value}
                         id="source_description" 
                         as="textarea" 
                         rows="3" />
@@ -181,14 +176,13 @@ CreateBodySource.propTypes = {
     addNewFolder: PropTypes.func.isRequired,
     handlerInput: PropTypes.func.isRequired, 
     storageInput: PropTypes.object.isRequired,
+    generatingNewToken: PropTypes.func.isRequired,
     handelerFolderDelete: PropTypes.func.isRequired,
 };
 
 export default class ModalWindowChangeSource extends React.Component {
     constructor(props){
         super(props);
-
-        console.log(props);
 
         this.windowClose = this.windowClose.bind(this); 
     }
@@ -207,7 +201,7 @@ export default class ModalWindowChangeSource extends React.Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Редактировать источник №{this.props.settings.id}</h5>
+                        <h5>Редактировать источник №{this.props.settings.sourceID}</h5>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -215,11 +209,12 @@ export default class ModalWindowChangeSource extends React.Component {
                         addNewFolder={this.props.addNewFolder}
                         handlerInput={this.props.handlerInput} 
                         storageInput={this.props.storageInput}
+                        generatingNewToken={this.props.generatingNewToken}
                         handelerFolderDelete={this.props.handelerFolderDelete} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.windowClose} variant="outline-secondary">закрыть</Button>
-                    <Button onClick={this.buttonAdd} variant="outline-primary">добавить</Button>
+                    <Button onClick={this.props.handlerSaveInformation} variant="outline-success">сохранить</Button>
                 </Modal.Footer>
             </Modal>
         );
@@ -233,5 +228,7 @@ ModalWindowChangeSource.propTypes = {
     addNewFolder: PropTypes.func.isRequired,
     handlerInput: PropTypes.func.isRequired, 
     storageInput: PropTypes.object.isRequired,
+    generatingNewToken: PropTypes.func.isRequired,
     handelerFolderDelete: PropTypes.func.isRequired,
+    handlerSaveInformation: PropTypes.func.isRequired,
 };
