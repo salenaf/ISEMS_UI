@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import CreateTableSources from "./createTableSources.jsx";
 import CreateTableDivision from "./createTableDivision.jsx";
 import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
+import CreateBodyManagementEntity from "./createBodyManagementEntity.jsx";
 import ModalWindowSourceInfo from "../../modalwindows/modalWindowSourceInfo.jsx";
 import ModalWindowChangeSource from "../../modalwindows/modalWindowChangeSource.jsx";
 import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
@@ -367,13 +368,70 @@ class CreatePageOrganizationAndSources extends React.Component {
 
     handlerSaveInformation(){
         console.log("func 'handlerSaveInformation', START...");
-        console.log("Здесь надо сделать проверку параметров isValid на валидность значений и параметра onChange на то что было ли изменение значений ВСЕ ЭТО В this.state.sourceSettings");
 
-        /**
-         * Здесь надо сделать проверку параметров isValid на валидность значений
-        * и параметра onChange на то что было ли изменение значений
-        * ВСЕ ЭТО В this.state.sourceSettings
-        */
+        function checkValueChange(list){
+            let isChange = false;
+
+            let range = (list)=>{
+                for(let key in list){
+                    if((key === "onChange") && (list[key])){
+                        isChange = true;
+
+                        break;
+                    }
+
+                    if({}.toString.call(list[key]).slice(8, -1) === "Object"){                      
+                        range(list[key]);
+                    }
+                }
+            };
+
+            range(list);
+
+            return isChange;
+        }
+
+        function checkValueIsValid(list){
+            let isValid = true;
+
+            let range = (list)=>{
+                for(let key in list){
+                    if((key === "isValid") && (!list[key]) && (list.onChange)){
+                        isValid = false;
+
+                        break;
+                    }
+
+                    if({}.toString.call(list[key]).slice(8, -1) === "Object"){                      
+                        range(list[key]);
+                    }
+                }
+            };
+
+            range(list);
+
+            return isValid;
+        }
+
+        let sourceSettings = this.state.sourceSettings;
+        //console.log(sourceSettings);
+
+        //делаем проверку были ли какие либо изменения в информации по источнику
+        if(!checkValueChange(sourceSettings)){
+            console.log("Ни каких изменений в информации по источнику сделано не было");
+
+            return;
+        }
+
+        //делаем проверку все ли ли параметры валидны
+        if(!checkValueIsValid(sourceSettings)){
+            console.log("Один или более заданных парамеров не валидны");
+
+            return;
+        }
+
+
+        console.log("передаем информацию о новом источнике в БД");
     }
 
     handelerFolderDelete(nameFolder){
@@ -410,7 +468,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                         <CreateTableDivision listDivisionInformation={this.props.listDivisionInformation}/>
                     </Tab>
                     <Tab eventKey="organization" title="Организации">
-                        <div>Organization</div>
+                        <CreateBodyManagementEntity />
                     </Tab>
                     <Tab eventKey="addElement" title="Новая сущность">
                         
