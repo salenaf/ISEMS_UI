@@ -50,6 +50,7 @@ class CreateBodyOrganization extends React.Component {
                 <Form.Label>Вид деятельности</Form.Label>
                 <Form.Control 
                     as="select" 
+                    size="sm"
                     id="organization_field_selector" 
                     isValid={this.props.storageInput.fieldActivity.isValid}
                     isInvalid={this.props.storageInput.fieldActivity.isInvalid} 
@@ -191,6 +192,7 @@ class CreateBodySource extends React.Component {
                             isInvalid={this.props.storageInput.architecture.isInvalid}
                             id="source_architecture" 
                             as="select" 
+                            size="sm"
                             defaultValue="client">
                             <option value="client">клиент</option>
                             <option value="server">сервер</option>
@@ -204,6 +206,7 @@ class CreateBodySource extends React.Component {
                             isInvalid={this.props.storageInput.maxSimultaneousProc.isInvalid}
                             id="source_max_simultaneous_proc" 
                             as="select" 
+                            size="sm"
                             defaultValue="5">
                             {(() => {
                                 let list = [];
@@ -226,6 +229,7 @@ class CreateBodySource extends React.Component {
                             isInvalid={this.props.storageInput.networkChannel.isInvalid}
                             id="source_network_channel"
                             as="select" 
+                            size="sm"
                             defaultValue="ip">
                             <option value="ip">ip/vlan</option>
                             <option value="pppoe">pppoe</option>

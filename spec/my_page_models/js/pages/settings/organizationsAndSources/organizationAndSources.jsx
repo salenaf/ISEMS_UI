@@ -4,7 +4,6 @@ import { Button, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateTableSources from "./createTableSources.jsx";
-import CreateTableDivision from "./createTableDivision.jsx";
 import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
 import CreateBodyManagementEntity from "./createBodyManagementEntity.jsx";
 import ModalWindowSourceInfo from "../../modalwindows/modalWindowSourceInfo.jsx";
@@ -446,7 +445,7 @@ class CreatePageOrganizationAndSources extends React.Component {
         return (
             <React.Fragment>
                 <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
-                    <Tab eventKey="sources" title="Источники">
+                    <Tab eventKey="sources" title="источники">
                         <br/>
                         <div className="row">
                             <div className="col-md-9 text-left">Всего источников: {Object.keys(this.state.checkboxMarkedSourceDel).length}</div>
@@ -464,15 +463,24 @@ class CreatePageOrganizationAndSources extends React.Component {
                             handlerShowChangeInfo={this.showModalWindowChangeSource}
                             listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
-                    <Tab eventKey="division" title="Подразделения">
-                        <CreateTableDivision listDivisionInformation={this.props.listDivisionInformation}/>
+                    <Tab eventKey="organization" title="организации / подразделения">
+                        {/** 
+                        Здесть тоже используется объект listSourcesInformation, соответственно в PRODUCTION 
+                        тоже должен быть отдельный объект 
+                        */}
+                        <CreateBodyManagementEntity listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
-                    <Tab eventKey="organization" title="Организации">
-                        <CreateBodyManagementEntity />
-                    </Tab>
-                    <Tab eventKey="addElement" title="Новая сущность">
+                    <Tab eventKey="addElement" title="новая сущность">
                         
-                        {/** Затенять и делать не активным, при запрете группе добавлять новые сущности */}
+                        {/** 
+                            Затенять и делать не активным, при запрете группе добавлять новые сущности 
+                        
+                        На основе объекта listSourcesInformation в классе CreateBodyNewEntity формируется
+                        перечень организаций и подразделений в выпадающем списке, однако listSourcesInformation
+                        на прямую зависит от источнико, если источника нет то и в списке listSourcesInformation
+                        его не будет, хотя должны быть Организация и Подразделение которых тоже не будет.
+                        По этому, а PRODUCTION похоже нужен отдельный список Организаций и Подразделений получаемый с сервера
+                        */}
                         
                         <CreateBodyNewEntity listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
