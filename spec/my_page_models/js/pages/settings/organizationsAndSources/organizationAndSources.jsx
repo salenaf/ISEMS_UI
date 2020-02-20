@@ -468,7 +468,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                         Здесть тоже используется объект listSourcesInformation, соответственно в PRODUCTION 
                         тоже должен быть отдельный объект 
                         */}
-                        <CreateBodyManagementEntity listSourcesInformation={this.props.listSourcesInformation}/>
+                        <CreateBodyManagementEntity 
+                            listSourcesInformation={this.props.listSourcesInformation}
+                            listSourcesFullInformation={this.props.listSourcesFullInformation}/>
                     </Tab>
                     <Tab eventKey="addElement" title="новая сущность">
                         
@@ -597,6 +599,8 @@ let listSourcesInformation = {
 let listSourcesFullInformation = {
     100: {
         "id": "ffeo0393f94h8884h494g4g",
+        "did": "dnjdjdnuw82hd8h882h82h8h",
+        "oid": "cnw9w9dj93d8383d8h38d83f4",
         "shortName": "RosAtom COD 1",
         "dateRegister": "2019-08-13 14:39:08",
         "dateChange": "2020-01-02 10:45:43",
@@ -636,6 +640,8 @@ let listSourcesFullInformation = {
     },
     102: {
         "id": "bmfomr94jbv4nrb949gh94g994",
+        "did": "vm93j9939f9933993uf9rrrrr",
+        "oid": "cnw9w9dj93d8383d8h38d83f4",
         "shortName": "RosAtom COD 2",
         "dateRegister": "2020-01-13 10:13:00",
         "dateChange": "2020-01-02 10:45:43",
@@ -675,6 +681,8 @@ let listSourcesFullInformation = {
     },
     106: {
         "id": "nx0j29jf993h88v84g84gf8asa",
+        "did": "vievieivihf83h38f838hfh3f8",
+        "oid": "cne8h8h828882yfd337fg3g838",
         "shortName": "RosCosmos COD 1",
         "dateRegister": "2019-01-12 13:13:13",
         "dateChange": "2020-01-01 08:15:43",
@@ -714,6 +722,8 @@ let listSourcesFullInformation = {
     },
     103: {
         "id": "xjn99393ru93ru9439r93ur933",
+        "did": "nwc99983883h8hrf38fh83f383",
+        "oid": "cnw89h8dh38h8h38fhd838f83",
         "shortName": "UMCHS Belgorod",
         "dateRegister": "2019-12-16 18:03:20",
         "dateChange": "2020-01-01 08:15:43",
@@ -753,6 +763,8 @@ let listSourcesFullInformation = {
     },
     104: {
         "id": "n9j0j349849ur8u8488384833",
+        "did": "xaja9ja9j9j93j380aj016d25",
+        "oid": "cnw89h8dh38h8h38fhd838f83",
         "shortName": "UMCHS Tambov",
         "dateRegister": "2019-08-13 16:19:59",
         "dateChange": "2020-01-01 08:15:43",
@@ -792,6 +804,8 @@ let listSourcesFullInformation = {
     },
     1015: {
         "id": "vm0pc0fff3933030jr0i34344",
+        "did": "dwj289j38838r8r8838r3r393",
+        "oid": "dj929d29euu93438r84r49392",
         "shortName": "DZO Briansk",
         "dateRegister": "2019-02-30 07:49:48",
         "dateChange": "2020-01-01 08:15:43",
@@ -800,7 +814,7 @@ let listSourcesFullInformation = {
             "name": "Департамент здравоохранения Брянской области",
             "dateRegister": "2019-08-12 11:32:08",
             "dateChange": "2020-01-03 11:45:43",
-            "physicalAddress": "г.Брянск, ул. Возраждения, д.20",
+            "physicalAddress": "г.Брянск, ул. Возрождения, д.20",
             "description": "какие то замечания или описание по подразделению...",
             "countSources": 2,
         },

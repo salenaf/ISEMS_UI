@@ -7,30 +7,105 @@ class ShowEntityInformation extends React.Component {
         super(props);
 
         this.showInformation = this.showInformation.bind(this);
+        this.createDivisionCard = this.createDivisionCard.bind(this);
+    }
+
+    handlerSaveButton(type, id){
+        this.props.handlerSave(type, id);
+    }
+
+    handlerDeleteButton(type, id){
+        this.props.handlerDelete(type, id);
+    }
+
+    createDivisionCard(){
+        let num = 1;
+        return this.props.resivedInfo.listDivision.map((item) => {
+            return (
+                <Card border="dark" key={`key_division_${item.name}`}>
+                    <Accordion.Toggle as={Card.Header} eventKey={num}>{item.name}</Accordion.Toggle>
+                    <Accordion.Collapse eventKey={num++}>
+                        <Card.Body>
+                            <Row>
+                                <Col><Form.Control type="text" onChange={this.props.handlerInputChange} value={item.name} id={`name:${item.id}`}></Form.Control></Col>
+                                <Col><Form.Control as="textarea" onChange={this.props.handlerInputChange} value={item.physicalAddress} id={`physical_address:${item.id}`}></Form.Control></Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}><Form.Control as="textarea" onChange={this.props.handlerInputChange} value={item.description} id={`description:${item.id}`}></Form.Control></Col>
+                                <Col md={2} className="text-left">источники:</Col>
+                                <Col md={4} className="text-left"><ul>{item.listSource.map((source) => <li key={`li_source_${source}`}>{source}</li>)}</ul></Col>
+                            </Row>
+                            <Row>
+                                <Col className="text-right">
+                                    <Button variant="outline-success" onClick={this.handlerSaveButton.bind(this, "division", item.id)} size="sm">сохранить</Button>&nbsp;
+                                    <Button variant="outline-danger" onClick={this.handlerDeleteButton.bind(this, "division", item.id)} size="sm">удалить</Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Accordion.Collapse>
+                </Card>
+            );
+        });
     }
 
     showInformation(){
         if(!this.props.showInfo){
             return;
         }
-    
-        /**
- * из полученной информации содержащейся в объекте
- * this.props.resivedInfo сформировать 'Аккардион' по образцу
- */
+ 
+        let list = Object.keys(this.props.listFieldActivity);
+        list.sort();
 
-        //только для теста
-        return <div>{JSON.stringify(this.props.resivedInfo)}</div>;
+        let num = 1;
+
+        console.log(this.props.listFieldActivity);
+        console.log(this.props.resivedInfo);
+
+        return (
+            <Accordion defaultActiveKey="0" style={{ width: "55rem" }}>
+                <Card border="info">
+                    <Accordion.Toggle as={Card.Header} eventKey="0">{this.props.resivedInfo.name}</Accordion.Toggle>
+                    <Accordion.Collapse eventKey="0">
+                        <Card.Body>
+                            <Row>
+                                <Col><Form.Control type="text" onChange={this.props.handlerInputChange} defaultValue={this.props.resivedInfo.name} id="name"></Form.Control></Col>
+                                <Col><Form.Control as="textarea" onChange={this.props.handlerInputChange} defaultValue={this.props.resivedInfo.legalAddress} id="legal_address"></Form.Control></Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Form.Control as="select" onChange={this.props.handlerInputChange} value={this.props.resivedInfo.fieldActivity} id="field_activity" size="sm">
+                                        <option value="" key="list_field_activity_0">...</option>
+                                        {list.map((item) => <option value={item} key={`list_field_activity_${num++}`}>{item}</option>)}
+                                    </Form.Control>
+                                </Col>
+                                <Col></Col>
+                            </Row>
+                            <Row>
+                                <Col className="text-right">
+                                    <Button variant="outline-success" onClick={this.handlerSaveButton.bind(this, "organization", this.props.resivedInfo.id)} size="sm">сохранить</Button>&nbsp;
+                                    <Button variant="outline-danger" onClick={this.handlerDeleteButton.bind(this, "organization", this.props.resivedInfo.id)} size="sm">удалить</Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Accordion.Collapse>
+                </Card>
+                {this.createDivisionCard()}
+            </Accordion>
+        );
     }
 
     render(){
-        return <Row>{this.showInformation()}</Row>;
+        return <Row><Col md={{ span: 9, offset: 1 }}>{this.showInformation()}</Col></Row>;
     }
 }
 
 ShowEntityInformation.propTypes = {
-    showInfo: PropTypes.bool,
-    resivedInfo: PropTypes.object,
+    showInfo: PropTypes.bool.isRequired,
+    handlerSave: PropTypes.func.isRequired,
+    handlerDelete: PropTypes.func.isRequired,
+    resivedInfo: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.object.isRequired,
+    handlerInputChange: PropTypes.func.isRequired,
 };
 
 class CreateListEntity extends React.Component {
@@ -126,13 +201,15 @@ export default class CreateBodyManagementEntity extends React.Component {
             showInfo: false,
             listOrganizationName: this.createListOrganization.call(this),
             listDivisionName: this.createListDivision.call(this),
+            objectShowedInformation: {},
         };
 
         this.listSourceName = this.createListSource.call(this);
 
+        this.handlerSave = this.handlerSave.bind(this);
+        this.handlerDelete = this.handlerDelete.bind(this);
         this.handlerSelected = this.handlerSelected.bind(this);
-
-        this.objectTestShowedInformation = {};
+        this.handlerInputChange = this.handlerInputChange.bind(this);
     }
 
     createListOrganization(){
@@ -175,9 +252,73 @@ export default class CreateBodyManagementEntity extends React.Component {
         return listTmp;
     }
 
+    getListFieldActivity(){
+        let objTmp = {};
+        for(let source in this.props.listSourcesInformation){
+            objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
+        }
+
+        return objTmp;
+    }
+
+    searchInfoListSourceInformation_test({ type: searchType, value: searchID }){
+
+        console.log("FUNC 'searchInfoListSourceInformation_test'");
+
+        let paramType = {
+            "organization": "oid",
+            "division": "did",
+            "source": "id",
+        };
+    
+        let lsi = this.props.listSourcesFullInformation;
+        let tmp = {};
+        let oid = "";
+    
+        //получаем организацию
+        for(let sourceID in lsi){
+            if(lsi[sourceID][paramType[searchType]] === searchID){
+                tmp.id = lsi[sourceID].oid;
+                tmp.name = lsi[sourceID].organization.name;
+                tmp.dateRegister = lsi[sourceID].organization.dateRegister;
+                tmp.dateChange = lsi[sourceID].organization.dateChange;
+                tmp.fieldActivity = lsi[sourceID].organization.fieldActivity;
+                tmp.legalAddress = lsi[sourceID].organization.legalAddress;
+                tmp.listDivision = [];
+    
+                oid = lsi[sourceID].oid;
+    
+                break;
+            }
+        }
+    
+        for(let sourceID in lsi){
+            if(lsi[sourceID].oid === oid){
+                let sourceListTmp = [];
+                for(let sid in lsi){
+                    if(lsi[sid].did === lsi[sourceID].did){
+                        sourceListTmp.push(`${sid} ${lsi[sid].shortName}`);
+                    }
+                }
+    
+                tmp.listDivision.push({
+                    "id": lsi[sourceID].did,
+                    "name": lsi[sourceID].division.name,
+                    "dateRegister": lsi[sourceID].division.dateRegister,
+                    "dateChange": lsi[sourceID].division.dateChange,
+                    "physicalAddress": lsi[sourceID].division.physicalAddress,
+                    "description": lsi[sourceID].division.description,
+                    "listSource": sourceListTmp,
+                });
+            }
+        }
+
+        return tmp;
+    }
+
     handlerSelected(obj){
         console.log("func 'handlerSelected', START");
-        console.log(JSON.stringify(obj));
+        console.log(obj);
 
         /**
          * Только для макета из оъекта 'listSourcesInformation' формируем объект 
@@ -186,23 +327,59 @@ export default class CreateBodyManagementEntity extends React.Component {
          * !!! В Production готовый объект с информацией будет приходить с сервера !!!
          */
 
-        //это для теста!!
-        this.objectTestShowedInformation = obj;
-
-        /* 
-теперь выполнить поиск полученного ID в this.props.listSourcesInformation и записать найденную
-информацию в объект this.objectTestShowedInformation
-*/
-
-        this.objectTestShowedInformation = this.searchInfo_test.call(this);
-
+        //ТОЛЬКО ДЛЯ ТЕСТА!!! ищем в объекте listSourcesInformation информацию по ID
+        this.setState({objectShowedInformation: this.searchInfoListSourceInformation_test.call(this, obj)});
         this.setState({ showInfo: true });
     }
 
-    searchInfo_test(){
+    handlerInputChange(e){
+        console.log("func 'handlerInputChange', START...");
+        console.log(`ID: ${e.target.id}, Value: ${e.target.value}`);
+
         /**
- * Искать информацию в this.props.listSourcesInformation
- */
+         * 
+         *  !!!!!!!!!!!!!!! 
+         * 
+         * Непонятно работает обработчик ввода. При изменении названия организации, название меняется,
+         * однако, при выборе из списка другой организации все поля меняются, кроме названия организации
+         * помененной ранее.
+         * При изменении названия подразделения, вводится только ОДИН символ, следующий символ можно ввести
+         * только после повторного выделения поля
+         */
+
+        let pattern = {
+            "name": "name",
+            "legal_address": "legalAddress",
+            "field_activity": "fieldActivity",
+            "physical_address": "physicalAddress",
+            "description": "description",
+        };
+        let tmpObj = this.state.objectShowedInformation;
+
+        let [ name, ID ] = e.target.id.split(":");
+        if(typeof ID === "undefined"){
+            tmpObj[pattern[name]] = e.target.value;
+        } else {
+            for(let i = 0; i < tmpObj.listDivision.length; i++){
+                if(tmpObj.listDivision[i].id === ID){
+                    tmpObj.listDivision[i][pattern[name]] = e.target.value;
+                }
+            }
+        }
+
+        this.setState({ objectShowedInformation: tmpObj });
+    }
+
+    handlerSave(entityType, entityID){
+        console.log("func 'handlerSave', START...");
+        console.log(`отправляем серверу запрос для 'СОХРАНЕНИЯ' информации в БД, ${JSON.stringify({ action: "entity_save", entityType: entityType, entityID: entityID })}`);
+
+    }
+
+    handlerDelete(entityType, entityID){
+        console.log("func 'handlerSave', START...");
+        console.log(`отправляем серверу запрос для 'УДАЛЕНИЯ' информации из БД, ${JSON.stringify({ action: "entity_save", entityType: entityType, entityID: entityID })}`);
+
     }
 
     render(){
@@ -229,110 +406,11 @@ export default class CreateBodyManagementEntity extends React.Component {
                 <br/>
                 <ShowEntityInformation 
                     showInfo={this.state.showInfo}
-                    resivedInfo={this.objectTestShowedInformation}/>
-                <Row>
-                    НИЖЕ ТОЛЬКО ОБРАЗЕЦ
-                    <Col md={{ span: 9, offset: 1 }}>
-                        <Accordion defaultActiveKey="0" style={{ width: "55rem" }}>
-                            <Card border="info">
-                                <Accordion.Toggle as={Card.Header} eventKey="0">
-                                Государственная корпорация атомной энергии Росатом
-                                </Accordion.Toggle>
-                                <Accordion.Collapse eventKey="0">
-                                    <Card.Body>
-                                        <Row>
-                                            <Col>
-                                                {/*                                    <Form.Label><small>Название</small></Form.Label> */}
-                                                <Form.Control type="text" defaultValue={"Государственная корпорация атомной энергии Росатом"}></Form.Control>
-                                            </Col>
-                                            <Col>
-                                                {/*                                    <Form.Label><small>Юридический адрес</small></Form.Label> */}
-                                                <Form.Control as="textarea" id="legal_address" defaultValue={"123482 г. Москва, Дмитровское шоссе, д. 67, к. 3"}></Form.Control>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                                {/*                                    <Form.Label><small>Вид деятельности</small></Form.Label> */}
-                                                <Form.Control as="select" size="sm">
-                                                    <option key="0">...</option>
-                                                    <option key="1">атомная промышленность</option>
-                                                </Form.Control>
-                                            </Col>
-                                            <Col></Col>
-                                        </Row>
-                                        <Row>
-                                            <Col className="text-right">
-                                                <Button variant="outline-success" size="sm">сохранить</Button>&nbsp;
-                                                <Button variant="outline-danger" size="sm">удалить</Button>
-                                            </Col>
-                                        </Row>
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                            <Card border="dark">
-                                <Accordion.Toggle as={Card.Header} eventKey="1">
-                                Центр обработки данных 1
-                                </Accordion.Toggle>
-                                <Accordion.Collapse eventKey="1">
-                                    <Card.Body>
-                                        <Row>
-                                            <Col>
-                                                <Form.Control type="text" defaultValue={"Центр обработки данных 1"}></Form.Control>
-                                            </Col>
-                                            <Col>
-                                                <Form.Control as="textarea" id="physical_address" defaultValue={"123482 г. Москва, Дмитровское шоссе, д. 67, к. 3"}></Form.Control>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={6}><Form.Control as="textarea" id="legal_address" defaultValue={"Какие то заметки"}></Form.Control></Col>
-                                            <Col md={2} className="text-left">источники:</Col>
-                                            <Col md={4} className="text-left">
-                                                <ul>
-                                                    <li>1002 RSNet</li>
-                                                    <li>1038 AO Smolensk</li>
-                                                </ul>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col className="text-right">
-                                                <Button variant="outline-success" size="sm">сохранить</Button>&nbsp;
-                                                <Button variant="outline-danger" size="sm">удалить</Button>
-                                            </Col>
-                                        </Row>
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                            <Card border="dark">
-                                <Accordion.Toggle as={Card.Header} eventKey="2">
-                                Центр обработки данных 2
-                                </Accordion.Toggle>
-                                <Accordion.Collapse eventKey="2">
-                                    <Card.Body>
-                                        <Row>
-                                            <Col>
-                                                <Form.Control type="text" defaultValue={"Центр обработки данных 2"}></Form.Control>
-                                            </Col>
-                                            <Col>
-                                                <Form.Control as="textarea" id="physical_address" defaultValue={"123482 г. Москва, Дмитровское шоссе, д. 67, к. 3"}></Form.Control>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={6}><Form.Control as="textarea" id="legal_address" defaultValue={"Какие то заметки"}></Form.Control></Col>
-                                            <Col md={2} className="text-left">источники:</Col>
-                                            <Col md={4} className="text-left"></Col>
-                                        </Row>
-                                        <Row>
-                                            <Col className="text-right">
-                                                <Button variant="outline-success" size="sm">сохранить</Button>&nbsp;
-                                                <Button variant="outline-danger" size="sm">удалить</Button>
-                                            </Col>
-                                        </Row>
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                        </Accordion>
-                    </Col>
-                </Row>
+                    handlerSave={this.handlerSave}
+                    handlerDelete={this.handlerDelete}
+                    listFieldActivity={this.getListFieldActivity.call(this)}
+                    resivedInfo={this.state.objectShowedInformation}
+                    handlerInputChange={this.handlerInputChange} />
             </React.Fragment>
         );
     }
@@ -340,5 +418,6 @@ export default class CreateBodyManagementEntity extends React.Component {
 
 CreateBodyManagementEntity.propTypes ={
     listSourcesInformation: PropTypes.object.isRequired,
+    listSourcesFullInformation: PropTypes.object.isRequired,
 };
 
