@@ -97,7 +97,6 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         this.listSourceDelete = [];
 
-
         this.handlerInput = this.handlerInput.bind(this);
         this.handlerNewFolder = this.handlerNewFolder.bind(this);
         this.generatingNewToken = this.generatingNewToken.bind(this);
@@ -112,6 +111,9 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
+
+        //устанавливаем тему для всех элементов select2
+        $.fn.select2.defaults.set("theme", "bootstrap");
     }
 
     createStateCheckboxMarkedSourceDel(){

@@ -148,6 +148,17 @@ class CreateListEntity extends React.Component {
         this.handlerChoose = this.handlerChoose.bind(this);
     }
 
+    componentDidMount() {
+        this.el = $("#dropdown_all_entity");
+       
+        this.el.select2({
+            placeholder: "выбор сущности",
+            containerCssClass: "input-group input-group-sm",
+        });
+    
+        this.el.on("change", this.handlerChoose);
+    }
+
     listOrganization(){
         let arrayTmp = Object.keys(this.props.listOrganization).sort().map((name) => {
             return <option key={`key_org_${this.props.listOrganization[name]}`} value={`organization:${this.props.listOrganization[name]}`}>{name}</option>;
@@ -173,8 +184,6 @@ class CreateListEntity extends React.Component {
     }
 
     handlerChoose(e){
-        console.log("func 'handlerChoose'");
-
         if(typeof e.target === "undefined"){
             return;
         }
@@ -184,8 +193,6 @@ class CreateListEntity extends React.Component {
         }
 
         let [ typeValue, valueID ] = e.target.value.split(":");
-
-        console.log(`type:'${typeValue}', value:'${valueID}'`);
 
         /** 
          * В Production отправляем, через WebSocket, серверу запрос на поиск информации в БД
@@ -202,6 +209,23 @@ class CreateListEntity extends React.Component {
 
     render(){
         return (
+            <select id="dropdown_all_entity">
+                <option></option>
+                <optgroup label="организации">
+                    {this.listOrganization()}
+                </optgroup>
+                <optgroup label="подразделения или филиалы">
+                    {this.listDivision()}
+                </optgroup>
+                <optgroup label="источники">
+                    {this.listSource()}
+                </optgroup>
+            </select>
+        );
+    }
+}
+
+/**
             <Form.Control onClick={this.handlerChoose} as="select" className="custom-select" size="sm">
                 <option key="key_choose" value="0">выбрать...</option>
                 <option key="key_organization_title" disabled>{"организации".toUpperCase()}</option>
@@ -211,9 +235,7 @@ class CreateListEntity extends React.Component {
                 <option key="source_title" disabled>{"источники".toUpperCase()}</option>
                 {this.listSource()}
             </Form.Control>
-        );
-    }
-}
+ */
 
 CreateListEntity.propTypes = {
     listOrganization: PropTypes.object.isRequired,
@@ -221,6 +243,7 @@ CreateListEntity.propTypes = {
     listSource: PropTypes.object.isRequired,
     handlerSelected: PropTypes.func.isRequired,
 };
+
 
 export default class CreateBodyManagementEntity extends React.Component {
     constructor(props){
@@ -538,7 +561,7 @@ export default class CreateBodyManagementEntity extends React.Component {
                     <Col className="text-left">Всего, организаций: {numOrganization}, подразделений: {numDivision}, источников: {numSource}.</Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col className="text-left">
                         <CreateListEntity 
                             listOrganization={this.state.listOrganizationName}
                             listDivision={this.state.listDivisionName}

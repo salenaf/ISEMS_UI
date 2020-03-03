@@ -16,6 +16,8 @@ module.exports = {
             "reactDom",
             "reactBootstrap",
             "bootstrap",
+            "select2",
+            //            "select2Full",
             "jquery",
         ],
         header: "./pages/header.jsx",
@@ -42,13 +44,15 @@ module.exports = {
 
     resolve: {
         modules: ["node_modules", bootstrapPath],
-        extensions: [".js", "jsx", ".css"],
+        extensions: [".js", ".jsx", ".css"],
         alias: {
-            react: "react",
-            reactDom: "react-dom",
-            reactBootstrap: "react-bootstrap/dist/react-bootstrap.min.js",
-            bootstrap: "bootstrap/dist/js/bootstrap.min.js",
-            jquery: "jquery/dist/jquery.min.js",
+            "react": "react",
+            "reactDom": "react-dom",
+            "reactBootstrap": "react-bootstrap/dist/react-bootstrap.min.js",
+            "bootstrap": "bootstrap/dist/js/bootstrap.min.js",
+            //"select2": "select2/dist/js/select2.js",
+            "select2": "select2/dist/js/select2.full.min.js",
+            "jquery": "jquery/dist/jquery.min.js",
         }
     },
 

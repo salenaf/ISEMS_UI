@@ -10,7 +10,43 @@ class CreateHeaderMenu extends React.Component {
 
     render(){
         return (
-            <Nav className="justify-content-center">
+            <Navbar bg="dark" variant="dark" fixed="top">
+                <Navbar.Brand href="/">
+                    <img src="./images/logo1.png" width="200" height="60"/>
+                </Navbar.Brand>
+                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                <Nav className="mr-auto">
+                    <Nav.Item>
+                        <Nav.Link href="/">Главная</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href="/">Аналитика</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href="/">Фильтрация</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href="/">Учет воздействий</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <NavDropdown title="Настройки" id="nav-dropdown">
+                            <NavDropdown.Item href="#action/3.2">пользователи</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.3">группы пользователей</NavDropdown.Item>
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item href="#action/3.4">организации и источники</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.4">правила СОА</NavDropdown.Item>
+                        </NavDropdown>
+                    </Nav.Item>
+                </Nav>
+                <Navbar.Text>Иванов Петр Семенович</Navbar.Text>&nbsp;&nbsp;
+                <Button variant="outline-info" size="sm" href="logout">ВЫХОД</Button>
+            </Navbar>
+        );
+    }
+}
+
+/**
+<Nav className="justify-content-center">
                 <Nav.Item>
                     <Nav.Link href="/">Главная</Nav.Link>
                 </Nav.Item>
@@ -33,9 +69,7 @@ class CreateHeaderMenu extends React.Component {
                     </NavDropdown>
                 </Nav.Item>
             </Nav>
-        );
-    }
-}
+ */
 
 //CreateHeaderMenu.protoType = {};
 

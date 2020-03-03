@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Badge, Card, Form } from "react-bootstrap";
+import { Button, Badge, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
@@ -54,6 +54,24 @@ export default class CreateBodyNewEntity extends React.Component {
         
         this.createListElementDivision = this.createListElementDivision.bind(this);
         this.createListElementOrganization = this.createListElementOrganization.bind(this);
+    }
+
+    componentDidMount() {
+        this.elOrg = $("#select_list_organization");
+        this.elDiv = $("#select_list_division");
+       
+        this.elOrg.select2({
+            placeholder: "добавить организацию",
+            maximumInputLength: 10,
+        });
+
+        this.elDiv.select2({
+            placeholder: "добавить подразделение",
+            maximumInputLength: 10,
+        });
+    
+        this.elOrg.on("change", this.selectedOrganization.bind(this));
+        this.elDiv.on("change", this.selectedDivision.bind(this));
     }
 
     getListFieldActivity(){
@@ -186,9 +204,9 @@ export default class CreateBodyNewEntity extends React.Component {
             return <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>;
         });
 
-        selectForm = <Form.Group onChange={this.selectedOrganization.bind(this)} controlId={"select_list_organization"}>
+        selectForm = <Form.Group>
             <Form.Label>Организация</Form.Label>
-            <Form.Control as="select" size="sm">
+            <Form.Control as="select" size="sm" id="select_list_organization">
                 <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
                 {listOptions}
             </Form.Control>
@@ -196,7 +214,7 @@ export default class CreateBodyNewEntity extends React.Component {
 
         return selectForm;
     }
-
+    
     createListElementDivision(){
         let selectForm = "";       
         let lsi = {};
@@ -215,9 +233,9 @@ export default class CreateBodyNewEntity extends React.Component {
 
         let listOptions = listName.map((name) => <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>);
 
-        selectForm = <Form.Group onChange={this.selectedDivision.bind(this)} controlId={"select_list_division"}>
+        selectForm = <Form.Group>
             <Form.Label>Подразделение или филиал организации</Form.Label>
-            <Form.Control as="select" size="sm">
+            <Form.Control as="select" size="sm" id="select_list_division">
                 <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
                 {listOptions}
             </Form.Control>
@@ -267,8 +285,8 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewDivision(options){
-        //console.log("func 'createNewDivision', START...");
-        //console.log(options);
+        console.log("func 'createNewDivision', START...");
+        console.log(options);
 
         let isExist = false;
         let newRecord = {
@@ -292,7 +310,11 @@ export default class CreateBodyNewEntity extends React.Component {
 
         for(let i = 0; i < listNewEntity.length; i++){
             //ищем объект организации в listNewEntity
-            if(listNewEntity[i].id_organization === options.parentID){
+            if((typeof listNewEntity[i].division_or_branch_list_id !== "undefined") && (listNewEntity[i].id_organization === options.parentID)){
+
+                console.log(`new record ${JSON.stringify(newRecord)}`);
+                console.log(listNewEntity);
+
                 listNewEntity[i].division_or_branch_list_id.push(newRecord);
                 isExist = true;
 
@@ -534,8 +556,10 @@ export default class CreateBodyNewEntity extends React.Component {
                 <div className="row">
                     <div className="col-md-12 text-left">
                         <Form>
-                            {this.createListElementOrganization()}
-                            {this.createListElementDivision()}
+                            <Row>
+                                <Col>{this.createListElementOrganization()}</Col>
+                                <Col>{this.createListElementDivision()}</Col>
+                            </Row>
                         </Form>
                     </div>
                 </div>
