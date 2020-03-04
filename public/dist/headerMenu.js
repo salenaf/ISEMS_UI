@@ -41192,7 +41192,8 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(CreateHeaderMenu).call(this, props));
     _this.listItems = _this.props.listItems;
-    _this.createMenu = _this.createMenu(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.createMenu = _this.createMenu.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.firstIconIsBig = _this.firstIconIsBig.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;
   }
 
@@ -41221,13 +41222,19 @@ function (_React$Component) {
       return list;
     }
   }, {
+    key: "firstIconIsBig",
+    value: function firstIconIsBig(str) {
+      if (!str) return str;
+      return str[0].toUpperCase() + str.slice(1);
+    }
+  }, {
     key: "createMenu",
     value: function createMenu() {
       var list = [];
       list.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Nav"].Link, {
         href: "/",
         key: "main_key"
-      }, "главная".toLowerCase()));
+      }, "\u0413\u043B\u0430\u0432\u043D\u0430\u044F"));
       var linkElemIsDisabled = "";
       var classElemIsDisable = "";
       var menuSettings = this.listItems.menuSettings;
@@ -41246,12 +41253,12 @@ function (_React$Component) {
             href: key,
             key: "".concat(key, "_key"),
             "aria-disabled": linkElemIsDisabled
-          }, menuSettings[key].name.toLowerCase()));
+          }, this.firstIconIsBig(menuSettings[key].name)));
           continue;
         }
 
         list.push(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["NavDropdown"], {
-          title: menuSettings[key].name.toLowerCase(),
+          title: this.firstIconIsBig(menuSettings[key].name),
           key: "".concat(key, "_key")
         }, this.createSubmenu.call(this, menuSettings[key].submenu)));
       }
@@ -41262,24 +41269,23 @@ function (_React$Component) {
     key: "render",
     value: function render() {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Container"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"], {
-        fixed: "top",
-        bg: "light",
-        variant: "light"
+        bg: "dark",
+        variant: "dark",
+        fixed: "top"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Brand, {
         href: "/"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
-        src: "images/logo.png",
-        className: "d-inline-block align-top",
-        height: "50",
-        width: "120"
+        src: "/images/logo1.png",
+        width: "200",
+        height: "60"
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Toggle, {
         "aria-controls": "basic-navbar-nav"
       }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Nav"], {
         className: "mr-auto"
-      }, this.createMenu), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Collapse, {
+      }, this.createMenu()), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Collapse, {
         className: "justify-content-end"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Navbar"].Text, null, this.listItems.userName), "\xA0\xA0", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        variant: "outline-primary",
+        variant: "outline-info",
         size: "sm",
         href: "logout"
       }, "\u0412\u042B\u0425\u041E\u0414"))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_commons_modalWindowChangeAdminPasswd_jsx__WEBPACK_IMPORTED_MODULE_4__["ModalWindowChangeAdminPasswd"], {
