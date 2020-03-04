@@ -10,7 +10,9 @@ class CreateHeaderMenu extends React.Component {
         super(props);
 
         this.listItems = this.props.listItems;
-        this.createMenu = this.createMenu(this);
+
+        this.createMenu = this.createMenu.bind(this);
+        this.firstIconIsBig = this.firstIconIsBig.bind(this);
     }
 
     createSubmenu(listDropDown){
@@ -36,9 +38,15 @@ class CreateHeaderMenu extends React.Component {
         return list;
     }
 
+    firstIconIsBig(str) {
+        if (!str) return str;
+      
+        return str[0].toUpperCase() + str.slice(1);
+    }
+    
     createMenu(){
         let list = [];
-        list.push(<Nav.Link href="/" key="main_key">{"главная".toLowerCase()}</Nav.Link>);
+        list.push(<Nav.Link href="/" key="main_key">Главная</Nav.Link>);
 
         let linkElemIsDisabled = "";
         let classElemIsDisable = "";
@@ -54,14 +62,14 @@ class CreateHeaderMenu extends React.Component {
 
             if (submenuIsExist) {
                 list.push(<Nav.Link className={classElemIsDisable} href={key} key={`${key}_key`} aria-disabled={linkElemIsDisabled}>
-                    {menuSettings[key].name.toLowerCase()}
+                    {this.firstIconIsBig(menuSettings[key].name)}
                 </Nav.Link>);
 
                 continue;
             }
 
             list.push(
-                <NavDropdown title={menuSettings[key].name.toLowerCase()} key={`${key}_key`}>
+                <NavDropdown title={this.firstIconIsBig(menuSettings[key].name)} key={`${key}_key`}>
                     {this.createSubmenu.call(this, menuSettings[key].submenu)}
                 </NavDropdown>);
         }
@@ -72,17 +80,18 @@ class CreateHeaderMenu extends React.Component {
     render(){
         return (
             <Container>
-                <Navbar fixed="top" bg="light" variant="light">
+                <Navbar bg="dark" variant="dark" fixed="top">
                     <Navbar.Brand href="/">
-                        <img src="images/logo.png" className="d-inline-block align-top" height="50" width="120" />
+                        <img src="/images/logo1.png" width="200" height="60"/>
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Nav className="mr-auto">{this.createMenu}</Nav>
+                    <Nav className="mr-auto">{this.createMenu()}</Nav>
                     <Navbar.Collapse className="justify-content-end">
                         <Navbar.Text>{this.listItems.userName}</Navbar.Text>&nbsp;&nbsp;
-                        <Button variant="outline-primary" size="sm" href="logout">ВЫХОД</Button>
+                        <Button variant="outline-info" size="sm" href="logout">ВЫХОД</Button>
                     </Navbar.Collapse>
                 </Navbar>
+
                 <ModalWindowChangeAdminPasswd 
                     login={this.listItems.login} 
                     passIsDefault={this.listItems.isPasswordDefaultAdministrator}

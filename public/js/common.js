@@ -13,6 +13,7 @@ require("bootstrapTokenfield");
 require("bootstrapDatetimepicker");
 
 require("moment");
+require("select2");
 //require('moment-with-locales');
 
 global.socket = io.connect();

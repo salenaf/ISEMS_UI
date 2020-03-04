@@ -2,29 +2,42 @@
 <html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <% include ../../head.ejs %>
-
     <script>
 
     </script>
+    <% include ../../header.ejs %>
 </head>
 <body>
-    <section id="container" >
-        <% include ../../header.ejs %>
-
-        <!--начало основного контента-->
+    <header>
+        <div class="row">
+            <div class="col-md-12" id="menu-top"></div>
+        </div>
+    </header>
+    <section id="container">
         <div class="content-wrapper">
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
-                        <h4 class="text-uppercase" style="margin-left: 10px; margin-right: 10px; padding-top: 10px;">
-                            Управление организациями, подразделениями и филиалами организации, а также источниками
-                        </h4>
+                        <h6 class="text-uppercase text-center">
+                            Управление организациями, подразделениями организации и источниками
+                        </h6>
                     </div>
                 </div>
-                <div class="col-md-12 text-center" id="field_information"></div>
+                <div class="col-md-12 text-center" id="main-page-content"></div>
             </div>
         </div>
-        <% include ../../footer.ejs %>
+        <section class="footer-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        Система управления событиями информационной безопасности ISEMS-UI, версия 1.1.0 2020
+                    </div>
+                </div>
+            </div>
+        </section>
     </section>
 </body>
+
+<!-- формирование основного раздела страницы -->
+<script src="/dist/settingOrganizationAndSourcesPage.js"></script>
 </html>

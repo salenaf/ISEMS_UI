@@ -124,19 +124,19 @@ function createModelGroups(modelGroup, next) {
                 analysis_sip: {
                     id: createUniqID.getMD5("administrator_menu_items_analysis_sip"),
                     status: true,
-                    description: "анализ ИПБ"
+                    description: "аналитика"
                 },
                 security_event_management: {
                     id: createUniqID.getMD5("administrator_menu_items_security_event_management"),
                     status: true,
-                    description: "управление событиями"
+                    description: "учёт воздействий"
                 },
                 network_interaction: {
                     id: createUniqID.getMD5("administrator_menu_items_network_interaction"),
                     status: true,
                     description: "сетевые взаимодействия"
                 },
-                element_tools: {
+                /*                element_tools: {
                     id: createUniqID.getMD5("administrator_menu_items_element_tools"),
                     name: "инструменты",
                     search_tools: {
@@ -149,10 +149,10 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: "декодирование"
                     }
-                },
+                },*/
                 element_settings: {
                     id: createUniqID.getMD5("administrator_menu_items_element_settings"),
-                    name: "настройки",
+                    name: "Настройки",
                     setting_groups: {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_groups"),
                         status: true,
@@ -166,13 +166,13 @@ function createModelGroups(modelGroup, next) {
                     setting_organizations_and_sources: {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_organizations_and_sources"),
                         status: true,
-                        description: "организации, подразделения и источники"
+                        description: "организации и источники"
                     },
-                    setting_objects_and_subjects: {
+                    /*                    setting_objects_and_subjects: {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_objects_and_subjects"),
                         status: true,
                         description: "объекты и субъекты"
-                    },
+                    },*/
                     setting_ids_rules: {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_setting_ids_rules"),
                         status: true,
@@ -197,7 +197,7 @@ function createModelGroups(modelGroup, next) {
             },
             management_analysis_sip: {
                 id: createUniqID.getMD5("administrator_management_analysis_sip"),
-                name: "анализ ИПБ",
+                name: "аналитика",
                 element_settings: {
                     save: {
                         id: createUniqID.getMD5("administrator_management_analysis_sip_save"),
@@ -208,7 +208,7 @@ function createModelGroups(modelGroup, next) {
             },
             management_security_event_management: {
                 id: createUniqID.getMD5("administrator_management_security_event_management"),
-                name: "управление событиями",
+                name: "учёт воздействий",
                 element_settings: {
                     create: {
                         id: createUniqID.getMD5("administrator_management_security_event_management_create"),
@@ -350,7 +350,7 @@ function createModelGroups(modelGroup, next) {
             },
             management_organizations_and_sources: {
                 id: createUniqID.getMD5("administrator_management_organizations_and_source"),
-                name: "организации, подразделения и источники",
+                name: "организации и источники",
                 element_settings: {
                     management_organizations: {
                         id: createUniqID.getMD5("administrator_management_organizations_and_source_organization"),
@@ -417,7 +417,7 @@ function createModelGroups(modelGroup, next) {
                     },
                 },
             },
-            management_objects_and_subjects: {
+            /*management_objects_and_subjects: {
                 id: createUniqID.getMD5("administrator_management_objects_and_subjects"),
                 name: "объекты и субъекты",
                 element_settings: {
@@ -437,7 +437,7 @@ function createModelGroups(modelGroup, next) {
                         description: "удаление"
                     }
                 }
-            },
+            },*/
             management_ids_rules: {
                 id: createUniqID.getMD5("administrator_management_ids_rules"),
                 name: "правила СОА",
@@ -1176,7 +1176,7 @@ function createModelGroups(modelGroup, next) {
 }
 
 //создание модели хранения данных об источнике
-function createModelSource(modelSource, next) {
+/*function createModelSource(modelSource, next) {
 
     debug("find source model");
 
@@ -1184,7 +1184,7 @@ function createModelSource(modelSource, next) {
         if (err) next(err);
         else next(null);
     });
-}
+}*/
 
 //создание модели хранения правил СОА
 function createModelRulesIDS(modelIdsRules, next) {

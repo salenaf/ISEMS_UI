@@ -16,7 +16,6 @@ const changeAdministratorPassword = require("../libs/changeAdministratorPassword
 
 //const processingManagementUsers = require("./pages/processing_http_request/processingManagementUsers");
 //const processingManagementSources = require("./pages/processing_http_request/processingManagementSources");
-const processingDownloadFileSourceSetting = require("../libs/processing/processing_downloaded_files/processingDownloadFileSourceSetting");
 
 module.exports = function(app, socketIo) {
     const pages = require("./pages");
@@ -138,9 +137,9 @@ module.exports = function(app, socketIo) {
     }
 
     //УПРАВЛЕНИЕ ИСТОЧНИКАМИ (Экспорт XML файла с настройками источников)
-    app.get("/export_file_setup_hosts", isAuthenticated, (req, res) => {
+    /*app.get("/export_file_setup_hosts", isAuthenticated, (req, res) => {
         return processingDownloadFileSourceSetting(req, res);
-    });
+    });*/
 
     //ВЫХОД
     app.get("/logout", (req, res) => {

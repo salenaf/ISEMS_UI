@@ -4,13 +4,12 @@
  * Верися 0.1, дата релиза 31.03.2017
  * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const async = require("async");
 
-const globalObject = require('../../configure/globalObject');
-const writeLogFile = require('../../libs/writeLogFile');
-const getListDashboardSource = require('../../libs/mongodb_requests/getListDashboardSource');
+const globalObject = require("../../configure/globalObject");
+const writeLogFile = require("../../libs/writeLogFile");
 
 module.exports = function(req, res, objHeader) {
     async.parallel({
@@ -40,14 +39,14 @@ module.exports = function(req, res, objHeader) {
         }
     }, function(err, result) {
         if (err) {
-            writeLogFile('error', err.toString());
-            res.render('index', {
+            writeLogFile("error", err.toString());
+            res.render("index", {
                 header: {},
                 listSources: {},
                 listSourceDashboard: {}
             });
         } else {
-            res.render('index', {
+            res.render("index", {
                 header: objHeader,
                 listSources: result.listSources,
                 listSourceDashboard: result.listSourceDashboard

@@ -5,12 +5,12 @@
  * Версия 0.1, дата релиза 22.01.2019
  */
 
-'use strict';
+"use strict";
 
-const debug = require('debug')('socketioResponseProcessor');
+const debug = require("debug")("socketioResponseProcessor");
 
-const globalObject = require('../configure/globalObject');
-const writeLogFile = require('../libs/writeLogFile');
+const globalObject = require("../configure/globalObject");
+const writeLogFile = require("../libs/writeLogFile");
 
 /**
  * @param {*} socketIo
@@ -18,10 +18,10 @@ const writeLogFile = require('../libs/writeLogFile');
 module.exports = function(socketIo) {
     const eventEmitter = globalObject.getEventSocketioResponse();
 
-    eventEmitter.on('error', (err) => {
-        debug('Error message');
+    eventEmitter.on("error", (err) => {
+        debug("Error message");
         debug(err);
 
-        writeLogFile('error', err.toString());
+        writeLogFile("error", err.toString());
     });
 };

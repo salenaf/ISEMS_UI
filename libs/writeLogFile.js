@@ -10,20 +10,20 @@
  * writeLogFile('error', 'message');
  * */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const async = require('async');
+const fs = require("fs");
+const async = require("async");
 
 class WriteLog {
     constructor(type, message) {
         this.type = type;
         this.message = message;
         this.currentDate = function() {
-            return (new Date(Date.now() - ((new Date()).getTimezoneOffset() * 60000))).toISOString().slice(0, -1).replace(/T/, ' ').replace(/\..+/, '');
+            return (new Date(Date.now() - ((new Date()).getTimezoneOffset() * 60000))).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, "");
         };
         this.dirRoot = __dirname.substr(0, (__dirname.length - 5));
-        this.dirLog = 'logs';
+        this.dirLog = "logs";
         this.pathLogFiles = `${this.dirRoot}/${this.dirLog}`;
 
         fs.lstat(this.pathLogFiles, err => {
@@ -37,48 +37,48 @@ class WriteLog {
 
     //пишем информационные сообщения
     write(nameFile, message, cb) {
-            let self = this;
-            let fileNameCurrentDate = self.currentDate().split(' ');
-            let newFileName = `${fileNameCurrentDate[0]}_${fileNameCurrentDate[1]}_${nameFile}`;
+        let self = this;
+        let fileNameCurrentDate = self.currentDate().split(" ");
+        let newFileName = `${fileNameCurrentDate[0]}_${fileNameCurrentDate[1]}_${nameFile}`;
 
-            new Promise((resolve, reject) => {
-                fs.appendFile(`${self.pathLogFiles}/${nameFile}`, message, err => {
-                    if (err) reject(err);
-                    else resolve();
-                });
-            }).then(() => {
-                return new Promise((resolve, reject) => {
-                    fs.lstat(`${self.pathLogFiles}/${nameFile}`, (err, stats) => {
-                        if (err) reject(err);
-                        else resolve(stats);
-                    });
-                });
-            }).then(stats => {
-                if (stats.size < 10000000) return cb(null);
-
-                return new Promise((resolve, reject) => {
-                    fs.rename(
-                        `${self.pathLogFiles}/${nameFile}`,
-                        `${self.pathLogFiles}/${newFileName}`,
-                        err => {
-                            if (err) reject(err);
-                            else resolve();
-                        });
-                });
-            }).then(() => {
-                return new Promise((resolve, reject) => {
-                    fs.appendFile(`${self.pathLogFiles}/${nameFile}`, '', { 'encoding': 'utf8' }, err => {
-                        if (err) resolve(err);
-                        else reject();
-                    });
-                });
-            }).then(() => {
-                cb(null);
-            }).catch(err => {
-                return cb(err);
+        new Promise((resolve, reject) => {
+            fs.appendFile(`${self.pathLogFiles}/${nameFile}`, message, err => {
+                if (err) reject(err);
+                else resolve();
             });
-        }
-        /*       fs.appendFile(self.rootDirectory + nameFile, message, err => {
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                fs.lstat(`${self.pathLogFiles}/${nameFile}`, (err, stats) => {
+                    if (err) reject(err);
+                    else resolve(stats);
+                });
+            });
+        }).then(stats => {
+            if (stats.size < 10000000) return cb(null);
+
+            return new Promise((resolve, reject) => {
+                fs.rename(
+                    `${self.pathLogFiles}/${nameFile}`,
+                    `${self.pathLogFiles}/${newFileName}`,
+                    err => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                fs.appendFile(`${self.pathLogFiles}/${nameFile}`, "", { "encoding": "utf8" }, err => {
+                    if (err) resolve(err);
+                    else reject();
+                });
+            });
+        }).then(() => {
+            cb(null);
+        }).catch(err => {
+            return cb(err);
+        });
+    }
+    /*       fs.appendFile(self.rootDirectory + nameFile, message, err => {
             if(err) return cb(err);
 
             fs.lstat(self.rootDirectory + nameFile, function(err, stats) {
@@ -126,7 +126,7 @@ class WriteLog {
             let arrayRemove = [];
 
             for (let typeFile in objCountSafeFiles) {
-                obj[typeFile] = files.filter(item => (~item.indexOf(typeFile + '.log')));
+                obj[typeFile] = files.filter(item => (~item.indexOf(typeFile + ".log")));
 
                 obj[typeFile].sort();
                 let array = obj[typeFile].splice(0, obj[typeFile].length - objCountSafeFiles[typeFile]);
@@ -155,12 +155,12 @@ module.exports = function(type, message) {
     });
 
     let objTypeMessage = {
-        'info': 'messageInfo',
-        'error': 'messageError'
+        "info": "messageInfo",
+        "error": "messageError"
     };
 
-    if (typeof writeLog[objTypeMessage[type]] === 'undefined') {
-        console.log('Error writing to log file message type not defined');
+    if (typeof writeLog[objTypeMessage[type]] === "undefined") {
+        console.log("Error writing to log file message type not defined");
 
         return;
     }

@@ -16,7 +16,6 @@ const objGlobals = require("../configure/globalObject");
 const showNotify = require("../libs/showNotify");
 const writeLogFile = require("../libs/writeLogFile");
 const getSessionId = require("../libs/helpers/getSessionId");
-const checkStatusSource = require("../libs/processing/status_source/checkStatusSource");
 const checkUserAuthentication = require("../libs/check/checkUserAuthentication");
 //const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
 
@@ -40,7 +39,6 @@ exports.eventGenerator = function(socketIo, object) {
                     setDisconnectSourceAll();
 
                     //генерируем событие об изменении статусов соединения
-                    checkStatusSource(socketIo);
                     showNotify(socketIo, "danger", "Невозможно установить соединение с API waterfall-broker");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
                     socketIo.emit("change of status", {
@@ -54,7 +52,6 @@ exports.eventGenerator = function(socketIo, object) {
                     setDisconnectSourceAll();
 
                     //генерируем событие об изменении статусов соединения
-                    checkStatusSource(socketIo);
                     showNotify(socketIo, "warning", "Соединение с API waterfall-broker было разорвано");
                     //генерируем событие изменяющее статус соединения с waterfall-broker
                     socketIo.emit("change of status", {
@@ -128,7 +125,7 @@ exports.eventGenerator = function(socketIo, object) {
 //генератор событий
 exports.eventEmitter = function(socketIo, object) {
     let handling = {
-        "changingStatusSource": checkStatusSource.bind(null, socketIo)
+        //        "changingStatusSource": checkStatusSource.bind(null, socketIo)
     };
 
     console.log("--- script:routeSocketIo, Event Emitter ---");

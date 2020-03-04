@@ -18,12 +18,6 @@ let groupSchema = new connection.Schema({
         analysis_sip: { id: String, status: Boolean, description: String },
         security_event_management: { id: String, status: Boolean, description: String },
         network_interaction: { id: String, status: Boolean, description: String },
-        element_tools: {
-            id: String,
-            name: String,
-            search_tools: { id: String, status: Boolean, description: String },
-            decode_tools: { id: String, status: Boolean, description: String }
-        },
         element_settings: {
             id: String,
             name: String,
