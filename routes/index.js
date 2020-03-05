@@ -38,14 +38,14 @@ module.exports = function(app, socketIo) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteraction,
         },
-        "/decode_tools": {
+        /*        "/decode_tools": {
             access: "menuSettings.element_tools.submenu.decode_tools.status",
             handler: pages.toolsDecode,
         },
         "/search_tools": {
             access: "menuSettings.element_tools.submenu.search_tools.status",
             handler: pages.toolsSearch,
-        },
+        },*/
         "/setting_users": {
             access: "menuSettings.element_settings.submenu.setting_users.status",
             handler: pages.managementUsers,
