@@ -134,7 +134,7 @@ function createModelGroups(modelGroup, next) {
                 network_interaction: {
                     id: createUniqID.getMD5("administrator_menu_items_network_interaction"),
                     status: true,
-                    description: "сетевые взаимодействия"
+                    description: "Сетевые взаимодействия"
                 },
                 /*                element_tools: {
                     id: createUniqID.getMD5("administrator_menu_items_element_tools"),
