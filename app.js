@@ -43,7 +43,7 @@ async.parallel([
     /**
      * устанавливаем соединение с СУБД MongoDB
      */
-    callback => {
+    (callback) => {
 
         debug("create connect for MongoDB ");
 
@@ -93,11 +93,11 @@ async.parallel([
                 callback(err);
             });
     },
-    /*
+    /**
      * соединение с API ISEMS-SMM (source messanger master),
      * установка и контроль соединений с сенсорами, создание и сопровождение задач по фильтрации и получении данных
      */
-    callback => {
+    (callback) => {
         /**
          * 
          * !!! ПОКА ЗАГЛУШКА !!!
@@ -118,7 +118,7 @@ async.parallel([
      * соединение с API ISEMS-R (recorder)
      * создание и управление карточками компьютерных воздействий
      */
-    callback => {
+    (callback) => {
         /**
          * 
          * !!! ПОКА ЗАГЛУШКА !!!
@@ -134,6 +134,16 @@ async.parallel([
         });
 
         callback(null);
+    },
+    /**
+     * устанавливаем общие настройки приложения
+     */
+    (callback) => {
+        process.nextTick(() => {
+            globalObject.setData("commonSettings", "listFieldActivity", config.get("appSettings:listFieldActivity"));
+
+            callback(null);
+        });
     }
 ], err => {
     if (err) {
@@ -145,6 +155,8 @@ async.parallel([
 
         process.exit(1);
     }
+
+    debug(`app settings: ${JSON.stringify(globalObject.getData("commonSettings"))}`);
 
     //запуск сервера
     server.listen({

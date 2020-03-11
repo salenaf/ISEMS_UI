@@ -10,7 +10,7 @@ import ModalWindowSourceInfo from "../../modalwindows/modalWindowSourceInfo.jsx"
 import ModalWindowChangeSource from "../../modalwindows/modalWindowChangeSource.jsx";
 import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
 
-import { helpers } from "../../common_helpers/helpers.js";
+import { helpers } from "../../../common_helpers/helpers.js";
 
 class CreatePageOrganizationAndSources extends React.Component {
     constructor(props){
@@ -108,6 +108,7 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
         this.showModalWindowChangeSource = this.showModalWindowChangeSource.bind(this);
         this.closeModalWindowChangeSource = this.closeModalWindowChangeSource.bind(this);
+        this.checkValue = this.checkValue.bind(this);
 
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
@@ -243,32 +244,69 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({ stateCopy });
     }
 
-    handlerInput(e){       
+    //!!!!!!!!!!!!!!!!!!!!!!!! */
+    checkValue(nameInput,value){
+        console.log("func 'checkValue', проверяем передоваемое значение !!!");
+        console.log(value);
+        let regul;
+        if(nameInput==="source_short_name")
+            regul =  new RegExp(/[^"'\p{L}\p{N}\s.,№-]/gui);                  // а-Я 0-9.,"'-     [?]
+        
+        if(nameInput==="source_id")   
+            regul =  new RegExp(/[^\p{L}\p{N}\s.,-]/gui); 
+
+        let check =  value.match(regul);      
+        if(check!=null){
+            return false;    
+        }else{
+            return true;
+        }
+    }    
+
+    checkValueAddress(value){
+        console.log("func 'checkValue', проверяем передоваемое значение");
+        console.log(value);
+    
+        let regul =  new RegExp(/[^\p{L}\p{N}\s.,-]/gui);                  // а-Я 0-9.,-     [?]
+        let check =  value.match(regul);      
+        if(check!=null){
+            return false;    
+        }
+        return true;
+    }
+
+    handlerInput(e){
+        /**
+         * Здесь сделать обработку параметров ввода на основе RegExp
+         * пока пусть будет только по длинне
+         * 
+         */
+        
         let elementName = e.target.id;
         let value = e.target.value;
-
+        
         console.log(`elemID: ${elementName}, elemValue: ${value}`);
 
         const listElem = {
             "source_id": {
                 name: "sourceID",
-                pattern: "hostID",
+                pattern: "",
             },
             "source_short_name": {
                 name: "shortName",
-                pattern: "shortNameHost",
+                pattern: "",
             }, 
             "source_ip": {
                 name: "ipAddress",
-                pattern: "ipaddress",
+                pattern: "",
             },
             "source_port": {
                 name: "port",
-                pattern: "port",
+                pattern: "",
             }, 
             "input_folder": {
                 name: "directoriesNetworkTraffic",
-                pattern: "stringAlphaNumEng",
+                pattern: "",
             },
             "source_description": {
                 name: "description",
@@ -310,23 +348,24 @@ class CreatePageOrganizationAndSources extends React.Component {
             return;
         }
 
-        console.log(`value: ${value}, reg res: '${helpers.checkInputValidation({name: listElem[elementName].pattern, value: value })}' |${listElem[elementName].pattern}|`);
+     
+        let bolNum = this.checkValue(elementName, value);
 
-        if(!helpers.checkInputValidation({name: listElem[elementName].pattern, value: value })){
+        //??????????????????????
+        if(!bolNum) {
             objUpdate.sourceSettings[listElem[elementName].name].isValid = false;
             objUpdate.sourceSettings[listElem[elementName].name].isInvalid = true;
         } else {
-            if(elementName === "input_folder"){
+
+            if((elementName === "input_folder")){
                 objUpdate.sourceSettings.newFolder = value;        
             } else {
                 objUpdate.sourceSettings[listElem[elementName].name].value = value;
                 objUpdate.sourceSettings[listElem[elementName].name].onChange = true;
-            }
-
+            } 
             objUpdate.sourceSettings[listElem[elementName].name].isValid = true;
             objUpdate.sourceSettings[listElem[elementName].name].isInvalid = false;
         }
-
         this.setState( objUpdate );
     }
 
@@ -411,6 +450,7 @@ class CreatePageOrganizationAndSources extends React.Component {
         }
 
         let sourceSettings = this.state.sourceSettings;
+        //console.log(sourceSettings);
 
         //делаем проверку были ли какие либо изменения в информации по источнику
         if(!checkValueChange(sourceSettings)){

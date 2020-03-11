@@ -1,10 +1,8 @@
-"use strict";
-
 import React from "react";
 import { Button, Col, Form, FormControl, Row, Modal, InputGroup } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import { helpers } from "../common_helpers/helpers.js";
+import { helpers } from "../../common_helpers/helpers.js";
 
 class ListFolder extends React.Component {
     constructor(props){
@@ -20,12 +18,10 @@ class ListFolder extends React.Component {
     listFolders(){
         return this.props.directoriesNetworkTraffic.map((item) => {
             let num = 0;
-            return (
-                <li key={`new_folder_${item}_${num++}`}>
-                    {item}&nbsp;
-                    <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
-                </li>)
-            ;
+            return <li key={`new_folder_${item}_${num++}`}>
+                {item}&nbsp;
+                <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+            </li>;
         });
     }
 
@@ -452,6 +448,7 @@ export default class ModalWindowAddEntity extends React.Component {
         this.sourcesInput = this.sourcesInput.bind(this);
         this.divisionInput = this.divisionInput.bind(this);
         this.organizationInput =  this.organizationInput.bind(this);
+        this.checkValue = this.checkValue.bind(this);
     }
 
     windowClose(){
@@ -701,40 +698,130 @@ export default class ModalWindowAddEntity extends React.Component {
         this.setState( objUpdate );
     }
 
-    organizationInput(elementName, value){     
+    checkValue(nameInput,value){
+      //  console.log("func 'checkValue', проверяем передоваемое значение");
+        
+        let regul=null;
+        let resultVal = true;
+        switch(nameInput){
+        case "organization_name":
+            {regul =  new RegExp(/[^"'а-яА-ЯёЁ\p{N}\s.\(\),№-]/gui);   break; }                  // а-Я 0-9.(),"'-№     [?]
+        
+        case "legal_address":
+            {regul =  new RegExp(/[^а-яА-ЯёЁ\p{N}\s.,-]/gui);      break; }                  // а-Я 0-9.,-    [?]
+ 
+        case "division_name":
+            {regul =  new RegExp(/[^"'а-яА-ЯёЁ\p{N}\s.,№-]/gui);   break; }                  // а-Я 0-9.,"'-№     [?]\p{L}
+
+        case "division_physical_address":
+            {regul =  new RegExp(/[^а-яА-ЯёЁ\p{N}\s.,№-]/gui);     break; }                  // а-Я 0-9.,-     [?]
+        
+        case "source_id":
+            {regul =  new RegExp(/[^0-9]/g);                   break;}                   //source_id уникальный идентификатор источника (Number) 0-9  
+
+        case "source_short_name":
+            {regul =  new RegExp(/[^a-zA-Z\p{N}\s_-]/gui);       break; }                 //short_name краткое название источника (String) a-Z-_0-9
+        
+        case "source_ip":
+        {  
+            let reg =  new RegExp(/\d{1,}/g);                                      // ip адрес (String) Проверка ip адреса на корректность             
+            let checkIp = value.match(reg);
+
+            let reg2 =  new RegExp(/[^0-9.]/g);
+            let checkIp2 = value.match(reg2);
+
+            console.log(`Значение: ${value}, найденное: ${checkIp}; лишнее :${checkIp2}; длина :${checkIp.length}`);
+            if(checkIp.length<=4)
+            {  
+                if(checkIp2==null)
+                {
+                    for(let k=0; k<4; k++){
+                        if(((checkIp[k]>255)||(checkIp[k]<0))){
+                            resultVal = false;
+                        }  
+                    }
+                } else {resultVal = false;}
+            }else {resultVal = false;}
+            
+            if(checkIp.length==4){
+                let reg3 =  new RegExp(/^\d{1,}\.\d{1,}\.\d{1,}\.\d{1,}$/);
+                let checkIp3 = value.match(reg3);
+                if(!checkIp3){  
+                    resultVal = false;
+                }
+                console.log(`Тута!`);
+            }                                                           break;
+        }
+        case "source_port":
+        { 
+            let reg =  new RegExp(/\d{1,}/g);                              // сетевой порт (Number) 0-9 и диапазон 1024-65565}
+            let checkIp = value.match(reg);
+            if(((checkIp.length>1)||(checkIp[0]>65565)||(checkIp[0]<1024))){
+                resultVal = false; 
+            }  
+            break;
+        }
+        case "input_folder":
+        {  regul =  new RegExp(/[^a-zA-Z_\\\/\p{N}]/gui); break;}
+    }
+            /*
+        let listSelectors = [
+            "source_description",
+            "source_telemetry",
+            "source_network_channel",
+            "source_architecture",
+            "source_max_simultaneous_proc", 
+        ];*/
+        if(regul!=null){
+            let check =  value.match(regul);
+            console.log(`Значение: ${value}, имя: ${nameInput}, результат: ${check}`);   
+            if(value.match(regul)){
+                return false;    
+            }else{
+                return true;
+            }
+        } else {
+        return resultVal;
+    }        
+}    
+    organizationInput(elementName, value){
+
+        /**
+        * Выполняем проверку параметров вводимых пользователем
+        * для макета выполняется простая проверка на длинну
+        * Для продакшена надо прикрутить RegExp
+        */
+       
         let objUpdate = Object.assign({}, this.state);
+
+        /**
+        * Пока проверяем только на длину (value.length <5)
+        */
 
         switch(elementName){
         case "organization_name":
             objUpdate.modalBodySettings.organizationSettings.organizationName.value = value;
-
-            if(!helpers.checkInputValidation({
-                "name": "fullNameHost", 
-                "value": value, 
-            })){
+            if(!this.checkValue(elementName,value)){
                 objUpdate.modalBodySettings.organizationSettings.organizationName.isInvalid = true;
-                objUpdate.modalBodySettings.organizationSettings.organizationName.isValid = false;
+                objUpdate.modalBodySettings.organizationSettings.organizationName.isValid = false;   
             } else {
                 objUpdate.modalBodySettings.organizationSettings.organizationName.isInvalid = false;
-                objUpdate.modalBodySettings.organizationSettings.organizationName.isValid = true;
+                objUpdate.modalBodySettings.organizationSettings.organizationName.isValid = true; 
             }
 
             break;
 
         case "legal_address":
             objUpdate.modalBodySettings.organizationSettings.legalAddress.value = value;
-
-            if(!helpers.checkInputValidation({
-                "name": "stringRuNumCharacter", 
-                "value": value, 
-            })){
+            
+            if(!this.checkValue(elementName,value)){
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isInvalid = true;
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isValid = false;
-            } else {
+                } else {
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isInvalid = false;
-                objUpdate.modalBodySettings.organizationSettings.legalAddress.isValid = true;
-            }
-            
+                objUpdate.modalBodySettings.organizationSettings.legalAddress.isValid = true; 
+                }
+
             break;
 
         case "organization_field_selector":
@@ -747,16 +834,27 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     divisionInput(elementName, value){
+        /**
+        * Выполняем проверку параметров вводимых пользователем
+        * для макета выполняется простая проверка на длинну
+        * проверка поля 'Примечание' не выполняется
+        * Для продакшена надо прикрутить RegExp
+        
+        
+        console.log("func 'divisionInput', START...");
+        console.log(`element name: ${elementName}`);
+        console.log(`value: ${value}`);
+        */
+
         let objUpdate = Object.assign({}, this.state);
 
+        /**
+        * Пока проверяем только на длину
+        */
         switch(elementName){
         case "division_name":
             objUpdate.modalBodySettings.divisionSettings.divisionName.value = value;
-
-            if(!helpers.checkInputValidation({
-                "name": "stringRuNumCharacter", 
-                "value": value, 
-            })){
+            if(!this.checkValue(elementName,value)){
                 objUpdate.modalBodySettings.divisionSettings.divisionName.isInvalid = true;
                 objUpdate.modalBodySettings.divisionSettings.divisionName.isValid = false;
             } else {
@@ -768,11 +866,7 @@ export default class ModalWindowAddEntity extends React.Component {
 
         case "division_physical_address":
             objUpdate.modalBodySettings.divisionSettings.physicalAddress.value = value;
-
-            if(!helpers.checkInputValidation({
-                "name": "stringRuNumCharacter", 
-                "value": value, 
-            })){
+            if(!this.checkValue(elementName,value)){
                 objUpdate.modalBodySettings.divisionSettings.physicalAddress.isInvalid = true;
                 objUpdate.modalBodySettings.divisionSettings.physicalAddress.isValid = false;
             } else {
@@ -791,26 +885,32 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     sourcesInput(elementName, value){
+        /**
+         * Здесь сделать обработку параметров ввода на основе RegExp
+         * пока пусть будет только по длинне
+         * 
+         */
+
         const listElem = {
             "source_id": {
                 name: "sourceID",
-                pattern: "hostID",
+                pattern: "",
             },
             "source_short_name": {
                 name: "shortName",
-                pattern: "shortNameHost",
+                pattern: "",
             }, 
             "source_ip": {
                 name: "ipAddress",
-                pattern: "ipaddress",
+                pattern: "",
             },
             "source_port": {
                 name: "port",
-                pattern: "port",
+                pattern: "",
             }, 
             "input_folder": {
                 name: "directoriesNetworkTraffic",
-                pattern: "stringAlphaNumEng",
+                pattern: "",
             },
             "source_description": {
                 name: "description",
@@ -850,8 +950,8 @@ export default class ModalWindowAddEntity extends React.Component {
     
             return;
         }
-        
-        if(!helpers.checkInputValidation({name: listElem[elementName].pattern, value: value })){
+
+        if(!this.checkValue(elementName,value)) {
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isValid = false;
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isInvalid = true;
         } else {

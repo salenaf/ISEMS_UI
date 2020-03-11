@@ -169,6 +169,8 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListOrganization(){
+        //console.log("createListOrganization START...");
+
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
@@ -178,6 +180,8 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListDivision(){
+        //console.log("createListDivision START...");
+
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].division] = {
@@ -258,6 +262,9 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewOrganization(options){
+        //console.log("func 'createNewOrganization', START...");
+        //console.log(options);
+
         //обновляем список организаций
         let updateOrgName = this.state.listOrganizationName;
         updateOrgName[options.organizationName] = options.id;
@@ -266,10 +273,10 @@ export default class CreateBodyNewEntity extends React.Component {
         let listNewEntity = this.state.listNewEntity;
         listNewEntity.push({
             id_organization: options.id,
-            name: options.organizationName,
-            legal_address: options.legalAddress,
-            field_activity: options.fieldActivity,
-            division_or_branch_list_id: [],
+            name: options.organizationName, // название организации (String) а-Я0-9"'.,()-
+            legal_address: options.legalAddress, // юридический адрес (String) а-Я0-9.,
+            field_activity: options.fieldActivity, // род деятельности (String) из заданных значений или значение по умолчанию
+            division_or_branch_list_id: [] // массив с объектами типа addDivision            
         });
         this.setState({ listNewEntity: listNewEntity });
 
@@ -278,14 +285,17 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewDivision(options){
+        console.log("func 'createNewDivision', START...");
+        console.log(options);
+
         let isExist = false;
         let newRecord = {
-            id_organization: options.parentID,
-            id_division: options.id,
-            name: options.divisionName,
-            physical_address: options.physicalAddress,
-            description: options.description,
-            source_list: [],
+            id_organization: options.parentID, // уникальный идентификатор организации (String) a-Z0-9
+            id_division: options.id, // уникальный идентификатор подразделения
+            name: options.divisionName, // название филиала или подразделения организации (String) а-Я0-9"'.,()-
+            physical_address: options.physicalAddress, // физический адрес (String) а-Я0-9.,
+            description: options.description, // дополнительное описание (String) а-Я0-9"'.()-
+            source_list: [], // массив с объектами типа addSource
         };
 
         //обновляем список подразделений
@@ -322,25 +332,28 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewSource(options){
+        //console.log("func 'createNewSource', START...");
+        //console.log(options);
+
         let isExist = false;
         let newRecord = {
-            id_division: options.parentID,
-            id_source: options.id,
-            source_id: options.sourceID,
-            short_name: options.shortName,
-            network_settings: {
-                ipaddress: options.ipAddress,
-                port: options.port,
-                token_id: options.token,
+            id_division: options.parentID, // уникальный идентификатор подразделения
+            id_source: options.id, // уникальный идентификатор источника
+            source_id: options.sourceID, // уникальный идентификатор источника (Number) 0-9
+            short_name: options.shortName, // краткое название источника (String) a-Z-_0-9
+            network_settings: { // сетевые настройки для доступа к источнику
+                ipaddress: options.ipAddress, // ip адрес (String) Проверка ip адреса на корректность
+                port: options.port, // сетевой порт (Number) 0-9 и диапазон 1024-65565
+                token_id: options.token, // идентификационный токен (String) a-Z0-9
             },
-            source_settings: { 
-                type_architecture_client_server: options.architecture,
-                transmission_telemetry: options.telemetry,
-                maximum_number_simultaneous_filtering_processes: options.maxSimultaneousProc,
-                type_channel_layer_protocol: options.networkChannel,
-                list_directories_with_file_network_traffic: options.directoriesNetworkTraffic,
+            source_settings: { // настройки источника 
+                type_architecture_client_server: options.architecture, // тип клиент серверной архитектуры (источник работает в режиме клиент или сервер) (String) a-z
+                transmission_telemetry: options.telemetry, // отправка телеметрии (Bool) BOOL
+                maximum_number_simultaneous_filtering_processes: options.maxSimultaneousProc, // максимальное количество одновременных процессов фильтрации (Number) 0-9 и диапазон 1-10
+                type_channel_layer_protocol: options.networkChannel, // тип протокола канального уровня (String) tcp/udp/any
+                list_directories_with_file_network_traffic: options.directoriesNetworkTraffic, // список директорий с файлами сетевого трафика, длинна массива не должна быть 0, массив содержит сторки с символами /\_a-Z0-9
             },
-            description: options.description,
+            description: options.description, // дополнительное описание (String) а-Я0-9"'.,()-
         };
 
         let addNewSource = function(listNewEntity){
@@ -365,8 +378,6 @@ export default class CreateBodyNewEntity extends React.Component {
         if(!isExist){
             listNewEntity.push(newRecord);
         }
-
-        console.log(JSON.stringify(listNewEntity));
 
         this.setState({ listNewEntity: listNewEntity });
         this.setState({ addedNewEntity: true });

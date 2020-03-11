@@ -3,7 +3,6 @@ import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
-import { helpers } from "../../common_helpers/helpers.js";
 
 class ShowEntityInformation extends React.Component {
     constructor(props){
@@ -79,7 +78,7 @@ class ShowEntityInformation extends React.Component {
 
         return (
             <Accordion defaultActiveKey="0" style={{ width: "55rem" }}>
-                <Card border="info">
+                <Card border="dark">
                     <Accordion.Toggle className="p-3 alert-primary text-dark" as={Card.Header} eventKey="0">{this.props.resivedInfo.organizationName}</Accordion.Toggle>
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
@@ -92,14 +91,13 @@ class ShowEntityInformation extends React.Component {
                                     isInvalid={this.props.resivedInfo.organizationNameIsInvalid}
                                     id="organization_name" />
                                 </Col>
-                                <Col>
-                                    <Form.Control 
-                                        as="textarea" 
-                                        onChange={this.props.handlerInputChange} 
-                                        value={this.props.resivedInfo.legalAddress}
-                                        isValid={this.props.resivedInfo.legalAddressIsValid} 
-                                        isInvalid={this.props.resivedInfo.legalAddressIsInvalid} 
-                                        id="legal_address" />
+                                <Col><Form.Control 
+                                    as="textarea" 
+                                    onChange={this.props.handlerInputChange} 
+                                    value={this.props.resivedInfo.legalAddress}
+                                    isValid={this.props.resivedInfo.legalAddressIsValid} 
+                                    isInvalid={this.props.resivedInfo.legalAddressIsInvalid} 
+                                    id="legal_address" />
                                 </Col>
                             </Row>
                             <Row>
@@ -226,6 +224,18 @@ class CreateListEntity extends React.Component {
     }
 }
 
+/**
+            <Form.Control onClick={this.handlerChoose} as="select" className="custom-select" size="sm">
+                <option key="key_choose" value="0">выбрать...</option>
+                <option key="key_organization_title" disabled>{"организации".toUpperCase()}</option>
+                {this.listOrganization()}
+                <option key="division_title" disabled>{"подразделения или филиалы".toUpperCase()}</option>
+                {this.listDivision()}
+                <option key="source_title" disabled>{"источники".toUpperCase()}</option>
+                {this.listSource()}
+            </Form.Control>
+ */
+
 CreateListEntity.propTypes = {
     listOrganization: PropTypes.object.isRequired,
     listDivision: PropTypes.object.isRequired,
@@ -251,6 +261,8 @@ export default class CreateBodyManagementEntity extends React.Component {
         this.listSourceName = this.createListSource.call(this);
 
         this.checkValue = this.checkValue.bind(this);
+        // this.checkValueName = this.checkValueName.bind(this);
+        // this.checkValueAddress = this.checkValueAddress.bind(this);
         this.handlerSave = this.handlerSave.bind(this);
         this.handlerDelete = this.handlerDelete.bind(this);
         this.handlerSelected = this.handlerSelected.bind(this);
@@ -261,6 +273,8 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     createListOrganization(){
+        //console.log("createListOrganization START...");
+
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
@@ -270,6 +284,8 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     createListDivision(){
+        //console.log("createListDivision START...");
+
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].division] = {
@@ -282,6 +298,8 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     createListSource(){
+        //console.log("createListSource START...");
+
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[`${source} ${this.props.listSourcesInformation[source].shortName}`] = {
@@ -324,6 +342,9 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     searchInfoListSourceInformation_test({ type: searchType, value: searchID }){
+
+        console.log("FUNC 'searchInfoListSourceInformation_test'");
+
         let paramType = {
             "organization": "oid",
             "division": "did",
@@ -414,7 +435,7 @@ export default class CreateBodyManagementEntity extends React.Component {
         if(typeof ID === "undefined"){
             tmpObj[pattern[name]] = e.target.value;
 
-            if(this.checkValue(pattern[name], e.target.value)){
+            if(this.checkValue(name, e.target.value)){
                 tmpObj[`${pattern[name]}IsValid`] = true;
                 tmpObj[`${pattern[name]}IsInvalid`] = false;
             } else {
@@ -426,19 +447,17 @@ export default class CreateBodyManagementEntity extends React.Component {
                 if(tmpObj.listDivision[i].id === ID){
                     tmpObj.listDivision[i][pattern[name]] = e.target.value;
 
-                    if(this.checkValue(pattern[name], e.target.value)){
+                    if(this.checkValue(name, e.target.value)){
                         tmpObj.listDivision[i][`${pattern[name]}IsValid`] = true;
                         tmpObj.listDivision[i][`${pattern[name]}IsInvalid`] = false;
                     } else {
                         tmpObj.listDivision[i][`${pattern[name]}IsValid`] = false;
                         tmpObj.listDivision[i][`${pattern[name]}IsInvalid`] = true;
-                    }
-
+                    } 
                     break;
                 }
             }
         }
-
         this.setState({ objectShowedInformation: tmpObj });
     }
 
@@ -504,9 +523,9 @@ export default class CreateBodyManagementEntity extends React.Component {
         let request = JSON.stringify({ action: "entity_delete", entityType: this.deleteEntityOptions.entityType, entityID: this.deleteEntityOptions.entityID });
 
         /**
-         * В БД сделать проверку на наличие дочерних потомков у удаляемой сущности. Если есть потомки то удаление не производится,
-         * выводится информационное сообщение о невозможности удалить сущност у которой есть потомки
-         */
+ * В БД сделать проверку на наличие дочерних потомков у удаляемой сущности. Если есть потомки то удаление не производится,
+ * выводится информационное сообщение о невозможности удалить сущност у которой есть потомки
+ */
 
         console.log(`отправляем серверу запрос для 'УДАЛЕНИЯ' информации из БД, ${request}`);
         
@@ -517,22 +536,96 @@ export default class CreateBodyManagementEntity extends React.Component {
         this.setState({ modalWindowSourceDel: false });
     }
 
-    checkValue(nameInput, value){
-        let elemName = {
-            "organizationName": "fullNameHost",
-            "legalAddress": "stringRuNumCharacter",
-            "divisionName": "stringRuNumCharacter",
-            "physicalAddress": "stringRuNumCharacter",
-        };
+    /* checkValue(nameInput, value){
+        console.log("func 'checkValue', проверяем передоваемое значение");
+        console.log(value);
 
-        if(typeof elemName[nameInput] === "undefined") {
+        //только для теста
+        if(value.includes("&")){
             return false;
         }
 
-        return helpers.checkInputValidation({
-            "name": elemName[nameInput], 
-            "value": value, 
-        });
+        return true;
+    }*/
+
+    /*только для теста if(value.includes("&")){return false;}
+        //!!!!!!!!!!!!!!!!!!!!!!!! */
+    checkValue(nameInput,value){
+        //  console.log("func 'checkValue', проверяем передоваемое значение");
+        let regul=null;
+        let resultVal = true;
+        switch(nameInput){
+        case "organization_name":
+        {regul =  new RegExp(/[^"'а-яА-ЯёЁ\p{N}\s.\(\),№-]/gui);   break; }                  // а-Я 0-9.(),"'-№     [?]
+              
+        case "legal_address":
+        {regul =  new RegExp(/[^а-яА-ЯёЁ\p{N}\s.,-]/gui);      break; }                  // а-Я 0-9.,-    [?]
+       
+        case "division_name":
+        {regul =  new RegExp(/[^"'а-яА-ЯёЁ\p{N}\s.,№-]/gui);   break; }                  // а-Я 0-9.,"'-№     [?]\p{L}
+      
+        case "physical_address":
+        {regul =  new RegExp(/[^а-яА-ЯёЁ\p{N}\s.,№-]/gui);     break; }                  // а-Я 0-9.,-     [?]
+              
+        case "source_id":
+        {regul =  new RegExp(/[^0-9]/g);                   break;}                   //source_id уникальный идентификатор источника (Number) 0-9  
+      
+        case "source_short_name":
+        {regul =  new RegExp(/[^a-zA-Z\p{N}\s_-]/gui);       break; }                 //short_name краткое название источника (String) a-Z-_0-9
+              
+        case "source_ip":
+        {  
+            let reg =  new RegExp(/\d{1,}/g);                                      // ip адрес (String) Проверка ip адреса на корректность             
+            let checkIp = value.match(reg);
+      
+            let reg2 =  new RegExp(/[^0-9.]/g);
+            let checkIp2 = value.match(reg2);
+      
+            console.log(`Значение: ${value}, найденное: ${checkIp}; лишнее :${checkIp2}; длина :${checkIp.length}`);
+            if(checkIp.length<=4){  
+                if(checkIp2==null){
+                    for(let k=0; k<4; k++){
+                        if(((checkIp[k]>255)||(checkIp[k]<0))){
+                            resultVal = false;
+                        }  
+                    }
+                } else {resultVal = false;}
+            }else {resultVal = false;}
+                  
+            if(checkIp.length==4)
+            {
+                let reg3 =  new RegExp(/^\d{1,}\.\d{1,}\.\d{1,}\.\d{1,}$/);
+                let checkIp3 = value.match(reg3);
+                if(!checkIp3){  
+                    resultVal = false;
+                }
+                //console.log(`Тута!`);
+            }
+            break;
+        }
+        case "source_port":
+        { 
+            let reg =  new RegExp(/\d{1,}/g);                              // сетевой порт (Number) 0-9 и диапазон 1024-65565}
+            let checkIp = value.match(reg);
+            if(((checkIp.length>1)||(checkIp[0]>65565)||(checkIp[0]<1024))){
+                resultVal = false; 
+            }  
+            break;
+        }
+        case "input_folder":
+        {  regul =  new RegExp(/[^a-zA-Z_\\\/\p{N}]/gui); break;}
+        }
+        /*  let listSelectors = ["source_description","source_telemetry","source_network_channel","source_architecture", "source_max_simultaneous_proc", ];*/
+    
+        if(regul!=null){
+            let check =  value.match(regul);
+            console.log(`Значение: ${value}, имя: ${nameInput}, результат: ${check}`);   
+            if(value.match(regul)){
+                return false;    
+            }
+            else{ return true; }
+        } else {return resultVal;}  
+
     }
 
     render(){
