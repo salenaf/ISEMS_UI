@@ -108,6 +108,7 @@ let helpers = {
             "port": new RegExp("^[0-9]{1,5}$"),
             "countProcess": new RegExp("^[0-9]{1}$"),
             "intervalTransmission": new RegExp("^[0-9]{1,}$"),
+            "folderStorage": new RegExp("^[\\w\\/_-]{3,}$"),
             "stringRuNumCharacter": new RegExp("^[а-яА-ЯёЁ0-9\\s.,№-]+$"),
             "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
             "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),

@@ -495,10 +495,12 @@ export default class ModalWindowAddEntity extends React.Component {
          */
         let valueIsEmpty = false;       
         let settings = this.state.modalBodySettings;
-        let listElem = [ "sourceID",
+        let listElem = [ 
+            "sourceID",
             "shortName",
             "ipAddress",
-            "port" ];
+            "port" 
+        ];
 
         let objUpdate = Object.assign({}, this.state);        
 
@@ -810,7 +812,7 @@ export default class ModalWindowAddEntity extends React.Component {
             }, 
             "input_folder": {
                 name: "directoriesNetworkTraffic",
-                pattern: "stringAlphaNumEng",
+                pattern: "folderStorage",
             },
             "source_description": {
                 name: "description",

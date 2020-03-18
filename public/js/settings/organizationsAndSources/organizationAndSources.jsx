@@ -102,10 +102,10 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.generatingNewToken = this.generatingNewToken.bind(this);
         this.handelerFolderDelete = this.handelerFolderDelete.bind(this);
         this.handlerSaveInformation = this.handlerSaveInformation.bind(this);
-        this.showModalWindowSourceInfo = this.showModalWindowSourceInfo.bind(this);
-        this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowSourceDel = this.showModalWindowSourceDel.bind(this);
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
+        this.showModalWindowSourceInfo = this.showModalWindowSourceInfo.bind(this);
+        this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowChangeSource = this.showModalWindowChangeSource.bind(this);
         this.closeModalWindowChangeSource = this.closeModalWindowChangeSource.bind(this);
 
@@ -268,7 +268,7 @@ class CreatePageOrganizationAndSources extends React.Component {
             }, 
             "input_folder": {
                 name: "directoriesNetworkTraffic",
-                pattern: "stringAlphaNumEng",
+                pattern: "folderStorage",
             },
             "source_description": {
                 name: "description",
