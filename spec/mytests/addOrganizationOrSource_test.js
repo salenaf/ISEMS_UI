@@ -1,5 +1,7 @@
 "use strict";
 
+const async = require("async");
+
 const config = require("../../configure");
 
 const helpersFunc = require("../../libs/helpers/helpersFunc");
@@ -94,6 +96,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
             "countProcess": new RegExp("^[0-9]{1}$"),
             "intervalTransmission": new RegExp("^[0-9]{1,}$"),
             "folderStorage": new RegExp("^[\\w\\/_-]{3,}$"),
+            "inputDescription": new RegExp("^[\\w\\sа-яА-ЯёЁ().,@№\"!?_-]$"),
             "stringRuNumCharacter": new RegExp("^[а-яА-ЯёЁ0-9\\s.,№-]+$"),
             "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
             "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),
@@ -201,17 +204,21 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
             }
         }
 
-        /* 
-        проверяем поле description
-
-        */
+        //проверяем поле description
+        let description = ""; 
+        if(checkInputValidation({ 
+            name: "inputDescription", 
+            value: listOrgOrSource.description,
+        })){
+            description = listOrgOrSource.description;
+        }
 
         newList.push({
             "id_organization": listOrgOrSource.id_organization,
             "id_division": listOrgOrSource.id_division,
             "name": listOrgOrSource.name,
             "physical_address": listOrgOrSource.physical_address,
-            "description": listOrgOrSource.description,
+            "description": description,
         });
 
         if(listOrgOrSource.source_list.length > 0){
@@ -324,9 +331,14 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
         }));
         listOrgOrSource.source_settings.list_directories_with_file_network_traffic = newListFolder;
         
-        /* 
-        проверяем поле description
-        */
+        //проверяем поле description
+        if(!checkInputValidation({ 
+            name: "inputDescription", 
+            value: listOrgOrSource.description,
+        })){
+            listOrgOrSource.description = "";
+        }
+
        
         newList.push(listOrgOrSource);
     };
@@ -353,6 +365,173 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
     processListOrgOrSource(listOrgOrSource);
 
     return { result: newList, errMsg: errMsg };
+}
+
+function insertInformationAboutObjectOrSource(listValideEntity){
+    console.log("func 'insertInformationAboutObjectOrSource', START...");
+    console.log(listValideEntity);
+    
+    let organizationPromise = (entity) => {
+
+        console.log(`processed id_organization: ${entity.id_organization}`);
+
+        return new Promise((resolve, reject) => {
+            (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelOrganizationName, {
+                document: {
+                    id: entity.id_organization,
+                    date_register: +(new Date),
+                    date_change: +(new Date),    
+                    name: entity.name,
+                    legal_address: entity.legal_address,
+                    field_activity: entity.field_activity,
+                    division_or_branch_list_id: [],
+                }
+            }, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    };
+
+    let divisionPromise = (entity) => {
+
+        console.log(`processed id_division: ${entity.id_division}`);
+
+        return new Promise((resolve, reject) => {
+            (require("../../middleware/mongodbQueryProcessor")).querySelect(require("../../controllers/models").modelOrganizationName, {
+                query: { "id": entity.id_organization },
+                select: { _id: 0, __v: 0, date_register: 0, data_change: 0, },
+            }, (err, info) => {
+                if(err) reject(err);
+                else resolve(info);
+            });
+        }).then((info) => {
+            if(info === null){
+                console.log(`division '${entity.id_division}' not found`);
+            
+                return;
+            }
+
+            return new Promise((resolve, reject) => {
+                //Создаем запись о новом подразделении
+                (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelDivisionBranchName, {
+                    document: {
+                        id: entity.id_division,
+                        id_organization: entity.id_organization,
+                        date_register: +(new Date),
+                        date_change: +(new Date),    
+                        name: entity.name,
+                        physical_address: entity.physical_address,
+                        description: entity.description,
+                        source_list: [],
+                    }
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    //Создаем связь между организацией и подразделением
+                    (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelOrganizationName, {
+                        query: { 
+                            "id": entity.id_organization, 
+                            "division_or_branch_list_id": { $ne: entity.id_division },
+                        },
+                        update:{ $push: {"division_or_branch_list_id": entity.id_division }},
+                    }, (err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+            });
+        });
+    };
+
+    let sourcePromise = (entity) => {
+
+        console.log(`processed id_source: ${entity.id_source}`);
+
+        //Создаем запись о новом источнике
+        return new Promise((resolve, reject) => {
+            (require("../../middleware/mongodbQueryProcessor")).querySelect(require("../../controllers/models").modelDivisionBranchName, {
+                query: { "id": entity.id_division },
+                select: { _id: 0, __v: 0, date_register: 0, data_change: 0, },
+            }, (err, info) => {
+                if(err) reject(err);
+                else resolve(info);
+            });
+        }).then((info) => {
+            if(info === null) {
+                console.log(`source '${entity.id_source}' not found`);
+
+                return;
+            }
+
+            return new Promise((resolve, reject) => {
+                //Создаем связь между организацией и подразделением
+                (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelDivisionBranchName, {
+                    query: { 
+                        "id": entity.id_division, 
+                        "source_list": { $ne: entity.id_source },
+                    },
+                    update:{ $push: {"source_list": entity.id_source }},
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelSourcesParameter, {
+                        document: {
+                            id: entity.id_source,
+                            id_division: entity.id_division,
+                            source_id: entity.source_id,
+                            date_register: +(new Date),
+                            date_change: +(new Date),
+                            short_name: entity.short_name,
+                            network_settings: { 
+                                ipaddress: entity.network_settings.ipaddress, 
+                                port: entity.network_settings.port, 
+                                token_id: entity.network_settings.token_id, 
+                            },
+                            source_settings: {
+                                type_architecture_client_server: entity.source_settings.type_architecture_client_server,
+                                transmission_telemetry: (entity.source_settings.transmission_telemetry === "on") ? true: false,
+                                maximum_number_simultaneous_filtering_processes: +entity.source_settings.maximum_number_simultaneous_filtering_processes,
+                                type_channel_layer_protocol: entity.source_settings.type_channel_layer_protocol,
+                                list_directories_with_file_network_traffic: entity.source_settings.list_directories_with_file_network_traffic,
+                            },
+                            description: entity.description,
+                            information_about_app: {
+                                version: "не определена",
+                                date: "не определено",
+                            },
+                        }
+                    }, (err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    }); 
+                });
+            });
+        });
+    };
+
+    let promises = Promise.resolve();
+    listValideEntity.forEach((item) => {
+        promises = promises.then(() => {
+            let organizationID = item.id_organization;
+            let divisionID = item.id_division;
+            if(organizationID && !divisionID){
+                return organizationPromise(item);
+            } else if(organizationID && divisionID){
+                return divisionPromise(item);
+            } else {
+                return sourcePromise(item);
+            }
+        });
+    });
+
+    return promises;
 }
 
 let validList = [
@@ -788,32 +967,117 @@ describe("Тест 2. Тестируем запись информации о п
         });
     });
 });
-
+      
 describe("Тест 3. Валидация тестового объекта с информацией по организациям и источникам", () => {
     it("Должен быть получен новый, проверенный список организаций, подразделений и источников", () => {
         let newListObject = getValidObjectOrganizationOrSource(validList, globalObject.getData("commonSettings", "listFieldActivity")); 
-        
+
+        /*
         console.log(newListObject);
         console.log("-------------");
         console.log(JSON.stringify(newListObject));
+        */
 
         expect(newListObject.result.length).not.toEqual(0);
         expect(newListObject.errMsg.length).toEqual(0);
     });
+});
 
-    /**
- * Валидацию написал, теперь все же надо понять что делать с
- * полем 'description' и можно писать функцию которая вставляет
- * данные в БД 
- * 
+describe("Тест 4. Загрузка, полученного после валидации списка, в БД", () => {
+    it("Должен быть успешно загружен в БД весь список елементов, у которого дочерние елементы имеют родительские. Ошибок быть не должно.", (done) => {
+        new Promise((resolve, reject) => {
+            //заранее создаем тестовую организацию 
+            console.log("CREATE NEW ORGANIZATION");
+
+            (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelOrganizationName, {
+                document: {
+                    id: "cne8h8h828882yfd337fg3g838",
+                    date_register: +(new Date),
+                    date_change: +(new Date),    
+                    name: orgName,
+                    legal_address: "123452 г. Москва, ул. Каланчевка, д. 89, ст. 1,",
+                    field_activity: "космическая промышленность",
+                    division_or_branch_list_id: [],
+                }
+            }, err => {
+                if (err) reject(err);
+                else resolve();
+            });
+        }).then(() => {
+            //заранее создаем тестовое подразделение
+            return new Promise((resolve, reject) => {
+                (require("../../middleware/mongodbQueryProcessor")).querySelect(require("../../controllers/models").modelOrganizationName, {
+                    query: { "id": "cne8h8h828882yfd337fg3g838" },
+                    select: { _id: 0, __v: 0, date_register: 0, data_change: 0, },
+                }, (err, info) => {
+                    if(err) reject(err);
+                    else resolve(info);
+                });
+            }).then((info) => {
+                if(info === null) return;
+
+                return new Promise((resolve, reject) => {
+                    //Создаем запись о новом подразделении
+                    (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelDivisionBranchName, {
+                        document: {
+                            id: "dnjdjdnuw82hd8h882h82h8h",
+                            id_organization: "cne8h8h828882yfd337fg3g838",
+                            date_register: +(new Date),
+                            date_change: +(new Date),    
+                            name: divisionName,
+                            physical_address: "г. Смоленск, ул. Зои партизанки, д. 45, к. 2",
+                            description: "просто какое то описание",
+                            source_list: [],
+                        }
+                    }, (err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        //Создаем связь между организацией и подразделением
+                        (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelOrganizationName, {
+                            query: { 
+                                "id": "cne8h8h828882yfd337fg3g838", 
+                                "division_or_branch_list_id": { $ne: "dnjdjdnuw82hd8h882h82h8h" },
+                            },
+                            update:{ $push: {"division_or_branch_list_id": "dnjdjdnuw82hd8h882h82h8h" }},
+                        }, (err) => {
+                            if (err) reject(err);
+                            else resolve();
+                        });
+                    });
+                });
+            });
+        }).then(() => {
+            return insertInformationAboutObjectOrSource(getValidObjectOrganizationOrSource(validList, globalObject.getData("commonSettings", "listFieldActivity")).result);
+        }).then(() => {
+            console.log("INSERTED SUCCESS!!!");
+            expect(true).toEqual(true);
+
+            done();
+        }).catch((err) => {
+            console.log(`ERROR: ${err.toString()}`);
+            expect(err).toBe(null);
+
+            done();
+        });   
+        //expect((()=>{throw new Error("my error test");})).not.toThrow();
+        
+    });
+});
+
+/**
+ *      Все тесты прошли успешно, данные по организациям, подразделениям
+ *  и источникам загружаются успешно. Связи меду ними устанавливаются. 
+ *  Теперь можно переходить к написанию основной части backend отвечающей
+ *  за обработку данных по организациям и источникам.
+ *  Для этого использовать функции:
+ *  валидации - getValidObjectOrganizationOrSource
+ *  insert to DB - insertInformationAboutObjectOrSource
  */
 
-/*
-    it("Должен быть получено FALSE, так как такого ИСТОЧНИКА нет в БД", () => {
-    
-    });
-*/
-});
+
 
 /*
 describe("Тест 4. Загрузка тестового объекта в БД", () => {
