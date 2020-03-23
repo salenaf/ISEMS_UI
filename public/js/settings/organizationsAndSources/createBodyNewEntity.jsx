@@ -40,7 +40,7 @@ export default class CreateBodyNewEntity extends React.Component {
         this.modalWindowSettings = {
             type: "",
             name: "",
-            listFieldActivity: this.getListFieldActivity.call(this),
+            listFieldActivity: this.props.listFieldActivity, //this.getListFieldActivity.call(this),
         };
 
 
@@ -74,14 +74,14 @@ export default class CreateBodyNewEntity extends React.Component {
         this.elDiv.on("change", this.selectedDivision.bind(this));
     }
 
-    getListFieldActivity(){
+    /*getListFieldActivity(){
         let objTmp = {};
         for(let source in this.props.listSourcesInformation){
             objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
         }
 
         return objTmp;
-    }
+    }*/
 
     isDisabledDelete(){
 
@@ -581,5 +581,6 @@ export default class CreateBodyNewEntity extends React.Component {
 }
 
 CreateBodyNewEntity.propTypes ={
+    listFieldActivity: PropTypes.array.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,
 };

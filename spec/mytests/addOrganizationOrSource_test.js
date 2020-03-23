@@ -983,6 +983,7 @@ describe("Тест 3. Валидация тестового объекта с и
     });
 });
 
+/*
 describe("Тест 4. Загрузка, полученного после валидации списка, в БД", () => {
     it("Должен быть успешно загружен в БД весь список елементов, у которого дочерние елементы имеют родительские. Ошибок быть не должно.", (done) => {
         new Promise((resolve, reject) => {
@@ -1065,6 +1066,77 @@ describe("Тест 4. Загрузка, полученного после вал
         //expect((()=>{throw new Error("my error test");})).not.toThrow();
         
     });
+});
+*/
+
+describe("Тест 5. Получить весь список сущьностей из БД", () => {     
+    it("Должен быть получен весь список сущьностей из БД", (done) => {
+        async.parallel({
+            shortListSource: (callbackParallel) => {
+                (require("../../middleware/mongodbQueryProcessor")).querySelect(
+                    require("../../controllers/models").modelSourcesParameter, { 
+                        isMany: true,
+                        select: { 
+                            _id: 0, 
+                            __v: 0, 
+                            description: 0,
+                            date_register: 0, 
+                            source_settings : 0, 
+                            network_settings: 0,
+                        },
+                    }, (err, list) => {
+                        if(err) callbackParallel(err);
+                        else callbackParallel(null, list);
+                    });
+            },
+            shortListDivision: (callbackParallel) => {
+                (require("../../middleware/mongodbQueryProcessor")).querySelect(
+                    require("../../controllers/models").modelDivisionBranchName, { 
+                        isMany: true,
+                        select: { 
+                            _id: 0, 
+                            __v: 0, 
+                            description: 0,
+                            date_change:0,
+                            date_register: 0, 
+                            physical_address: 0,
+                        },
+                    }, (err, list) => {
+                        if(err) callbackParallel(err);
+                        else callbackParallel(null, list);
+                    });
+            },
+            shortListOrganization: (callbackParallel) => {
+                (require("../../middleware/mongodbQueryProcessor")).querySelect(
+                    require("../../controllers/models").modelOrganizationName, { 
+                        isMany: true,
+                        select: { 
+                            _id: 0,
+                            __v: 0, 
+                            date_change:0,
+                            date_register: 0, 
+                            legal_address: 0,
+                        },
+                    }, (err, list) => {
+                        if(err) callbackParallel(err);
+                        else callbackParallel(null, list);
+                    });
+            },
+        }, (err, listEntity) => {
+            console.log(`ERROR: ${err}`);
+            console.log(`LIST: ${JSON.stringify(listEntity)}`); 
+
+            expect(err).toBe(null);
+            expect(listEntity.shortListSource.length).toEqual(4);
+
+            done();
+        });
+    });
+
+    /*    it("Должен быть получено FALSE, так как такого ИСТОЧНИКА нет в БД", () => {
+    
+    });*/
+
 });
 
 /**

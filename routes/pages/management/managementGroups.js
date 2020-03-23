@@ -17,14 +17,14 @@ const informationForPageManagementGroups = require("../../../libs/management_set
 module.exports = function(req, res, objHeader) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
-        userGroupPermissions: callback => {
+        userGroupPermissions: (callback) => {
             checkAccessRightsPage(req, (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
             });
         },
         //получаем информацию по группам
-        mainInformation: callback => {
+        mainInformation: (callback) => {
             informationForPageManagementGroups((err, result) => {
                 if (err) callback(err);
                 else callback(null, result);

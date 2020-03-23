@@ -72,8 +72,7 @@ class ShowEntityInformation extends React.Component {
             return;
         }
  
-        let list = Object.keys(this.props.listFieldActivity);
-        list.sort();
+        let list = this.props.listFieldActivity;
 
         let num = 1;
 
@@ -134,7 +133,7 @@ ShowEntityInformation.propTypes = {
     handlerSave: PropTypes.func.isRequired,
     handlerDelete: PropTypes.func.isRequired,
     resivedInfo: PropTypes.object.isRequired,
-    listFieldActivity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
     handlerInputChange: PropTypes.func.isRequired,
 };
 
@@ -314,14 +313,14 @@ export default class CreateBodyManagementEntity extends React.Component {
         return {};
     }
 
-    getListFieldActivity(){
+    /*getListFieldActivity(){
         let objTmp = {};
         for(let source in this.props.listSourcesInformation){
             objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
         }
 
         return objTmp;
-    }
+    }*/
 
     searchInfoListSourceInformation_test({ type: searchType, value: searchID }){
         let paramType = {
@@ -561,7 +560,7 @@ export default class CreateBodyManagementEntity extends React.Component {
                     showInfo={this.state.showInfo}
                     handlerSave={this.handlerSave}
                     handlerDelete={this.handlerDelete}
-                    listFieldActivity={this.getListFieldActivity.call(this)}
+                    listFieldActivity={this.props.listFieldActivity} 
                     resivedInfo={this.state.objectShowedInformation}
                     handlerInputChange={this.handlerInputChange} />
                 <ModalWindowConfirmMessage 
@@ -577,7 +576,10 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 }
 
+/* listFieldActivity={this.getListFieldActivity.call(this)} */ 
+
 CreateBodyManagementEntity.propTypes ={
+    listFieldActivity: PropTypes.array.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,
     listSourcesFullInformation: PropTypes.object.isRequired,
 };

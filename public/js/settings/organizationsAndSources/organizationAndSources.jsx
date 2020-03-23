@@ -17,11 +17,12 @@ class CreatePageOrganizationAndSources extends React.Component {
         super(props);
 
         this.state = {
-            "modalWindowSourceInfo": false,
             "modalWindowSourceDel": false,
+            "modalWindowSourceInfo": false,
             "modalWindowChangeSource": false,
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
-            sourceSettings: {
+            "tableSourceList": this.createTableSourceList.call(this),
+            "sourceSettings": {
                 id: "",
                 idDivision: "",
                 sourceID: {
@@ -210,15 +211,48 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({ stateCopy });
     }
 
+    createTableSourceList(){
+        let newList = this.props.listShortEntity.shortListSource.map((item) => {
+            let field = "";
+            this.props.listShortEntity.shortListDivision.forEach((i) => {
+                if(i.id === item.id_division){
+                    this.props.listShortEntity.shortListOrganization.forEach((e) => {
+                        if(e.id === i.id_organization){
+                            field = e.field_activity;
+                        }
+                    });
+                }
+            });
+
+            return {
+                "sourceID": item.source_id,
+                "sid": item.id,
+                "shortName": item.short_name,
+                "dateRegister": item.date_register,
+                "fieldActivity": field,
+                "versionApp": item.information_about_app.version,
+                "releaseApp": item.information_about_app.date,
+                "connectionStatus": false,
+            };
+        });
+
+        newList.sort((a, b) => {
+            if (a.sourceID > b.sourceID) return 1;
+            if (a.sourceID == b.sourceID) return 0;
+            if (a.sourceID < b.sourceID) return -1;
+        });
+
+        return newList;
+    }
+
     handlerSourceDelete(){
         console.log(`УДАЛЯЕМ ИСТОЧНИКИ № ${this.listSourceDelete}`);
     }
 
     isDisabledDelete(typeButton){
-
-        /**
-        * Еще проверить групповую политику пользователя
-        */
+        if(!this.props.userPermissions.delete.status){
+            return "disabled";
+        }
 
         let isChecked = false;
         let settings = {
@@ -455,6 +489,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                             </div>
                         </div>
                         <CreateTableSources 
+                            userPermissions={this.props.userPermissions}
+                            tableSourceList={this.state.tableSourceList}
+
                             changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
                             handlerShowInfoWindow={this.showModalWindowSourceInfo}
                             handlerShowChangeInfo={this.showModalWindowChangeSource}
@@ -465,7 +502,8 @@ class CreatePageOrganizationAndSources extends React.Component {
                         Здесть тоже используется объект listSourcesInformation, соответственно в PRODUCTION 
                         тоже должен быть отдельный объект 
                         */}
-                        <CreateBodyManagementEntity 
+                        <CreateBodyManagementEntity
+                            listFieldActivity={this.props.listFieldActivity} 
                             listSourcesInformation={this.props.listSourcesInformation}
                             listSourcesFullInformation={this.props.listSourcesFullInformation}/>
                     </Tab>
@@ -481,7 +519,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                         По этому, а PRODUCTION похоже нужен отдельный список Организаций и Подразделений получаемый с сервера
                         */}
                         
-                        <CreateBodyNewEntity listSourcesInformation={this.props.listSourcesInformation}/>
+                        <CreateBodyNewEntity 
+                            listFieldActivity={this.props.listFieldActivity}
+                            listSourcesInformation={this.props.listSourcesInformation}/>
                     </Tab>
                 </Tabs>
                 <ModalWindowSourceInfo 
@@ -512,7 +552,11 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 }
 
-CreatePageOrganizationAndSources.propTypes ={
+CreatePageOrganizationAndSources.propTypes = {
+    listShortEntity: PropTypes.object,
+    userPermissions: PropTypes.object,
+    listFieldActivity: PropTypes.array,
+
     listSourcesFullInformation: PropTypes.object,
     listSourcesInformation: PropTypes.object.isRequired,
     listDivisionInformation: PropTypes.array.isRequired,
@@ -888,6 +932,10 @@ let listDivisionInformation = [
 ];
 
 ReactDOM.render(<CreatePageOrganizationAndSources 
+    listShortEntity={receivedFromServerMain}
+    userPermissions={receivedFromServerAccess}
+    listFieldActivity={receivedFromServerListFieldActivity}
+
     listSourcesFullInformation={listSourcesFullInformation}
     listSourcesInformation={listSourcesInformation}
     listDivisionInformation={listDivisionInformation} />, document.getElementById("main-page-content"));

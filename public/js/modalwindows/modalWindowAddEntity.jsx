@@ -45,9 +45,6 @@ class CreateBodyOrganization extends React.Component {
     }
 
     createListFieldActivity(){
-        let list = Object.keys(this.props.listFieldActivity);
-        list.sort();
-
         let num = 1;
         return (
             <Form.Group>
@@ -60,7 +57,7 @@ class CreateBodyOrganization extends React.Component {
                     isInvalid={this.props.storageInput.fieldActivity.isInvalid} 
                     onChange={this.props.handlerInput.bind(this, "organization")} >
                     <option value="" key="list_field_activity_0">...</option>
-                    {list.map((item) => <option value={item} key={`list_field_activity_${num++}`}>{item}</option>)}
+                    {this.props.listFieldActivity.map((item) => <option value={item} key={`list_field_activity_${num++}`}>{item}</option>)}
                 </Form.Control>
             </Form.Group>
         );         
@@ -97,7 +94,7 @@ class CreateBodyOrganization extends React.Component {
 CreateBodyOrganization.propTypes = {
     handlerInput: PropTypes.func.isRequired,
     storageInput: PropTypes.object.isRequired,
-    listFieldActivity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
 };
 
 class CreateBodyDivision extends React.Component {
@@ -335,7 +332,7 @@ CreateModalBody.propTypes = {
     handlerInput: PropTypes.func.isRequired,
     storageInput: PropTypes.object.isRequired,
     typeModalBody: PropTypes.string,
-    listFieldActivity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
     handelerFolderDelete: PropTypes.func.isRequired,
 };
 
