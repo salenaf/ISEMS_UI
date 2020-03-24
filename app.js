@@ -81,7 +81,7 @@ async.parallel([
                     globalObject.setData("users", sessionId, listUserSession[sessionId]);
                 }
 
-                debug(globalObject.getData("users"));
+                //debug(globalObject.getData("users"));
 
                 callback(null);
             }).catch(err => {
@@ -156,7 +156,7 @@ async.parallel([
         process.exit(1);
     }
 
-    debug(`app settings: ${JSON.stringify(globalObject.getData("commonSettings"))}`);
+    //    debug(`app settings: ${JSON.stringify(globalObject.getData("commonSettings"))}`);
 
     //запуск сервера
     server.listen({

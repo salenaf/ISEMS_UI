@@ -20,11 +20,11 @@ class CreatePageOrganizationAndSources extends React.Component {
             "modalWindowSourceDel": false,
             "modalWindowSourceInfo": false,
             "modalWindowChangeSource": false,
+            "changeSourceInfoOutput": false,
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
             "tableSourceList": this.createTableSourceList.call(this),
             "sourceSettings": {
                 id: "",
-                idDivision: "",
                 sourceID: {
                     name: "цифровой идентификатор",
                     value: "",
@@ -94,7 +94,7 @@ class CreatePageOrganizationAndSources extends React.Component {
             },
         };
 
-        this.modalWindowSourceInfoSettings = { sourceID: 0 };
+        this.modalWindowSourceInfoSettings = { data: {}, sourceID: 0 };
 
         this.listSourceDelete = [];
 
@@ -113,6 +113,8 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
 
+        this.listenerSocketIonConnect.call(this);
+
         //устанавливаем тему для всех элементов select2
         $.fn.select2.defaults.set("theme", "bootstrap");
     }
@@ -130,12 +132,11 @@ class CreatePageOrganizationAndSources extends React.Component {
         return list;
     }
 
-    showModalWindowSourceInfo(sourceID){
-        /**
-         *          В продакшине нужно
-         * отправить через socketIo запрос на получение
-         * полной информации об источнике 
-         */
+    showModalWindowSourceInfo({ sid, sourceID }){
+        this.props.socketIo.emit("entity information", {
+            actionType: "get info about source",
+            arguments: { entityId: sid },
+        });
 
         this.modalWindowSourceInfoSettings.sourceID = sourceID;
 
@@ -146,49 +147,48 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({"modalWindowSourceInfo": false});
     }
 
-    showModalWindowChangeSource(sourceID){
-        /**
-         *          В продакшине нужно
-         * отправить через socketIo запрос на получение
-         * полной информации об источнике 
-         * 
-         */
+    listenerSocketIonConnect(){
+        this.props.socketIo.on("entity: set info only source", (data) => {
+            let stateCopy = Object.assign({}, this.state);
+        
+            stateCopy.sourceSettings.id = data.arguments.id;
+            stateCopy.sourceSettings.sourceID.value = data.arguments.source_id;
+            stateCopy.sourceSettings.shortName.value = data.arguments.short_name;
+            stateCopy.sourceSettings.ipAddress.value = data.arguments.network_settings.ipaddress;
+            stateCopy.sourceSettings.port.value = data.arguments.network_settings.port;
+            stateCopy.sourceSettings.token.value = data.arguments.network_settings.token_id;
+            stateCopy.sourceSettings.architecture.value = data.arguments.network_settings.type_architecture_client_server;
+            stateCopy.sourceSettings.maxSimultaneousProc.value = data.arguments.source_settings.maximum_number_simultaneous_filtering_processes;
+            stateCopy.sourceSettings.networkChannel.value = data.arguments.source_settings.type_channel_layer_protocol;
+            stateCopy.sourceSettings.telemetry.value = data.arguments.source_settings.transmission_telemetry;
+            stateCopy.sourceSettings.directoriesNetworkTraffic.value = data.arguments.source_settings.list_directories_with_file_network_traffic;
+            stateCopy.sourceSettings.description.value = data.arguments.description;
 
-        /** ТАКОЙ СПОСОБ ТОЛЬКО ДЛЯ ТЕСТОВ!!! В продакшене нужны socketio запросы  */
-        let sourceInfo = this.props.listSourcesFullInformation[sourceID];
-        if(typeof sourceInfo === "undefined"){
-            return console.log(`Информация по источнику с ID ${sourceID} не найдена`);
-        }
+            this.setState({ stateCopy });
+
+            this.setState({ changeSourceInfoOutput: true });
+        });
+    }
+
+    showModalWindowChangeSource({ sid, sourceID }){
+        this.props.socketIo.emit("entity information", {
+            actionType: "get info only source",
+            arguments: { entityId: sid },
+        });
 
         this.modalWindowSourceInfoSettings.sourceID = sourceID;
-
-        let stateCopy = Object.assign({}, this.state);
-        
-        stateCopy.sourceSettings.id = sourceInfo.id;
-        stateCopy.sourceSettings.idDivision = "в тестовом объекте нет такого поля (в документе из БД есть)";
-        stateCopy.sourceSettings.sourceID.value = sourceID;
-        stateCopy.sourceSettings.shortName.value = sourceInfo.shortName;
-        stateCopy.sourceSettings.ipAddress.value = sourceInfo.networkSettings.ip;
-        stateCopy.sourceSettings.port.value = sourceInfo.networkSettings.port;
-        stateCopy.sourceSettings.token.value = sourceInfo.networkSettings.tokenID;
-        stateCopy.sourceSettings.architecture.value = sourceInfo.sourceSettings.architecture;
-        stateCopy.sourceSettings.maxSimultaneousProc.value = sourceInfo.sourceSettings.maxNumFilter;
-        stateCopy.sourceSettings.networkChannel.value = sourceInfo.sourceSettings.typeChannelLayerProto;
-        stateCopy.sourceSettings.telemetry.value = sourceInfo.sourceSettings.telemetry;
-        stateCopy.sourceSettings.directoriesNetworkTraffic.value = sourceInfo.sourceSettings.listDirWithFileNetworkTraffic;
-        stateCopy.sourceSettings.description.value = sourceInfo.description;
-
-        this.setState({ stateCopy });
 
         this.setState({"modalWindowChangeSource": true});
     }
 
     closeModalWindowChangeSource(){
-        this.setState({"modalWindowChangeSource": false});
+        this.setState({ "modalWindowChangeSource": false });
+        this.setState({ "changeSourceInfoOutput": true });
     }
 
     showModalWindowSourceDel(){
         this.listSourceDelete = [];
+
         for(let id in this.state.checkboxMarkedSourceDel){
             if(this.state.checkboxMarkedSourceDel[id].checked){
                 this.listSourceDelete.push(id);
@@ -197,11 +197,11 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         if(this.listSourceDelete.length === 0) return;
 
-        this.setState({"modalWindowSourceDel": true});
+        this.setState({ "modalWindowSourceDel": true });
     }
 
     closeModalWindowSourceDel(){
-        this.setState({"modalWindowSourceDel": false});
+        this.setState({ "modalWindowSourceDel": false });
     }
 
     changeCheckboxMarkedSourceDel(sourceID){
@@ -461,7 +461,29 @@ class CreatePageOrganizationAndSources extends React.Component {
         }
 
 
+
         console.log("передаем информацию о новом источнике в БД");
+
+        let s = this.state.sourceSettings;
+
+        this.props.socketIo.emit("change source info", {
+            id: s.id,
+            source_id: s.sourceID.value,
+            short_name: s.shortName.value,
+            description: s.description.value,
+            network_settings: {
+                ipaddress: s.ipAddress.value,
+                port: s.port.value,
+                token_id: s.token.value,
+            },
+            source_settings: {
+                list_directories_with_file_network_traffic: s.directoriesNetworkTraffic.value,
+                type_architecture_client_server: s.architecture.value,
+                transmission_telemetry: s.telemetry.value,
+                maximum_number_simultaneous_filtering_processes: s.maxSimultaneousProc.value,
+                type_channel_layer_protocol: s.networkChannel.value,
+            },
+        });
     }
 
     handelerFolderDelete(nameFolder){
@@ -491,11 +513,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                         <CreateTableSources 
                             userPermissions={this.props.userPermissions}
                             tableSourceList={this.state.tableSourceList}
-
                             changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
                             handlerShowInfoWindow={this.showModalWindowSourceInfo}
-                            handlerShowChangeInfo={this.showModalWindowChangeSource}
-                            listSourcesInformation={this.props.listSourcesInformation}/>
+                            handlerShowChangeInfo={this.showModalWindowChangeSource} />
                     </Tab>
                     <Tab eventKey="organization" title="организации / подразделения">
                         {/** 
@@ -527,12 +547,14 @@ class CreatePageOrganizationAndSources extends React.Component {
                 <ModalWindowSourceInfo 
                     show={this.state.modalWindowSourceInfo}
                     onHide={this.closeModalWindowSourceInfo}
-                    settings={this.modalWindowSourceInfoSettings} 
-                    sourceInfoForTest={this.props.listSourcesFullInformation} />
+                    socketIo={this.props.socketIo}
+                    settings={this.modalWindowSourceInfoSettings} />
                 <ModalWindowChangeSource                     
                     show={this.state.modalWindowChangeSource}
                     onHide={this.closeModalWindowChangeSource}
-                    settings={this.modalWindowSourceInfoSettings} 
+                    socketIo={this.props.socketIo}
+                    settings={this.modalWindowSourceInfoSettings}
+                    isShowInfo={this.state.changeSourceInfoOutput} 
                     addNewFolder={this.handlerNewFolder}
                     handlerInput={this.handlerInput} 
                     storageInput={this.state.sourceSettings}
@@ -553,9 +575,10 @@ class CreatePageOrganizationAndSources extends React.Component {
 }
 
 CreatePageOrganizationAndSources.propTypes = {
-    listShortEntity: PropTypes.object,
-    userPermissions: PropTypes.object,
-    listFieldActivity: PropTypes.array,
+    socketIo: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
+    userPermissions: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
 
     listSourcesFullInformation: PropTypes.object,
     listSourcesInformation: PropTypes.object.isRequired,
@@ -932,6 +955,7 @@ let listDivisionInformation = [
 ];
 
 ReactDOM.render(<CreatePageOrganizationAndSources 
+    socketIo={socket}
     listShortEntity={receivedFromServerMain}
     userPermissions={receivedFromServerAccess}
     listFieldActivity={receivedFromServerListFieldActivity}

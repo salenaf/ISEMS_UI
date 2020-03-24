@@ -1069,8 +1069,8 @@ describe("Тест 4. Загрузка, полученного после вал
 });
 */
 
-describe("Тест 5. Получить весь список сущьностей из БД", () => {     
-    it("Должен быть получен весь список сущьностей из БД", (done) => {
+describe("Тест 5. Получить весь список сущностей из БД", () => {     
+    it("Должен быть получен весь список сущностей из БД", (done) => {
         async.parallel({
             shortListSource: (callbackParallel) => {
                 (require("../../middleware/mongodbQueryProcessor")).querySelect(
@@ -1149,7 +1149,53 @@ describe("Тест 5. Получить весь список сущьносте�
  *  insert to DB - insertInformationAboutObjectOrSource
  */
 
+describe("Тест 6. Получить информацию по источнику, организации и подразделению", () => {   
+    it("Должен быть успешно найдена информация об источнике, при этом ошибок быть не должно", (done) => {
+        new Promise((resolve, reject) => {
+            (require("../../middleware/mongodbQueryProcessor")).querySelect(
+                require("../../controllers/models").modelSourcesParameter, { 
+                    query: { id: "bcbc0c6367590771165509575a1a" },
+                    select: { _id: 0,  __v: 0 },
+                }, (err, list) => {
+                    if(err) reject(err);
+                    else resolve(list);
+                });
+        }).then((sourceInfo) => {
+            return new Promise((resolve, reject) => {
+                (require("../../middleware/mongodbQueryProcessor")).querySelect(
+                    require("../../controllers/models").modelDivisionBranchName, { 
+                        query: { id: sourceInfo.id_division },
+                        select: { _id: 0,  __v: 0 },
+                    }, (err, list) => {
+                        if(err) reject(err);
+                        else resolve({ source: sourceInfo, division: list });
+                    });
+            });
+        }).then((objInfo) => {
+            return new Promise((resolve, reject) => {
+                (require("../../middleware/mongodbQueryProcessor")).querySelect(
+                    require("../../controllers/models").modelOrganizationName, { 
+                        query: { id: objInfo.division.id_organization },
+                        select: { _id: 0,  __v: 0 },
+                    }, (err, list) => {
+                        if(err) reject(err);
+                
+                        objInfo.organization = list;
+                        resolve(objInfo);
+                    });
+            });
+        }).then((objInfo) => {
+            console.log(objInfo);
 
+            expect(objInfo.source.source_id).toEqual(10022);
+            done();
+        }).catch((err) => {
+            expect(err).toBeNull();
+
+            done();
+        });
+    });
+});
 
 /*
 describe("Тест 4. Загрузка тестового объекта в БД", () => {
@@ -1185,207 +1231,3 @@ describe("Тест 2. Проверка функций взаимодейству
     it("Запрос пользователя по логину (ПОЛЬЗОВАТЕЛь НАЙДЕН)", (done) => {
     });
 });*/
-
-
-
-
-/*
-    let orgName = "Новая организация";
-    let hexSumOrg = (require("../../libs/helpers/createUniqID")).getMD5(`organization_name_${orgName}`);
-
-    it("Должен быть получено TRUE, если название ОРГАНИЗАЦИ есть в БД", (done) => {
-        new Promise((resolve, reject) => {
-
-            console.log("CREATE NEW ORGANIZATION");
-
-            //Создаем новую запись об организации
-            (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelOrganizationName, {
-                document: {
-                    id: hexSumOrg,
-                    date_register: +(new Date),
-                    date_change: +(new Date),    
-                    name: orgName,
-                    legal_address: "123452 г. Москва, ул. Каланчевка, д. 89, ст. 1,",
-                    field_activity: "космическая промышленность",
-                    division_or_branch_list_id: [],
-                }
-            }, err => {
-                if (err) reject(err);
-                else resolve();
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-
-                console.log("GET INFORMATION ABOUT ORGANIZATION");
-
-                //Выполняем поиск огранизации по ее ID
-                (require("../../middleware/mongodbQueryProcessor")).querySelect(require("../../controllers/models").modelOrganizationName, {
-                    document: { id: hexSumOrg }
-                }, (err, info) => {
-                    if(err) reject(err);
-                    else resolve(info);
-                });
-            });
-        }).then((info) => {
-
-            console.log(`INFO ORGANIZATION: '${info}'`);
-
-            expect(info.name).toEqual(orgName);
-
-            done();
-        }).catch((err) => {
-            expect(err).toBeNull();
-
-            done();
-        });
-    });
-
-    let divisionName = "Новое подразделение";
-    let hexSumDiv = (require("../../libs/helpers/createUniqID")).getMD5(`organization_name_${divisionName}`);
-
-    it("Должен быть получено TRUE, если название ПОДРАЗДЕЛЕНИЯ есть в БД", (done) => {
-        new Promise((resolve, reject) => {
-
-            console.log("CREATE NEW DIVISION");
-
-            //Создаем запись о новом подразделении
-            (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelDivisionBranchName, {
-                document: {
-                    id: hexSumDiv,
-                    id_organization: hexSumOrg,
-                    date_register: +(new Date),
-                    date_change: +(new Date),    
-                    name: divisionName,
-                    physical_address: "г. Смоленск, ул. Зои партизанки, д. 45, к. 2",
-                    description: "просто какое то описание",
-                    source_list: [],
-                }
-            }, (err) => {
-                if (err) reject(err);
-                else resolve();
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-            //Создаем связь между организацией и подразделением
-                (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelOrganizationName, {
-                    query: { 
-                        "id": hexSumOrg, 
-                        "division_or_branch_list_id": { $ne: hexSumDiv },
-                    },
-                    update:{ $push: {"division_or_branch_list_id": hexSumDiv }},
-                }, (err) => {
-                    if (err) reject(err);
-                    else resolve();
-                });
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-
-                console.log("GET INFORMATION ABOUT DIVISION");
-
-                //Выполняем поиск инофрмации о подразделении по его ID
-                (require("../../middleware/mongodbQueryProcessor")).querySelect(require("../../controllers/models").modelDivisionBranchName, {
-                    document: { id: hexSumDiv }
-                }, (err, info) => {
-                    if(err) reject(err);
-                    else resolve(info);
-                });
-            });
-        }).then(info => {
-
-            console.log(`INFO DIVISION: '${info}'`);
-
-            expect(info.name).toEqual(divisionName);
-
-            done();
-        }).catch(err => {
-            expect(err).toBeNull();
-
-            done();
-        });
-    });
-
-    let sourceID = 1001;
-    let hexSumSource = (require("../../libs/helpers/createUniqID")).getMD5(`organization_name_${sourceID}`);
-
-    it("Должен быть получено TRUE, если название ИСТОЧНИКА есть в БД", (done) => {
-        new Promise((resolve, reject) => {
-
-            console.log("CREATE NEW SOURCE");
-
-            //Создаем запись о новом источнике
-            (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelSourcesParameter, {
-                document: {
-                    id: hexSumSource,
-                    id_division: hexSumDiv,
-                    source_id: sourceID,
-                    date_register: +(new Date),
-                    date_change: +(new Date),
-                    short_name: "Test Source",
-                    network_settings: { 
-                        ipaddress: "59.23.4.110", 
-                        port: 13113, 
-                        token_id: "ff24jgj8j328fn8n837ge7g2", 
-                    },
-                    source_settings: {
-                        type_architecture_client_server: "client",
-                        transmission_telemetry: false,
-                        maximum_number_simultaneous_filtering_processes: 5,
-                        type_channel_layer_protocol: "ip",
-                        list_directories_with_file_network_traffic: [
-                            "/test_folder_1",
-                            "/test_folder_2",
-                            "/test_folder_3",
-                        ],
-                    },
-                    description: "дополнительное описание для источника",
-                    information_about_app: {
-                        version: "0.11",
-                        date: "14.03.2020",
-                    },
-                }
-            }, (err) => {
-                if (err) reject(err);
-                else resolve();
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-            //Создаем связь между организацией и подразделением
-                (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelDivisionBranchName, {
-                    query: { 
-                        "id": hexSumDiv, 
-                        "source_list": { $ne: hexSumSource },
-                    },
-                    update:{ $push: {"source_list": hexSumSource }},
-                }, (err) => {
-                    if (err) reject(err);
-                    else resolve();
-                });
-            });
-        }).then(() => {
-            return new Promise((resolve, reject) => {
-
-                console.log("GET INFORMATION ABOUT SOURCE");
-
-                //Выполняем поиск инофрмации о подразделении по его ID
-                (require("../../middleware/mongodbQueryProcessor")).querySelect(require("../../controllers/models").modelSourcesParameter, {
-                    document: { id: hexSumDiv }
-                }, (err, info) => {
-                    if(err) reject(err);
-                    else resolve(info);
-                });
-            });
-        }).then(info => {
-
-            console.log(`INFO SOURCE: '${info}'`);
-
-            expect(info.source_id).toEqual(sourceID);
-
-            done();
-        }).catch(err => {
-            expect(err).toBeNull();
-
-            done();
-        });
-    });
-*/

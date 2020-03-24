@@ -141,11 +141,14 @@ module.exports.eventHandling = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ПАРОЛЯМИ ПО УМОЛЧАНИЮ --- */
     require("./routeHandlersSocketIo/handlerChangePassword")(socketIo);
 
+    /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
+    require("./routeHandlersSocketIo/handlerActionsUsers").addHandlers(socketIo);
+
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
     require("./routeHandlersSocketIo/handlerActionsGroups").addHandlers(socketIo);
 
-    /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
-    require("./routeHandlersSocketIo/handlerActionsUsers").addHandlers(socketIo);
+    /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
+    require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
