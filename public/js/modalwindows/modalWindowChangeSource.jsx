@@ -302,12 +302,12 @@ export default class ModalWindowChangeSource extends React.Component {
                 <Row>
                     <Col lg={4}>
                         <Form.Check 
-                            onChange={this.props.handlerInput.bind(this)}
+                            custom
                             defaultChecked={this.props.storageInput.telemetry.value}
+                            onChange={this.props.handlerInput.bind(this)}
                             type="switch"
                             id="source_telemetry" 
-                            label="телеметрия"
-                        />
+                            label="телеметрия" />
                     </Col>
                     <Col lg={8}>
                         <InputGroup className="mb-3">

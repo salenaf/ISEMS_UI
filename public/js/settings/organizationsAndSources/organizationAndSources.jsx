@@ -21,8 +21,8 @@ class CreatePageOrganizationAndSources extends React.Component {
             "modalWindowSourceInfo": false,
             "modalWindowChangeSource": false,
             "changeSourceInfoOutput": false,
+            "tableSourceList": this.createTableSourceList.call(this, this.props.listShortEntity),
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
-            "tableSourceList": this.createTableSourceList.call(this),
             "sourceSettings": {
                 id: "",
                 sourceID: {
@@ -120,16 +120,73 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 
     createStateCheckboxMarkedSourceDel(){
-        let listSource = Object.keys(this.props.listSourcesInformation);
-
         let list = {};
-        listSource.forEach(id => {
-            list[id] = {
+
+        this.props.listShortEntity.shortListSource.forEach((source) => {
+            list[source.source_id] = {
                 checked: false,
             };
         });
 
         return list;
+    }
+
+    listenerSocketIonConnect(){ 
+        let listElem = [
+            "sourceID",
+            "shortName",
+            "ipAddress",
+            "port",
+            "token",
+            "architecture",
+            "maxSimultaneousProc",
+            "networkChannel",
+            "telemetry",
+            "directoriesNetworkTraffic",
+            "description"
+        ];
+
+        this.props.socketIo.on("entity: set info only source", (data) => {
+            let stateCopy = Object.assign({}, this.state);
+
+            stateCopy.sourceSettings.id = data.arguments.id;
+            stateCopy.sourceSettings.sourceID.value = data.arguments.source_id;
+            stateCopy.sourceSettings.shortName.value = data.arguments.short_name;
+            stateCopy.sourceSettings.ipAddress.value = data.arguments.network_settings.ipaddress;
+            stateCopy.sourceSettings.port.value = data.arguments.network_settings.port;
+            stateCopy.sourceSettings.token.value = data.arguments.network_settings.token_id;
+            stateCopy.sourceSettings.architecture.value = data.arguments.source_settings.type_architecture_client_server;
+            stateCopy.sourceSettings.maxSimultaneousProc.value = data.arguments.source_settings.maximum_number_simultaneous_filtering_processes;
+            stateCopy.sourceSettings.networkChannel.value = data.arguments.source_settings.type_channel_layer_protocol;
+            stateCopy.sourceSettings.telemetry.value = data.arguments.source_settings.transmission_telemetry;
+            stateCopy.sourceSettings.directoriesNetworkTraffic.value = data.arguments.source_settings.list_directories_with_file_network_traffic;
+            stateCopy.sourceSettings.description.value = data.arguments.description;
+
+            listElem.forEach((item) => {
+                if(typeof stateCopy.sourceSettings[item] !== "undefined"){
+                    if(typeof stateCopy.sourceSettings[item].isValid !== "undefined"){
+                        stateCopy.sourceSettings[item].isValid = false;
+                    }
+                    if(typeof stateCopy.sourceSettings[item].isInvalid !== "undefined"){
+                        stateCopy.sourceSettings[item].isInvalid = false;
+                    }
+                    if(typeof stateCopy.sourceSettings[item].onChange !== "undefined"){
+                        stateCopy.sourceSettings[item].onChange = false;
+                    }
+                }
+            });
+
+            this.setState(stateCopy);
+
+            this.setState({ changeSourceInfoOutput: true });
+        });
+
+        this.props.socketIo.on("entity: new short source list", (date) => {
+            let stateCopy = Object.assign({}, this.state);
+            stateCopy.tableSourceList = this.createTableSourceList.call(this, date.arguments);
+            
+            this.setState(stateCopy);
+        });
     }
 
     showModalWindowSourceInfo({ sid, sourceID }){
@@ -147,29 +204,6 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState({"modalWindowSourceInfo": false});
     }
 
-    listenerSocketIonConnect(){
-        this.props.socketIo.on("entity: set info only source", (data) => {
-            let stateCopy = Object.assign({}, this.state);
-        
-            stateCopy.sourceSettings.id = data.arguments.id;
-            stateCopy.sourceSettings.sourceID.value = data.arguments.source_id;
-            stateCopy.sourceSettings.shortName.value = data.arguments.short_name;
-            stateCopy.sourceSettings.ipAddress.value = data.arguments.network_settings.ipaddress;
-            stateCopy.sourceSettings.port.value = data.arguments.network_settings.port;
-            stateCopy.sourceSettings.token.value = data.arguments.network_settings.token_id;
-            stateCopy.sourceSettings.architecture.value = data.arguments.network_settings.type_architecture_client_server;
-            stateCopy.sourceSettings.maxSimultaneousProc.value = data.arguments.source_settings.maximum_number_simultaneous_filtering_processes;
-            stateCopy.sourceSettings.networkChannel.value = data.arguments.source_settings.type_channel_layer_protocol;
-            stateCopy.sourceSettings.telemetry.value = data.arguments.source_settings.transmission_telemetry;
-            stateCopy.sourceSettings.directoriesNetworkTraffic.value = data.arguments.source_settings.list_directories_with_file_network_traffic;
-            stateCopy.sourceSettings.description.value = data.arguments.description;
-
-            this.setState({ stateCopy });
-
-            this.setState({ changeSourceInfoOutput: true });
-        });
-    }
-
     showModalWindowChangeSource({ sid, sourceID }){
         this.props.socketIo.emit("entity information", {
             actionType: "get info only source",
@@ -183,7 +217,7 @@ class CreatePageOrganizationAndSources extends React.Component {
 
     closeModalWindowChangeSource(){
         this.setState({ "modalWindowChangeSource": false });
-        this.setState({ "changeSourceInfoOutput": true });
+        this.setState({ "changeSourceInfoOutput": false });
     }
 
     showModalWindowSourceDel(){
@@ -207,16 +241,15 @@ class CreatePageOrganizationAndSources extends React.Component {
     changeCheckboxMarkedSourceDel(sourceID){
         let stateCopy = Object.assign({}, this.state);
         stateCopy.checkboxMarkedSourceDel[sourceID].checked = !this.state.checkboxMarkedSourceDel[sourceID].checked;
-
-        this.setState({ stateCopy });
+        this.setState(stateCopy);
     }
 
-    createTableSourceList(){
-        let newList = this.props.listShortEntity.shortListSource.map((item) => {
+    createTableSourceList(listShortEntity){
+        let newList = listShortEntity.shortListSource.map((item) => {
             let field = "";
-            this.props.listShortEntity.shortListDivision.forEach((i) => {
+            listShortEntity.shortListDivision.forEach((i) => {
                 if(i.id === item.id_division){
-                    this.props.listShortEntity.shortListOrganization.forEach((e) => {
+                    listShortEntity.shortListOrganization.forEach((e) => {
                         if(e.id === i.id_organization){
                             field = e.field_activity;
                         }
@@ -247,6 +280,13 @@ class CreatePageOrganizationAndSources extends React.Component {
 
     handlerSourceDelete(){
         console.log(`УДАЛЯЕМ ИСТОЧНИКИ № ${this.listSourceDelete}`);
+
+        this.props.socketIo.emit("delete source info", {
+            actionType: "",
+            arguments: { listSource: this.listSourceDelete },
+        });
+
+        this.setState({ "modalWindowSourceDel": false });
     }
 
     isDisabledDelete(typeButton){
@@ -273,15 +313,17 @@ class CreatePageOrganizationAndSources extends React.Component {
     generatingNewToken(){
         let stateCopy = Object.assign({}, this.state);
         stateCopy.sourceSettings.token.value = helpers.tokenRand();
-
-        this.setState({ stateCopy });
+        stateCopy.sourceSettings.token.onChange = true;
+        this.setState(stateCopy);
     }
 
     handlerInput(e){       
         let elementName = e.target.id;
         let value = e.target.value;
 
+        console.log("func 'handlerInput', START...");
         console.log(`elemID: ${elementName}, elemValue: ${value}`);
+        console.log(e.target.value);
 
         const listElem = {
             "source_id": {
@@ -336,10 +378,17 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         let objUpdate = Object.assign({}, this.state);
 
+        console.log(objUpdate.sourceSettings);
+
         if(listSelectors.includes(elementName)){
-            objUpdate.sourceSettings[listElem[elementName].name].value = value;    
+            if(elementName === "source_telemetry"){
+                objUpdate.sourceSettings[listElem[elementName].name].value = e.target.checked;    
+            } else {
+                objUpdate.sourceSettings[listElem[elementName].name].value = value;    
+            }
+
             objUpdate.sourceSettings[listElem[elementName].name].onChange = true;    
-            this.setState( objUpdate );
+            this.setState(objUpdate);
     
             return;
         }
@@ -361,7 +410,7 @@ class CreatePageOrganizationAndSources extends React.Component {
             objUpdate.sourceSettings[listElem[elementName].name].isInvalid = false;
         }
 
-        this.setState( objUpdate );
+        this.setState(objUpdate);
     }
 
     handlerNewFolder(){
@@ -460,8 +509,6 @@ class CreatePageOrganizationAndSources extends React.Component {
             return;
         }
 
-
-
         console.log("передаем информацию о новом источнике в БД");
 
         let s = this.state.sourceSettings;
@@ -484,6 +531,8 @@ class CreatePageOrganizationAndSources extends React.Component {
                 type_channel_layer_protocol: s.networkChannel.value,
             },
         });
+
+        this.closeModalWindowChangeSource();
     }
 
     handelerFolderDelete(nameFolder){
@@ -491,7 +540,7 @@ class CreatePageOrganizationAndSources extends React.Component {
         let list = objUpdate.sourceSettings.directoriesNetworkTraffic.value;
         objUpdate.sourceSettings.directoriesNetworkTraffic.value = list.filter((item) => (item !== nameFolder));
 
-        this.setState( objUpdate );
+        this.setState(objUpdate);
     }
 
     render(){

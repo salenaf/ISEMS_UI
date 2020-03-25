@@ -55,7 +55,7 @@ let hexSumSource = (require("../../libs/helpers/createUniqID")).getMD5(`source_n
 
 let hexSumSourceTwo = (require("../../libs/helpers/createUniqID")).getMD5("source_name_1010");
 
-afterAll(async() => {
+/*afterAll(async() => {
     //удаляем организацию
     await (require("../../middleware/mongodbQueryProcessor")).queryDelete(require("../../controllers/models").modelOrganizationName, {
         query: { "id": hexSumOrg },
@@ -81,39 +81,10 @@ afterAll(async() => {
     }, (err) => {
         console.log(err);
     });
-});
+});*/
 
 function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) {
     console.log("func 'getValidObjectOrganizationOrSource', START...");
-    
-    let checkInputValidation = (elem) => {
-        let objSettings = {
-            "hostID": new RegExp("^[0-9]{2,}$"),
-            "shortNameHost": new RegExp("^[a-zA-Z0-9_№\"\\-\\s]{3,}$"),
-            "fullNameHost": new RegExp("^[a-zA-Zа-яА-ЯёЁ0-9_№\"\\-\\s\\.,]{5,}$"),
-            "ipaddress": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),
-            "port": new RegExp("^[0-9]{1,5}$"),
-            "countProcess": new RegExp("^[0-9]{1}$"),
-            "intervalTransmission": new RegExp("^[0-9]{1,}$"),
-            "folderStorage": new RegExp("^[\\w\\/_-]{3,}$"),
-            "inputDescription": new RegExp("^[\\w\\sа-яА-ЯёЁ().,@№\"!?_-]$"),
-            "stringRuNumCharacter": new RegExp("^[а-яА-ЯёЁ0-9\\s.,№-]+$"),
-            "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
-            "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),
-            "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$"),
-        };
-        let pattern = objSettings[elem.name];
-
-        if(typeof pattern === "undefined"){
-            return false;
-        }
-
-        if (elem.name === "port") {
-            if (!(0 <= elem.value && elem.value < 65536)) return false;
-        }
-        if (elem.name === "intervalTransmission" && (elem.value < 10)) return false;
-        return (!pattern.test(elem.value)) ? false : true;
-    };
 
     let checkOrganization = (listOrgOrSource, listFieldActivity) => {
         let pattern = {
@@ -139,7 +110,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
                 return;
             }
 
-            if(!checkInputValidation({
+            if(!helpersFunc.checkInputValidation({
                 name: pattern[elemName].namePattern,
                 value: listOrgOrSource[elemName],
             })){
@@ -194,7 +165,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
                 return;
             }
 
-            if(!checkInputValidation({
+            if(!helpersFunc.checkInputValidation({
                 name: pattern[elemName].namePattern,
                 value: listOrgOrSource[elemName],
             })){
@@ -206,7 +177,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
 
         //проверяем поле description
         let description = ""; 
-        if(checkInputValidation({ 
+        if(helpersFunc.checkInputValidation({ 
             name: "inputDescription", 
             value: listOrgOrSource.description,
         })){
@@ -269,7 +240,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
                 return;
             }
        
-            if(!checkInputValidation({
+            if(!helpersFunc.checkInputValidation({
                 name: commonPattern[elemName].namePattern,
                 value: listOrgOrSource[elemName],
             })){
@@ -287,7 +258,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
                 return;
             }
 
-            if(!checkInputValidation({
+            if(!helpersFunc.checkInputValidation({
                 name: networkPattern[elemName].namePattern,
                 value: listOrgOrSource.network_settings[elemName]
             })){
@@ -325,14 +296,14 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
                 message: "не заданы директории в которых выполняется фильтрация сет. трафика",
             };
         }
-        let newListFolder = ldwfnt.filter((folder) => checkInputValidation({
+        let newListFolder = ldwfnt.filter((folder) => helpersFunc.checkInputValidation({
             name: "folderStorage",
             value: folder,
         }));
         listOrgOrSource.source_settings.list_directories_with_file_network_traffic = newListFolder;
         
         //проверяем поле description
-        if(!checkInputValidation({ 
+        if(!helpersFunc.checkInputValidation({ 
             name: "inputDescription", 
             value: listOrgOrSource.description,
         })){
@@ -365,6 +336,107 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
     processListOrgOrSource(listOrgOrSource);
 
     return { result: newList, errMsg: errMsg };
+}
+
+function checkSourceValue(obj, callback) {
+    let commonPattern = {
+        "id": {
+            "namePattern": "stringAlphaNumEng",
+            "messageError": "принят некорректный идентификатор источника",
+        },
+        "source_id": {
+            "namePattern": "hostID",
+            "messageError": "идентификатор источника не является числом",
+        },
+        "short_name": {
+            "namePattern": "shortNameHost",
+            "messageError": "обнаружен недопустимый символ в кратком названии организации",
+        },
+    };
+
+    let networkPattern = {
+        "ipaddress": {
+            "namePattern": "ipaddress",
+            "messageError": "принят некорректный ip адрес",
+        },
+        "port": {
+            "namePattern": "port",
+            "messageError": "принят некорректный порт",
+        },
+        "token_id": {
+            "namePattern": "stringAlphaNumEng",
+            "messageError": "принят некорректный идентификационный токен",
+        },
+    };
+
+    //проверяем наличие всех элементов
+    for(let elemName in commonPattern){
+        if(typeof obj[elemName] === "undefined"){
+            return callback(new Error("отсутствует некоторая информацией об источнике"));
+        }
+
+        if(!helpersFunc.checkInputValidation({
+            name: commonPattern[elemName].namePattern,
+            value: obj[elemName],
+        })){
+            return callback(commonPattern[elemName].messageError);
+        }
+    }
+
+    //проверяем сетевые настройки источника
+    for(let elemName in networkPattern){
+        if(obj.network_settings[elemName] === "undefined"){           
+            return new Error("отсутствует некоторая информация, необходимая для осуществления сетевого соединения с источником");
+        }
+
+        if(!helpersFunc.checkInputValidation({
+            name: networkPattern[elemName].namePattern,
+            value: obj.network_settings[elemName]
+        })){
+            return callback(networkPattern[elemName].messageError);
+        }
+    }
+
+    // проверяем параметры источника
+    let tacs = obj.source_settings.type_architecture_client_server;
+    if((typeof tacs === "undefined") || (tacs !== "server")){
+        obj.source_settings.type_architecture_client_server = "client";
+    }
+
+    let tt = obj.source_settings.transmission_telemetry;
+    if((typeof tt === "undefined") || (tt !== "on")){
+        obj.source_settings.transmission_telemetry = "off";
+    }
+
+    let mnsfp = obj.source_settings.maximum_number_simultaneous_filtering_processes;
+    if((typeof mnsfp === "undefined") || (+mnsfp <= 0 || +mnsfp > 10)){
+        obj.source_settings.maximum_number_simultaneous_filtering_processes = 5;    
+    }
+
+    let tclp = obj.source_settings.type_channel_layer_protocol;
+    if((typeof tclp === "undefined") || (tclp != "pppoe")){
+        obj.source_settings.type_channel_layer_protocol = "ip";    
+    }
+
+    let ldwfnt = obj.source_settings.list_directories_with_file_network_traffic;
+    if(typeof ldwfnt === "undefined"){
+        return callback(new Error("не заданы директории в которых выполняется фильтрация сет. трафика"));
+    }
+    let newListFolder = ldwfnt.filter((folder) => helpersFunc.checkInputValidation({
+        name: "folderStorage",
+        value: folder,
+    }));
+    obj.source_settings.list_directories_with_file_network_traffic = newListFolder;
+
+    //проверяем поле description
+    if(!helpersFunc.checkInputValidation({ 
+        name: "inputDescription", 
+        value: obj.description,
+    })){
+        obj.description = "";
+    }
+    
+    callback(null, obj);
 }
 
 function insertInformationAboutObjectOrSource(listValideEntity){
@@ -1194,6 +1266,51 @@ describe("Тест 6. Получить информацию по источни�
 
             done();
         });
+    });
+});
+
+describe("Тест 7. Проверка функции валидации параметров источника при его изменении", () => {   
+    it("Если объект валидный то ошибок быть не должно", (done) => {
+        let testObj = {
+            network_settings: {
+                ipaddress: "34.24.55.2",
+                port: 111,
+                token_id: "608925d25151d2d56c7a936052d8"
+            },
+            source_settings: {
+                list_directories_with_file_network_traffic: [
+                    "/directory_1",
+                    "/directory_2",
+                    "/directory_3",
+                    "/directory_4",
+                    "/directory_5"
+                ],
+                type_architecture_client_server: "server",
+                transmission_telemetry: true,
+                maximum_number_simultaneous_filtering_processes: 6,
+                type_channel_layer_protocol: "ip"
+            },
+            id: "520939710d5a9656d77825b386628",
+            source_id: 1035,
+            date_register: 1584621223950,
+            date_change: 1584621223950,
+            short_name: "Short Name",
+            description: ""
+        };
+        
+        checkSourceValue(testObj, (err, newTestObj) => {
+            if(err) {
+                console.log(err.toString());
+            }
+
+            console.log("___________________");
+            console.log(newTestObj);
+            console.log("___________________");
+
+            expect(err).toBeNull();
+
+            done();
+        });    
     });
 });
 

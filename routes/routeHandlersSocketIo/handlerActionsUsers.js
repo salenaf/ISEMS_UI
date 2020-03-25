@@ -37,7 +37,7 @@ module.exports.addHandlers = function(socketIo) {
 function addUser(socketIo, data) {
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
+        .then((authData) => {
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("user management", "Пользователь не авторизован.");
@@ -79,7 +79,7 @@ function addUser(socketIo, data) {
                             else callbackParallel(null);
                         });
                     }
-                }, err => {
+                }, (err) => {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -112,12 +112,12 @@ function addUser(socketIo, data) {
                             sourceMainPage: []
                         }
                     }
-                }, err => {
+                }, (err) => {
                     if (err) reject(err);
                     else resolve(newUser);
                 });
             });
-        }).then(newUser => {
+        }).then((newUser) => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -125,7 +125,7 @@ function addUser(socketIo, data) {
             });
 
             socketIo.emit("add new user", JSON.stringify(newUser));
-        }).catch(err => {
+        }).catch((err) => {
             if (err.name === "user management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -147,7 +147,7 @@ function addUser(socketIo, data) {
 function updateUser(socketIo, data) {
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
+        .then((authData) => {
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("user management", "Пользователь не авторизован.");
@@ -194,7 +194,7 @@ function updateUser(socketIo, data) {
                     else resolve(result.userInfo);
                 });
             });
-        }).then(userInfo => {
+        }).then((userInfo) => {
             return new Promise((resolve, reject) => {
                 let md5string = crypto.createHash("md5")
                     .update(data.arguments.user_password)
@@ -225,12 +225,12 @@ function updateUser(socketIo, data) {
                 mongodbQueryProcessor.queryUpdate(models.modelUser, {
                     id: userInfo.id,
                     update: userInfoUpdate,
-                }, err => {
+                }, (err) => {
                     if (err) reject(err);
                     else resolve(updateUser);
                 });
             });
-        }).then(updateUser => {
+        }).then((updateUser) => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -238,7 +238,7 @@ function updateUser(socketIo, data) {
             });
 
             socketIo.emit("update user", JSON.stringify(updateUser));
-        }).catch(err => {
+        }).catch((err) => {
             if (err.name === "user management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -260,7 +260,7 @@ function updateUser(socketIo, data) {
 function deleteUser(socketIo, data) {
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
+        .then((authData) => {
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("user management", "Пользователь не авторизован.");
@@ -283,7 +283,7 @@ function deleteUser(socketIo, data) {
                     else resolve(userInfo);
                 });
             });
-        }).then(userInfo => {
+        }).then((userInfo) => {
             if (userInfo === null || (typeof userInfo === "undefined")) {
                 throw new MyError("user management", "Невозможно удалить пользователя, не найден пользователь с заданным идентификатором.");
             }
@@ -307,7 +307,7 @@ function deleteUser(socketIo, data) {
             });
 
             socketIo.emit("del selected user", JSON.stringify({ userID: data.arguments.userID }));
-        }).catch(err => {
+        }).catch((err) => {
             if (err.name === "user management") {
                 return showNotify({
                     socketIo: socketIo,

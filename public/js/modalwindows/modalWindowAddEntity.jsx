@@ -655,7 +655,7 @@ export default class ModalWindowAddEntity extends React.Component {
             this.divisionInput(elementName, value);
         }
         if(typeInput === "source"){
-            this.sourcesInput(elementName, value);
+            this.sourcesInput(elementName, value, event);
         }
     }
 
@@ -789,7 +789,7 @@ export default class ModalWindowAddEntity extends React.Component {
         this.setState( objUpdate );
     }
 
-    sourcesInput(elementName, value){
+    sourcesInput(elementName, value, e){
         const listElem = {
             "source_id": {
                 name: "sourceID",
@@ -844,7 +844,14 @@ export default class ModalWindowAddEntity extends React.Component {
         let objUpdate = Object.assign({}, this.state);
 
         if(listSelectors.includes(elementName)){
-            objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;    
+            if(elementName === "source_telemetry"){
+                objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = e.target.checked;    
+            } else {
+                objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;    
+            }
+
+            console.log(objUpdate);
+
             this.setState( objUpdate );
     
             return;
