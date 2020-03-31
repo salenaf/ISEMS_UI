@@ -15,7 +15,7 @@ export default class CreateTableSources extends React.Component {
     }
 
     showIconChangeInfo(objInfo){
-        if(this.props.userPermissions.edit.status){
+        if(this.props.userPermissions.management_sources.element_settings.edit.status){
             return (
                 <a href="#" onClick={this.props.handlerShowChangeInfo.bind(this, objInfo)}>
                     <img className="clickable_icon" src="./images/icons8-edit-16.png" alt="редактировать"></img>

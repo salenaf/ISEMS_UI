@@ -290,7 +290,7 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 
     isDisabledDelete(typeButton){
-        if(!this.props.userPermissions.delete.status){
+        if(!this.props.userPermissions.management_sources.element_settings.delete.status){
             return "disabled";
         }
 
@@ -440,6 +440,7 @@ class CreatePageOrganizationAndSources extends React.Component {
         objUpdate.sourceSettings.newFolder = "";
         objUpdate.sourceSettings.directoriesNetworkTraffic.isValid = false;
         objUpdate.sourceSettings.directoriesNetworkTraffic.isInvalid = false;
+        objUpdate.sourceSettings.directoriesNetworkTraffic.onChange = true;    
 
         this.setState( objUpdate );
 
@@ -502,8 +503,9 @@ class CreatePageOrganizationAndSources extends React.Component {
             return;
         }
 
+        let foldersOnChange = sourceSettings.directoriesNetworkTraffic.onChange;
         //делаем проверку все ли ли параметры валидны
-        if(!checkValueIsValid(sourceSettings)){
+        if(!checkValueIsValid(sourceSettings && !foldersOnChange)){
             console.log("Один или более заданных парамеров не валидны");
 
             return;
@@ -539,6 +541,12 @@ class CreatePageOrganizationAndSources extends React.Component {
         let objUpdate = Object.assign({}, this.state);        
         let list = objUpdate.sourceSettings.directoriesNetworkTraffic.value;
         objUpdate.sourceSettings.directoriesNetworkTraffic.value = list.filter((item) => (item !== nameFolder));
+
+        if(list.length !== objUpdate.sourceSettings.directoriesNetworkTraffic.value.length){
+            console.log(`count before folder: '${list.length}', count folder after ${objUpdate.sourceSettings.directoriesNetworkTraffic.value.length}`);
+
+            objUpdate.sourceSettings.directoriesNetworkTraffic.onChange = true;    
+        }
 
         this.setState(objUpdate);
     }
@@ -589,8 +597,9 @@ class CreatePageOrganizationAndSources extends React.Component {
                         */}
                         
                         <CreateBodyNewEntity 
+                            userPermissions={this.props.userPermissions}
                             listFieldActivity={this.props.listFieldActivity}
-                            listSourcesInformation={this.props.listSourcesInformation}/>
+                            listShortEntity={this.props.listShortEntity} />
                     </Tab>
                 </Tabs>
                 <ModalWindowSourceInfo 
@@ -616,8 +625,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                     msgBody={`Вы действительно хотите удалить ${(this.listSourceDelete.length > 1) ? "источники с номерами": "источник с номером"} ${this.listSourceDelete}`}
                     msgTitle={"Удаление"}
                     nameDel={this.listSourceDelete.join()}
-                    handlerConfirm={this.handlerSourceDelete}
-                />
+                    handlerConfirm={this.handlerSourceDelete} />
             </React.Fragment>
         );
     }

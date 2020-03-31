@@ -40,9 +40,8 @@ export default class CreateBodyNewEntity extends React.Component {
         this.modalWindowSettings = {
             type: "",
             name: "",
-            listFieldActivity: this.props.listFieldActivity, //this.getListFieldActivity.call(this),
+            listFieldActivity: this.props.listFieldActivity,
         };
-
 
         this.handlerAddEntity = this.handlerAddEntity.bind(this);
         this.handelrButtonAdd = this.handelrButtonAdd.bind(this);
@@ -73,15 +72,6 @@ export default class CreateBodyNewEntity extends React.Component {
         this.elOrg.on("change", this.selectedOrganization.bind(this));
         this.elDiv.on("change", this.selectedDivision.bind(this));
     }
-
-    /*getListFieldActivity(){
-        let objTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
-        }
-
-        return objTmp;
-    }*/
 
     isDisabledDelete(){
 
@@ -169,75 +159,69 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListOrganization(){
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
-        }
+        let listOrg = this.props.listShortEntity.shortListOrganization.map((item) => {
+            return { name: item.name, id: item.id };
+        });
+ 
+        listOrg.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
 
-        return listTmp;
+        return listOrg;
     }
 
     createListDivision(){
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].division] = {
-                did: this.props.listSourcesInformation[source].did,
-                oid: this.props.listSourcesInformation[source].oid,
+        let listDivName = this.props.listShortEntity.shortListDivision.map((item) => {
+            return {
+                name: item.name,
+                did: item.id,
+                oid: item.id_organization,
             };
-        }
+        });
 
-        return listTmp;
+        listDivName.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
+
+        return listDivName;
     }
 
     createListElementOrganization(){
-        let selectForm = "";
-        let lsi = this.state.listOrganizationName;
-
-        let listName = Object.keys(lsi);
-        listName.sort();
-
-        let listOptions = listName.map((name) => {
-            return <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>;
-        });
-
-        selectForm = <Form.Group>
-            <Form.Label>Организация</Form.Label>
-            <Form.Control as="select" size="sm" id="select_list_organization">
-                <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
-                {listOptions}
-            </Form.Control>
-        </Form.Group>;
-
-        return selectForm;
+        return (
+            <Form.Group>
+                <Form.Label>Организация</Form.Label>
+                <Form.Control as="select" size="sm" id="select_list_organization">
+                    <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
+                    {this.state.listOrganizationName.map((item) => {
+                        return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
+                    })}
+                </Form.Control>
+            </Form.Group>
+        );
     }
     
     createListElementDivision(){
-        let selectForm = "";       
-        let lsi = {};
-       
-        for(let nameDivision in this.state.listDivisionName){
-            let isEqual = this.state.chosenOrganizationID === this.state.listDivisionName[nameDivision].oid;
-            if(isEqual || this.state.chosenOrganizationID === null || this.state.chosenOrganizationID === "all"){
-                lsi[nameDivision] = this.state.listDivisionName[nameDivision].did;
+        let listOptions = this.state.listDivisionName.map((item) => {
+            let isEqual = this.state.chosenOrganizationID === item.oid;
 
-                continue;
+            if(isEqual || this.state.chosenOrganizationID === null || this.state.chosenOrganizationID === "all"){      
+                return <option value={item.did} key={`select_${item.did}_option`}>{item.name}</option>;
             }
-        }        
+        });
 
-        let listName = Object.keys(lsi);
-        listName.sort();
-
-        let listOptions = listName.map((name) => <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>);
-
-        selectForm = <Form.Group>
-            <Form.Label>Подразделение или филиал организации</Form.Label>
-            <Form.Control as="select" size="sm" id="select_list_division">
-                <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
-                {listOptions}
-            </Form.Control>
-        </Form.Group>;
-
-        return selectForm;
+        return (
+            <Form.Group>
+                <Form.Label>Подразделение или филиал организации</Form.Label>
+                <Form.Control as="select" size="sm" id="select_list_division">
+                    <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
+                    {listOptions}
+                </Form.Control>
+            </Form.Group>
+        );
     }
 
     handlerAddEntity(objInfo){
@@ -260,7 +244,24 @@ export default class CreateBodyNewEntity extends React.Component {
     createNewOrganization(options){
         //обновляем список организаций
         let updateOrgName = this.state.listOrganizationName;
-        updateOrgName[options.organizationName] = options.id;
+
+        //проверяем наличие организации с таким же названием
+        for(let i = 0; i < updateOrgName.length; i++){
+            if(updateOrgName[i].name === options.organizationName){
+                return;
+            }
+        }
+
+        updateOrgName.push({ 
+            name: options.organizationName, 
+            id: options.id,
+        });
+        updateOrgName.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
+
         this.setState({ listOrganizationName: updateOrgName });
         
         let listNewEntity = this.state.listNewEntity;
@@ -290,6 +291,18 @@ export default class CreateBodyNewEntity extends React.Component {
 
         //обновляем список подразделений
         let updateDiviName = this.state.listDivisionName;
+        updateDiviName.push({
+            name: options.divisionName,
+            did: options.id,
+            oid: options.parentID,
+        });
+
+        updateDiviName.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
+
         updateDiviName[options.divisionName] = {
             did: options.id,
             oid: options.parentID,
@@ -534,6 +547,15 @@ export default class CreateBodyNewEntity extends React.Component {
 
     sendInfoNewEntity(){
         console.log("Отправляем информацию о новых сущностях");
+
+        /**
+         * Избавился от тестовых данных, теперь все списки в данном
+         * разделе формируются только на основе данных получаемых с
+         * сервера.
+         * 
+         * Следующий этап, сделать отправку объекта с новыми сущьностями
+         * на сервер и добавление их в БД
+         */
     }
 
     render(){
@@ -552,7 +574,7 @@ export default class CreateBodyNewEntity extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-md-12 text-right">
-                        <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>добавить</Button>
+                        <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>Новая сущность</Button>
                     </div>
                 </div>
                 <br/>
@@ -564,13 +586,17 @@ export default class CreateBodyNewEntity extends React.Component {
                 <br/>
                 <div className="row">
                     <div className="col-md-12 text-right">
-                        <ButtonSaveNewEntity handler={this.sendInfoNewEntity} showButton={this.state.addedNewEntity} />
+                        <ButtonSaveNewEntity 
+                            handler={this.sendInfoNewEntity} 
+                            showButton={this.state.addedNewEntity} />
                     </div>
                 </div>
 
                 <ModalWindowAddEntity 
                     show={this.state.showModalWindow}
                     onHide={this.closeModalWindow}
+                    userPermissions={this.props.userPermissions}
+
                     settings={this.modalWindowSettings}
                     parentDivisionID={this.state.chosenDivisionID}
                     parentOrganizationID={this.state.chosenOrganizationID}
@@ -581,6 +607,7 @@ export default class CreateBodyNewEntity extends React.Component {
 }
 
 CreateBodyNewEntity.propTypes ={
+    userPermissions: PropTypes.object.isRequired,
     listFieldActivity: PropTypes.array.isRequired,
-    listSourcesInformation: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
 };

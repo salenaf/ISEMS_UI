@@ -47,19 +47,11 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
-        let list = globalObject.getData("commonSettings", "listFieldActivity");
-
-        let listField = [];
-        if(list.length > 0){
-            listField = list.sort();
-            listField.push("иная деятельность",);
-        }
-
         res.render("menu/settings/setting_organizations_and_sources", {
             header: objHeader,
-            userPermissions: userPermissions.management_organizations_and_sources.element_settings.management_organizations.element_settings,
+            userPermissions: userPermissions.management_organizations_and_sources.element_settings,
             mainInformation: result.mainInformation,
-            listFieldActivity: listField,
+            listFieldActivity: globalObject.getData("commonSettings", "listFieldActivity"),
         });
     });
 };

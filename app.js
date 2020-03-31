@@ -140,7 +140,11 @@ async.parallel([
      */
     (callback) => {
         process.nextTick(() => {
-            globalObject.setData("commonSettings", "listFieldActivity", config.get("appSettings:listFieldActivity"));
+            let listFieldActivity = config.get("appSettings:listFieldActivity");
+            listFieldActivity.sort();
+            listFieldActivity.push("иная деятельность");
+
+            globalObject.setData("commonSettings", "listFieldActivity", listFieldActivity);
 
             callback(null);
         });

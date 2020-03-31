@@ -440,6 +440,12 @@ export default class ModalWindowAddEntity extends React.Component {
             },
         };
 
+        this.modalType = {
+            source: "management_sources",
+            division: "management_division",
+            organization: "management_organizations",
+        };
+
         this.buttonAdd = this.buttonAdd.bind(this);
         this.windowClose = this.windowClose.bind(this); 
         this.handlerInput = this.handlerInput.bind(this);
@@ -452,9 +458,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     windowClose(){
-
-        console.log(`закрыть модальное окно для типа ${JSON.stringify(this.props.settings.type)}`);
-
         let pattern = {
             "organization": "organizationSettings",
             "division": "divisionSettings",
@@ -485,8 +488,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     buttonAdd(){
-        console.log(`Получить и проверить входные параметры заданные пользователем для модального окна типа: '${this.props.settings.type}'`);
-
         /**
          * проверяем корректность значений и их наличие
          */
@@ -850,8 +851,6 @@ export default class ModalWindowAddEntity extends React.Component {
                 objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;    
             }
 
-            console.log(objUpdate);
-
             this.setState( objUpdate );
     
             return;
@@ -875,6 +874,15 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     render(){
+        let addButtonIsDisabled = true;
+        let up = this.props.userPermissions[this.modalType[this.props.settings.type]];
+
+        if(this.props.settings.type !== "" && (typeof up !== "undefined")){
+            if(up.element_settings.create){
+                addButtonIsDisabled = false;
+            }
+        }
+
         return (
             <Modal
                 size="lg"
@@ -897,7 +905,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.windowClose} variant="outline-secondary">закрыть</Button>
-                    <Button onClick={this.buttonAdd} variant="outline-primary">добавить</Button>
+                    <Button onClick={this.buttonAdd} variant="outline-primary" disabled={addButtonIsDisabled}>добавить</Button>
                 </Modal.Footer>
             </Modal>
         );
@@ -907,6 +915,8 @@ export default class ModalWindowAddEntity extends React.Component {
 ModalWindowAddEntity.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func,
+    userPermissions: PropTypes.object.isRequired,
+
     settings: PropTypes.object,
     parentDivisionID: PropTypes.string,
     parentOrganizationID: PropTypes.string,
