@@ -1,13 +1,7 @@
-/**
- * Модуль обработчик изменения пароля пользователя
- * 
- * Версия 0.1, дата релиза 25.12.2019
- */
-
 "use strict";
 
-const crypto = require("crypto");
 const debug = require("debug")("handlerChangePassword");
+const crypto = require("crypto");
 
 const models = require("../../controllers/models");
 const MyError = require("../../libs/helpers/myError");
@@ -19,6 +13,11 @@ const informationAboutUser = require("../../libs/management_settings/information
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
 
+/**
+ * Модуль обработчик изменения пароля пользователя
+ * 
+ * @param {*} socketIo 
+ */
 module.exports = function(socketIo) {
     socketIo.on("change password", data => {
         debug(data);
@@ -109,21 +108,3 @@ function changeUserPassword(data, socketIo, callback) {
             callback(err);
         });
 }
-
-/**
- *                 mongodbQueryProcessor.queryUpdate(models.modelUser, {
-                    id: userInfo.id,
-                    update: {
-                        date_change: updateUser.dateChange,
-                        password: hashPassword.getHashPassword(md5string, "isems-ui"),
-                        group: updateUser.group,
-                        user_name: updateUser.userName,
-                        settings: {
-                            sourceMainPage: []
-                        },
-                    },
-                }, err => {
-                    if (err) reject(err);
-                    else resolve(updateUser);
-                });
- */

@@ -424,7 +424,6 @@ export default class CreateBodyNewEntity extends React.Component {
                         </div>);
                     }
                 }
-                
             }                
 
             if(parents !== "organization") {
@@ -542,20 +541,21 @@ export default class CreateBodyNewEntity extends React.Component {
         if(modifiedObject.listEntity.length === 0){
             this.setState({ addedNewEntity: false });
         }
-
     }
 
     sendInfoNewEntity(){
         console.log("Отправляем информацию о новых сущностях");
 
-        /**
-         * Избавился от тестовых данных, теперь все списки в данном
-         * разделе формируются только на основе данных получаемых с
-         * сервера.
-         * 
-         * Следующий этап, сделать отправку объекта с новыми сущьностями
-         * на сервер и добавление их в БД
-         */
+        this.props.socketIo.emit("add new entitys", {
+            actionType: "add new",
+            arguments: this.state.listNewEntity,
+        });
+
+        //очищаем список добавляемых объектов
+        this.setState({ listNewEntity: [] });
+
+        //убираем кнопку 'сохранить'
+        this.setState({ addedNewEntity: false });
     }
 
     render(){
@@ -583,7 +583,6 @@ export default class CreateBodyNewEntity extends React.Component {
                         {this.resultBody()}
                     </div>
                 </div>
-                <br/>
                 <div className="row">
                     <div className="col-md-12 text-right">
                         <ButtonSaveNewEntity 
@@ -596,7 +595,6 @@ export default class CreateBodyNewEntity extends React.Component {
                     show={this.state.showModalWindow}
                     onHide={this.closeModalWindow}
                     userPermissions={this.props.userPermissions}
-
                     settings={this.modalWindowSettings}
                     parentDivisionID={this.state.chosenDivisionID}
                     parentOrganizationID={this.state.chosenOrganizationID}
@@ -607,7 +605,8 @@ export default class CreateBodyNewEntity extends React.Component {
 }
 
 CreateBodyNewEntity.propTypes ={
+    socketIo: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
-    listFieldActivity: PropTypes.array.isRequired,
     listShortEntity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
 };

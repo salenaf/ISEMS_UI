@@ -585,18 +585,8 @@ class CreatePageOrganizationAndSources extends React.Component {
                             listSourcesFullInformation={this.props.listSourcesFullInformation}/>
                     </Tab>
                     <Tab eventKey="addElement" title="новая сущность">
-                        
-                        {/** 
-                            Затенять и делать не активным, при запрете группе добавлять новые сущности 
-                        
-                        На основе объекта listSourcesInformation в классе CreateBodyNewEntity формируется
-                        перечень организаций и подразделений в выпадающем списке, однако listSourcesInformation
-                        на прямую зависит от источнико, если источника нет то и в списке listSourcesInformation
-                        его не будет, хотя должны быть Организация и Подразделение которых тоже не будет.
-                        По этому, а PRODUCTION похоже нужен отдельный список Организаций и Подразделений получаемый с сервера
-                        */}
-                        
-                        <CreateBodyNewEntity 
+                        <CreateBodyNewEntity
+                            socketIo={this.props.socketIo} 
                             userPermissions={this.props.userPermissions}
                             listFieldActivity={this.props.listFieldActivity}
                             listShortEntity={this.props.listShortEntity} />
@@ -610,7 +600,6 @@ class CreatePageOrganizationAndSources extends React.Component {
                 <ModalWindowChangeSource                     
                     show={this.state.modalWindowChangeSource}
                     onHide={this.closeModalWindowChangeSource}
-                    socketIo={this.props.socketIo}
                     settings={this.modalWindowSourceInfoSettings}
                     isShowInfo={this.state.changeSourceInfoOutput} 
                     addNewFolder={this.handlerNewFolder}

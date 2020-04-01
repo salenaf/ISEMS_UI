@@ -1,14 +1,7 @@
-/**
- * Модуль обработчик действий над организациями, подразделениями и источниками
- * 
- * Версия 0.1, дата релиза 24.03.2020
- */
-
 "use strict";
 
-const debug = require("debug")("handlerOAS");
-
 const async = require("async");
+const debug = require("debug")("handlerOAS");
 
 const models = require("../../controllers/models");
 const MyError = require("../../libs/helpers/myError");
@@ -18,8 +11,14 @@ const helpersFunc = require("../../libs/helpers/helpersFunc");
 const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+//const validationObjectNewEntitys = require("../../libs/processing/routeSocketIo/validationObjectNewEntitys");
 const informationForPageManagementOrganizationAndSource = require("../../libs/management_settings/informationForPageManagementOrganizationAndSource");
 
+/**
+ * Модуль обработчик действий над сущностями (организациями, подразделениями и источниками)
+ *
+ * @param {*} socketIo 
+ */
 module.exports.addHandlers = function(socketIo) {
     debug("func 'addHandlers', START...");
     
@@ -44,43 +43,100 @@ function addNewEntitys(socketIo, data){
     debug("func 'addNewEntitys', START...");
     debug(data);
 
-    /**
-            checkUserAuthentication(socketIo)
-            .then(authData => {
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
             //авторизован ли пользователь
-                if (!authData.isAuthentication) {
-                    throw new MyError("organization and source management", "Пользователь не авторизован.");
-                }
-
-                //может ли пользователь создавать нового пользователя
-            if (!authData.document.groupSettings.management_users.element_settings.create.status) {
-                throw new MyError("organization and source management", "Невозможно добавить нового пользователя. Недостаточно прав на выполнение данного действия.");
+            if (!authData.isAuthentication) {
+                throw new MyError("organization and source management", "Пользователь не авторизован.");
             }
-        }).then(() => {
+
+            return authData.document.groupSettings.management_organizations_and_sources.element_settings;
+        }).then((authData) => {
             //проверяем параметры полученные от пользователя
-            if (!helpersFunc.checkUserSettingsManagementUsers(data.arguments)) {
-                throw new MyError("user management", "Невозможно добавить нового пользователя. Один или более заданных параметров некорректен.");
+            let obj = (require("../../libs/processing/routeSocketIo/validationObjectNewEntitys"))(data.arguments);
+            obj.authData = authData;
+
+            return obj;
+        }).then(({ result: newObjectEntity, errMsg: listErrors, authData: ad }) => {
+            //проверяем права пользователя на добавление сущностей различных типов
+            debug("new object entity:");
+            debug(newObjectEntity);
+            debug(`list errors: ${listErrors}`);
+            debug("check user permission");
+
+            /**
+             * Права пользователя протестировал (проверяется успешно)
+             * Валидация входных параметров выполняется, но надо
+             * попробовать сделать отправку через EventEmitter сообщений
+             * пользователю о некорректных параметрах при валидации
+             * 
+             * 
+            */
+
+            let { entityList, errMsg } = checkListEntitiesBasedUserPrivileges(newObjectEntity, ad);
+            if(errMsg){
+                throw errMsg;
             }
-            }).then(() => {
 
-            }).catch(err => {
-                if (err.name === "organization and source management") {
-                    return showNotify({
-                        socketIo: socketIo,
-                        type: "danger",
-                        message: err.message
-                    });
-                }
+            return entityList;
+        }).then((entityList) => {
+            //добавляем новые сущности в БД
+            return (require("../../libs/processing/routeSocketIo/insertNewEntity"))(entityList);
+        }).then(() => {
 
-                showNotify({
+            debug("получаем новый краткий список с информацией по источникам");
+
+            //получаем новый краткий список с информацией по сущностям
+            return new Promise((resolve, reject) => {
+                informationForPageManagementOrganizationAndSource((err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
+            });
+        }).then((shortSourceList) => {           
+            //отправляем новый список в интерфейс
+            //debug("отправляем новый список в интерфейс");
+            //debug("------ RESIVED NEW shortSourceList ------");
+            //debug(shortSourceList);
+
+            socketIo.emit("entity: new short source list", {
+                arguments: shortSourceList,
+            });
+
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Новые сущности были успешно добавлены."
+            });       
+
+        })/*.then(() => {
+            debug("____________________");
+            debug("ИНФОРМАЦИЯ В БД БЫЛА УСПЕШНО ДОБАВЛЕНА, ОЖИДАЕТСЯ ДАЛЬНЕЙШАЯ ОБРАБОТКА");
+            debug("____________________");
+
+
+
+        })*/.catch((err) => {
+            if (err.name === "organization and source management") {
+                return showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                    message: err.message
                 });
+            }
 
-                writeLogFile("error", err.toString());
+            debug("ERROR");
+            debug(err);
+
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
-     */
+
+            writeLogFile("error", err.toString());
+        });
+     
 }
 
 //получить информацию о сущности
@@ -393,7 +449,7 @@ function changeSourceInfo(socketIo, data){
 
             //debug("получаем новый краткий список с информацией по источникам");
 
-            //получаем новый краткий список с информацией по источникам
+            //получаем новый краткий список с информацией по сущностям
             return new Promise((resolve, reject) => {
                 informationForPageManagementOrganizationAndSource((err, result) => {
                     if (err) reject(err);
@@ -409,6 +465,12 @@ function changeSourceInfo(socketIo, data){
             socketIo.emit("entity: new short source list", {
                 arguments: shortSourceList,
             });            
+
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: `Информация по источнику ${data.source_id} была успешно изменена.`
+            });       
 
         }).catch((err) => {
             //debug("ERROR-------------------------");
@@ -534,4 +596,53 @@ function changeOrganizationInfo(socketIo, data){
 function deleteOrganizationInfo(socketIo, data){
     debug("func 'deleteOrganizationInfo', START...");
     debug(data);
+}
+
+/**
+ * Функция проверяет права пользователя на добавление новых сущьностей
+ * возвращает список сущьностей которые текущий пользователь может добавлять  
+ * 
+ * @param {*} listEntity 
+ * @param {*} userPermission 
+ */
+function checkListEntitiesBasedUserPrivileges(listEntity, userPermission){
+    let addOrg = userPermission.management_organizations.element_settings.create.status;
+    let addDivi = userPermission.management_division.element_settings.create.status;
+    let addSour = userPermission.management_sources.element_settings.create.status;
+
+    //действие разрешено для всех сущностей
+    if(addOrg && addDivi && addSour){
+        return { entityList: listEntity, errMsg: null };
+    }
+
+    //действие запрещено для всех сущностей
+    if(!addOrg && !addDivi && !addSour){
+        return { entityList: [], errMsg: new Error("пользователю полностью запрещено добавлять новые сущности") };
+    }
+
+    let newEntityList = listEntity.filter((item) => {
+        let orgId = (typeof item.id_organization === "undefined");
+        let divId = (typeof item.id_division === "undefined");
+
+        if(!orgId && divId){
+        //для организации        
+            if(addOrg){
+                return true;
+            }
+        } else if(!orgId && !divId){
+        //для подразделения
+            if(addDivi){
+                return true;
+            }
+        } else {
+        //для источника            
+            if(addSour){
+                return true;
+            }
+        }
+
+        return false;
+    });
+
+    return { entityList: newEntityList, errMsg: null};
 }

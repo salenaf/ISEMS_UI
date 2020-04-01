@@ -1,10 +1,3 @@
-/*
- * Формирование страницы управления организациями, ее подразделениями
- * и источниками
- *
- * Верися 0.1, дата релиза 23.03.2020
- * */
-
 "use strict";
 
 const async = require("async");
@@ -14,6 +7,12 @@ const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 const informationForPageManagementOrganizationAndSource = require("../../../libs/management_settings/informationForPageManagementOrganizationAndSource");
 
+/**
+ * Модуль формирующий страницу на которой реализовано управление сущностями (организациями, 
+ * ее подразделениями и источниками)
+ * 
+ * @param {*} socketIo
+ */ 
 module.exports = function(req, res, objHeader) {
     async.parallel({
         userOrganizationOrSourcePermissions: (callback) => {

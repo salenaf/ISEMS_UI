@@ -1,9 +1,3 @@
-/*
- * Модуль маршрутизации для запросов к HTTP серверу
- *
- * Версия 0.2, дата релиза 04.12.2019
- * */
-
 "use strict";
 
 const passport = require("passport");
@@ -17,6 +11,12 @@ const changeAdministratorPassword = require("../libs/changeAdministratorPassword
 //const processingManagementUsers = require("./pages/processing_http_request/processingManagementUsers");
 //const processingManagementSources = require("./pages/processing_http_request/processingManagementSources");
 
+/**
+ * Модуль маршрутизации для запросов к HTTP серверу
+ * 
+ * @param {*} app 
+ * @param {*} socketIo 
+ */
 module.exports = function(app, socketIo) {
     const pages = require("./pages");
 

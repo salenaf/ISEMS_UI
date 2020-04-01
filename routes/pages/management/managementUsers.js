@@ -1,9 +1,3 @@
-/*
- * Страница управления пользователями
- *
- * Верися 0.1, дата релиза 28.11.2019
- * */
-
 "use strict";
 
 const async = require("async");
@@ -13,6 +7,13 @@ const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage
 const informationForPageManagementUsers = require("../../../libs/management_settings/informationForPageManagementUsers");
 const informationForPageManagementGroups = require("../../../libs/management_settings/informationForPageManagementGroups");
 
+/**
+ * Модуль управления пользователями
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} objHeader 
+ */
 module.exports = function(req, res, objHeader) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей

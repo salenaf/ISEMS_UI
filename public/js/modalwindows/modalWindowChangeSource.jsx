@@ -369,7 +369,6 @@ export default class ModalWindowChangeSource extends React.Component {
 ModalWindowChangeSource.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
-    socketIo: PropTypes.object.isRequired,
     settings: PropTypes.object.isRequired,
     isShowInfo: PropTypes.bool.isRequired,
     addNewFolder: PropTypes.func.isRequired,

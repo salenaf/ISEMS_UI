@@ -1,9 +1,3 @@
-/**
- * Модуль обработчик действий над пользователями
- * 
- * Версия 0.2, дата релиза 10.12.2019
- */
-
 "use strict";
 
 const async = require("async");
@@ -22,6 +16,11 @@ const informationItemGroups = require("../../libs/management_settings/informatio
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
 
+/**
+ * Модуль обработчик действий над пользователями
+ * 
+ * @param {*} socketIo 
+ */
 module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "add new user": addUser,

@@ -105,7 +105,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
         //проверяем наличие всех элементов
         for(let elemName in pattern){
             if(listOrgOrSource[elemName] === "undefined"){
-                errMsg.push(new Error("в объекте с информацией об организации отсутствуют некоторые поля"));
+                errMsg.push("в объекте с информацией об организации отсутствуют некоторые поля");
 
                 return;
             }
@@ -114,7 +114,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
                 name: pattern[elemName].namePattern,
                 value: listOrgOrSource[elemName],
             })){
-                errMsg.push(new Error(pattern[elemName].messageError));
+                errMsg.push(pattern[elemName].messageError);
 
                 return;
             }
@@ -160,7 +160,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
         //проверяем наличие всех элементов
         for(let elemName in pattern){
             if(listOrgOrSource[elemName] === "undefined"){
-                errMsg.push(new Error("в объекте с информацией о подразделении отсутствуют некоторые поля"));
+                errMsg.push("в объекте с информацией о подразделении отсутствуют некоторые поля");
                 
                 return;
             }
@@ -235,7 +235,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
         //проверяем наличие всех элементов
         for(let elemName in commonPattern){
             if(typeof listOrgOrSource[elemName] === "undefined"){
-                errMsg.push(new Error("отсутствует некоторая информацией об источнике"));
+                errMsg.push("отсутствует некоторая информацией об источнике");
 
                 return;
             }
@@ -253,7 +253,7 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
         //проверяем сетевые настройки источника
         for(let elemName in networkPattern){
             if(listOrgOrSource.network_settings[elemName] === "undefined"){
-                errMsg.push(new Error("отсутствует некоторая информация, необходимая для осуществления сетевого соединения с источником"));
+                errMsg.push("отсутствует некоторая информация, необходимая для осуществления сетевого соединения с источником");
                 
                 return;
             }
@@ -309,7 +309,6 @@ function getValidObjectOrganizationOrSource(listOrgOrSource, listFieldActivity) 
         })){
             listOrgOrSource.description = "";
         }
-
        
         newList.push(listOrgOrSource);
     };
@@ -604,6 +603,56 @@ function insertInformationAboutObjectOrSource(listValideEntity){
     });
 
     return promises;
+}
+
+function checkListEntitiesBasedUserPrivileges(listEntity, userPermission){
+    console.log("func 'checkListEntitiesBasedUserPrivileges', START...");
+
+    let addOrg = userPermission.management_organizations.element_settings.create.status;
+    let addDivi = userPermission.management_division.element_settings.create.status;
+    let addSour = userPermission.management_sources.element_settings.create.status;
+
+    //действие разрешено для всех сущностей
+    if(addOrg && addDivi && addSour){
+
+        console.log("действие разрешено для всех сущностей");
+
+        return { entityList: listEntity, errMsg: null };
+    }
+
+    //действие запрещено для всех сущностей
+    if(!addOrg && !addDivi && !addSour){
+
+        console.log("действие запрещено для всех сущностей");
+
+        return { entityList: [], errMsg: new Error("пользователю полностью запрещено добавлять новые сущности") };
+    }
+
+    let newEntityList = listEntity.filter((item) => {
+        let orgId = (typeof item.id_organization === "undefined");
+        let divId = (typeof item.id_division === "undefined");
+
+        if(!orgId && divId){
+        //для организации        
+            if(addOrg){
+                return true;
+            }
+        } else if(!orgId && !divId){
+        //для подразделения
+            if(addDivi){
+                return true;
+            }
+        } else {
+        //для источника            
+            if(addSour){
+                return true;
+            }
+        }
+
+        return false;
+    });
+
+    return { entityList: newEntityList, errMsg: null};
 }
 
 let validList = [
@@ -1055,6 +1104,45 @@ describe("Тест 3. Валидация тестового объекта с и
     });
 });
 
+describe("Тест 3.1. Валидация тестового объекта с информацией по организациям и источникам", () => {
+    it("Должен быть получен новый, проверенный список, должны быть некоторые ошибки", () => {
+        validList.push({
+            "id_organization":"nifnienf838f88b383gb83g8883",
+            "name":"Организация REEc с непонятным родом деятельности",
+            "legal_address":"123555 г. Москва, ул. 1 Мая, д.20, ***к. 10",
+            "field_activity":"кракозябра",
+            "division_or_branch_list_id":[]
+        });
+
+        validList.push({
+            "id_organization":"8b20449203b458a161400921909",
+            "name":"Яндекс организация - вторая",
+            "legal_address":"311453, г. Москва, ул. 1-ого Мая, д. 53, к. 1",
+            "field_activity":"органы государственной власти",
+            "division_or_branch_list_id":[
+                {
+                    "id_organization":"8b20449203b458a161400921909",
+                    "id_division":"a3b16680b858c674522142127257",
+                    "name":"В***ажное подразделение №1",
+                    "physical_address":"г. Москва, ул. Щербинка, д. 21",
+                    "description":"просто примечание",
+                    "source_list":[]
+                }]
+        });
+        
+        let { result: newListObject, errMsg } = getValidObjectOrganizationOrSource(validList, globalObject.getData("commonSettings", "listFieldActivity")); 
+
+        //        console.log(newListObject);
+        console.log("- Тест 3.1. ----- newObjEntity -------");
+        console.log(JSON.stringify(newListObject));
+        console.log("ERROR");
+        console.log(errMsg);
+
+        expect(newListObject.length).not.toEqual(0);
+        expect(errMsg.length).not.toEqual(0);
+    });
+});
+
 /*
 describe("Тест 4. Загрузка, полученного после валидации списка, в БД", () => {
     it("Должен быть успешно загружен в БД весь список елементов, у которого дочерние елементы имеют родительские. Ошибок быть не должно.", (done) => {
@@ -1313,6 +1401,87 @@ describe("Тест 7. Проверка функции валидации пар�
         });    
     });
 });
+
+describe("Тест 8. Проверка прав пользователя на добавление различных типов сущьностей", () => {  
+    let listEntity = [{
+        id_organization: "517b071ab6715d91d3756498245746",
+        name: "Первая коммерческая организация",
+        legal_address: "мдмщ щмащ щмщаищща",
+        field_activity: "коммерческая деятельность"
+    }, {
+        id_organization: "517b071ab6715d91d3756498245746",
+        id_division: "b6a6b6d72615dda77b8238b2b105",
+        name: "Офис №1",
+        physical_address: "вуа  ау  аьшщуашшу",
+        description: ""
+    }, {
+        id_division: "b6a6b6d72615dda77b8238b2b105",
+        id_source: "4bb063441dc1936d38700a022d1a8",
+        source_id: "11001",
+        short_name: "Office №1",
+        network_settings: {
+            ipaddress: "32.14.41.3",
+            port: "11321",
+            token_id: "8ca525d77882b37a2d2935c75474"
+        },
+        source_settings: {
+            type_architecture_client_server: "client",
+            transmission_telemetry: "off",
+            maximum_number_simultaneous_filtering_processes: 5,
+            type_channel_layer_protocol: "ip",
+            list_directories_with_file_network_traffic: ["/folder_1", "/folder_2"]
+        },
+        description: ""
+    }];
+    
+    let userPermission = {
+        management_organizations: {
+            element_settings: { 
+                create: {
+                    id:"933da4bb4eed4eef2c3034a09738323f",
+                    status: true,
+                    description:"создание"
+                }, 
+                edit: {}, delete: {}},
+            id: "9c2b9e65157a833455ff4da6b29b4fa4",
+            name: "управление организациями"
+        },
+        management_division: {
+            element_settings: { 
+                create: {
+                    id:"933da4bb4egfdiifdic3034a09738323f",
+                    status: true,
+                    description:"создание"
+                }, 
+                edit: {}, delete: {}},
+            id: "98fb4a147fb46af6eb8020b64feab1c0",
+            name: "управление подразделениями"
+        },
+        management_sources: {
+            element_settings: { 
+                create: {
+                    id:"9sfsfa4bb4eed4eef2c3034a09738323f",
+                    status: true,
+                    description:"создание"
+                }, 
+                edit: {}, delete: {}},
+            id: "828c59969fb6ca31c003ec77aa074d59",
+            name: "управление источниками"
+        }
+    }; 
+
+    it("Должен быть получен список сущностей типы которых может добавлять пользователь", () => {
+        let { entityList, errMsg } = checkListEntitiesBasedUserPrivileges(listEntity, userPermission);
+
+        console.log("----- Новый список сущностей ----");
+        console.log(entityList);
+        console.log("===== Ошибки =====");
+        console.log(errMsg);
+
+        expect(errMsg).toBeNull();
+    });
+});
+
 
 /*
 describe("Тест 4. Загрузка тестового объекта в БД", () => {
