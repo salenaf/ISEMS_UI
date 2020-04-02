@@ -32,8 +32,8 @@ export default class CreateBodyNewEntity extends React.Component {
             showModalWindow: false,
             chosenDivisionID: null,
             chosenOrganizationID: null,
-            listOrganizationName: this.createListOrganization.call(this),
-            listDivisionName: this.createListDivision.call(this),
+            listOrganizationName: this.createListOrganization.call(this, this.props.listShortEntity),
+            listDivisionName: this.createListDivision.call(this, this.props.listShortEntity),
             listNewEntity: [],
         };
 
@@ -46,6 +46,8 @@ export default class CreateBodyNewEntity extends React.Component {
         this.handlerAddEntity = this.handlerAddEntity.bind(this);
         this.handelrButtonAdd = this.handelrButtonAdd.bind(this);
         this.closeModalWindow = this.closeModalWindow.bind(this);
+
+        this.listenerSocketIoConn = this.listenerSocketIoConn.call(this);
 
         this.createNewSource = this.createNewSource.bind(this);
         this.createNewDivision = this.createNewDivision.bind(this);
@@ -158,8 +160,8 @@ export default class CreateBodyNewEntity extends React.Component {
         }
     }
 
-    createListOrganization(){
-        let listOrg = this.props.listShortEntity.shortListOrganization.map((item) => {
+    createListOrganization(listShortEntity){
+        let listOrg = listShortEntity.shortListOrganization.map((item) => {
             return { name: item.name, id: item.id };
         });
  
@@ -172,8 +174,8 @@ export default class CreateBodyNewEntity extends React.Component {
         return listOrg;
     }
 
-    createListDivision(){
-        let listDivName = this.props.listShortEntity.shortListDivision.map((item) => {
+    createListDivision(listShortEntity){
+        let listDivName = listShortEntity.shortListDivision.map((item) => {
             return {
                 name: item.name,
                 did: item.id,
@@ -359,7 +361,7 @@ export default class CreateBodyNewEntity extends React.Component {
         let addNewSource = function(listNewEntity){
             for(let i = 0; i < listNewEntity.length; i++){
                 //ищем объект организации в listNewEntity
-                if(listNewEntity[i].id_division === options.parentID){
+                if((typeof listNewEntity[i].id_organization !== "undefined") && (listNewEntity[i].id_division === options.parentID)){
                     listNewEntity[i].source_list.push(newRecord);
                     isExist = true;
     
@@ -371,8 +373,12 @@ export default class CreateBodyNewEntity extends React.Component {
                 }
             }
         };
+
         let listNewEntity = this.state.listNewEntity;
         addNewSource(listNewEntity);
+
+        console.log(`isExist ${isExist}`);
+        console.log(listNewEntity);
 
         //если не нашли организацию просто добавляе в массив
         if(!isExist){
@@ -556,6 +562,13 @@ export default class CreateBodyNewEntity extends React.Component {
 
         //убираем кнопку 'сохранить'
         this.setState({ addedNewEntity: false });
+    }
+
+    listenerSocketIoConn(){
+        this.props.socketIo.on("entity: new short source list", (data) => {
+            this.setState({ listOrganizationName: this.createListOrganization.call(this, data.arguments) });
+            this.setState({ listDivisionName: this.createListDivision.call(this, data.arguments) });
+        });
     }
 
     render(){

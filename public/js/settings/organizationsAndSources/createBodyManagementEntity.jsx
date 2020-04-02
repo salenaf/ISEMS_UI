@@ -240,14 +240,14 @@ export default class CreateBodyManagementEntity extends React.Component {
         this.state = {
             showInfo: false,
             modalWindowSourceDel: false,
-            listOrganizationName: this.createListOrganization.call(this),
-            listDivisionName: this.createListDivision.call(this),
+            listOrganizationName: this.createListOrganization.call(this, this.props.listShortEntity.shortListOrganization),
+            listDivisionName: this.createListDivision.call(this, this.props.listShortEntity.shortListDivision),
             objectShowedInformation: {},
         };
 
         this.deleteEntityOptions = {};
 
-        this.listSourceName = this.createListSource.call(this);
+        this.listSourceName = this.createListSource.call(this, this.props.listShortEntity);
 
         this.checkValue = this.checkValue.bind(this);
         this.handlerSave = this.handlerSave.bind(this);
@@ -259,36 +259,45 @@ export default class CreateBodyManagementEntity extends React.Component {
         this.searchEntityInObjectShowedInformation = this.searchEntityInObjectShowedInformation.bind(this);
     }
 
-    createListOrganization(){
+    createListOrganization(list){
         let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
-        }
+        list.forEach((item) => {
+            listTmp[item.name] = item.id;
+        });
 
         return listTmp;
     }
 
-    createListDivision(){
+    createListDivision(list){
         let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].division] = {
-                did: this.props.listSourcesInformation[source].did,
-                oid: this.props.listSourcesInformation[source].oid,
+        list.forEach((item) => {
+            listTmp[item.name] = {
+                did: item.id,
+                oid: item.id_organization,
             };
-        }
+        });
 
         return listTmp;
     }
 
-    createListSource(){
+    createListSource(list){
         let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[`${source} ${this.props.listSourcesInformation[source].shortName}`] = {
-                sid: this.props.listSourcesInformation[source].sid,
-                did: this.props.listSourcesInformation[source].did,
-                oid: this.props.listSourcesInformation[source].oid,
+        list.shortListSource.forEach((item) => {
+            let organizationId = "";
+            for(let d of list.shortListDivision){
+                if(d.id === item.id_division){
+                    organizationId = d.id_organization;
+
+                    break;
+                }
+            }
+
+            listTmp[item.short_name] = {
+                sid: item.id,
+                did: item.id_division,
+                oid: organizationId,
             };
-        }
+        });
 
         return listTmp;
     }
@@ -386,6 +395,11 @@ export default class CreateBodyManagementEntity extends React.Component {
         console.log("func 'handlerSelected', START");
         console.log(obj);
 
+        this.props.socketIo.emit("entity information", { 
+            actionType: "get info about organization or division",
+            arguments: obj
+        });
+
         /**
          * Только для макета из оъекта 'listSourcesInformation' формируем объект 
          * содержащий информацию для вывода на страницу.
@@ -394,8 +408,8 @@ export default class CreateBodyManagementEntity extends React.Component {
          */
 
         //ТОЛЬКО ДЛЯ ТЕСТА!!! ищем в объекте listSourcesInformation информацию по ID
-        this.setState({objectShowedInformation: this.searchInfoListSourceInformation_test.call(this, obj)});
-        this.setState({ showInfo: true });
+        //this.setState({objectShowedInformation: this.searchInfoListSourceInformation_test.call(this, obj)});
+        //this.setState({ showInfo: true });
     }
 
     handlerInputChange(e){
@@ -576,11 +590,9 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 }
 
-/* listFieldActivity={this.getListFieldActivity.call(this)} */ 
-
 CreateBodyManagementEntity.propTypes ={
+    socketIo: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
     listFieldActivity: PropTypes.array.isRequired,
-    listSourcesInformation: PropTypes.object.isRequired,
-    listSourcesFullInformation: PropTypes.object.isRequired,
 };
 

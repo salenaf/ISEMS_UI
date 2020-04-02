@@ -40,14 +40,14 @@ module.exports.addHandlers = function(socketIo) {
 
 //обработчик для добавления новых сущностей
 function addNewEntitys(socketIo, data){
-    debug("func 'addNewEntitys', START...");
-    debug(data);
+//    debug("func 'addNewEntitys', START...");
+//    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
-                throw new MyError("organization and source management", "Пользователь не авторизован.");
+                throw new MyError("management auth", "Пользователь не авторизован.");
             }
 
             return authData.document.groupSettings.management_organizations_and_sources.element_settings;
@@ -58,21 +58,12 @@ function addNewEntitys(socketIo, data){
 
             return obj;
         }).then(({ result: newObjectEntity, errMsg: listErrors, authData: ad }) => {
+            //наличие ошибок при валидации данных полученных от пользователя
+            if(listErrors.length > 0){
+                throw new MyError("management validation", listErrors);
+            }
+
             //проверяем права пользователя на добавление сущностей различных типов
-            debug("new object entity:");
-            debug(newObjectEntity);
-            debug(`list errors: ${listErrors}`);
-            debug("check user permission");
-
-            /**
-             * Права пользователя протестировал (проверяется успешно)
-             * Валидация входных параметров выполняется, но надо
-             * попробовать сделать отправку через EventEmitter сообщений
-             * пользователю о некорректных параметрах при валидации
-             * 
-             * 
-            */
-
             let { entityList, errMsg } = checkListEntitiesBasedUserPrivileges(newObjectEntity, ad);
             if(errMsg){
                 throw errMsg;
@@ -83,56 +74,45 @@ function addNewEntitys(socketIo, data){
             //добавляем новые сущности в БД
             return (require("../../libs/processing/routeSocketIo/insertNewEntity"))(entityList);
         }).then(() => {
-
-            debug("получаем новый краткий список с информацией по источникам");
-
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Новые сущности были успешно добавлены."
+            });      
+        }).finally(() => {
             //получаем новый краткий список с информацией по сущностям
             return new Promise((resolve, reject) => {
                 informationForPageManagementOrganizationAndSource((err, result) => {
                     if (err) reject(err);
                     else resolve(result);
                 });
+            }).then((shortSourceList) => {             
+                socketIo.emit("entity: new short source list", {
+                    arguments: shortSourceList,
+                }); 
             });
-        }).then((shortSourceList) => {           
-            //отправляем новый список в интерфейс
-            //debug("отправляем новый список в интерфейс");
-            //debug("------ RESIVED NEW shortSourceList ------");
-            //debug(shortSourceList);
-
-            socketIo.emit("entity: new short source list", {
-                arguments: shortSourceList,
-            });
-
-            showNotify({
-                socketIo: socketIo,
-                type: "success",
-                message: "Новые сущности были успешно добавлены."
-            });       
-
-        })/*.then(() => {
-            debug("____________________");
-            debug("ИНФОРМАЦИЯ В БД БЫЛА УСПЕШНО ДОБАВЛЕНА, ОЖИДАЕТСЯ ДАЛЬНЕЙШАЯ ОБРАБОТКА");
-            debug("____________________");
-
-
-
-        })*/.catch((err) => {
-            if (err.name === "organization and source management") {
-                return showNotify({
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
                     socketIo: socketIo,
                     type: "danger",
                     message: err.message
                 });
+            } else if (err.name === "management validation") {               
+                err.message.forEach((msg) => {
+                    showNotify({
+                        socketIo: socketIo,
+                        type: "danger",
+                        message: msg
+                    });
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                });    
             }
-
-            debug("ERROR");
-            debug(err);
-
-            showNotify({
-                socketIo: socketIo,
-                type: "danger",
-                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
-            });
 
             writeLogFile("error", err.toString());
         });
@@ -145,6 +125,7 @@ function getEntityInformation(socketIo, data){
     //debug(data);
 
     switch(data.actionType){
+    //информация только по источнику
     case "get info only source":
         //debug("INFORMATION ONLY SOURCE");
 
@@ -199,6 +180,8 @@ function getEntityInformation(socketIo, data){
 
         break;
 
+    //полная информация организация, подразделение и источник
+    // поиск по источнику
     case "get info about source":
 
         //debug("INFORMATION ABOUT SOURCE");
@@ -278,12 +261,101 @@ function getEntityInformation(socketIo, data){
 
         break;
 
+    //информация по организации и подразделению
+    // поиск по любому ID: организации, подразделению или источнику
     case "get info about organization or division":
 
         debug("INFORMATION ABOUT ORGANIZATION OR DIVISION");
+        debug(data);
+
+        checkUserAuthentication(socketIo)
+            .then((authData) => {
+                //авторизован ли пользователь
+                if (!authData.isAuthentication) {
+                    throw new MyError("organization and source management", "Пользователь не авторизован.");
+                }
+            }).then(() => {
+                //проверяем параметры полученные от пользователя
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.value)) {
+                    throw new MyError("organization and source management", "Невозможно получить информацию. Один или более заданных параметров некорректен.");
+                }
+            }).then(() => {
+                switch(data.type){
+                case "organization":
+                    socketIo.emit("entity: set info about organization and division", {
+                        arguments: getInformationAboutOrganizationID(data.arguments.value)
+                    });
+                    /**
+ * Сделать обработчики для получения
+ * информации об организации и подразделениях
+ * по ID организации, подразделении или источнику
+ * 
+ */
+                    break;
+
+                case "division":
+
+                    break;
+
+                case "source":
+
+
+                }
+            }).catch((err) => {
+                debug("ERROR:");
+                debug(err);
+            });
 
         break;
     }
+}
+
+function getInformationAboutOrganizationID(organizationID){
+    debug("func 'getInformationAboutOrganizationID'");
+    debug(organizationID);
+
+    return new Promise((resolve, reject) => {
+        mongodbQueryProcessor.querySelect(
+            models.modelOrganizationName, { 
+                query: { id: organizationID },
+                select: { _id: 0,  __v: 0 },
+            }, (err, result) => {
+                if(err) reject(err);
+                else resolve(result);
+            });
+    }).then((orgInfo) => {
+        debug("Info about organization");
+        debug(orgInfo.division_or_branch_list_id);
+
+        if(orgInfo.division_or_branch_list_id.length === 0){
+            return orgInfo;
+        }
+
+        let promises = orgInfo.division_or_branch_list_id.map((id) => {
+            return getInformationAboutDivisionID(id);
+        });
+
+        Promise.all(promises)
+            .then(() => {
+                //здесь собрать новый orgInfo добавив в
+                // division_or_branch_list_id объекты подразделений
+            }).catch((err) => {
+                throw err;
+            });
+    });
+}
+
+function getInformationAboutDivisionID(divisionID){
+    return new Promise((resolve, reject) => {
+        mongodbQueryProcessor.querySelect(
+            models.modelDivisionBranchName, { 
+                query: { id: divisionID },
+                select: { _id: 0,  __v: 0 },
+            }, (err, result) => {
+                if(err) reject(err);
+                else resolve(result);
+            });
+    });
 }
 
 //изменить информацию об источнике
@@ -552,6 +624,11 @@ function deleteSourceInfo(socketIo, data){
                 arguments: shortSourceList,
             });            
 
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: `Источники с номерами ${data.arguments.listSource.join(",")} были успешно удалены. `
+            });      
         }).catch((err) => {
             debug("ERROR-------------------------");
             debug(err);
