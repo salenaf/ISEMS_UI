@@ -23,7 +23,24 @@ class ShowEntityInformation extends React.Component {
 
     createDivisionCard(){
         let num = 1;
+
+        if(this.props.resivedInfo.listDivision.length === 0){
+            return (<React.Fragment></React.Fragment>);
+        }
+
+        this.props.resivedInfo.listDivision.sort((a, b) => {
+            if(a.divisionName > b.divisionName) return 1;
+            if(a.divisionName === b.divisionName) return 0;
+            if(a.divisionName < b.divisionName) return -1;
+        });
+
         return this.props.resivedInfo.listDivision.map((item) => {
+            item.listSource.sort((a, b) => {
+                if(a.source_id > b.source_id) return 1;
+                if(a.source_id === b.source_id) return 0;
+                if(a.source_id < b.source_id) return -1;
+            });
+
             return (
                 <Card border="dark" key={`key_division_${num}`}>
                     <Accordion.Toggle className="p-2 alert-secondary text-dark" as={Card.Header} eventKey={num}>{item.divisionName}</Accordion.Toggle>
@@ -52,7 +69,7 @@ class ShowEntityInformation extends React.Component {
                             <Row>
                                 <Col md={6}><Form.Control as="textarea" onChange={this.props.handlerInputChange} value={item.description} id={`description:${item.id}`}></Form.Control></Col>
                                 <Col md={2} className="text-left">источники:</Col>
-                                <Col md={4} className="text-left"><ul>{item.listSource.map((source) => <li key={`li_source_${source}`}>{source}</li>)}</ul></Col>
+                                <Col md={4} className="text-left"><ul>{item.listSource.map((item) => <li key={`li_source_${item.source_id}_${item.short_name}`}>{`${item.source_id} ${item.short_name}`}</li>)}</ul></Col>
                             </Row>
                             <Row>
                                 <Col className="text-right">
@@ -247,6 +264,7 @@ export default class CreateBodyManagementEntity extends React.Component {
 
         this.deleteEntityOptions = {};
 
+        this.handlerEvents.call(this);
         this.listSourceName = this.createListSource.call(this, this.props.listShortEntity);
 
         this.checkValue = this.checkValue.bind(this);
@@ -257,6 +275,19 @@ export default class CreateBodyManagementEntity extends React.Component {
         this.handlerEntityDelete = this.handlerEntityDelete.bind(this);
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
         this.searchEntityInObjectShowedInformation = this.searchEntityInObjectShowedInformation.bind(this);
+    }
+
+    handlerEvents(){
+
+        console.log("func 'handlerEvents'");
+
+        this.props.socketIo.on("entity: set info about organization and division", (data) => {
+            console.log("Events 'entity: set info about organization and division'");
+            console.log(data);
+
+            this.setState({ objectShowedInformation: data.arguments });
+            this.setState({ showInfo: true });
+        });
     }
 
     createListOrganization(list){
@@ -322,94 +353,11 @@ export default class CreateBodyManagementEntity extends React.Component {
         return {};
     }
 
-    /*getListFieldActivity(){
-        let objTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
-        }
-
-        return objTmp;
-    }*/
-
-    searchInfoListSourceInformation_test({ type: searchType, value: searchID }){
-        let paramType = {
-            "organization": "oid",
-            "division": "did",
-            "source": "id",
-        };
-    
-        let lsi = this.props.listSourcesFullInformation;
-        let tmp = {};
-        let oid = "";
-    
-        //получаем организацию
-        for(let sourceID in lsi){
-            if(lsi[sourceID][paramType[searchType]] === searchID){
-                tmp.id = lsi[sourceID].oid;
-                tmp.organizationName = lsi[sourceID].organization.name;
-                tmp.organizationNameIsValid = true;
-                tmp.organizationNameIsInvalid = false;
-                tmp.dateRegister = lsi[sourceID].organization.dateRegister;
-                tmp.dateChange = lsi[sourceID].organization.dateChange;
-                tmp.fieldActivity = lsi[sourceID].organization.fieldActivity;
-                tmp.legalAddress = lsi[sourceID].organization.legalAddress;
-                tmp.legalAddressIsValid = true;
-                tmp.legalAddressIsInvalid = false;
-                tmp.listDivision = [];
-    
-                oid = lsi[sourceID].oid;
-    
-                break;
-            }
-        }
-    
-        for(let sourceID in lsi){
-            if(lsi[sourceID].oid === oid){
-                let sourceListTmp = [];
-                for(let sid in lsi){
-                    if(lsi[sid].did === lsi[sourceID].did){
-                        sourceListTmp.push(`${sid} ${lsi[sid].shortName}`);
-                    }
-                }
-    
-                tmp.listDivision.push({
-                    "id": lsi[sourceID].did,
-                    "divisionName": lsi[sourceID].division.name,
-                    "divisionNameIsValid": true,
-                    "divisionNameIsInvalid": false,
-                    "dateRegister": lsi[sourceID].division.dateRegister,
-                    "dateChange": lsi[sourceID].division.dateChange,
-                    "physicalAddress": lsi[sourceID].division.physicalAddress,
-                    "physicalAddressIsValid": true,
-                    "physicalAddressIsInvalid": false,
-                    "description": lsi[sourceID].division.description,
-                    "listSource": sourceListTmp,
-                });
-            }
-        }
-
-        return tmp;
-    }
-
     handlerSelected(obj){
-        console.log("func 'handlerSelected', START");
-        console.log(obj);
-
         this.props.socketIo.emit("entity information", { 
             actionType: "get info about organization or division",
             arguments: obj
         });
-
-        /**
-         * Только для макета из оъекта 'listSourcesInformation' формируем объект 
-         * содержащий информацию для вывода на страницу.
-         * 
-         * !!! В Production готовый объект с информацией будет приходить с сервера !!!
-         */
-
-        //ТОЛЬКО ДЛЯ ТЕСТА!!! ищем в объекте listSourcesInformation информацию по ID
-        //this.setState({objectShowedInformation: this.searchInfoListSourceInformation_test.call(this, obj)});
-        //this.setState({ showInfo: true });
     }
 
     handlerInputChange(e){
@@ -468,7 +416,7 @@ export default class CreateBodyManagementEntity extends React.Component {
             }
 
             let reqOrg = JSON.stringify({ 
-                action: "entity_save", 
+                action: "change organization info", 
                 entityType: entityType, 
                 entityID: entityID,
                 options: {
@@ -488,7 +436,7 @@ export default class CreateBodyManagementEntity extends React.Component {
         }
 
         let reqDiv = JSON.stringify({ 
-            action: "entity_save", 
+            action: "change division info", 
             entityType: entityType, 
             entityID: entityID,
             options: {

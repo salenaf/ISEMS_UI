@@ -265,8 +265,8 @@ function getEntityInformation(socketIo, data){
     // поиск по любому ID: организации, подразделению или источнику
     case "get info about organization or division":
 
-        debug("INFORMATION ABOUT ORGANIZATION OR DIVISION");
-        debug(data);
+        //debug("INFORMATION ABOUT ORGANIZATION OR DIVISION");
+        //debug(data);
 
         checkUserAuthentication(socketIo)
             .then((authData) => {
@@ -280,30 +280,83 @@ function getEntityInformation(socketIo, data){
                     throw new MyError("organization and source management", "Невозможно получить информацию. Один или более заданных параметров некорректен.");
                 }
             }).then(() => {
-                switch(data.type){
+                switch(data.arguments.type){
                 case "organization":
-                    socketIo.emit("entity: set info about organization and division", {
-                        arguments: getInformationAboutOrganizationID(data.arguments.value)
-                    });
-                    /**
- * Сделать обработчики для получения
- * информации об организации и подразделениях
- * по ID организации, подразделении или источнику
- * 
- */
-                    break;
+                    return getInformationAboutOrganizationID(data.arguments.value)
+                        .then((result) => {
+                            socketIo.emit("entity: set info about organization and division", {
+                                arguments: result
+                            });
+                        }).catch((err) => {
+                            throw err;
+                        });
 
                 case "division":
+                    return new Promise((resolve, reject) => {
+                        mongodbQueryProcessor.querySelect(
+                            models.modelDivisionBranchName, { 
+                                query: { id: data.arguments.value },
+                                select: { id_organization: 1 },
+                            }, (err, organizationInfo) => {
+                                if(err) reject(err);
+                                else resolve(organizationInfo.id_organization);
+                            });
 
-                    break;
+                    }).then((organizationId) => {
+                        return getInformationAboutOrganizationID(organizationId)
+                            .then((result) => {
+                                socketIo.emit("entity: set info about organization and division", {
+                                    arguments: result
+                                });
+                            }).catch((err) => {
+                                throw err;
+                            });
+                    }).catch((err) => {
+                        throw err;
+                    });
 
                 case "source":
+                    debug("SEARCH SOURCE...");
 
+                    return new Promise((resolve, reject) => {
+                        mongodbQueryProcessor.querySelect(
+                            models.modelDivisionBranchName, { 
+                                query: { source_list: data.arguments.value },
+                                select: { id_organization: 1 },
+                            }, (err, organizationInfo) => {
+                                if(err) reject(err);
+                                else resolve(organizationInfo.id_organization);
+                            });
 
+                    }).then((organizationId) => {
+                        return getInformationAboutOrganizationID(organizationId)
+                            .then((result) => {
+                                socketIo.emit("entity: set info about organization and division", {
+                                    arguments: result
+                                });
+                            }).catch((err) => {
+                                throw err;
+                            });
+                    }).catch((err) => {
+                        throw err;
+                    });
                 }
             }).catch((err) => {
-                debug("ERROR:");
-                debug(err);
+                if (err.name === "organization and source management") {
+                    return showNotify({
+                        socketIo: socketIo,
+                        type: "danger",
+                        message: err.message
+                    });
+                }
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                });
+
+                writeLogFile("error", err.toString());
             });
 
         break;
@@ -311,50 +364,83 @@ function getEntityInformation(socketIo, data){
 }
 
 function getInformationAboutOrganizationID(organizationID){
-    debug("func 'getInformationAboutOrganizationID'");
-    debug(organizationID);
+    //debug("func 'getInformationAboutOrganizationID'");
+    //debug(organizationID);
 
     return new Promise((resolve, reject) => {
         mongodbQueryProcessor.querySelect(
             models.modelOrganizationName, { 
                 query: { id: organizationID },
-                select: { _id: 0,  __v: 0 },
+                select: { _id: 0, __v: 0 },
             }, (err, result) => {
                 if(err) reject(err);
                 else resolve(result);
             });
     }).then((orgInfo) => {
-        debug("Info about organization");
-        debug(orgInfo.division_or_branch_list_id);
+        let newObj = {
+            id: orgInfo.id,
+            organizationName: orgInfo.name,
+            organizationNameIsValid: true,
+            organizationNameIsInvalid: false,
+            dateRegister: orgInfo.date_register,
+            dateChange: orgInfo.date_change,
+            fieldActivity: orgInfo.field_activity,
+            legalAddress: orgInfo.legal_address,
+            legalAddressIsValid: true,
+            legalAddressIsInvalid: false,
+            listDivision: [],
+        };
 
         if(orgInfo.division_or_branch_list_id.length === 0){
-            return orgInfo;
+            return newObj;
         }
 
-        let promises = orgInfo.division_or_branch_list_id.map((id) => {
-            return getInformationAboutDivisionID(id);
-        });
+        return getInformationAboutDivision(orgInfo.division_or_branch_list_id)
+            .then((listInfo) => {
+                newObj.listDivision = listInfo;
 
-        Promise.all(promises)
-            .then(() => {
-                //здесь собрать новый orgInfo добавив в
-                // division_or_branch_list_id объекты подразделений
-            }).catch((err) => {
-                throw err;
+                return newObj;
             });
     });
 }
 
-function getInformationAboutDivisionID(divisionID){
+function getInformationAboutDivision(listDivision){
     return new Promise((resolve, reject) => {
         mongodbQueryProcessor.querySelect(
             models.modelDivisionBranchName, { 
-                query: { id: divisionID },
+                isMany: true,
+                query: { id: listDivision },
                 select: { _id: 0,  __v: 0 },
             }, (err, result) => {
                 if(err) reject(err);
                 else resolve(result);
             });
+    }).then((listDivisionInfo) => {
+        return Promise.all(listDivisionInfo.map((divisionInfo) => {
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(
+                    models.modelSourcesParameter, { 
+                        isMany: true,
+                        query: { id: divisionInfo.source_list },
+                        select: { _id: 0, source_id: 1,  short_name: 1 },
+                    }, (err, sourceList) => {
+                        if(err) reject(err);
+                        else resolve({
+                            id: divisionInfo.id,
+                            divisionName: divisionInfo.name,
+                            divisionNameIsValid: true,
+                            divisionNameIsInvalid: false,
+                            dateRegister: divisionInfo.date_register,
+                            dateChange: divisionInfo.date_change,
+                            physicalAddress: divisionInfo.physical_address,
+                            physicalAddressIsValid: true,
+                            physicalAddressIsInvalid: false,
+                            description: divisionInfo.description,
+                            listSource: sourceList,
+                        });
+                    });
+            });
+        }));
     });
 }
 
@@ -582,7 +668,7 @@ function deleteSourceInfo(socketIo, data){
 
             debug("может ли пользователь удалять информацию об источнике");
 
-            //может ли пользователь изменять информацию об источнике
+            //может ли пользователь удалять информацию об источнике
             if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_sources.element_settings.delete.status) {
                 throw new MyError("organization and source management", "Невозможно удалить выбранные источники. Недостаточно прав на выполнение данного действия.");
             }
@@ -655,6 +741,106 @@ function deleteSourceInfo(socketIo, data){
 function changeDivisionInfo(socketIo, data){
     debug("func 'changeDivisionInfo', START...");
     debug(data);
+
+    /**
+ * Потестировать эту функцию
+ * и понять почему она не запускается
+ * 
+ */
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //debug("авторизован ли пользователь");
+
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("organization and source management", "Пользователь не авторизован.");
+            }
+
+            //debug("может ли пользователь изменять информацию об источнике");
+
+            //может ли пользователь изменять информацию об источнике
+            if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_division.element_settings.edit.status) {
+                throw new MyError("organization and source management", "Невозможно изменить информацию о подразделении. Недостаточно прав на выполнение данного действия.");
+            }
+        }).then(() => {
+            
+            debug("проверяем параметры полученные от пользователя");
+
+            let commonPattern = {
+                "divisionName": {
+                    "namePattern": "fullNameHost",
+                    "messageError": "название подразделения или филиала содержит недопустимые значения",
+                },
+                "physicalAddress": {
+                    "namePattern": "stringRuNumCharacter",
+                    "messageError": "физический адрес подразделения содержит недопустимые значения",
+                },
+                "description": {
+                    "namePattern": "inputDescription",
+                    "messageError": "обнаружен недопустимый символ в дополнительном описании подразделения",
+                },
+            };
+
+            //проверяем параметры полученные от пользователя
+            return new Promise((resolve, reject) => {
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.entityType)) {
+                    reject(new MyError("organization and source management", "Невозможно получить информацию. Один или более заданных параметров некорректен."));
+                }
+                
+                for(let elem in data.options){
+                    if(!helpersFunc.checkInputValidation({ 
+                        name: commonPattern[elem].namePattern, 
+                        value: data.options[elem],
+                    })){
+                        reject(new MyError("organization and source management", commonPattern[elem].messageError));
+                    }
+
+                    resolve();
+                }
+            });
+        }).then(() => {
+            
+            debug("обновляем информацию в БД");
+
+            //обновляем информацию в БД
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.queryUpdate(models.modelDivisionBranchName, {
+                    query: { id: data.entityType },
+                    update: {
+                        name: data.options.divisionName,
+                        physical_address: data.options.physicalAddress,
+                        description: data.options.description,
+                        date_change: +(new Date),
+                    },
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        }).then(() => {
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: `Информация о подразделении '${data.options.divisionName}'' была успешно изменена.`
+            });       
+        }).catch((err) => {
+            if (err.name === "organization and source management") {
+                return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
+            }
+
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+            });
+
+            writeLogFile("error", err.toString());        
+        });
 }
 
 //удалить всю информацию о подразделении
