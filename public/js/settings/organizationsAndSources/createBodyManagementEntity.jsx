@@ -165,15 +165,20 @@ class CreateListEntity extends React.Component {
         this.handlerChoose = this.handlerChoose.bind(this);
     }
 
-    componentDidMount() {
+    handlerDropDown(){
         this.el = $("#dropdown_all_entity");
        
         this.el.select2({
             placeholder: "выбор сущности",
             containerCssClass: "input-group input-group-sm",
+            width: "auto",
         });
-    
+
         this.el.on("change", this.handlerChoose);
+    }
+
+    componentDidMount() {
+        this.handlerDropDown.call(this);
     }
 
     listOrganization(){
@@ -211,13 +216,6 @@ class CreateListEntity extends React.Component {
 
         let [ typeValue, valueID ] = e.target.value.split(":");
 
-        /** 
-         * В Production отправляем, через WebSocket, серверу запрос на поиск информации в БД
-         * при этом в конструкторе должна быть выполненна функция с обработчиком сообщений 
-         * от сервера
-         */
-
-        /* для макета следующая реализация */
         this.props.handlerSelected({
             type: typeValue,
             value: valueID,
@@ -256,11 +254,14 @@ export default class CreateBodyManagementEntity extends React.Component {
 
         this.state = {
             showInfo: false,
+            showModalAlert: false,
             modalWindowSourceDel: false,
             listOrganizationName: this.createListOrganization.call(this, this.props.listShortEntity.shortListOrganization),
             listDivisionName: this.createListDivision.call(this, this.props.listShortEntity.shortListDivision),
             objectShowedInformation: {},
         };
+
+        this.alertMessage = { header: "", msg: "" };
 
         this.deleteEntityOptions = {};
 
@@ -282,11 +283,74 @@ export default class CreateBodyManagementEntity extends React.Component {
         console.log("func 'handlerEvents'");
 
         this.props.socketIo.on("entity: set info about organization and division", (data) => {
-            console.log("Events 'entity: set info about organization and division'");
-            console.log(data);
-
             this.setState({ objectShowedInformation: data.arguments });
             this.setState({ showInfo: true });
+        });
+
+        this.props.socketIo.on("entity: change organization", (data) => {
+            if(data.arguments.id === this.state.objectShowedInformation.id){
+                let orgList = this.state.listOrganizationName;
+                for(let name in orgList){
+                    if(orgList[name] === data.arguments.id){
+                        delete orgList[name];
+   
+                        orgList[this.state.objectShowedInformation.organizationName] = data.arguments.id;
+                        this.setState({ listOrganizationName: orgList });
+
+                        this.el = $("#dropdown_all_entity");
+                        this.el.select2({
+                            placeholder: "выбор сущности",
+                            containerCssClass: "input-group input-group-sm",
+                            width: "auto",
+                        });
+
+                        break;
+                    }
+                }
+            }
+        });
+
+        this.props.socketIo.on("entity: change division", (data) => {
+            let ld = this.state.objectShowedInformation.listDivision;
+            if(typeof ld !== "undefined"){
+                for(let i = 0; i < ld.length; i++){
+                    if(ld[i].id === data.arguments.id){
+                        let divList = this.state.listDivisionName;
+   
+                        for(let name in divList){
+                            if(divList[name].did === data.arguments.id){
+                                let newDivName = { did: divList[name].did, oid: divList[name].oid };
+
+                                delete divList[name];
+                                divList[ld[i].divisionName] = newDivName;
+                                
+                                this.setState({ listDivisionName: divList });
+
+                                this.el = $("#dropdown_all_entity");
+                                this.el.select2({
+                                    placeholder: "выбор сущности",
+                                    containerCssClass: "input-group input-group-sm",
+                                    width: "auto",
+                                });
+
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+        });
+
+        this.props.socketIo.on("entity: delete division", (data) => {
+            console.log("RECEIVED MESSAGE ABOUT DELETE DIVISION");
+            console.log(data);
+        });
+
+        this.props.socketIo.on("entity: delete organization", (data) => {
+            console.log("RECEIVED MESSAGE ABOUT DELETE ORGANIZTION");
+            console.log(data);
         });
     }
 
@@ -460,18 +524,63 @@ export default class CreateBodyManagementEntity extends React.Component {
     handlerEntityDelete(){
         let request = JSON.stringify({ action: "entity_delete", entityType: this.deleteEntityOptions.entityType, entityID: this.deleteEntityOptions.entityID });
 
-        /**
-         * В БД сделать проверку на наличие дочерних потомков у удаляемой сущности. Если есть потомки то удаление не производится,
-         * выводится информационное сообщение о невозможности удалить сущност у которой есть потомки
-         */
+        console.log(this.state);
+
+        if(this.deleteEntityOptions.entityType === "organization"){
+            if(this.state.objectShowedInformation.listDivision.length > 0){
+                let listDivision = this.state.objectShowedInformation.listDivision.map((item) => item.divisionName).join(", ");
+
+                this.alertMessage = { 
+                    header: `Невозможно удалить организацию '${this.deleteEntityOptions.name}'.`, 
+                    msg: `К данной организации принадлежат следующие дочерние подразделения: ${listDivision}. Для удаления организации сначало необходимо удалить все дочерние подразделения.` 
+                };
+    
+                this.setState({ showModalAlert: true });
+
+                return;
+            }
+
+            //отправляем серверу запрос на удаление 
+            this.props.socketIo.emit("delete organization info", { arguments: { organizationId: this.deleteEntityOptions.entityID }});
+        }
+
+        if(this.deleteEntityOptions.entityType === "division"){
+            let ld = this.state.objectShowedInformation.listDivision;
+            for(let i = 0; i < ld.length; i++){
+                if(ld[i].id === this.deleteEntityOptions.entityID){
+                    if(ld[i].listSource.length > 0){
+                        let listSource = ld[i].listSource.map((item) => `${item.source_id} ${item.short_name}`).join(", ");
+
+                        this.alertMessage = { 
+                            header: `Невозможно удалить подразделение '${ld[i].divisionName}' принадлежащее организации '${this.state.objectShowedInformation.organizationName}'.`, 
+                            msg: `Данному подразделению принадлежат следующие источники: ${listSource}. Для удаления подразделения сначало необходимо удалить все дочерние источники.` 
+                        };
+
+                        this.setState({ showModalAlert: true });
+                    } else {
+                        //отправляем серверу запрос на удаление 
+                        this.props.socketIo.emit("delete division info", { 
+                            arguments: { 
+                                divisionId: this.deleteEntityOptions.entityID,
+                                organizationId: this.state.objectShowedInformation.id
+                            }
+                        });
+                    }
+
+                    return;
+                }
+            }
+
+        }
 
         console.log(`отправляем серверу запрос для 'УДАЛЕНИЯ' информации из БД, ${request}`);
-        
-        this.closeModalWindowSourceDel();
     }
 
     closeModalWindowSourceDel(){
         this.setState({ modalWindowSourceDel: false });
+
+        this.alertMessage = { header: "", msg: "" };
+        this.setState({ showModalAlert: false });
     }
 
     checkValue(nameInput, value){
@@ -497,6 +606,11 @@ export default class CreateBodyManagementEntity extends React.Component {
         let numDivision = Object.keys(this.state.listDivisionName).length;
         let numSource = Object.keys(this.listSourceName).length;
 
+        console.log("====================");
+        console.log(this.state.showModalAlert);
+        console.log(this.alertMessage);
+        console.log("++++++++++++++++++++");
+
         return (
             <React.Fragment>
                 <br/>
@@ -509,7 +623,6 @@ export default class CreateBodyManagementEntity extends React.Component {
                             listOrganization={this.state.listOrganizationName}
                             listDivision={this.state.listDivisionName}
                             listSource={this.listSourceName}
-
                             handlerSelected={this.handlerSelected} />
                     </Col>
                 </Row>
@@ -523,12 +636,13 @@ export default class CreateBodyManagementEntity extends React.Component {
                     handlerInputChange={this.handlerInputChange} />
                 <ModalWindowConfirmMessage 
                     show={this.state.modalWindowSourceDel}
+                    showAlert={this.state.showModalAlert}
+                    alertMessage={this.alertMessage}
                     onHide={this.closeModalWindowSourceDel}
                     msgBody={`Вы действительно хотите удалить ${(this.deleteEntityOptions.entityType === "organization") ? "организацию":"подразделение"} '${this.deleteEntityOptions.name}'`}
                     msgTitle={"Удаление"}
                     nameDel=""
-                    handlerConfirm={this.handlerEntityDelete}
-                />
+                    handlerConfirm={this.handlerEntityDelete} />
             </React.Fragment>
         );
     }

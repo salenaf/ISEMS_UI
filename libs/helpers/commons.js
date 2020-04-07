@@ -19,7 +19,7 @@ module.exports = {
             "countProcess": new RegExp("^[0-9]{1}$"),
             "intervalTransmission": new RegExp("^[0-9]{1,}$"),
             "folderStorage": new RegExp("^[\\w\\/_-]{3,}$"),
-            "inputDescription": new RegExp("^[a-zA-Zа-яА-ЯёЁ().,@№\"!?_-\\s]{1,}$"),
+            "inputDescription": new RegExp("^[a-zA-Zа-яА-ЯёЁ().,@№\"!?_-\\s]{0,}$"),
             "stringRuNumCharacter": new RegExp("^[а-яА-ЯёЁ0-9\\s.,№-]+$"),
             "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
             "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),

@@ -689,6 +689,24 @@ function deleteSourceInfo(socketIo, data){
                         else resolve();
                     });
                 });
+
+                /**
+ * 
+ *              Забыл!!!!
+ * Нужно удалить id источника из подразделения
+ * из массива 'source_list'
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
             }));
         }).then(() => {
 
@@ -831,7 +849,11 @@ function changeDivisionInfo(socketIo, data){
                 socketIo: socketIo,
                 type: "success",
                 message: `Информация о подразделении '${data.arguments.divisionName}'' была успешно изменена.`
-            });       
+            });  
+            
+            socketIo.emit("entity: change division", {
+                arguments: { id: data.entityId },
+            });
         }).catch((err) => {
 
             debug("ERROR:");
@@ -859,6 +881,105 @@ function changeDivisionInfo(socketIo, data){
 function deleteDivisionInfo(socketIo, data){
     debug("func 'deleteDivisionInfo', START...");
     debug(data);
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            debug("авторизован ли пользователь");
+
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("organization and source management", "Пользователь не авторизован.");
+            }
+
+            debug("может ли пользователь удалять информацию о подразделении");
+
+            //может ли пользователь удалять информацию о подразделении
+            if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_division.element_settings.delete.status) {
+                throw new MyError("organization and source management", "Невозможно удалить подразделение. Недостаточно прав на выполнение данного действия.");
+            }
+        }).then(() => {
+
+            debug("удаляем выбранное подразделение");
+            
+            //удаляем выбранное подразделение
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.queryDelete(models.modelDivisionBranchName, {
+                    query: { 
+                        "id": data.arguments.divisionId, 
+                        "source_list": { "$size": 0 },
+                    },
+                }, (err, numElemDelete) => {
+
+                    debug(err);
+                    debug(`COUNT ELEM FOR DEELETE = ${numElemDelete}`);
+
+                    if (err) reject(err);
+                    if(numElemDelete === 0){
+                        resolve();
+                    }
+
+                    //удаляем подразделение из организации
+                    return new Promise((resolve, reject) => {
+                        /**
+ * Нужно удалить id подразделения из организации
+ * 
+ * проверить эту функцию, и тоже самое сделать для источников
+ * 
+ */
+                        debug("//удаляем подразделение из организации");
+                        mongodbQueryProcessor.queryUpdate(models.modelOrganizationName, {
+                            query: { id: data.arguments.organizationId },
+                            select: { "$pull": { "division_or_branch_list_id": data.arguments.divisionId }}
+                        }, (err) => {
+                            /**
+ * не удаляет из массива
+ * видимо $pull не срабатывает (может не туда его запихнул)
+ * 
+ */
+                            debug(err);
+
+                            if(err) reject(err);
+                            else resolve();
+                        });
+
+                    });
+                });
+            });
+        }).then(() => {           
+            debug("отправляем информационное сообщение");
+
+            socketIo.emit("entity: delete division", {
+                arguments: {
+                    divisionId: data.arguments.divisionId,
+                    organizationId: data.arguments.organizationId
+                },
+            });            
+
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Выбранное подразделение было успешно удалено."
+            });      
+        }).catch((err) => {
+            debug("ERROR-------------------------");
+            debug(err);
+
+            if (err.name === "organization and source management") {
+                return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
+            }
+
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+            });
+
+            writeLogFile("error", err.toString());        
+        });
 }
 
 //изменить информацию об организации
@@ -942,23 +1063,15 @@ function changeOrganizationInfo(socketIo, data){
                 });
             });
         }).then(() => {
-            //получаем новый краткий список с информацией по сущностям
-            return new Promise((resolve, reject) => {
-                informationForPageManagementOrganizationAndSource((err, result) => {
-                    if (err) reject(err);
-                    else resolve(result);
-                });
-            }).then((shortSourceList) => {             
-                socketIo.emit("entity: new short source list", {
-                    arguments: shortSourceList,
-                }); 
-            });
-        }).then(() => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
                 message: `Информация об организации '${data.arguments.organizationName}' была успешно изменена.`
-            });       
+            });
+            
+            socketIo.emit("entity: change organization", {
+                arguments: { id: data.entityId },
+            });
         }).catch((err) => {
 
             debug("ERROR:");
