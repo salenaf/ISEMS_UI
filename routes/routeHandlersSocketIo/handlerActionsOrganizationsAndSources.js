@@ -8,6 +8,7 @@ const MyError = require("../../libs/helpers/myError");
 const commons = require("../../libs/helpers/commons");
 const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
+const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
@@ -742,12 +743,6 @@ function changeDivisionInfo(socketIo, data){
     debug("func 'changeDivisionInfo', START...");
     debug(data);
 
-    /**
- * Потестировать эту функцию
- * и понять почему она не запускается
- * 
- */
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //debug("авторизован ли пользователь");
@@ -782,35 +777,48 @@ function changeDivisionInfo(socketIo, data){
                 },
             };
 
+            let errMsgCommon = "Невозможно изменить информацию о подразделении. Получены некорректные параметры.";
+
+            if(typeof data.arguments === "undefined" || data.arguments.length === 0){
+                throw new MyError("organization and source management", errMsgCommon);
+            }
+
             //проверяем параметры полученные от пользователя
             return new Promise((resolve, reject) => {
-                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.entityType)) {
-                    reject(new MyError("organization and source management", "Невозможно получить информацию. Один или более заданных параметров некорректен."));
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.entityId)) {
+                    reject(new MyError("organization and source management", errMsgCommon));
                 }
                 
-                for(let elem in data.options){
-                    if(!helpersFunc.checkInputValidation({ 
+                for(let elem in commonPattern){
+                    if(typeof data.arguments[elem] === "undefined"){
+                        throw new MyError("organization and source management", errMsgCommon);
+                    }
+
+                    debug(`check: ${elem}`);
+
+                    if(!helpersFunc.checkInputValidation({
                         name: commonPattern[elem].namePattern, 
-                        value: data.options[elem],
+                        value: data.arguments[elem],
                     })){
                         reject(new MyError("organization and source management", commonPattern[elem].messageError));
                     }
-
-                    resolve();
                 }
+
+                resolve();
             });
         }).then(() => {
             
             debug("обновляем информацию в БД");
+            debug(data.arguments);
 
             //обновляем информацию в БД
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryUpdate(models.modelDivisionBranchName, {
-                    query: { id: data.entityType },
+                    query: { id: data.entityId },
                     update: {
-                        name: data.options.divisionName,
-                        physical_address: data.options.physicalAddress,
-                        description: data.options.description,
+                        name: data.arguments.divisionName,
+                        physical_address: data.arguments.physicalAddress,
+                        description: data.arguments.description,
                         date_change: +(new Date),
                     },
                 }, (err) => {
@@ -822,9 +830,13 @@ function changeDivisionInfo(socketIo, data){
             showNotify({
                 socketIo: socketIo,
                 type: "success",
-                message: `Информация о подразделении '${data.options.divisionName}'' была успешно изменена.`
+                message: `Информация о подразделении '${data.arguments.divisionName}'' была успешно изменена.`
             });       
         }).catch((err) => {
+
+            debug("ERROR:");
+            debug(err);
+
             if (err.name === "organization and source management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -853,6 +865,121 @@ function deleteDivisionInfo(socketIo, data){
 function changeOrganizationInfo(socketIo, data){
     debug("func 'changeOrganizationInfo', START...");
     debug(data);
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("organization and source management", "Пользователь не авторизован.");
+            }
+
+            //может ли пользователь изменять информацию об источнике
+            if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_division.element_settings.edit.status) {
+                throw new MyError("organization and source management", "Невозможно изменить информацию об организации. Недостаточно прав на выполнение данного действия.");
+            }
+        }).then(() => {
+            
+            //            debug("проверяем параметры полученные от пользователя");
+
+            let listFieldActivity = globalObject.getData("commonSettings", "listFieldActivity");
+            let errMsgCommon = "Невозможно изменить информацию об организации. Получены некорректные параметры.";
+            let commonPattern = {
+                "organizationName": {
+                    "namePattern": "fullNameHost",
+                    "messageError": "название организации содержит недопустимые значения",
+                },
+                "legalAddress": {
+                    "namePattern": "stringRuNumCharacter",
+                    "messageError": "юридический адрес организации содержит недопустимые значения",
+                },
+            };
+
+            if(typeof data.arguments === "undefined" || data.arguments.length === 0){
+                throw new MyError("organization and source management", errMsgCommon);
+            }
+
+
+            //проверяем сферу деятельности
+            if(!listFieldActivity.some((i) => i === data.arguments.fieldActivity)){
+                data.arguments.fieldActivity = "иная деятельность";
+            }
+
+            //проверяем параметры полученные от пользователя
+            return new Promise((resolve, reject) => {
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.entityId)) {
+                    reject(new MyError("organization and source management", errMsgCommon));
+                }
+                
+                for(let elem in commonPattern){
+                    if(!helpersFunc.checkInputValidation({ 
+                        name: commonPattern[elem].namePattern, 
+                        value: data.arguments[elem],
+                    })){
+                        reject(new MyError("organization and source management", commonPattern[elem].messageError));
+                    }
+                }
+
+                resolve();
+            });
+        }).then(() => {
+            
+            //            debug("обновляем информацию в БД");
+            //            debug(data.arguments);
+
+            //обновляем информацию в БД
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.queryUpdate(models.modelOrganizationName, {
+                    query: { id: data.entityId },
+                    update: {
+                        name: data.arguments.organizationName,
+                        legal_address: data.arguments.legalAddress,
+                        field_activity: data.arguments.fieldActivity,
+                        date_change: +(new Date),
+                    },
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        }).then(() => {
+            //получаем новый краткий список с информацией по сущностям
+            return new Promise((resolve, reject) => {
+                informationForPageManagementOrganizationAndSource((err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
+            }).then((shortSourceList) => {             
+                socketIo.emit("entity: new short source list", {
+                    arguments: shortSourceList,
+                }); 
+            });
+        }).then(() => {
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: `Информация об организации '${data.arguments.organizationName}' была успешно изменена.`
+            });       
+        }).catch((err) => {
+
+            debug("ERROR:");
+            debug(err);
+
+            if (err.name === "organization and source management") {
+                return showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message
+                });
+            }
+
+            showNotify({
+                socketIo: socketIo,
+                type: "danger",
+                message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+            });
+
+            writeLogFile("error", err.toString());        
+        });
 }
 
 //удалить всю информацию об организации

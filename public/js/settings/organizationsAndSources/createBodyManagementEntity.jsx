@@ -415,17 +415,15 @@ export default class CreateBodyManagementEntity extends React.Component {
                 return;
             }
 
-            let reqOrg = JSON.stringify({ 
-                action: "change organization info", 
-                entityType: entityType, 
-                entityID: entityID,
-                options: {
+            this.props.socketIo.emit("change organization info", {
+                actionType: "change",
+                entityId: entityID,
+                arguments: {
                     organizationName: entityInfo.organizationName,
                     fieldActivity: entityInfo.fieldActivity,
                     legalAddress: entityInfo.legalAddress,
-                }});
-
-            console.log(`отправляем серверу запрос для 'СОХРАНЕНИЯ' информации об организации, ${reqOrg}`);
+                }
+            });
 
             return;
         } 
@@ -435,17 +433,15 @@ export default class CreateBodyManagementEntity extends React.Component {
             return;
         }
 
-        let reqDiv = JSON.stringify({ 
-            action: "change division info", 
-            entityType: entityType, 
-            entityID: entityID,
-            options: {
+        this.props.socketIo.emit("change division info", {
+            actionType: "change",
+            entityId: entityID,
+            arguments: {
                 divisionName: entityInfo.divisionName,
                 physicalAddress: entityInfo.physicalAddress,
                 description: entityInfo.description,
-            }});
-
-        console.log(`отправляем серверу запрос для 'СОХРАНЕНИЯ' информации об подразделении, ${reqDiv}`);
+            }
+        });
     }
 
     handlerDelete(entityType, entityID){
