@@ -151,8 +151,8 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         this.props.socketIo.on("entity: set info only source", (data) => {
 
-            console.log("______ entity: set info only source _______");
-            console.log(data);
+            //            console.log("______ entity: set info only source _______");
+            //            console.log(data);
             //            console.log("=======");
             //            console.log(this.state.listShortEntity);
 
@@ -192,8 +192,8 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         this.props.socketIo.on("entity: new short source list", (data) => {
 
-            console.log("______ entity: new short source list _______");
-            console.log(data);
+            //            console.log("______ entity: new short source list _______");
+            //            console.log(data);
 
             /*           let stateCopy = Object.assign({}, this.state);
             stateCopy.listShortEntity = data.arguments;
@@ -206,8 +206,15 @@ class CreatePageOrganizationAndSources extends React.Component {
             this.setState({ tableSourceList: this.createTableSourceList.call(this, data.arguments) });
             this.setState({ checkboxMarkedSourceDel: this.createStateCheckboxMarkedSourceDel.call(this, data.arguments.shortListSource) });
 
-            console.log("=======");
-            console.log(this.state.listShortEntity);
+            this.el = $("#dropdown_all_entity");
+            this.el.select2({
+                placeholder: "выбор сущности",
+                containerCssClass: "input-group input-group-sm",
+                width: "auto",
+            });
+
+            //            console.log("=======");
+            //            console.log(this.state.listShortEntity);
         });
     }
 

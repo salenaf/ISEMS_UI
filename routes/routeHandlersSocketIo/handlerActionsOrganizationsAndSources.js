@@ -20,9 +20,7 @@ const informationForPageManagementOrganizationAndSource = require("../../libs/ma
  *
  * @param {*} socketIo 
  */
-module.exports.addHandlers = function(socketIo) {
-    debug("func 'addHandlers', START...");
-    
+module.exports.addHandlers = function(socketIo) {   
     const handlers = {
         "add new entitys": addNewEntitys,
         "entity information": getEntityInformation,
@@ -143,7 +141,7 @@ function getEntityInformation(socketIo, data){
                 }
             }).then(() => {
                 //запрос информации к БД
-                debug(`sending information to DB about id: ${data.arguments.entityId}`);
+                //                debug(`sending information to DB about id: ${data.arguments.entityId}`);
 
                 return new Promise((resolve, reject) => {
                     mongodbQueryProcessor.querySelect(
@@ -156,7 +154,7 @@ function getEntityInformation(socketIo, data){
                         });
                 });
             }).then((objInfo) => {
-                debug(objInfo);
+                //                debug(objInfo);
 
                 socketIo.emit("entity: set info only source", {
                     arguments: objInfo,
@@ -317,7 +315,7 @@ function getEntityInformation(socketIo, data){
                     });
 
                 case "source":
-                    debug("SEARCH SOURCE...");
+                    //                    debug("SEARCH SOURCE...");
 
                     return new Promise((resolve, reject) => {
                         mongodbQueryProcessor.querySelect(
@@ -447,8 +445,8 @@ function getInformationAboutDivision(listDivision){
 
 //изменить информацию об источнике
 function changeSourceInfo(socketIo, data){
-    debug("func 'changeSourceInfo', START...");
-    debug(data);
+//    debug("func 'changeSourceInfo', START...");
+//    debug(data);
 
     let checkSourceValue = (obj, callback) => {
         let commonPattern = {
@@ -655,19 +653,19 @@ function changeSourceInfo(socketIo, data){
 
 //удалить всю информацию по источнику
 function deleteSourceInfo(socketIo, data){
-    debug("func 'deleteSourceInfo', START...");
-    debug(data);
+//    debug("func 'deleteSourceInfo', START...");
+//    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
-            debug("авторизован ли пользователь");
+            //            debug("авторизован ли пользователь");
 
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("organization and source management", "Пользователь не авторизован.");
             }
 
-            debug("может ли пользователь удалять информацию об источнике");
+            //            debug("может ли пользователь удалять информацию об источнике");
 
             //может ли пользователь удалять информацию об источнике
             if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_sources.element_settings.delete.status) {
@@ -675,12 +673,12 @@ function deleteSourceInfo(socketIo, data){
             }
         }).then(() => {
             //удаляем выбранные источники
-            debug("удаляем выбранные источники");
+            //            debug("удаляем выбранные источники");
             
             return Promise.all(data.arguments.listSource.map((item) => {
                 
-                debug(`delete source id ${item.source}`);
-                debug(`sourceId: ${item.sourceId}, division id: ${item.divisionId}`);
+                //                debug(`delete source id ${item.source}`);
+                //                debug(`sourceId: ${item.sourceId}, division id: ${item.divisionId}`);
 
                 return new Promise((resolve, reject) => {
                     mongodbQueryProcessor.queryDelete(models.modelSourcesParameter, {
@@ -703,7 +701,7 @@ function deleteSourceInfo(socketIo, data){
             }));
         }).then(() => {
 
-            debug("получаем новый краткий список с информацией по источникам");
+            //            debug("получаем новый краткий список с информацией по источникам");
 
             //получаем новый краткий список с информацией по источникам
             return new Promise((resolve, reject) => {
@@ -714,8 +712,8 @@ function deleteSourceInfo(socketIo, data){
             });
         }).then((shortSourceList) => {           
             //отправляем новый список в интерфейс
-            debug("отправляем новый список в интерфейс");
-            debug("------ RESIVED NEW shortSourceList ------");
+            //            debug("отправляем новый список в интерфейс");
+            //            debug("------ RESIVED NEW shortSourceList ------");
             //debug(shortSourceList);
 
             socketIo.emit("entity: new short source list", {
@@ -728,8 +726,8 @@ function deleteSourceInfo(socketIo, data){
                 message: `Источники с номерами ${data.arguments.listSource.map((item) => item.source).join(",")} были успешно удалены. `
             });      
         }).catch((err) => {
-            debug("ERROR-------------------------");
-            debug(err);
+            //            debug("ERROR-------------------------");
+            //            debug(err);
 
             if (err.name === "organization and source management") {
                 return showNotify({
@@ -751,8 +749,8 @@ function deleteSourceInfo(socketIo, data){
 
 //изменить информацию о подразделении
 function changeDivisionInfo(socketIo, data){
-    debug("func 'changeDivisionInfo', START...");
-    debug(data);
+//    debug("func 'changeDivisionInfo', START...");
+//    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -771,7 +769,7 @@ function changeDivisionInfo(socketIo, data){
             }
         }).then(() => {
             
-            debug("проверяем параметры полученные от пользователя");
+            //            debug("проверяем параметры полученные от пользователя");
 
             let commonPattern = {
                 "divisionName": {
@@ -805,7 +803,7 @@ function changeDivisionInfo(socketIo, data){
                         throw new MyError("organization and source management", errMsgCommon);
                     }
 
-                    debug(`check: ${elem}`);
+                    //                    debug(`check: ${elem}`);
 
                     if(!helpersFunc.checkInputValidation({
                         name: commonPattern[elem].namePattern, 
@@ -819,8 +817,8 @@ function changeDivisionInfo(socketIo, data){
             });
         }).then(() => {
             
-            debug("обновляем информацию в БД");
-            debug(data.arguments);
+            //            debug("обновляем информацию в БД");
+            //            debug(data.arguments);
 
             //обновляем информацию в БД
             return new Promise((resolve, reject) => {
@@ -849,8 +847,8 @@ function changeDivisionInfo(socketIo, data){
             });
         }).catch((err) => {
 
-            debug("ERROR:");
-            debug(err);
+            //            debug("ERROR:");
+            //            debug(err);
 
             if (err.name === "organization and source management") {
                 return showNotify({
@@ -872,19 +870,19 @@ function changeDivisionInfo(socketIo, data){
 
 //удалить всю информацию о подразделении
 function deleteDivisionInfo(socketIo, data){
-    debug("func 'deleteDivisionInfo', START...");
-    debug(data);
+//    debug("func 'deleteDivisionInfo', START...");
+//    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
-            debug("авторизован ли пользователь");
+            //            debug("авторизован ли пользователь");
 
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("organization and source management", "Пользователь не авторизован.");
             }
 
-            debug("может ли пользователь удалять информацию о подразделении");
+            //            debug("может ли пользователь удалять информацию о подразделении");
 
             //может ли пользователь удалять информацию о подразделении
             if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_division.element_settings.delete.status) {
@@ -892,7 +890,7 @@ function deleteDivisionInfo(socketIo, data){
             }
         }).then(() => {
 
-            debug("удаляем выбранное подразделение");
+            //            debug("удаляем выбранное подразделение");
             
             //удаляем выбранное подразделение
             return new Promise((resolve, reject) => {
@@ -903,8 +901,8 @@ function deleteDivisionInfo(socketIo, data){
                     },
                 }, (err, deleteObj) => {
 
-                    debug(err);
-                    debug(`COUNT ELEM FOR DEELETE = ${deleteObj}`);
+                    //                    debug(err);
+                    //                    debug(`COUNT ELEM FOR DEELETE = ${deleteObj}`);
 
                     if (err) reject(err);
                     else resolve(deleteObj);
@@ -915,11 +913,10 @@ function deleteDivisionInfo(socketIo, data){
                 return;
             }
 
-            //удаляем подразделение из организации
             return new Promise((resolve, reject) => {
 
-                debug("//удаляем подразделение из организации");
-                debug(`division id: ${data.arguments.divisionId}, organization id: ${data.arguments.organizationId}`);
+                //                debug("//удаляем подразделение из организации");
+                //                debug(`division id: ${data.arguments.divisionId}, organization id: ${data.arguments.organizationId}`);
 
                 mongodbQueryProcessor.queryUpdate(models.modelOrganizationName, {
                     query: { id: data.arguments.organizationId },
@@ -929,15 +926,33 @@ function deleteDivisionInfo(socketIo, data){
                     else resolve();
                 });
             });
-        }).then(() => {           
-            debug("отправляем информационное сообщение");
+        }).then(() => {
+
+            //            debug("получаем новый краткий список с информацией по источникам");
+
+            //получаем новый краткий список с информацией по источникам
+            return new Promise((resolve, reject) => {
+                informationForPageManagementOrganizationAndSource((err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
+            });
+        }).then((shortSourceList) => {           
+            //отправляем новый список в интерфейс
+            //            debug("отправляем новый список в интерфейс");
+            //            debug("------ RESIVED NEW shortSourceList ------");
+            //debug(shortSourceList);
+
+            socketIo.emit("entity: new short source list", {
+                arguments: shortSourceList,
+            });            
 
             socketIo.emit("entity: delete division", {
                 arguments: {
                     divisionId: data.arguments.divisionId,
-                    organizationId: data.arguments.organizationId
-                },
-            });            
+                    organizationId: data.arguments.organizationId,
+                }
+            });
 
             showNotify({
                 socketIo: socketIo,
@@ -945,9 +960,6 @@ function deleteDivisionInfo(socketIo, data){
                 message: "Выбранное подразделение было успешно удалено."
             });      
         }).catch((err) => {
-            debug("ERROR-------------------------");
-            debug(err);
-
             if (err.name === "organization and source management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -968,8 +980,8 @@ function deleteDivisionInfo(socketIo, data){
 
 //изменить информацию об организации
 function changeOrganizationInfo(socketIo, data){
-    debug("func 'changeOrganizationInfo', START...");
-    debug(data);
+//    debug("func 'changeOrganizationInfo', START...");
+//    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -1057,10 +1069,6 @@ function changeOrganizationInfo(socketIo, data){
                 arguments: { id: data.entityId },
             });
         }).catch((err) => {
-
-            debug("ERROR:");
-            debug(err);
-
             if (err.name === "organization and source management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -1081,28 +1089,21 @@ function changeOrganizationInfo(socketIo, data){
 
 //удалить всю информацию об организации
 function deleteOrganizationInfo(socketIo, data){
-    debug("func 'deleteOrganizationInfo', START...");
-    debug(data);
+//    debug("func 'deleteOrganizationInfo', START...");
+//    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
-            debug("авторизован ли пользователь");
-
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("organization and source management", "Пользователь не авторизован.");
             }
 
-            debug("может ли пользователь удалять информацию об организации");
-
             //может ли пользователь удалять информацию об организации
             if (!authData.document.groupSettings.management_organizations_and_sources.element_settings.management_organizations.element_settings.delete.status) {
                 throw new MyError("organization and source management", "Невозможно удалить организацию. Недостаточно прав на выполнение данного действия.");
             }
-        }).then(() => {
-
-            debug("удаляем выбранную организацию");
-            
+        }).then(() => {          
             //удаляем выбранное подразделение
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryDelete(models.modelOrganizationName, {
@@ -1115,8 +1116,18 @@ function deleteOrganizationInfo(socketIo, data){
                     else resolve();
                 });
             });
-        }).then(() => {           
-            debug("отправляем информационное сообщение");
+        }).then(() => {
+            //получаем новый краткий список с информацией по источникам
+            return new Promise((resolve, reject) => {
+                informationForPageManagementOrganizationAndSource((err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
+            });
+        }).then((shortSourceList) => {           
+            socketIo.emit("entity: new short source list", {
+                arguments: shortSourceList,
+            });          
 
             socketIo.emit("entity: delete organization", {
                 arguments: {
@@ -1130,9 +1141,6 @@ function deleteOrganizationInfo(socketIo, data){
                 message: "Выбранная организация была успешно удалена."
             });      
         }).catch((err) => {
-            debug("ERROR-------------------------");
-            debug(err);
-
             if (err.name === "organization and source management") {
                 return showNotify({
                     socketIo: socketIo,

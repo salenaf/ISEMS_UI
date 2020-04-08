@@ -91,7 +91,6 @@ class ShowEntityInformation extends React.Component {
         }
  
         let list = this.props.listFieldActivity;
-
         let num = 1;
 
         return (
@@ -183,24 +182,55 @@ class CreateListEntity extends React.Component {
     }
 
     listOrganization(){
-        let arrayTmp = Object.keys(this.props.listOrganization).sort().map((name) => {
-            return <option key={`key_org_${this.props.listOrganization[name]}`} value={`organization:${this.props.listOrganization[name]}`}>{name}</option>;
+        let listTmp = {};
+        this.props.listShortEntity.shortListOrganization.forEach((item) => {
+            listTmp[item.name] = item.id;
+        });
+
+        let arrayTmp = Object.keys(listTmp).sort().map((name) => {
+            return <option key={`key_org_${listTmp[name]}`} value={`organization:${listTmp[name]}`}>{name}</option>;
         });
 
         return arrayTmp;
     }
 
     listDivision(){       
-        let arrayTmp = Object.keys(this.props.listDivision).sort().map((name) => {
-            return <option key={`key_divi_${this.props.listDivision[name].did}`} value={`division:${this.props.listDivision[name].did}`}>{name}</option>;
+        let listTmp = {};
+        this.props.listShortEntity.shortListDivision.forEach((item) => {
+            listTmp[item.name] = {
+                did: item.id,
+                oid: item.id_organization,
+            };
+        });
+
+        let arrayTmp = Object.keys(listTmp).sort().map((name) => {
+            return <option key={`key_divi_${listTmp[name].did}`} value={`division:${listTmp[name].did}`}>{name}</option>;
         });
 
         return arrayTmp;
     }
 
     listSource(){
-        let arrayTmp = Object.keys(this.props.listSource).sort((a, b) => a < b).map((name) => {
-            return <option key={`key_sour_${this.props.listSource[name].sid}`} value={`source:${this.props.listSource[name].sid}`}>{name}</option>;
+        let listTmp = {};
+        this.props.listShortEntity.shortListSource.forEach((item) => {
+            let organizationId = "";
+            for(let d of this.props.listShortEntity.shortListDivision){
+                if(d.id === item.id_division){
+                    organizationId = d.id_organization;
+
+                    break;
+                }
+            }
+
+            listTmp[item.short_name] = {
+                sid: item.id,
+                did: item.id_division,
+                oid: organizationId,
+            };
+        });
+
+        let arrayTmp = Object.keys(listTmp).sort((a, b) => a < b).map((name) => {
+            return <option key={`key_sour_${listTmp[name].sid}`} value={`source:${listTmp[name].sid}`}>{name}</option>;
         });
 
         return arrayTmp;
@@ -242,9 +272,7 @@ class CreateListEntity extends React.Component {
 }
 
 CreateListEntity.propTypes = {
-    listOrganization: PropTypes.object.isRequired,
-    listDivision: PropTypes.object.isRequired,
-    listSource: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
     handlerSelected: PropTypes.func.isRequired,
 };
 
@@ -257,8 +285,6 @@ export default class CreateBodyManagementEntity extends React.Component {
             showInfo: false,
             showModalAlert: false,
             modalWindowSourceDel: false,
-            listOrganizationName: this.createListOrganization.call(this),
-            listDivisionName: this.createListDivision.call(this),
             objectShowedInformation: {},
         };
 
@@ -266,8 +292,7 @@ export default class CreateBodyManagementEntity extends React.Component {
 
         this.deleteEntityOptions = {};
 
-        this.handlerEvents.call(this);
-        this.listSourceName = this.createListSource.call(this, this.props.listShortEntity);
+        this.handlerEvents.call(this);       
 
         this.checkValue = this.checkValue.bind(this);
         this.handlerSave = this.handlerSave.bind(this);
@@ -286,6 +311,18 @@ export default class CreateBodyManagementEntity extends React.Component {
         });
 
         this.props.socketIo.on("entity: change organization", (data) => {
+
+            console.log("entity: change organization");
+            console.log(data);
+
+            /**
+ * Не работает изменение названия организации в
+ * выподающем списке
+ * 
+ * Надо подумать как сделать что бы работало
+ * 
+ */
+
             if(data.arguments.id === this.state.objectShowedInformation.id){
                 let orgList = this.state.listOrganizationName;
                 for(let name in orgList){
@@ -354,24 +391,12 @@ export default class CreateBodyManagementEntity extends React.Component {
                 this.setState({ showInfo: false });
             }
 
-            //удаляем организацию из списка
-            let listOrg = this.state.listOrganizationName;
-            for(let name in listOrg){
-                if(listOrg[name] === data.arguments.organizationId){
-                    delete listOrg[name];
-
-                    this.setState({ listOrganizationName: listOrg });
-
-                    this.el = $("#dropdown_all_entity");
-                    this.el.select2({
-                        placeholder: "выбор сущности",
-                        containerCssClass: "input-group input-group-sm",
-                        width: "auto",
-                    });
-
-                    break;
-                }
-            }
+            this.el = $("#dropdown_all_entity");
+            this.el.select2({
+                placeholder: "выбор сущности",
+                containerCssClass: "input-group input-group-sm",
+                width: "auto",
+            });
         });
 
         this.props.socketIo.on("entity: delete division", (data) => {
@@ -391,75 +416,14 @@ export default class CreateBodyManagementEntity extends React.Component {
                     }
                 }
             }
-                        
-            //удаляем организацию из списка
-            let listDiv = this.state.listDivisionName;
-            for(let name in listDiv){
-                if(listDiv[name].did === data.arguments.divisionId){
-                    delete listDiv[name];
-            
-                    this.setState({ listDivisionName: listDiv });
-            
-                    this.el = $("#dropdown_all_entity");
-                    this.el.select2({
-                        placeholder: "выбор сущности",
-                        containerCssClass: "input-group input-group-sm",
-                        width: "auto",
-                    });
-            
-                    break;
-                }
-            }
+
+            this.el = $("#dropdown_all_entity");
+            this.el.select2({
+                placeholder: "выбор сущности",
+                containerCssClass: "input-group input-group-sm",
+                width: "auto",
+            });
         });
-    }
-
-    createListOrganization(){
-
-        console.log("func 'createListOrganization', START");
-
-        let listTmp = {};
-        this.props.listShortEntity.shortListOrganization.forEach((item) => {
-            listTmp[item.name] = item.id;
-        });
-
-        return listTmp;
-    }
-
-    createListDivision(){
-
-        console.log("func 'createListDivision', START...");
-
-        let listTmp = {};
-        this.props.listShortEntity.shortListDivision.forEach((item) => {
-            listTmp[item.name] = {
-                did: item.id,
-                oid: item.id_organization,
-            };
-        });
-
-        return listTmp;
-    }
-
-    createListSource(list){
-        let listTmp = {};
-        list.shortListSource.forEach((item) => {
-            let organizationId = "";
-            for(let d of list.shortListDivision){
-                if(d.id === item.id_division){
-                    organizationId = d.id_organization;
-
-                    break;
-                }
-            }
-
-            listTmp[item.short_name] = {
-                sid: item.id,
-                did: item.id_division,
-                oid: organizationId,
-            };
-        });
-
-        return listTmp;
     }
 
     searchEntityInObjectShowedInformation(type, id){
@@ -660,9 +624,9 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     render(){
-        let numOrganization = Object.keys(this.state.listOrganizationName).length;
-        let numDivision = Object.keys(this.state.listDivisionName).length;
-        let numSource = Object.keys(this.listSourceName).length;
+        let numOrganization = this.props.listShortEntity.shortListOrganization.length;
+        let numDivision = this.props.listShortEntity.shortListDivision.length;
+        let numSource = this.props.listShortEntity.shortListSource.length;
 
         return (
             <React.Fragment>
@@ -673,9 +637,7 @@ export default class CreateBodyManagementEntity extends React.Component {
                 <Row>
                     <Col className="text-left">
                         <CreateListEntity 
-                            listOrganization={this.state.listOrganizationName}
-                            listDivision={this.state.listDivisionName}
-                            listSource={this.listSourceName}
+                            listShortEntity={this.props.listShortEntity}
                             handlerSelected={this.handlerSelected} />
                     </Col>
                 </Row>
