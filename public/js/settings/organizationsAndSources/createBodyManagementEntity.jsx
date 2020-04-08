@@ -24,7 +24,8 @@ class ShowEntityInformation extends React.Component {
     createDivisionCard(){
         let num = 1;
 
-        if(this.props.resivedInfo.listDivision.length === 0){
+        let isExist = (typeof this.props.resivedInfo.listDivision === "undefined");
+        if(isExist || (this.props.resivedInfo.listDivision.length === 0)){
             return (<React.Fragment></React.Fragment>);
         }
 
@@ -86,7 +87,7 @@ class ShowEntityInformation extends React.Component {
 
     showInformation(){
         if(!this.props.showInfo){
-            return;
+            return (<React.Fragment></React.Fragment>);
         }
  
         let list = this.props.listFieldActivity;
@@ -256,8 +257,8 @@ export default class CreateBodyManagementEntity extends React.Component {
             showInfo: false,
             showModalAlert: false,
             modalWindowSourceDel: false,
-            listOrganizationName: this.createListOrganization.call(this, this.props.listShortEntity.shortListOrganization),
-            listDivisionName: this.createListDivision.call(this, this.props.listShortEntity.shortListDivision),
+            listOrganizationName: this.createListOrganization.call(this),
+            listDivisionName: this.createListDivision.call(this),
             objectShowedInformation: {},
         };
 
@@ -279,9 +280,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     handlerEvents(){
-
-        console.log("func 'handlerEvents'");
-
         this.props.socketIo.on("entity: set info about organization and division", (data) => {
             this.setState({ objectShowedInformation: data.arguments });
             this.setState({ showInfo: true });
@@ -343,29 +341,96 @@ export default class CreateBodyManagementEntity extends React.Component {
             }
         });
 
-        this.props.socketIo.on("entity: delete division", (data) => {
-            console.log("RECEIVED MESSAGE ABOUT DELETE DIVISION");
-            console.log(data);
-        });
-
         this.props.socketIo.on("entity: delete organization", (data) => {
             console.log("RECEIVED MESSAGE ABOUT DELETE ORGANIZTION");
-            console.log(data);
+            //console.log(data);
+
+            //console.log("------");
+            //console.log(this.state.objectShowedInformation);
+
+            //удаляем информацию об организации из интерфейса
+            let objShowInfo = this.state.objectShowedInformation;
+            if(objShowInfo.id === data.arguments.organizationId){
+                this.setState({ showInfo: false });
+            }
+
+            //удаляем организацию из списка
+            let listOrg = this.state.listOrganizationName;
+            for(let name in listOrg){
+                if(listOrg[name] === data.arguments.organizationId){
+                    delete listOrg[name];
+
+                    this.setState({ listOrganizationName: listOrg });
+
+                    this.el = $("#dropdown_all_entity");
+                    this.el.select2({
+                        placeholder: "выбор сущности",
+                        containerCssClass: "input-group input-group-sm",
+                        width: "auto",
+                    });
+
+                    break;
+                }
+            }
+        });
+
+        this.props.socketIo.on("entity: delete division", (data) => {
+            console.log("RECEIVED MESSAGE ABOUT DELETE DIVISION");
+            //console.log(data);
+
+            //удаляем информацию об организации из интерфейса
+            let objShowInfo = this.state.objectShowedInformation;
+            if(objShowInfo.id === data.arguments.organizationId){
+                for(let i = 0; i < objShowInfo.listDivision.length; i++){
+                    if(objShowInfo.listDivision[i].id === data.arguments.divisionId){
+                        objShowInfo.listDivision.splice(i,1);
+
+                        this.setState({ objectShowedInformation: objShowInfo });
+
+                        break;
+                    }
+                }
+            }
+                        
+            //удаляем организацию из списка
+            let listDiv = this.state.listDivisionName;
+            for(let name in listDiv){
+                if(listDiv[name].did === data.arguments.divisionId){
+                    delete listDiv[name];
+            
+                    this.setState({ listDivisionName: listDiv });
+            
+                    this.el = $("#dropdown_all_entity");
+                    this.el.select2({
+                        placeholder: "выбор сущности",
+                        containerCssClass: "input-group input-group-sm",
+                        width: "auto",
+                    });
+            
+                    break;
+                }
+            }
         });
     }
 
-    createListOrganization(list){
+    createListOrganization(){
+
+        console.log("func 'createListOrganization', START");
+
         let listTmp = {};
-        list.forEach((item) => {
+        this.props.listShortEntity.shortListOrganization.forEach((item) => {
             listTmp[item.name] = item.id;
         });
 
         return listTmp;
     }
 
-    createListDivision(list){
+    createListDivision(){
+
+        console.log("func 'createListDivision', START...");
+
         let listTmp = {};
-        list.forEach((item) => {
+        this.props.listShortEntity.shortListDivision.forEach((item) => {
             listTmp[item.name] = {
                 did: item.id,
                 oid: item.id_organization,
@@ -468,12 +533,9 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     handlerSave(entityType, entityID){
-        console.log("func 'handlerSave', START...");
-
         let entityInfo = this.searchEntityInObjectShowedInformation(entityType, entityID);
 
         if(entityType === "organization"){
-
             //проверяем что бы поля были валидны
             if(entityInfo.organizationNameIsInvalid || entityInfo.legalAddressIsInvalid){
                 return;
@@ -522,10 +584,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     handlerEntityDelete(){
-        let request = JSON.stringify({ action: "entity_delete", entityType: this.deleteEntityOptions.entityType, entityID: this.deleteEntityOptions.entityID });
-
-        console.log(this.state);
-
         if(this.deleteEntityOptions.entityType === "organization"){
             if(this.state.objectShowedInformation.listDivision.length > 0){
                 let listDivision = this.state.objectShowedInformation.listDivision.map((item) => item.divisionName).join(", ");
@@ -542,6 +600,7 @@ export default class CreateBodyManagementEntity extends React.Component {
 
             //отправляем серверу запрос на удаление 
             this.props.socketIo.emit("delete organization info", { arguments: { organizationId: this.deleteEntityOptions.entityID }});
+            this.setState({ modalWindowSourceDel: false });
         }
 
         if(this.deleteEntityOptions.entityType === "division"){
@@ -565,15 +624,14 @@ export default class CreateBodyManagementEntity extends React.Component {
                                 organizationId: this.state.objectShowedInformation.id
                             }
                         });
+
+                        this.setState({ modalWindowSourceDel: false });
                     }
 
                     return;
                 }
             }
-
         }
-
-        console.log(`отправляем серверу запрос для 'УДАЛЕНИЯ' информации из БД, ${request}`);
     }
 
     closeModalWindowSourceDel(){
@@ -605,11 +663,6 @@ export default class CreateBodyManagementEntity extends React.Component {
         let numOrganization = Object.keys(this.state.listOrganizationName).length;
         let numDivision = Object.keys(this.state.listDivisionName).length;
         let numSource = Object.keys(this.listSourceName).length;
-
-        console.log("====================");
-        console.log(this.state.showModalAlert);
-        console.log(this.alertMessage);
-        console.log("++++++++++++++++++++");
 
         return (
             <React.Fragment>

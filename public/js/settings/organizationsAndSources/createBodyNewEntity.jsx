@@ -377,15 +377,10 @@ export default class CreateBodyNewEntity extends React.Component {
         let listNewEntity = this.state.listNewEntity;
         addNewSource(listNewEntity);
 
-        console.log(`isExist ${isExist}`);
-        console.log(listNewEntity);
-
         //если не нашли организацию просто добавляе в массив
         if(!isExist){
             listNewEntity.push(newRecord);
         }
-
-        console.log(JSON.stringify(listNewEntity));
 
         this.setState({ listNewEntity: listNewEntity });
         this.setState({ addedNewEntity: true });

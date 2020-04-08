@@ -21,6 +21,7 @@ class CreatePageOrganizationAndSources extends React.Component {
             "modalWindowSourceInfo": false,
             "modalWindowChangeSource": false,
             "changeSourceInfoOutput": false,
+            "listShortEntity": this.props.listShortEntity,
             "tableSourceList": this.createTableSourceList.call(this, this.props.listShortEntity),
             "checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this, this.props.listShortEntity.shortListSource),
             "sourceSettings": {
@@ -123,7 +124,11 @@ class CreatePageOrganizationAndSources extends React.Component {
         let list = {};
 
         shortListSource.forEach((source) => {
-            list[source.source_id] = { checked: false };
+            list[source.source_id] = { 
+                checked: false,
+                sourceId: source.id,
+                divisionId: source.id_division 
+            };
         });
 
         return list;
@@ -145,6 +150,12 @@ class CreatePageOrganizationAndSources extends React.Component {
         ];
 
         this.props.socketIo.on("entity: set info only source", (data) => {
+
+            console.log("______ entity: set info only source _______");
+            console.log(data);
+            //            console.log("=======");
+            //            console.log(this.state.listShortEntity);
+
             let stateCopy = Object.assign({}, this.state);
 
             stateCopy.sourceSettings.id = data.arguments.id;
@@ -180,10 +191,23 @@ class CreatePageOrganizationAndSources extends React.Component {
         });
 
         this.props.socketIo.on("entity: new short source list", (data) => {
-            let stateCopy = Object.assign({}, this.state);
+
+            console.log("______ entity: new short source list _______");
+            console.log(data);
+
+            /*           let stateCopy = Object.assign({}, this.state);
+            stateCopy.listShortEntity = data.arguments;
+
             stateCopy.tableSourceList = this.createTableSourceList.call(this, data.arguments);
             stateCopy.checkboxMarkedSourceDel = this.createStateCheckboxMarkedSourceDel.call(this, data.arguments.shortListSource);
-            this.setState(stateCopy);
+            this.setState(stateCopy);*/
+
+            this.setState({ listShortEntity: data.arguments });
+            this.setState({ tableSourceList: this.createTableSourceList.call(this, data.arguments) });
+            this.setState({ checkboxMarkedSourceDel: this.createStateCheckboxMarkedSourceDel.call(this, data.arguments.shortListSource) });
+
+            console.log("=======");
+            console.log(this.state.listShortEntity);
         });
     }
 
@@ -277,9 +301,21 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 
     handlerSourceDelete(){
+        let listSourceDel = [];
+        for(let id in this.state.checkboxMarkedSourceDel){
+            if(this.state.checkboxMarkedSourceDel[id].checked){
+                listSourceDel.push({
+                    source: id,
+                    sourceId: this.state.checkboxMarkedSourceDel[id].sourceId,
+                    divisionId: this.state.checkboxMarkedSourceDel[id].divisionId
+                });
+                //                this.listSourceDelete.push(id);
+            }
+        }
+
         this.props.socketIo.emit("delete source info", {
             actionType: "",
-            arguments: { listSource: this.listSourceDelete },
+            arguments: { listSource: listSourceDel },
         });
 
         this.setState({ "modalWindowSourceDel": false });
@@ -435,8 +471,6 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 
     handlerSaveInformation(){
-        console.log("func 'handlerSaveInformation', START...");
-
         function checkValueChange(list){
             let isChange = false;
 
@@ -485,20 +519,14 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         //делаем проверку были ли какие либо изменения в информации по источнику
         if(!checkValueChange(sourceSettings)){
-            console.log("Ни каких изменений в информации по источнику сделано не было");
-
             return;
         }
 
         let foldersOnChange = sourceSettings.directoriesNetworkTraffic.onChange;
         //делаем проверку все ли ли параметры валидны
         if(!checkValueIsValid(sourceSettings && !foldersOnChange)){
-            console.log("Один или более заданных парамеров не валидны");
-
             return;
         }
-
-        console.log("передаем информацию о новом источнике в БД");
 
         let s = this.state.sourceSettings;
 
@@ -530,8 +558,6 @@ class CreatePageOrganizationAndSources extends React.Component {
         objUpdate.sourceSettings.directoriesNetworkTraffic.value = list.filter((item) => (item !== nameFolder));
 
         if(list.length !== objUpdate.sourceSettings.directoriesNetworkTraffic.value.length){
-            console.log(`count before folder: '${list.length}', count folder after ${objUpdate.sourceSettings.directoriesNetworkTraffic.value.length}`);
-
             objUpdate.sourceSettings.directoriesNetworkTraffic.onChange = true;    
         }
 
@@ -564,7 +590,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                     <Tab eventKey="organization" title="организации / подразделения">
                         <CreateBodyManagementEntity
                             socketIo={this.props.socketIo}
-                            listShortEntity={this.props.listShortEntity}
+                            listShortEntity={this.state.listShortEntity}
                             listFieldActivity={this.props.listFieldActivity} />
                     </Tab>
                     <Tab eventKey="addElement" title="новая сущность">
@@ -572,7 +598,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                             socketIo={this.props.socketIo} 
                             userPermissions={this.props.userPermissions}
                             listFieldActivity={this.props.listFieldActivity}
-                            listShortEntity={this.props.listShortEntity} />
+                            listShortEntity={this.state.listShortEntity} />
                     </Tab>
                 </Tabs>
                 <ModalWindowSourceInfo 
