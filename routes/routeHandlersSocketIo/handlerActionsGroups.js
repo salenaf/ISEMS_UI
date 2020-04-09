@@ -1,9 +1,3 @@
-/**
- * Модуль обработчик дейсвий над группами пользователей
- * 
- * Версия 1.3, дата релиза 14.01.2019
- */
-
 "use strict";
 
 const models = require("../../controllers/models");
@@ -14,6 +8,11 @@ const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
 
+/**
+ * Модуль для управления группами пользователей
+ * 
+ * @param {*} socketIo - object
+ */
 module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "add new group": addGroup,

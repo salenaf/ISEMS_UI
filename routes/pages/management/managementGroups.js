@@ -1,12 +1,4 @@
-/*
- * Страница управления группами пользователей
- *
- * Верися 0.1, дата релиза 28.03.2017
- * */
-
 "use strict";
-
-const debug = require("debug")("managementGroups");
 
 const async = require("async");
 
@@ -14,17 +6,24 @@ const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 const informationForPageManagementGroups = require("../../../libs/management_settings/informationForPageManagementGroups");
 
+/**
+ * Модуль управления группами пользователей
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} objHeader 
+ */
 module.exports = function(req, res, objHeader) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
-        userGroupPermissions: callback => {
+        userGroupPermissions: (callback) => {
             checkAccessRightsPage(req, (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
             });
         },
         //получаем информацию по группам
-        mainInformation: callback => {
+        mainInformation: (callback) => {
             informationForPageManagementGroups((err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
@@ -47,9 +46,6 @@ module.exports = function(req, res, objHeader) {
             userGroupPermissions: result.userGroupPermissions.group_settings.management_groups.element_settings,
             mainInformation: result.mainInformation
         };
-
-        //debug(result.mainInformation.administrator.elements);
-        //        debug(objResult.userGroupPermissions);
 
         res.render("menu/settings/setting_groups", objResult);
     });

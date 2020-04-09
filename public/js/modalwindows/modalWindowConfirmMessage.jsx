@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Alert, Modal, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 class ModalWindowConfirmMessage extends React.Component {
@@ -10,6 +10,7 @@ class ModalWindowConfirmMessage extends React.Component {
 
         this.handlerClose = this.handlerClose.bind(this);
         this.handlerConfirm = this.handlerConfirm.bind(this);
+        this.showAlertMessage = this.showAlertMessage.bind(this);
     }
 
     handlerClose(){
@@ -20,13 +21,27 @@ class ModalWindowConfirmMessage extends React.Component {
         this.props.handlerConfirm(this.props.nameDel);
     }
 
+    showAlertMessage(){
+        if((typeof this.props.showAlert !== "undefined") && this.props.showAlert){
+            return (
+                <Alert variant="danger">
+                    <p>{this.props.alertMessage.header}</p>
+                    <p>{this.props.alertMessage.msg}</p>
+                </Alert>
+            );
+        }
+    }
+
     render(){
         return (
             <Modal show={this.props.show} onHide={this.handlerClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.msgTitle}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{this.props.msgBody}</Modal.Body>
+                <Modal.Body>
+                    {this.props.msgBody}
+                    {this.showAlertMessage()}
+                </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-secondary" onClick={this.handlerClose}>отмена</Button>
                     <Button variant="outline-primary" onClick={this.handlerConfirm}>подтвердить</Button>
@@ -39,6 +54,8 @@ class ModalWindowConfirmMessage extends React.Component {
 ModalWindowConfirmMessage.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
+    showAlert: PropTypes.bool,
+    alertMessage: PropTypes.object,
     msgBody: PropTypes.string.isRequired,
     msgTitle: PropTypes.string.isRequired,
     nameDel: PropTypes.string.isRequired,

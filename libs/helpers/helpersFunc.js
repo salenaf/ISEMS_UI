@@ -29,3 +29,17 @@ module.exports.checkUserSettingsManagementUsers = function(userSettings) {
 
     return result;
 };
+
+module.exports.checkInputValidation = (elem) => {
+    let pattern = commons.getRegularExpression(elem.name);
+
+    if(typeof pattern === "undefined"){
+        return false;
+    }
+
+    if (elem.name === "port") {
+        if (!(0 <= elem.value && elem.value < 65536)) return false;
+    }
+    if (elem.name === "intervalTransmission" && (elem.value < 10)) return false;
+    return (!pattern.test(elem.value)) ? false : true;
+};

@@ -21,7 +21,7 @@ const connection = globalObject.getData("descriptionDB", "MongoDB", "connection"
 */
 let usersSchema = new connection.Schema({
     id: { type: String, index: true, unique: true },
-    id_organization: String,
+    id_organization: { type: String, index: true },
     date_register: Number,
     date_change: Number,    
     name: String,

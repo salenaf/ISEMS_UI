@@ -30,7 +30,7 @@ const connection = globalObject.getData("descriptionDB", "MongoDB", "connection"
  */
 let sourcesSchema = new connection.Schema({
     id: { type: String, index: true, unique: true },
-    id_division: String,
+    id_division: { type: String, index: true },
     source_id: { type: Number, index: true, unique: true },
     date_register: Number,
     date_change: Number,

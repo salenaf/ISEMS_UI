@@ -45,9 +45,6 @@ class CreateBodyOrganization extends React.Component {
     }
 
     createListFieldActivity(){
-        let list = Object.keys(this.props.listFieldActivity);
-        list.sort();
-
         let num = 1;
         return (
             <Form.Group>
@@ -60,7 +57,7 @@ class CreateBodyOrganization extends React.Component {
                     isInvalid={this.props.storageInput.fieldActivity.isInvalid} 
                     onChange={this.props.handlerInput.bind(this, "organization")} >
                     <option value="" key="list_field_activity_0">...</option>
-                    {list.map((item) => <option value={item} key={`list_field_activity_${num++}`}>{item}</option>)}
+                    {this.props.listFieldActivity.map((item) => <option value={item} key={`list_field_activity_${num++}`}>{item}</option>)}
                 </Form.Control>
             </Form.Group>
         );         
@@ -97,7 +94,7 @@ class CreateBodyOrganization extends React.Component {
 CreateBodyOrganization.propTypes = {
     handlerInput: PropTypes.func.isRequired,
     storageInput: PropTypes.object.isRequired,
-    listFieldActivity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
 };
 
 class CreateBodyDivision extends React.Component {
@@ -335,7 +332,7 @@ CreateModalBody.propTypes = {
     handlerInput: PropTypes.func.isRequired,
     storageInput: PropTypes.object.isRequired,
     typeModalBody: PropTypes.string,
-    listFieldActivity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
     handelerFolderDelete: PropTypes.func.isRequired,
 };
 
@@ -443,6 +440,12 @@ export default class ModalWindowAddEntity extends React.Component {
             },
         };
 
+        this.modalType = {
+            source: "management_sources",
+            division: "management_division",
+            organization: "management_organizations",
+        };
+
         this.buttonAdd = this.buttonAdd.bind(this);
         this.windowClose = this.windowClose.bind(this); 
         this.handlerInput = this.handlerInput.bind(this);
@@ -455,9 +458,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     windowClose(){
-
-        console.log(`закрыть модальное окно для типа ${JSON.stringify(this.props.settings.type)}`);
-
         let pattern = {
             "organization": "organizationSettings",
             "division": "divisionSettings",
@@ -488,17 +488,17 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     buttonAdd(){
-        console.log(`Получить и проверить входные параметры заданные пользователем для модального окна типа: '${this.props.settings.type}'`);
-
         /**
          * проверяем корректность значений и их наличие
          */
         let valueIsEmpty = false;       
         let settings = this.state.modalBodySettings;
-        let listElem = [ "sourceID",
+        let listElem = [ 
+            "sourceID",
             "shortName",
             "ipAddress",
-            "port" ];
+            "port" 
+        ];
 
         let objUpdate = Object.assign({}, this.state);        
 
@@ -656,7 +656,7 @@ export default class ModalWindowAddEntity extends React.Component {
             this.divisionInput(elementName, value);
         }
         if(typeInput === "source"){
-            this.sourcesInput(elementName, value);
+            this.sourcesInput(elementName, value, event);
         }
     }
 
@@ -701,24 +701,17 @@ export default class ModalWindowAddEntity extends React.Component {
         this.setState( objUpdate );
     }
 
-    organizationInput(elementName, value){
-
-        /**
-        * Выполняем проверку параметров вводимых пользователем
-        * для макета выполняется простая проверка на длинну
-        * Для продакшена надо прикрутить RegExp
-        */
-       
+    organizationInput(elementName, value){     
         let objUpdate = Object.assign({}, this.state);
-
-        /**
-        * Пока проверяем только на длину
-        */
 
         switch(elementName){
         case "organization_name":
             objUpdate.modalBodySettings.organizationSettings.organizationName.value = value;
-            if(value.length < 5){
+
+            if(!helpers.checkInputValidation({
+                "name": "fullNameHost", 
+                "value": value, 
+            })){
                 objUpdate.modalBodySettings.organizationSettings.organizationName.isInvalid = true;
                 objUpdate.modalBodySettings.organizationSettings.organizationName.isValid = false;
             } else {
@@ -730,7 +723,11 @@ export default class ModalWindowAddEntity extends React.Component {
 
         case "legal_address":
             objUpdate.modalBodySettings.organizationSettings.legalAddress.value = value;
-            if(value.length < 5){
+
+            if(!helpers.checkInputValidation({
+                "name": "stringRuNumCharacter", 
+                "value": value, 
+            })){
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isInvalid = true;
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isValid = false;
             } else {
@@ -750,27 +747,16 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     divisionInput(elementName, value){
-        /**
-        * Выполняем проверку параметров вводимых пользователем
-        * для макета выполняется простая проверка на длинну
-        * проверка поля 'Примечание' не выполняется
-        * Для продакшена надо прикрутить RegExp
-        
-        
-        console.log("func 'divisionInput', START...");
-        console.log(`element name: ${elementName}`);
-        console.log(`value: ${value}`);
-        */
-
         let objUpdate = Object.assign({}, this.state);
 
-        /**
-        * Пока проверяем только на длину
-        */
         switch(elementName){
         case "division_name":
             objUpdate.modalBodySettings.divisionSettings.divisionName.value = value;
-            if(value.length < 5){
+
+            if(!helpers.checkInputValidation({
+                "name": "stringRuNumCharacter", 
+                "value": value, 
+            })){
                 objUpdate.modalBodySettings.divisionSettings.divisionName.isInvalid = true;
                 objUpdate.modalBodySettings.divisionSettings.divisionName.isValid = false;
             } else {
@@ -782,7 +768,11 @@ export default class ModalWindowAddEntity extends React.Component {
 
         case "division_physical_address":
             objUpdate.modalBodySettings.divisionSettings.physicalAddress.value = value;
-            if(value.length < 5){
+
+            if(!helpers.checkInputValidation({
+                "name": "stringRuNumCharacter", 
+                "value": value, 
+            })){
                 objUpdate.modalBodySettings.divisionSettings.physicalAddress.isInvalid = true;
                 objUpdate.modalBodySettings.divisionSettings.physicalAddress.isValid = false;
             } else {
@@ -800,33 +790,27 @@ export default class ModalWindowAddEntity extends React.Component {
         this.setState( objUpdate );
     }
 
-    sourcesInput(elementName, value){
-        /**
-         * Здесь сделать обработку параметров ввода на основе RegExp
-         * пока пусть будет только по длинне
-         * 
-         */
-
+    sourcesInput(elementName, value, e){
         const listElem = {
             "source_id": {
                 name: "sourceID",
-                pattern: "",
+                pattern: "hostID",
             },
             "source_short_name": {
                 name: "shortName",
-                pattern: "",
+                pattern: "shortNameHost",
             }, 
             "source_ip": {
                 name: "ipAddress",
-                pattern: "",
+                pattern: "ipaddress",
             },
             "source_port": {
                 name: "port",
-                pattern: "",
+                pattern: "port",
             }, 
             "input_folder": {
                 name: "directoriesNetworkTraffic",
-                pattern: "",
+                pattern: "folderStorage",
             },
             "source_description": {
                 name: "description",
@@ -861,13 +845,18 @@ export default class ModalWindowAddEntity extends React.Component {
         let objUpdate = Object.assign({}, this.state);
 
         if(listSelectors.includes(elementName)){
-            objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;    
+            if(elementName === "source_telemetry"){
+                objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = e.target.checked;    
+            } else {
+                objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].value = value;    
+            }
+
             this.setState( objUpdate );
     
             return;
         }
-
-        if(value.length < 5) {
+        
+        if(!helpers.checkInputValidation({name: listElem[elementName].pattern, value: value })){
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isValid = false;
             objUpdate.modalBodySettings.sourceSettings[listElem[elementName].name].isInvalid = true;
         } else {
@@ -885,6 +874,15 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     render(){
+        let addButtonIsDisabled = true;
+        let up = this.props.userPermissions[this.modalType[this.props.settings.type]];
+
+        if(this.props.settings.type !== "" && (typeof up !== "undefined")){
+            if(up.element_settings.create){
+                addButtonIsDisabled = false;
+            }
+        }
+
         return (
             <Modal
                 size="lg"
@@ -907,7 +905,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.windowClose} variant="outline-secondary">закрыть</Button>
-                    <Button onClick={this.buttonAdd} variant="outline-primary">добавить</Button>
+                    <Button onClick={this.buttonAdd} variant="outline-primary" disabled={addButtonIsDisabled}>добавить</Button>
                 </Modal.Footer>
             </Modal>
         );
@@ -917,6 +915,8 @@ export default class ModalWindowAddEntity extends React.Component {
 ModalWindowAddEntity.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func,
+    userPermissions: PropTypes.object.isRequired,
+
     settings: PropTypes.object,
     parentDivisionID: PropTypes.string,
     parentOrganizationID: PropTypes.string,

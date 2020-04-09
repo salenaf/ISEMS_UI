@@ -32,21 +32,22 @@ export default class CreateBodyNewEntity extends React.Component {
             showModalWindow: false,
             chosenDivisionID: null,
             chosenOrganizationID: null,
-            listOrganizationName: this.createListOrganization.call(this),
-            listDivisionName: this.createListDivision.call(this),
+            listOrganizationName: this.createListOrganization.call(this, this.props.listShortEntity),
+            listDivisionName: this.createListDivision.call(this, this.props.listShortEntity),
             listNewEntity: [],
         };
 
         this.modalWindowSettings = {
             type: "",
             name: "",
-            listFieldActivity: this.getListFieldActivity.call(this),
+            listFieldActivity: this.props.listFieldActivity,
         };
-
 
         this.handlerAddEntity = this.handlerAddEntity.bind(this);
         this.handelrButtonAdd = this.handelrButtonAdd.bind(this);
         this.closeModalWindow = this.closeModalWindow.bind(this);
+
+        this.listenerSocketIoConn = this.listenerSocketIoConn.call(this);
 
         this.createNewSource = this.createNewSource.bind(this);
         this.createNewDivision = this.createNewDivision.bind(this);
@@ -74,30 +75,8 @@ export default class CreateBodyNewEntity extends React.Component {
         this.elDiv.on("change", this.selectedDivision.bind(this));
     }
 
-    getListFieldActivity(){
-        let objTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
-        }
-
-        return objTmp;
-    }
-
-    isDisabledDelete(){
-
-        /**
-        * Проверить добавилась ли новая сущность!!!
-        */
-
-        let isChecked = false;
-
-        return (isChecked) ? "" : "disabled";
-    }
-
     handelrButtonAdd(){
         let typeEntity = "source";
-
-        //console.log(`organization id: ${this.state.chosenOrganizationID}, division id: ${this.state.chosenDivisionID}`);
 
         if(this.state.chosenOrganizationID === null){
             typeEntity = "organization";
@@ -109,9 +88,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     showModalWindow(typeEntity){
-
-        //console.log(`Открыто модальное окно для сущности '${typeEntity}'`);
-
         const listTypeEntity = {
             "organization": {
                 name: "организацию",
@@ -138,9 +114,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedOrganization(e){
-
-        //console.log(`Была выбрана организация с ID: ${e.target.value}`);
-
         let v = (e.target.value === "all") ? null: e.target.value;
 
         this.setState({ chosenOrganizationID: v });
@@ -148,9 +121,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedDivision(e){
-
-        //console.log(`Было выбрано подразделение с ID: ${e.target.value}`);
-
         let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
         this.setState({ chosenDivisionID: v });
@@ -168,80 +138,70 @@ export default class CreateBodyNewEntity extends React.Component {
         }
     }
 
-    createListOrganization(){
-        //console.log("createListOrganization START...");
+    createListOrganization(listShortEntity){
+        let listOrg = listShortEntity.shortListOrganization.map((item) => {
+            return { name: item.name, id: item.id };
+        });
+ 
+        listOrg.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
 
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
-        }
-
-        return listTmp;
+        return listOrg;
     }
 
-    createListDivision(){
-        //console.log("createListDivision START...");
-
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].division] = {
-                did: this.props.listSourcesInformation[source].did,
-                oid: this.props.listSourcesInformation[source].oid,
+    createListDivision(listShortEntity){
+        let listDivName = listShortEntity.shortListDivision.map((item) => {
+            return {
+                name: item.name,
+                did: item.id,
+                oid: item.id_organization,
             };
-        }
+        });
 
-        return listTmp;
+        listDivName.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
+
+        return listDivName;
     }
 
     createListElementOrganization(){
-        let selectForm = "";
-        let lsi = this.state.listOrganizationName;
-
-        let listName = Object.keys(lsi);
-        listName.sort();
-
-        let listOptions = listName.map((name) => {
-            return <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>;
-        });
-
-        selectForm = <Form.Group>
-            <Form.Label>Организация</Form.Label>
-            <Form.Control as="select" size="sm" id="select_list_organization">
-                <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
-                {listOptions}
-            </Form.Control>
-        </Form.Group>;
-
-        return selectForm;
+        return (
+            <Form.Group>
+                <Form.Label>Организация</Form.Label>
+                <Form.Control as="select" size="sm" id="select_list_organization">
+                    <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
+                    {this.state.listOrganizationName.map((item) => {
+                        return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
+                    })}
+                </Form.Control>
+            </Form.Group>
+        );
     }
     
     createListElementDivision(){
-        let selectForm = "";       
-        let lsi = {};
-       
-        for(let nameDivision in this.state.listDivisionName){
-            let isEqual = this.state.chosenOrganizationID === this.state.listDivisionName[nameDivision].oid;
-            if(isEqual || this.state.chosenOrganizationID === null || this.state.chosenOrganizationID === "all"){
-                lsi[nameDivision] = this.state.listDivisionName[nameDivision].did;
+        let listOptions = this.state.listDivisionName.map((item) => {
+            let isEqual = this.state.chosenOrganizationID === item.oid;
 
-                continue;
+            if(isEqual || this.state.chosenOrganizationID === null || this.state.chosenOrganizationID === "all"){      
+                return <option value={item.did} key={`select_${item.did}_option`}>{item.name}</option>;
             }
-        }        
+        });
 
-        let listName = Object.keys(lsi);
-        listName.sort();
-
-        let listOptions = listName.map((name) => <option value={lsi[name]} key={`select_${lsi[name]}_option`}>{name}</option>);
-
-        selectForm = <Form.Group>
-            <Form.Label>Подразделение или филиал организации</Form.Label>
-            <Form.Control as="select" size="sm" id="select_list_division">
-                <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
-                {listOptions}
-            </Form.Control>
-        </Form.Group>;
-
-        return selectForm;
+        return (
+            <Form.Group>
+                <Form.Label>Подразделение или филиал организации</Form.Label>
+                <Form.Control as="select" size="sm" id="select_list_division">
+                    <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
+                    {listOptions}
+                </Form.Control>
+            </Form.Group>
+        );
     }
 
     handlerAddEntity(objInfo){
@@ -262,21 +222,35 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewOrganization(options){
-        //console.log("func 'createNewOrganization', START...");
-        //console.log(options);
-
         //обновляем список организаций
         let updateOrgName = this.state.listOrganizationName;
-        updateOrgName[options.organizationName] = options.id;
+
+        //проверяем наличие организации с таким же названием
+        for(let i = 0; i < updateOrgName.length; i++){
+            if(updateOrgName[i].name === options.organizationName){
+                return;
+            }
+        }
+
+        updateOrgName.push({ 
+            name: options.organizationName, 
+            id: options.id,
+        });
+        updateOrgName.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
+
         this.setState({ listOrganizationName: updateOrgName });
         
         let listNewEntity = this.state.listNewEntity;
         listNewEntity.push({
             id_organization: options.id,
-            name: options.organizationName, // название организации (String) а-Я0-9"'.,()-
-            legal_address: options.legalAddress, // юридический адрес (String) а-Я0-9.,
-            field_activity: options.fieldActivity, // род деятельности (String) из заданных значений или значение по умолчанию
-            division_or_branch_list_id: [] // массив с объектами типа addDivision            
+            name: options.organizationName,
+            legal_address: options.legalAddress,
+            field_activity: options.fieldActivity,
+            division_or_branch_list_id: [],
         });
         this.setState({ listNewEntity: listNewEntity });
 
@@ -285,21 +259,30 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewDivision(options){
-        console.log("func 'createNewDivision', START...");
-        console.log(options);
-
         let isExist = false;
         let newRecord = {
-            id_organization: options.parentID, // уникальный идентификатор организации (String) a-Z0-9
-            id_division: options.id, // уникальный идентификатор подразделения
-            name: options.divisionName, // название филиала или подразделения организации (String) а-Я0-9"'.,()-
-            physical_address: options.physicalAddress, // физический адрес (String) а-Я0-9.,
-            description: options.description, // дополнительное описание (String) а-Я0-9"'.()-
-            source_list: [], // массив с объектами типа addSource
+            id_organization: options.parentID,
+            id_division: options.id,
+            name: options.divisionName,
+            physical_address: options.physicalAddress,
+            description: options.description,
+            source_list: [],
         };
 
         //обновляем список подразделений
         let updateDiviName = this.state.listDivisionName;
+        updateDiviName.push({
+            name: options.divisionName,
+            did: options.id,
+            oid: options.parentID,
+        });
+
+        updateDiviName.sort((a, b) => {
+            if(a.name > b.name) return 1;
+            if(a.name === b.name) return 0;
+            if(a.name < b.name) return -1;
+        });
+
         updateDiviName[options.divisionName] = {
             did: options.id,
             oid: options.parentID,
@@ -311,10 +294,6 @@ export default class CreateBodyNewEntity extends React.Component {
         for(let i = 0; i < listNewEntity.length; i++){
             //ищем объект организации в listNewEntity
             if((typeof listNewEntity[i].division_or_branch_list_id !== "undefined") && (listNewEntity[i].id_organization === options.parentID)){
-
-                console.log(`new record ${JSON.stringify(newRecord)}`);
-                console.log(listNewEntity);
-
                 listNewEntity[i].division_or_branch_list_id.push(newRecord);
                 isExist = true;
 
@@ -332,34 +311,31 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewSource(options){
-        //console.log("func 'createNewSource', START...");
-        //console.log(options);
-
         let isExist = false;
         let newRecord = {
-            id_division: options.parentID, // уникальный идентификатор подразделения
-            id_source: options.id, // уникальный идентификатор источника
-            source_id: options.sourceID, // уникальный идентификатор источника (Number) 0-9
-            short_name: options.shortName, // краткое название источника (String) a-Z-_0-9
-            network_settings: { // сетевые настройки для доступа к источнику
-                ipaddress: options.ipAddress, // ip адрес (String) Проверка ip адреса на корректность
-                port: options.port, // сетевой порт (Number) 0-9 и диапазон 1024-65565
-                token_id: options.token, // идентификационный токен (String) a-Z0-9
+            id_division: options.parentID,
+            id_source: options.id,
+            source_id: options.sourceID,
+            short_name: options.shortName,
+            network_settings: {
+                ipaddress: options.ipAddress,
+                port: options.port,
+                token_id: options.token,
             },
-            source_settings: { // настройки источника 
-                type_architecture_client_server: options.architecture, // тип клиент серверной архитектуры (источник работает в режиме клиент или сервер) (String) a-z
-                transmission_telemetry: options.telemetry, // отправка телеметрии (Bool) BOOL
-                maximum_number_simultaneous_filtering_processes: options.maxSimultaneousProc, // максимальное количество одновременных процессов фильтрации (Number) 0-9 и диапазон 1-10
-                type_channel_layer_protocol: options.networkChannel, // тип протокола канального уровня (String) tcp/udp/any
-                list_directories_with_file_network_traffic: options.directoriesNetworkTraffic, // список директорий с файлами сетевого трафика, длинна массива не должна быть 0, массив содержит сторки с символами /\_a-Z0-9
+            source_settings: { 
+                type_architecture_client_server: options.architecture,
+                transmission_telemetry: options.telemetry,
+                maximum_number_simultaneous_filtering_processes: options.maxSimultaneousProc,
+                type_channel_layer_protocol: options.networkChannel,
+                list_directories_with_file_network_traffic: options.directoriesNetworkTraffic,
             },
-            description: options.description, // дополнительное описание (String) а-Я0-9"'.,()-
+            description: options.description,
         };
 
         let addNewSource = function(listNewEntity){
             for(let i = 0; i < listNewEntity.length; i++){
                 //ищем объект организации в listNewEntity
-                if(listNewEntity[i].id_division === options.parentID){
+                if((typeof listNewEntity[i].id_organization !== "undefined") && (listNewEntity[i].id_division === options.parentID)){
                     listNewEntity[i].source_list.push(newRecord);
                     isExist = true;
     
@@ -371,10 +347,9 @@ export default class CreateBodyNewEntity extends React.Component {
                 }
             }
         };
+
         let listNewEntity = this.state.listNewEntity;
         addNewSource(listNewEntity);
-
-
 
         //если не нашли организацию просто добавляе в массив
         if(!isExist){
@@ -424,7 +399,6 @@ export default class CreateBodyNewEntity extends React.Component {
                         </div>);
                     }
                 }
-                
             }                
 
             if(parents !== "organization") {
@@ -471,8 +445,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     delAddedElem(elemID){
-        //console.log(`удалить элемент с ID ${elemID} и всех его дочерних потомков`);
-
         function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
             let iterator = (obj, func) => {
                 let newObj = {};
@@ -511,7 +483,6 @@ export default class CreateBodyNewEntity extends React.Component {
                     }
                 }
             };
-
             searchIDAndDel(listEntity, id);
 
             return {
@@ -542,11 +513,26 @@ export default class CreateBodyNewEntity extends React.Component {
         if(modifiedObject.listEntity.length === 0){
             this.setState({ addedNewEntity: false });
         }
-
     }
 
     sendInfoNewEntity(){
-        console.log("Отправляем информацию о новых сущностях");
+        this.props.socketIo.emit("add new entitys", {
+            actionType: "add new",
+            arguments: this.state.listNewEntity,
+        });
+
+        //очищаем список добавляемых объектов
+        this.setState({ listNewEntity: [] });
+
+        //убираем кнопку 'сохранить'
+        this.setState({ addedNewEntity: false });
+    }
+
+    listenerSocketIoConn(){
+        this.props.socketIo.on("entity: new short source list", (data) => {
+            this.setState({ listOrganizationName: this.createListOrganization.call(this, data.arguments) });
+            this.setState({ listDivisionName: this.createListDivision.call(this, data.arguments) });
+        });
     }
 
     render(){
@@ -565,7 +551,7 @@ export default class CreateBodyNewEntity extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-md-12 text-right">
-                        <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>добавить</Button>
+                        <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>Новая сущность</Button>
                     </div>
                 </div>
                 <br/>
@@ -574,16 +560,18 @@ export default class CreateBodyNewEntity extends React.Component {
                         {this.resultBody()}
                     </div>
                 </div>
-                <br/>
                 <div className="row">
                     <div className="col-md-12 text-right">
-                        <ButtonSaveNewEntity handler={this.sendInfoNewEntity} showButton={this.state.addedNewEntity} />
+                        <ButtonSaveNewEntity 
+                            handler={this.sendInfoNewEntity} 
+                            showButton={this.state.addedNewEntity} />
                     </div>
                 </div>
 
                 <ModalWindowAddEntity 
                     show={this.state.showModalWindow}
                     onHide={this.closeModalWindow}
+                    userPermissions={this.props.userPermissions}
                     settings={this.modalWindowSettings}
                     parentDivisionID={this.state.chosenDivisionID}
                     parentOrganizationID={this.state.chosenOrganizationID}
@@ -594,5 +582,8 @@ export default class CreateBodyNewEntity extends React.Component {
 }
 
 CreateBodyNewEntity.propTypes ={
-    listSourcesInformation: PropTypes.object.isRequired,
+    socketIo: PropTypes.object.isRequired,
+    userPermissions: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
 };

@@ -43,7 +43,7 @@ async.parallel([
     /**
      * устанавливаем соединение с СУБД MongoDB
      */
-    callback => {
+    (callback) => {
 
         debug("create connect for MongoDB ");
 
@@ -81,7 +81,7 @@ async.parallel([
                     globalObject.setData("users", sessionId, listUserSession[sessionId]);
                 }
 
-                debug(globalObject.getData("users"));
+                //debug(globalObject.getData("users"));
 
                 callback(null);
             }).catch(err => {
@@ -93,11 +93,21 @@ async.parallel([
                 callback(err);
             });
     },
-    /*
+    /**
+ * соединение с модулем ISEMS-NIH
+ * модуль сетевого взаимодействия с источниками
+ */
+    (callback) => {
+        debug("модуль сетевого взаимодействия с источниками");
+
+        callback(null);
+    },
+
+    /**
      * соединение с API ISEMS-SMM (source messanger master),
      * установка и контроль соединений с сенсорами, создание и сопровождение задач по фильтрации и получении данных
      */
-    callback => {
+    (callback) => {
         /**
          * 
          * !!! ПОКА ЗАГЛУШКА !!!
@@ -118,7 +128,7 @@ async.parallel([
      * соединение с API ISEMS-R (recorder)
      * создание и управление карточками компьютерных воздействий
      */
-    callback => {
+    (callback) => {
         /**
          * 
          * !!! ПОКА ЗАГЛУШКА !!!
@@ -134,6 +144,20 @@ async.parallel([
         });
 
         callback(null);
+    },
+    /**
+     * устанавливаем общие настройки приложения
+     */
+    (callback) => {
+        process.nextTick(() => {
+            let listFieldActivity = config.get("appSettings:listFieldActivity");
+            listFieldActivity.sort();
+            listFieldActivity.push("иная деятельность");
+
+            globalObject.setData("commonSettings", "listFieldActivity", listFieldActivity);
+
+            callback(null);
+        });
     }
 ], err => {
     if (err) {
@@ -145,6 +169,8 @@ async.parallel([
 
         process.exit(1);
     }
+
+    //    debug(`app settings: ${JSON.stringify(globalObject.getData("commonSettings"))}`);
 
     //запуск сервера
     server.listen({

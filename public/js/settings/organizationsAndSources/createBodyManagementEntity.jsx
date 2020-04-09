@@ -3,6 +3,7 @@ import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
+import { helpers } from "../../common_helpers/helpers.js";
 
 class ShowEntityInformation extends React.Component {
     constructor(props){
@@ -22,10 +23,28 @@ class ShowEntityInformation extends React.Component {
 
     createDivisionCard(){
         let num = 1;
+
+        let isExist = (typeof this.props.resivedInfo.listDivision === "undefined");
+        if(isExist || (this.props.resivedInfo.listDivision.length === 0)){
+            return (<React.Fragment></React.Fragment>);
+        }
+
+        this.props.resivedInfo.listDivision.sort((a, b) => {
+            if(a.divisionName > b.divisionName) return 1;
+            if(a.divisionName === b.divisionName) return 0;
+            if(a.divisionName < b.divisionName) return -1;
+        });
+
         return this.props.resivedInfo.listDivision.map((item) => {
+            item.listSource.sort((a, b) => {
+                if(a.source_id > b.source_id) return 1;
+                if(a.source_id === b.source_id) return 0;
+                if(a.source_id < b.source_id) return -1;
+            });
+
             return (
                 <Card border="dark" key={`key_division_${num}`}>
-                    <Accordion.Toggle as={Card.Header} eventKey={num}>{item.divisionName}</Accordion.Toggle>
+                    <Accordion.Toggle className="p-2 alert-secondary text-dark" as={Card.Header} eventKey={num}>{item.divisionName}</Accordion.Toggle>
                     <Accordion.Collapse eventKey={num++}>
                         <Card.Body>
                             <Row>
@@ -51,7 +70,7 @@ class ShowEntityInformation extends React.Component {
                             <Row>
                                 <Col md={6}><Form.Control as="textarea" onChange={this.props.handlerInputChange} value={item.description} id={`description:${item.id}`}></Form.Control></Col>
                                 <Col md={2} className="text-left">источники:</Col>
-                                <Col md={4} className="text-left"><ul>{item.listSource.map((source) => <li key={`li_source_${source}`}>{source}</li>)}</ul></Col>
+                                <Col md={4} className="text-left"><ul>{item.listSource.map((item) => <li key={`li_source_${item.source_id}_${item.short_name}`}>{`${item.source_id} ${item.short_name}`}</li>)}</ul></Col>
                             </Row>
                             <Row>
                                 <Col className="text-right">
@@ -68,18 +87,16 @@ class ShowEntityInformation extends React.Component {
 
     showInformation(){
         if(!this.props.showInfo){
-            return;
+            return (<React.Fragment></React.Fragment>);
         }
  
-        let list = Object.keys(this.props.listFieldActivity);
-        list.sort();
-
+        let list = this.props.listFieldActivity;
         let num = 1;
 
         return (
             <Accordion defaultActiveKey="0" style={{ width: "55rem" }}>
                 <Card border="info">
-                    <Accordion.Toggle as={Card.Header} eventKey="0">{this.props.resivedInfo.organizationName}</Accordion.Toggle>
+                    <Accordion.Toggle className="p-3 alert-primary text-dark" as={Card.Header} eventKey="0">{this.props.resivedInfo.organizationName}</Accordion.Toggle>
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
                             <Row>
@@ -133,7 +150,7 @@ ShowEntityInformation.propTypes = {
     handlerSave: PropTypes.func.isRequired,
     handlerDelete: PropTypes.func.isRequired,
     resivedInfo: PropTypes.object.isRequired,
-    listFieldActivity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
     handlerInputChange: PropTypes.func.isRequired,
 };
 
@@ -148,36 +165,72 @@ class CreateListEntity extends React.Component {
         this.handlerChoose = this.handlerChoose.bind(this);
     }
 
-    componentDidMount() {
+    handlerDropDown(){
         this.el = $("#dropdown_all_entity");
        
         this.el.select2({
             placeholder: "выбор сущности",
             containerCssClass: "input-group input-group-sm",
+            width: "auto",
         });
-    
+
         this.el.on("change", this.handlerChoose);
     }
 
+    componentDidMount() {
+        this.handlerDropDown.call(this);
+    }
+
     listOrganization(){
-        let arrayTmp = Object.keys(this.props.listOrganization).sort().map((name) => {
-            return <option key={`key_org_${this.props.listOrganization[name]}`} value={`organization:${this.props.listOrganization[name]}`}>{name}</option>;
+        let listTmp = {};
+        this.props.listShortEntity.shortListOrganization.forEach((item) => {
+            listTmp[item.name] = item.id;
+        });
+
+        let arrayTmp = Object.keys(listTmp).sort().map((name) => {
+            return <option key={`key_org_${listTmp[name]}`} value={`organization:${listTmp[name]}`}>{name}</option>;
         });
 
         return arrayTmp;
     }
 
     listDivision(){       
-        let arrayTmp = Object.keys(this.props.listDivision).sort().map((name) => {
-            return <option key={`key_divi_${this.props.listDivision[name].did}`} value={`division:${this.props.listDivision[name].did}`}>{name}</option>;
+        let listTmp = {};
+        this.props.listShortEntity.shortListDivision.forEach((item) => {
+            listTmp[item.name] = {
+                did: item.id,
+                oid: item.id_organization,
+            };
+        });
+
+        let arrayTmp = Object.keys(listTmp).sort().map((name) => {
+            return <option key={`key_divi_${listTmp[name].did}`} value={`division:${listTmp[name].did}`}>{name}</option>;
         });
 
         return arrayTmp;
     }
 
     listSource(){
-        let arrayTmp = Object.keys(this.props.listSource).sort((a, b) => a < b).map((name) => {
-            return <option key={`key_sour_${this.props.listSource[name].sid}`} value={`source:${this.props.listSource[name].sid}`}>{name}</option>;
+        let listTmp = {};
+        this.props.listShortEntity.shortListSource.forEach((item) => {
+            let organizationId = "";
+            for(let d of this.props.listShortEntity.shortListDivision){
+                if(d.id === item.id_division){
+                    organizationId = d.id_organization;
+
+                    break;
+                }
+            }
+
+            listTmp[item.short_name] = {
+                sid: item.id,
+                did: item.id_division,
+                oid: organizationId,
+            };
+        });
+
+        let arrayTmp = Object.keys(listTmp).sort((a, b) => a < b).map((name) => {
+            return <option key={`key_sour_${listTmp[name].sid}`} value={`source:${listTmp[name].sid}`}>{name}</option>;
         });
 
         return arrayTmp;
@@ -194,13 +247,6 @@ class CreateListEntity extends React.Component {
 
         let [ typeValue, valueID ] = e.target.value.split(":");
 
-        /** 
-         * В Production отправляем, через WebSocket, серверу запрос на поиск информации в БД
-         * при этом в конструкторе должна быть выполненна функция с обработчиком сообщений 
-         * от сервера
-         */
-
-        /* для макета следующая реализация */
         this.props.handlerSelected({
             type: typeValue,
             value: valueID,
@@ -225,22 +271,8 @@ class CreateListEntity extends React.Component {
     }
 }
 
-/**
-            <Form.Control onClick={this.handlerChoose} as="select" className="custom-select" size="sm">
-                <option key="key_choose" value="0">выбрать...</option>
-                <option key="key_organization_title" disabled>{"организации".toUpperCase()}</option>
-                {this.listOrganization()}
-                <option key="division_title" disabled>{"подразделения или филиалы".toUpperCase()}</option>
-                {this.listDivision()}
-                <option key="source_title" disabled>{"источники".toUpperCase()}</option>
-                {this.listSource()}
-            </Form.Control>
- */
-
 CreateListEntity.propTypes = {
-    listOrganization: PropTypes.object.isRequired,
-    listDivision: PropTypes.object.isRequired,
-    listSource: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
     handlerSelected: PropTypes.func.isRequired,
 };
 
@@ -251,15 +283,16 @@ export default class CreateBodyManagementEntity extends React.Component {
 
         this.state = {
             showInfo: false,
+            showModalAlert: false,
             modalWindowSourceDel: false,
-            listOrganizationName: this.createListOrganization.call(this),
-            listDivisionName: this.createListDivision.call(this),
             objectShowedInformation: {},
         };
 
+        this.alertMessage = { header: "", msg: "" };
+
         this.deleteEntityOptions = {};
 
-        this.listSourceName = this.createListSource.call(this);
+        this.handlerEvents.call(this);       
 
         this.checkValue = this.checkValue.bind(this);
         this.handlerSave = this.handlerSave.bind(this);
@@ -271,44 +304,49 @@ export default class CreateBodyManagementEntity extends React.Component {
         this.searchEntityInObjectShowedInformation = this.searchEntityInObjectShowedInformation.bind(this);
     }
 
-    createListOrganization(){
-        //console.log("createListOrganization START...");
+    handlerEvents(){
+        this.props.socketIo.on("entity: set info about organization and division", (data) => {
+            this.setState({ objectShowedInformation: data.arguments });
+            this.setState({ showInfo: true });
+        });
 
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
-        }
+        this.props.socketIo.on("entity: delete organization", (data) => {
+            //удаляем информацию об организации из интерфейса
+            let objShowInfo = this.state.objectShowedInformation;
+            if(objShowInfo.id === data.arguments.organizationId){
+                this.setState({ showInfo: false });
+            }
 
-        return listTmp;
-    }
+            this.el = $("#dropdown_all_entity");
+            this.el.select2({
+                placeholder: "выбор сущности",
+                containerCssClass: "input-group input-group-sm",
+                width: "auto",
+            });
+        });
 
-    createListDivision(){
-        //console.log("createListDivision START...");
+        this.props.socketIo.on("entity: delete division", (data) => {
+            //удаляем информацию об организации из интерфейса
+            let objShowInfo = this.state.objectShowedInformation;
+            if(objShowInfo.id === data.arguments.organizationId){
+                for(let i = 0; i < objShowInfo.listDivision.length; i++){
+                    if(objShowInfo.listDivision[i].id === data.arguments.divisionId){
+                        objShowInfo.listDivision.splice(i,1);
 
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[this.props.listSourcesInformation[source].division] = {
-                did: this.props.listSourcesInformation[source].did,
-                oid: this.props.listSourcesInformation[source].oid,
-            };
-        }
+                        this.setState({ objectShowedInformation: objShowInfo });
 
-        return listTmp;
-    }
+                        break;
+                    }
+                }
+            }
 
-    createListSource(){
-        //console.log("createListSource START...");
-
-        let listTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            listTmp[`${source} ${this.props.listSourcesInformation[source].shortName}`] = {
-                sid: this.props.listSourcesInformation[source].sid,
-                did: this.props.listSourcesInformation[source].did,
-                oid: this.props.listSourcesInformation[source].oid,
-            };
-        }
-
-        return listTmp;
+            this.el = $("#dropdown_all_entity");
+            this.el.select2({
+                placeholder: "выбор сущности",
+                containerCssClass: "input-group input-group-sm",
+                width: "auto",
+            });
+        });
     }
 
     searchEntityInObjectShowedInformation(type, id){
@@ -331,92 +369,11 @@ export default class CreateBodyManagementEntity extends React.Component {
         return {};
     }
 
-    getListFieldActivity(){
-        let objTmp = {};
-        for(let source in this.props.listSourcesInformation){
-            objTmp[this.props.listSourcesInformation[source].fieldActivity] = "";
-        }
-
-        return objTmp;
-    }
-
-    searchInfoListSourceInformation_test({ type: searchType, value: searchID }){
-
-        console.log("FUNC 'searchInfoListSourceInformation_test'");
-
-        let paramType = {
-            "organization": "oid",
-            "division": "did",
-            "source": "id",
-        };
-    
-        let lsi = this.props.listSourcesFullInformation;
-        let tmp = {};
-        let oid = "";
-    
-        //получаем организацию
-        for(let sourceID in lsi){
-            if(lsi[sourceID][paramType[searchType]] === searchID){
-                tmp.id = lsi[sourceID].oid;
-                tmp.organizationName = lsi[sourceID].organization.name;
-                tmp.organizationNameIsValid = true;
-                tmp.organizationNameIsInvalid = false;
-                tmp.dateRegister = lsi[sourceID].organization.dateRegister;
-                tmp.dateChange = lsi[sourceID].organization.dateChange;
-                tmp.fieldActivity = lsi[sourceID].organization.fieldActivity;
-                tmp.legalAddress = lsi[sourceID].organization.legalAddress;
-                tmp.legalAddressIsValid = true;
-                tmp.legalAddressIsInvalid = false;
-                tmp.listDivision = [];
-    
-                oid = lsi[sourceID].oid;
-    
-                break;
-            }
-        }
-    
-        for(let sourceID in lsi){
-            if(lsi[sourceID].oid === oid){
-                let sourceListTmp = [];
-                for(let sid in lsi){
-                    if(lsi[sid].did === lsi[sourceID].did){
-                        sourceListTmp.push(`${sid} ${lsi[sid].shortName}`);
-                    }
-                }
-    
-                tmp.listDivision.push({
-                    "id": lsi[sourceID].did,
-                    "divisionName": lsi[sourceID].division.name,
-                    "divisionNameIsValid": true,
-                    "divisionNameIsInvalid": false,
-                    "dateRegister": lsi[sourceID].division.dateRegister,
-                    "dateChange": lsi[sourceID].division.dateChange,
-                    "physicalAddress": lsi[sourceID].division.physicalAddress,
-                    "physicalAddressIsValid": true,
-                    "physicalAddressIsInvalid": false,
-                    "description": lsi[sourceID].division.description,
-                    "listSource": sourceListTmp,
-                });
-            }
-        }
-
-        return tmp;
-    }
-
     handlerSelected(obj){
-        console.log("func 'handlerSelected', START");
-        console.log(obj);
-
-        /**
-         * Только для макета из оъекта 'listSourcesInformation' формируем объект 
-         * содержащий информацию для вывода на страницу.
-         * 
-         * !!! В Production готовый объект с информацией будет приходить с сервера !!!
-         */
-
-        //ТОЛЬКО ДЛЯ ТЕСТА!!! ищем в объекте listSourcesInformation информацию по ID
-        this.setState({objectShowedInformation: this.searchInfoListSourceInformation_test.call(this, obj)});
-        this.setState({ showInfo: true });
+        this.props.socketIo.emit("entity information", { 
+            actionType: "get info about organization or division",
+            arguments: obj
+        });
     }
 
     handlerInputChange(e){
@@ -463,28 +420,23 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     handlerSave(entityType, entityID){
-        console.log("func 'handlerSave', START...");
-
         let entityInfo = this.searchEntityInObjectShowedInformation(entityType, entityID);
 
         if(entityType === "organization"){
-
             //проверяем что бы поля были валидны
             if(entityInfo.organizationNameIsInvalid || entityInfo.legalAddressIsInvalid){
                 return;
             }
 
-            let reqOrg = JSON.stringify({ 
-                action: "entity_save", 
-                entityType: entityType, 
-                entityID: entityID,
-                options: {
+            this.props.socketIo.emit("change organization info", {
+                actionType: "change",
+                entityId: entityID,
+                arguments: {
                     organizationName: entityInfo.organizationName,
                     fieldActivity: entityInfo.fieldActivity,
                     legalAddress: entityInfo.legalAddress,
-                }});
-
-            console.log(`отправляем серверу запрос для 'СОХРАНЕНИЯ' информации об организации, ${reqOrg}`);
+                }
+            });
 
             return;
         } 
@@ -494,17 +446,15 @@ export default class CreateBodyManagementEntity extends React.Component {
             return;
         }
 
-        let reqDiv = JSON.stringify({ 
-            action: "entity_save", 
-            entityType: entityType, 
-            entityID: entityID,
-            options: {
+        this.props.socketIo.emit("change division info", {
+            actionType: "change",
+            entityId: entityID,
+            arguments: {
                 divisionName: entityInfo.divisionName,
                 physicalAddress: entityInfo.physicalAddress,
                 description: entityInfo.description,
-            }});
-
-        console.log(`отправляем серверу запрос для 'СОХРАНЕНИЯ' информации об подразделении, ${reqDiv}`);
+            }
+        });
     }
 
     handlerDelete(entityType, entityID){
@@ -521,38 +471,85 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     handlerEntityDelete(){
-        let request = JSON.stringify({ action: "entity_delete", entityType: this.deleteEntityOptions.entityType, entityID: this.deleteEntityOptions.entityID });
+        if(this.deleteEntityOptions.entityType === "organization"){
+            if(this.state.objectShowedInformation.listDivision.length > 0){
+                let listDivision = this.state.objectShowedInformation.listDivision.map((item) => item.divisionName).join(", ");
 
-        /**
- * В БД сделать проверку на наличие дочерних потомков у удаляемой сущности. Если есть потомки то удаление не производится,
- * выводится информационное сообщение о невозможности удалить сущност у которой есть потомки
- */
+                this.alertMessage = { 
+                    header: `Невозможно удалить организацию '${this.deleteEntityOptions.name}'.`, 
+                    msg: `К данной организации принадлежат следующие дочерние подразделения: ${listDivision}. Для удаления организации сначало необходимо удалить все дочерние подразделения.` 
+                };
+    
+                this.setState({ showModalAlert: true });
 
-        console.log(`отправляем серверу запрос для 'УДАЛЕНИЯ' информации из БД, ${request}`);
-        
-        this.closeModalWindowSourceDel();
+                return;
+            }
+
+            //отправляем серверу запрос на удаление 
+            this.props.socketIo.emit("delete organization info", { arguments: { organizationId: this.deleteEntityOptions.entityID }});
+            this.setState({ modalWindowSourceDel: false });
+        }
+
+        if(this.deleteEntityOptions.entityType === "division"){
+            let ld = this.state.objectShowedInformation.listDivision;
+            for(let i = 0; i < ld.length; i++){
+                if(ld[i].id === this.deleteEntityOptions.entityID){
+                    if(ld[i].listSource.length > 0){
+                        let listSource = ld[i].listSource.map((item) => `${item.source_id} ${item.short_name}`).join(", ");
+
+                        this.alertMessage = { 
+                            header: `Невозможно удалить подразделение '${ld[i].divisionName}' принадлежащее организации '${this.state.objectShowedInformation.organizationName}'.`, 
+                            msg: `Данному подразделению принадлежат следующие источники: ${listSource}. Для удаления подразделения сначало необходимо удалить все дочерние источники.` 
+                        };
+
+                        this.setState({ showModalAlert: true });
+                    } else {
+                        //отправляем серверу запрос на удаление 
+                        this.props.socketIo.emit("delete division info", { 
+                            arguments: { 
+                                divisionId: this.deleteEntityOptions.entityID,
+                                organizationId: this.state.objectShowedInformation.id
+                            }
+                        });
+
+                        this.setState({ modalWindowSourceDel: false });
+                    }
+
+                    return;
+                }
+            }
+        }
     }
 
     closeModalWindowSourceDel(){
         this.setState({ modalWindowSourceDel: false });
+
+        this.alertMessage = { header: "", msg: "" };
+        this.setState({ showModalAlert: false });
     }
 
     checkValue(nameInput, value){
-        console.log("func 'checkValue', проверяем передоваемое значение");
-        console.log(value);
+        let elemName = {
+            "organizationName": "fullNameHost",
+            "legalAddress": "stringRuNumCharacter",
+            "divisionName": "stringRuNumCharacter",
+            "physicalAddress": "stringRuNumCharacter",
+        };
 
-        //только для теста
-        if(value.includes("&")){
+        if(typeof elemName[nameInput] === "undefined") {
             return false;
         }
 
-        return true;
+        return helpers.checkInputValidation({
+            "name": elemName[nameInput], 
+            "value": value, 
+        });
     }
 
     render(){
-        let numOrganization = Object.keys(this.state.listOrganizationName).length;
-        let numDivision = Object.keys(this.state.listDivisionName).length;
-        let numSource = Object.keys(this.listSourceName).length;
+        let numOrganization = this.props.listShortEntity.shortListOrganization.length;
+        let numDivision = this.props.listShortEntity.shortListDivision.length;
+        let numSource = this.props.listShortEntity.shortListSource.length;
 
         return (
             <React.Fragment>
@@ -563,10 +560,7 @@ export default class CreateBodyManagementEntity extends React.Component {
                 <Row>
                     <Col className="text-left">
                         <CreateListEntity 
-                            listOrganization={this.state.listOrganizationName}
-                            listDivision={this.state.listDivisionName}
-                            listSource={this.listSourceName}
-
+                            listShortEntity={this.props.listShortEntity}
                             handlerSelected={this.handlerSelected} />
                     </Col>
                 </Row>
@@ -575,24 +569,26 @@ export default class CreateBodyManagementEntity extends React.Component {
                     showInfo={this.state.showInfo}
                     handlerSave={this.handlerSave}
                     handlerDelete={this.handlerDelete}
-                    listFieldActivity={this.getListFieldActivity.call(this)}
+                    listFieldActivity={this.props.listFieldActivity} 
                     resivedInfo={this.state.objectShowedInformation}
                     handlerInputChange={this.handlerInputChange} />
                 <ModalWindowConfirmMessage 
                     show={this.state.modalWindowSourceDel}
+                    showAlert={this.state.showModalAlert}
+                    alertMessage={this.alertMessage}
                     onHide={this.closeModalWindowSourceDel}
                     msgBody={`Вы действительно хотите удалить ${(this.deleteEntityOptions.entityType === "organization") ? "организацию":"подразделение"} '${this.deleteEntityOptions.name}'`}
                     msgTitle={"Удаление"}
                     nameDel=""
-                    handlerConfirm={this.handlerEntityDelete}
-                />
+                    handlerConfirm={this.handlerEntityDelete} />
             </React.Fragment>
         );
     }
 }
 
 CreateBodyManagementEntity.propTypes ={
-    listSourcesInformation: PropTypes.object.isRequired,
-    listSourcesFullInformation: PropTypes.object.isRequired,
+    socketIo: PropTypes.object.isRequired,
+    listShortEntity: PropTypes.object.isRequired,
+    listFieldActivity: PropTypes.array.isRequired,
 };
 

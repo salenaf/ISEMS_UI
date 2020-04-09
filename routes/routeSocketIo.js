@@ -1,9 +1,3 @@
-/*
- * Маршруты для обработки информации передаваемой через протокол socket.io
- *
- * Версия 1.1, дата релиза 25.02.2019
- * */
-
 "use strict";
 
 const debug = require("debug")("routeSocketIo");
@@ -19,7 +13,13 @@ const getSessionId = require("../libs/helpers/getSessionId");
 const checkUserAuthentication = require("../libs/check/checkUserAuthentication");
 //const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
 
-//генератор событий (обрабатывает события от внешних источников, например API)
+/**
+ * Маршруты для обработки информации передаваемой через протокол socket.io
+ * Генератор событий (обрабатывает события от внешних источников, например API)
+ *
+ * @param {*} socketIo 
+ * @param {*} object
+ */ 
 exports.eventGenerator = function(socketIo, object) {
     let actionsObject = {
         "waterfall-broker": {
@@ -122,7 +122,13 @@ exports.eventGenerator = function(socketIo, object) {
     actionsObject[object.name][object.type][object.info.action]();
 };
 
-//генератор событий
+/**
+ * Маршруты для обработки информации передаваемой через протокол socket.io
+ * Генератор событий
+ *
+ * @param {*} socketIo 
+ * @param {*} object
+ */
 exports.eventEmitter = function(socketIo, object) {
     let handling = {
         //        "changingStatusSource": checkStatusSource.bind(null, socketIo)
@@ -134,18 +140,23 @@ exports.eventEmitter = function(socketIo, object) {
 };
 
 /** 
- * ОБРАБОТЧИК СОБЫТИЙ ПОСТУПАЮЩИХ С User Interface 
+ * Маршруты для обработки информации передаваемой через протокол socket.io
+ * Обработчик событий поступающих от UI
  * 
+ * @param {*} socketIo 
  **/
 module.exports.eventHandling = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ПАРОЛЯМИ ПО УМОЛЧАНИЮ --- */
     require("./routeHandlersSocketIo/handlerChangePassword")(socketIo);
 
+    /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
+    require("./routeHandlersSocketIo/handlerActionsUsers").addHandlers(socketIo);
+
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
     require("./routeHandlersSocketIo/handlerActionsGroups").addHandlers(socketIo);
 
-    /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
-    require("./routeHandlersSocketIo/handlerActionsUsers").addHandlers(socketIo);
+    /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
+    require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
@@ -508,11 +519,3 @@ exports.uploadFiles = function(socketIo, ss) {
         });
     });
 };
-
-//изменение статуса на 'не подключен' для всех источников
-function setDisconnectSourceAll() {
-    for (let sourceId in objGlobals.sources.sourceAvailability) {
-        objGlobals.sources.sourceAvailability[sourceId].statusOld = false;
-        objGlobals.sources.sourceAvailability[sourceId].statusNew = false;
-    }
-}
