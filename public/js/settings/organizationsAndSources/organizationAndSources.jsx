@@ -150,12 +150,6 @@ class CreatePageOrganizationAndSources extends React.Component {
         ];
 
         this.props.socketIo.on("entity: set info only source", (data) => {
-
-            //            console.log("______ entity: set info only source _______");
-            //            console.log(data);
-            //            console.log("=======");
-            //            console.log(this.state.listShortEntity);
-
             let stateCopy = Object.assign({}, this.state);
 
             stateCopy.sourceSettings.id = data.arguments.id;
@@ -191,17 +185,6 @@ class CreatePageOrganizationAndSources extends React.Component {
         });
 
         this.props.socketIo.on("entity: new short source list", (data) => {
-
-            //            console.log("______ entity: new short source list _______");
-            //            console.log(data);
-
-            /*           let stateCopy = Object.assign({}, this.state);
-            stateCopy.listShortEntity = data.arguments;
-
-            stateCopy.tableSourceList = this.createTableSourceList.call(this, data.arguments);
-            stateCopy.checkboxMarkedSourceDel = this.createStateCheckboxMarkedSourceDel.call(this, data.arguments.shortListSource);
-            this.setState(stateCopy);*/
-
             this.setState({ listShortEntity: data.arguments });
             this.setState({ tableSourceList: this.createTableSourceList.call(this, data.arguments) });
             this.setState({ checkboxMarkedSourceDel: this.createStateCheckboxMarkedSourceDel.call(this, data.arguments.shortListSource) });
@@ -212,9 +195,6 @@ class CreatePageOrganizationAndSources extends React.Component {
                 containerCssClass: "input-group input-group-sm",
                 width: "auto",
             });
-
-            //            console.log("=======");
-            //            console.log(this.state.listShortEntity);
         });
     }
 
@@ -316,7 +296,6 @@ class CreatePageOrganizationAndSources extends React.Component {
                     sourceId: this.state.checkboxMarkedSourceDel[id].sourceId,
                     divisionId: this.state.checkboxMarkedSourceDel[id].divisionId
                 });
-                //                this.listSourceDelete.push(id);
             }
         }
 

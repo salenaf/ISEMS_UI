@@ -310,81 +310,7 @@ export default class CreateBodyManagementEntity extends React.Component {
             this.setState({ showInfo: true });
         });
 
-        this.props.socketIo.on("entity: change organization", (data) => {
-
-            console.log("entity: change organization");
-            console.log(data);
-
-            /**
- * Не работает изменение названия организации в
- * выподающем списке
- * 
- * Надо подумать как сделать что бы работало
- * 
- */
-
-            if(data.arguments.id === this.state.objectShowedInformation.id){
-                let orgList = this.state.listOrganizationName;
-                for(let name in orgList){
-                    if(orgList[name] === data.arguments.id){
-                        delete orgList[name];
-   
-                        orgList[this.state.objectShowedInformation.organizationName] = data.arguments.id;
-                        this.setState({ listOrganizationName: orgList });
-
-                        this.el = $("#dropdown_all_entity");
-                        this.el.select2({
-                            placeholder: "выбор сущности",
-                            containerCssClass: "input-group input-group-sm",
-                            width: "auto",
-                        });
-
-                        break;
-                    }
-                }
-            }
-        });
-
-        this.props.socketIo.on("entity: change division", (data) => {
-            let ld = this.state.objectShowedInformation.listDivision;
-            if(typeof ld !== "undefined"){
-                for(let i = 0; i < ld.length; i++){
-                    if(ld[i].id === data.arguments.id){
-                        let divList = this.state.listDivisionName;
-   
-                        for(let name in divList){
-                            if(divList[name].did === data.arguments.id){
-                                let newDivName = { did: divList[name].did, oid: divList[name].oid };
-
-                                delete divList[name];
-                                divList[ld[i].divisionName] = newDivName;
-                                
-                                this.setState({ listDivisionName: divList });
-
-                                this.el = $("#dropdown_all_entity");
-                                this.el.select2({
-                                    placeholder: "выбор сущности",
-                                    containerCssClass: "input-group input-group-sm",
-                                    width: "auto",
-                                });
-
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-        });
-
         this.props.socketIo.on("entity: delete organization", (data) => {
-            console.log("RECEIVED MESSAGE ABOUT DELETE ORGANIZTION");
-            //console.log(data);
-
-            //console.log("------");
-            //console.log(this.state.objectShowedInformation);
-
             //удаляем информацию об организации из интерфейса
             let objShowInfo = this.state.objectShowedInformation;
             if(objShowInfo.id === data.arguments.organizationId){
@@ -400,9 +326,6 @@ export default class CreateBodyManagementEntity extends React.Component {
         });
 
         this.props.socketIo.on("entity: delete division", (data) => {
-            console.log("RECEIVED MESSAGE ABOUT DELETE DIVISION");
-            //console.log(data);
-
             //удаляем информацию об организации из интерфейса
             let objShowInfo = this.state.objectShowedInformation;
             if(objShowInfo.id === data.arguments.organizationId){

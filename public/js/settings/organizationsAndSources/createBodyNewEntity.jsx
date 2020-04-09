@@ -75,21 +75,8 @@ export default class CreateBodyNewEntity extends React.Component {
         this.elDiv.on("change", this.selectedDivision.bind(this));
     }
 
-    isDisabledDelete(){
-
-        /**
-        * Проверить добавилась ли новая сущность!!!
-        */
-
-        let isChecked = false;
-
-        return (isChecked) ? "" : "disabled";
-    }
-
     handelrButtonAdd(){
         let typeEntity = "source";
-
-        //console.log(`organization id: ${this.state.chosenOrganizationID}, division id: ${this.state.chosenDivisionID}`);
 
         if(this.state.chosenOrganizationID === null){
             typeEntity = "organization";
@@ -101,9 +88,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     showModalWindow(typeEntity){
-
-        //console.log(`Открыто модальное окно для сущности '${typeEntity}'`);
-
         const listTypeEntity = {
             "organization": {
                 name: "организацию",
@@ -130,9 +114,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedOrganization(e){
-
-        //console.log(`Была выбрана организация с ID: ${e.target.value}`);
-
         let v = (e.target.value === "all") ? null: e.target.value;
 
         this.setState({ chosenOrganizationID: v });
@@ -140,9 +121,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedDivision(e){
-
-        //console.log(`Было выбрано подразделение с ID: ${e.target.value}`);
-
         let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
         this.setState({ chosenDivisionID: v });
@@ -316,10 +294,6 @@ export default class CreateBodyNewEntity extends React.Component {
         for(let i = 0; i < listNewEntity.length; i++){
             //ищем объект организации в listNewEntity
             if((typeof listNewEntity[i].division_or_branch_list_id !== "undefined") && (listNewEntity[i].id_organization === options.parentID)){
-
-                console.log(`new record ${JSON.stringify(newRecord)}`);
-                console.log(listNewEntity);
-
                 listNewEntity[i].division_or_branch_list_id.push(newRecord);
                 isExist = true;
 
@@ -471,8 +445,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     delAddedElem(elemID){
-        //console.log(`удалить элемент с ID ${elemID} и всех его дочерних потомков`);
-
         function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
             let iterator = (obj, func) => {
                 let newObj = {};
@@ -511,7 +483,6 @@ export default class CreateBodyNewEntity extends React.Component {
                     }
                 }
             };
-
             searchIDAndDel(listEntity, id);
 
             return {
@@ -545,8 +516,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     sendInfoNewEntity(){
-        console.log("Отправляем информацию о новых сущностях");
-
         this.props.socketIo.emit("add new entitys", {
             actionType: "add new",
             arguments: this.state.listNewEntity,
