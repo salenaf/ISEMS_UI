@@ -47,7 +47,7 @@ async.parallel([
 
         debug("create connect for MongoDB ");
 	debug("test repository");
-	debug("ggfgfgf");
+	debug("ggfgfgf 111111111111111");
 
         connectMongoDB()
             .then(description => {
