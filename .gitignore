@@ -1,0 +1,16 @@
+.vscode/
+assets/
+assets/1
+logs/
+test/
+spec/helpers
+spec/jasmine_examples
+spec/support
+spec/my_page_models/node_modules
+uploads/
+node_modules/
+keys/isems_ui_cert.pem
+keys/isems_ui_private_key.pem
+public/dist/
+spec/my_page_models/dist/
+best_practices.txt
