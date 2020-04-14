@@ -68,6 +68,8 @@ async.parallel([
 
                     //проверяем наличие и при необходимости создаем схемы MongoDB
                     debug("create MongoDB schemes");
+                    debug("create MongoDB schemes");
+
 
                     createSchemasMongoDB(err => {
                         if (err) reject(err);
