@@ -9,10 +9,46 @@ class CreateHeaderMenu extends React.Component {
     constructor(props){
         super(props);
 
+        this.state = {
+            "connectionModuleNI": false,
+        };
+
         this.listItems = this.props.listItems;
 
         this.createMenu = this.createMenu.bind(this);
         this.firstIconIsBig = this.firstIconIsBig.bind(this);
+        this.statusConnectModules = this.statusConnectModules.bind(this);
+
+        this.handlerEvents = this.handlerEvents.call(this);
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            console.log("received event 'module NI API'");
+            console.log(data);
+
+            if(data.type === "connectModuleNI"){
+                if(data.options.connectionStatus){
+                    this.setState({ "connectionModuleNI": true });
+                } else {
+                    this.setState({ "connectionModuleNI": false });
+                }
+            }
+        });
+    }
+
+    statusConnectModules(){
+        let imgIcon = (this.state.connectionModuleNI) ? "/images/network_green.png" : "/images/network_red.png";
+        /*<img src="/images/network_green.png" width="30" height="30"/>*/
+        
+        return (
+            <OverlayTrigger
+                placement="bottom"
+                overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
+                <img src={imgIcon} width="30" height="30"/>
+
+            </OverlayTrigger>
+        );
     }
 
     createSubmenu(listDropDown){
@@ -87,12 +123,7 @@ class CreateHeaderMenu extends React.Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav className="mr-auto">{this.createMenu()}</Nav>
                     <Navbar.Collapse className="justify-content-end">
-                        <OverlayTrigger
-                            placement="bottom"
-                            overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
-                            <img src="/images/network_red.png" width="30" height="30"/>
-                            {/*<img src="/images/network_green.png" width="30" height="30"/>*/}
-                        </OverlayTrigger>
+                        {this.statusConnectModules()}
                         &nbsp;&nbsp;
                         <Navbar.Text>{this.listItems.userName}</Navbar.Text>
                         &nbsp;&nbsp;
@@ -112,6 +143,17 @@ CreateHeaderMenu.protoType = {
     socketIo: PropTypes.object.isRequired,
     listItems: PropTypes.object.isRequired,
 };
+
+/**
+ * !!!!!!
+ * 
+ * Чтобы по индикатору подключения модулей была актуальная информация,
+ * при обновление страницы через F5 нужно отправлять информация
+ * из globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
+ * в объекте resivedFromServer
+ * 
+ * !!!!!!
+ */
 
 ReactDOM.render(<CreateHeaderMenu 
     listItems={resivedFromServer} 

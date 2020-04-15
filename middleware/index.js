@@ -24,7 +24,10 @@ module.exports = function(app, express, io) {
     const LocalStrategy = require("passport-local").Strategy;
     const MongoStore = require("connect-mongo")(session);
 
+    const webSocketClient = require("websocket").client;
+
     const routes = require("../routes");
+    const globalObject = require("../configure/globalObject");
     const routeSocketIo = require("../routes/routeSocketIo");
     const AuthenticateStrategy = require("./authenticateStrategy");
 
@@ -105,6 +108,80 @@ module.exports = function(app, express, io) {
      * Routing
      * */
     routes(app, socketIo);
+
+    /* 
+    * Module network interaction 
+    * */
+    let connectionWithModuleNetworkInteraction = () => {
+        const TIME_INTERVAL = 7000;
+        if(globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){
+            return;    
+        }
+
+        console.log("--- connection not established ----");
+
+        let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+
+        connection.createAPIConnection()
+            .on("connect", (msg) => {
+
+                console.log("*** connection SUCCESS ***");
+                console.log(msg);
+
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
+
+                socketIo.emit("module NI API", { 
+                    "type": "connectModuleNI",
+                    "options": {
+                        "connectionStatus": true
+                    },
+                });
+            })
+            .on("connectFailed", (err) => {
+                console.log("*** connection CONNECT_FAILED ***");
+                console.log(err);
+            })
+            .on("close", (msg) => {
+                console.log("*** connection CLOSE ***");
+                console.log(msg);
+
+                socketIo.emit("module NI API", { 
+                    "type": "connectModuleNI",
+                    "options": {
+                        "connectionStatus": false
+                    },
+                });
+
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                
+                setTimeout((()=>{
+                    console.log("=== Attempt connection ===");
+    
+                    connection.createAPIConnection();
+                }), TIME_INTERVAL);
+            })
+            .on("error", (err) => {
+                console.log("*** connection ERROR ***");
+                console.log(err);
+
+                socketIo.emit("module NI API", { 
+                    "type": "connectModuleNI",
+                    "options": {
+                        "connectionStatus": false
+                    },
+                });
+
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                
+                setTimeout((()=>{
+                    console.log("=== Attempt connection ===");
+    
+                    connection.createAPIConnection();
+                }), TIME_INTERVAL);
+            });
+    };
+
+    connectionWithModuleNetworkInteraction();
 
     /*
      * Setup passport

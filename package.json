@@ -29,6 +29,7 @@
         "express-session": "~1.15.1",
         "figlet": "~1.2.0",
         "helmet": "^3.21.2",
+        "jquery": "^3.4.1",
         "moment": "~2.19.1",
         "mongodb": "^3.3.5",
         "mongoose": "^5.7.12",
@@ -40,15 +41,15 @@
         "prop-types": "^15.6.2",
         "react-addons-update": "^15.6.2",
         "react-notification-system": "^0.3.0",
+        "select2": "^4.0.13",
+        "select2-theme-bootstrap4": "^0.2.0-beta.6",
         "serve-favicon": "^2.5.0",
         "socket.io": "^2.2.0",
         "socket.io-client": "~2.0.3",
         "socket.io-stream": "~0.9.1",
         "validate.js": "~0.11.1",
-        "xml2js": "~0.4.19",
-        "jquery": "^3.4.1",
-        "select2": "^4.0.13",
-        "select2-theme-bootstrap4": "^0.2.0-beta.6"
+        "websocket": "^1.0.31",
+        "xml2js": "~0.4.19"
     },
     "devDependencies": {
         "@babel/core": "^7.8.4",

@@ -1,7 +1,7 @@
 /**
  * Точка входа для приложения ISEMS_UI
  *
- * Версия 0.2, дата релиза 10.01.2019
+ * Версия 0.2, дата релиза 15.04.2020
  */
 
 "use strict";
@@ -20,6 +20,7 @@ const globalObject = require("./configure/globalObject");
 const writeLogFile = require("./libs/writeLogFile");
 const connectMongoDB = require("./controllers/connectMongoDB");
 const createSchemasMongoDB = require("./controllers/createSchemasMongoDB");
+const networkInteractionHandlerAPI = require("./middleware/networkInteractionHandlerAPI");
 
 /*
 const checkConnectClickhouse = require('./libs/check/checkConnectClickhouse');
@@ -65,10 +66,7 @@ async.parallel([
                 });
             }).then(() => {
                 return new Promise((resolve, reject) => {
-
                     //проверяем наличие и при необходимости создаем схемы MongoDB
-                    debug("create MongoDB schemes");
-
                     createSchemasMongoDB(err => {
                         if (err) reject(err);
                         else resolve(null);
@@ -81,15 +79,8 @@ async.parallel([
                     globalObject.setData("users", sessionId, listUserSession[sessionId]);
                 }
 
-                //debug(globalObject.getData("users"));
-
                 callback(null);
             }).catch(err => {
-
-                debug("-------------");
-                debug(err);
-                debug("-------------");
-
                 callback(err);
             });
     },
@@ -99,8 +90,19 @@ async.parallel([
  */
     (callback) => {
         debug("модуль сетевого взаимодействия с источниками");
+        
+        globalObject.setData(
+            "descriptionAPI", 
+            "networkInteraction", {
+                "connection": networkInteractionHandlerAPI({
+                    ip: config.get("modules:networkInteraction:host"),
+                    port: config.get("modules:networkInteraction:port"),
+                    token: config.get("modules:networkInteraction:token")
+                }),
+                "connectionEstablished": false,
+            });
 
-        debug("делаем автоматическое подключение к модулю сет. взаимодействия");
+        debug(globalObject.getData("descriptionAPI", "networkInteraction", "connection"));
 
         callback(null);
     },
@@ -171,8 +173,6 @@ async.parallel([
 
         process.exit(1);
     }
-
-    //    debug(`app settings: ${JSON.stringify(globalObject.getData("commonSettings"))}`);
 
     //запуск сервера
     server.listen({

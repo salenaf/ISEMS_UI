@@ -11,6 +11,13 @@
         "password": "jkdds7dfm0",
         "UnixSocketPath": "../../../../tmp/mongodb.sock"
     },
+    "modules": {
+        "networkInteraction": {
+            "host": "127.0.0.1",
+            "port": "13314",
+            "token": "fud9939f939fh93hfh84894yfy8y8"
+        }
+    },
     "appSettings": {
         "listFieldActivity": [
             "органы безопасности",
