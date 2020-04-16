@@ -9,24 +9,25 @@ class CreateHeaderMenu extends React.Component {
     constructor(props){
         super(props);
 
-        this.state = {
-            "connectionModuleNI": false,
-        };
-
         this.listItems = this.props.listItems;
+
+        this.state = {
+            "connectionModuleNI": this.connModuleNI.call(this),
+        };
 
         this.createMenu = this.createMenu.bind(this);
         this.firstIconIsBig = this.firstIconIsBig.bind(this);
         this.statusConnectModules = this.statusConnectModules.bind(this);
 
-        this.handlerEvents = this.handlerEvents.call(this);
+        this.handlerEvents.call(this);
+    }
+
+    connModuleNI(){
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleNI: false;
     }
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
-            console.log("received event 'module NI API'");
-            console.log(data);
-
             if(data.type === "connectModuleNI"){
                 if(data.options.connectionStatus){
                     this.setState({ "connectionModuleNI": true });
@@ -38,14 +39,13 @@ class CreateHeaderMenu extends React.Component {
     }
 
     statusConnectModules(){
-        let imgIcon = (this.state.connectionModuleNI) ? "/images/network_green.png" : "/images/network_red.png";
-        /*<img src="/images/network_green.png" width="30" height="30"/>*/
+        let imgIcon = (this.state.connectionModuleNI) ? "network_green.png" : "network_red.png";
         
         return (
             <OverlayTrigger
                 placement="bottom"
                 overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
-                <img src={imgIcon} width="30" height="30"/>
+                <img src={"/images/"+imgIcon} width="30" height="30"/>
 
             </OverlayTrigger>
         );
@@ -139,22 +139,11 @@ class CreateHeaderMenu extends React.Component {
     }
 }
 
-CreateHeaderMenu.protoType = {
+CreateHeaderMenu.protoTypes = {
     socketIo: PropTypes.object.isRequired,
     listItems: PropTypes.object.isRequired,
 };
 
-/**
- * !!!!!!
- * 
- * Чтобы по индикатору подключения модулей была актуальная информация,
- * при обновление страницы через F5 нужно отправлять информация
- * из globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
- * в объекте resivedFromServer
- * 
- * !!!!!!
- */
-
 ReactDOM.render(<CreateHeaderMenu 
-    listItems={resivedFromServer} 
-    socketIo={socket} />, document.getElementById("menu-top"));
+    socketIo={socket}
+    listItems={resivedFromServer} />, document.getElementById("menu-top"));

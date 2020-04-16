@@ -7,7 +7,7 @@
 "use strict";
 
 module.exports = function(app, express, io) {
-    const ss = require("socket.io-stream");
+//    const ss = require("socket.io-stream");
     const ejs = require("ejs-locals");
     const path = require("path");
 
@@ -24,15 +24,15 @@ module.exports = function(app, express, io) {
     const LocalStrategy = require("passport-local").Strategy;
     const MongoStore = require("connect-mongo")(session);
 
-    const webSocketClient = require("websocket").client;
-
     const routes = require("../routes");
     const globalObject = require("../configure/globalObject");
+    const writeLogFile = require("../libs/writeLogFile");
     const routeSocketIo = require("../routes/routeSocketIo");
     const AuthenticateStrategy = require("./authenticateStrategy");
 
     //срок окончания хранения постоянных cookie 14 суток
     let expiresDate = new Date(Date.now() + ((60 * 60 * 24 * 14) * 1000));
+    let funcName = " (middleware/index.js)";
 
     /**
      * помогает защитить приложение от некоторых широко известных веб-уязвимостей путем соответствующей настройки заголовков HTTP
@@ -92,7 +92,8 @@ module.exports = function(app, express, io) {
      * Socket.io
      * */
     let socketIo = io.sockets.on("connection", function(socket) {
-        routeSocketIo.eventHandling(socket);
+        //обработчик событий User Interface
+        routeSocketIo.eventHandlingUserInterface(socket);
 
         /* upload file */
         //routeSocketIo.uploadFiles(socket, ss);
@@ -118,70 +119,34 @@ module.exports = function(app, express, io) {
             return;    
         }
 
-        console.log("--- connection not established ----");
-
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-
         connection.createAPIConnection()
-            .on("connect", (msg) => {
-
-                console.log("*** connection SUCCESS ***");
-                console.log(msg);
-
-                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
-
-                socketIo.emit("module NI API", { 
-                    "type": "connectModuleNI",
-                    "options": {
-                        "connectionStatus": true
-                    },
-                });
+            .on("connect", () => {
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);                
             })
             .on("connectFailed", (err) => {
-                console.log("*** connection CONNECT_FAILED ***");
-                console.log(err);
+                writeLogFile("error", err.toString()+funcName);
             })
             .on("close", (msg) => {
-                console.log("*** connection CLOSE ***");
-                console.log(msg);
-
-                socketIo.emit("module NI API", { 
-                    "type": "connectModuleNI",
-                    "options": {
-                        "connectionStatus": false
-                    },
-                });
-
+                writeLogFile("info", msg.toString()+funcName);
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
                 
-                setTimeout((()=>{
-                    console.log("=== Attempt connection ===");
-    
+                setTimeout((()=>{   
                     connection.createAPIConnection();
                 }), TIME_INTERVAL);
             })
-            .on("error", (err) => {
-                console.log("*** connection ERROR ***");
-                console.log(err);
-
-                socketIo.emit("module NI API", { 
-                    "type": "connectModuleNI",
-                    "options": {
-                        "connectionStatus": false
-                    },
-                });
-
+            .on("error", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
                 
-                setTimeout((()=>{
-                    console.log("=== Attempt connection ===");
-    
+                setTimeout((()=>{   
                     connection.createAPIConnection();
                 }), TIME_INTERVAL);
             });
     };
-
     connectionWithModuleNetworkInteraction();
+
+    //обработчик событий сторонних модулей через API
+    routeSocketIo.modulesEventGenerator(socketIo);
 
     /*
      * Setup passport

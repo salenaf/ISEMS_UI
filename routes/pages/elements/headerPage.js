@@ -6,6 +6,7 @@
 
 "use strict";
 
+const globalObject = require("../../../configure/globalObject");
 const usersSessionInformation = require("../../../libs/mongodb_requests/usersSessionInformation");
 
 module.exports = function(req) {
@@ -14,8 +15,13 @@ module.exports = function(req) {
             if (err) reject(err);
             else resolve(result);
         });
-    }).then(result => {
+    }).then((result) => {
         let objMenuSettings = {};
+
+        console.log("==== func 'headerPage' ====");
+        console.log(result);
+        console.log("===========================");
+
         let menuItems = result.group_settings.menu_items;
 
         let createList = function(listMenu, items) {
@@ -40,9 +46,12 @@ module.exports = function(req) {
             login: result.login,
             userName: result.user_name,
             isPasswordDefaultAdministrator: result.isPasswordDefaultAdministrator,
+            connectionModules: {
+                moduleNI: globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")
+            },
             menuSettings: objMenuSettings
         };
-    }).catch(err => {
+    }).catch((err) => {
         throw (err);
     });
 };

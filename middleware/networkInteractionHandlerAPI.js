@@ -29,14 +29,11 @@ class MyEventEmitter extends EventEmitter {
     }
 
     createAPIConnection(isDebug = false) {
-        console.log("Initiate a connection to the API...");
-
         let websocketTmp = new webSocketClient({
             closeTimeout: 3000,
             tlsOptions: {
                 host: this.configSettings.ip,
                 port: this.configSettings.port,
-                //servername: this.configSettings.ip,
                 method: "GET",
                 path: "/api_wss",
                 rejectUnauthorized: false,
@@ -46,16 +43,16 @@ class MyEventEmitter extends EventEmitter {
             },
         });
 
-        websocketTmp.on("connectFailed", err => {
+        websocketTmp.on("connectFailed", (err) => {
             this.emit("error", err);
         });
 
-        websocketTmp.on("connect", connection => {
+        websocketTmp.on("connect", (connection) => {
             this.emit("connect", `The connection to the API server with the address ${this.configSettings.ip} successfully installed`);
 
             this.connection = connection;
 
-            connection.on("error", err => {
+            connection.on("error", (err) => {
                 this.emit("error", err);
             });
 
@@ -63,7 +60,7 @@ class MyEventEmitter extends EventEmitter {
                 this.emit("close", "Connection to API server was terminated");
             });
 
-            connection.on("message", msg => {
+            connection.on("message", (msg) => {
                 if (msg.type !== "utf8") {
                     this.emit("error", new Error("Incorrect message format is accepted, binary data may be accepted"));
 
@@ -72,8 +69,6 @@ class MyEventEmitter extends EventEmitter {
 
                 try {
                     let json = JSON.parse(msg.utf8Data);
-
-                    //console.log(json);
 
                     if (typeof this.msgType[json.t] === "undefined") {
                         this.emit("error", new Error("Invalid JSON message type accepted"));
@@ -89,25 +84,6 @@ class MyEventEmitter extends EventEmitter {
                         return;
                     }
 
-
-                    /** ТОЛЬКО ДЛЯ ТЕСТОВ  */
-                    if (isDebug) {
-                        if (json.i === "get new source list") {
-
-                            //console.log('GET NEW SOURCE LIST');
-
-                            setTimeout(() => {
-                                this.emit(mt[json.s], {
-                                    instruction: json.i,
-                                    taskID: (typeof json.tid !== "undefined") ? json.tid : "",
-                                    options: json.o
-                                });
-                            }, 1000);
-
-                            return;
-                        }
-                    }
-
                     this.emit(mt[json.s], {
                         instruction: json.i,
                         taskID: (typeof json.tid !== "undefined") ? json.tid : "",
@@ -119,7 +95,7 @@ class MyEventEmitter extends EventEmitter {
             });
         });
 
-        websocketTmp.on("error", err => {
+        websocketTmp.on("error", (err) => {
             this.emit("error", err);
         });
 
@@ -139,9 +115,7 @@ class MyEventEmitter extends EventEmitter {
         };
 
         //предварительный HTTP запрос
-        let req = https.request(options, res => {
-            console.log(res.statusCode);
-            
+        let req = https.request(options, (res) => {           
             if (res.statusCode !== 301) {
                 this.emit("error", new Error(`Connection error to remote host ${this.configSettings.ip}:${this.configSettings.port}`));
 
@@ -154,7 +128,7 @@ class MyEventEmitter extends EventEmitter {
             res.on("end", () => {});
         });
 
-        req.on("error", err => {
+        req.on("error", (err) => {
             this.emit("error", err);
         });
 
@@ -238,6 +212,6 @@ class MyEventEmitter extends EventEmitter {
  *  tokent:
  * } 
  */
-module.exports = configSettings => {
+module.exports = (configSettings) => {
     return new MyEventEmitter(configSettings);
 };

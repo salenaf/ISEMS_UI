@@ -11,11 +11,13 @@ const informationForPageManagementOrganizationAndSource = require("../../../libs
  * Модуль формирующий страницу на которой реализовано управление сущностями (организациями, 
  * ее подразделениями и источниками)
  * 
- * @param {*} socketIo
+ * @param {*} req
+ * @param {*} res
+ * @param {*} objHeader
  */ 
 module.exports = function(req, res, objHeader) {
     async.parallel({
-        userOrganizationOrSourcePermissions: (callback) => {
+        permissions: (callback) => {
             checkAccessRightsPage(req, (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
@@ -41,7 +43,7 @@ module.exports = function(req, res, objHeader) {
             return;
         }
 
-        let userPermissions = result.userOrganizationOrSourcePermissions.group_settings;
+        let userPermissions = result.permissions.group_settings;
         let readStatus = userPermissions.menu_items.element_settings.setting_organizations_and_sources.status;
 
         if (readStatus === false) return res.render("403");

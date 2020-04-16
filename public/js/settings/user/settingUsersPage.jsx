@@ -360,7 +360,7 @@ class CreateTable extends React.Component {
     render(){
         return (
             <div>
-                <h4 className="text-left">Управление пользователями</h4>
+                <h6 className="text-center">{"управление пользователями".toUpperCase()}</h6>
                 <Table striped hover>
                     <HeadTable 
                         socketIo={this.props.socketIo} 

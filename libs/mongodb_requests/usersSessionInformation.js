@@ -186,6 +186,8 @@ module.exports.getInformation = function(objID, cb) {
         objQuery[obj[key]] = objID[key];
     }
 
+    debug(`request session ID: '${objQuery}'`);
+
     mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, { query: objQuery }, (err, result) => {
         if (err) cb(err);
         else cb(null, result);

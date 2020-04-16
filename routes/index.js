@@ -19,7 +19,6 @@ const changeAdministratorPassword = require("../libs/changeAdministratorPassword
  */
 module.exports = function(app, socketIo) {
     const pages = require("./pages");
-
     const listPages = {
         "/": pages.mainPage,
         "/auth": pages.authenticate,
@@ -76,6 +75,8 @@ module.exports = function(app, socketIo) {
         },
     };
 
+    let funcName = " (route/index.js)";
+
     function isAuthenticated(req, res, next) {
         if (req.isAuthenticated()) next();
         else res.redirect("/auth");
@@ -115,7 +116,7 @@ module.exports = function(app, socketIo) {
     for(let pathPage in listCustomPages){
         app.get(pathPage, isAuthenticated, (req, res) => {
             headerPage(req)
-                .then(objHeader => {
+                .then((objHeader) => {
                     try {
                         let listElem = listCustomPages[pathPage].access.split(".");
                         let isAccess = objHeader;
@@ -129,8 +130,11 @@ module.exports = function(app, socketIo) {
                     } catch (err) {
                         res.render("403", {});
                     }
-                }).catch(err => {
-                    writeLogFile("error", err.toString());
+                }).catch((err) => {
+                    console.log("===== route/index ERROR: 1 ======");
+                    console.log(err);       
+
+                    writeLogFile("error", err.toString()+funcName);
                     res.render("500", {});
                 });
         });
@@ -148,7 +152,7 @@ module.exports = function(app, socketIo) {
 
         //удаляем сессионные данные о пользователе
         usersSessionInformation.delete(req.sessionID, err => {
-            if (err) writeLogFile("error", err.toString());
+            if (err) writeLogFile("error", err.toString()+funcName);
         });
 
         res.redirect("/auth");
@@ -156,6 +160,10 @@ module.exports = function(app, socketIo) {
 
     if (process.env.NODE_ENV !== "development") {
         app.use(function(err, req, res) {
+
+            console.log("===== route/index ERROR: 2 ======");
+            console.log(err);
+
             res.render("500", {});
         });
     }

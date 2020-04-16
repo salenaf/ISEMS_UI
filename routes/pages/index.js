@@ -40,10 +40,10 @@ exports.toolsSearch = require("./tools/toolsSearch");
  * - репутационными списками
  * - событими
  */
-exports.managementGroups = require("./management/managementGroups");
+exports.managementGeoIp = require("./management/managementGeoIp");
 exports.managementUsers = require("./management/managementUsers");
-exports.managementOrganizationsAndSources = require("./management/managementOrganizationsAndSources");
+exports.managementGroups = require("./management/managementGroups");
 exports.managementIdsRules = require("./management/managementIdsRules");
 exports.managementSearchRules = require("./management/managementSearchRules");
-exports.managementGeoIp = require("./management/managementGeoIp");
 exports.managementReputationalLists = require("./management/managementReputationalLists");
+exports.managementOrganizationsAndSources = require("./management/managementOrganizationsAndSources");
