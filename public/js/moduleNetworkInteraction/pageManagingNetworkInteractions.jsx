@@ -6,72 +6,6 @@ import CreateBodyDynamics from "./createBodyDynamics.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import CreateBodyFormationTask from "./createBodyFormationTask.jsx";
 
-class CreatingWidgets extends React.Component {
-    constructor(props){
-        super(props);
-    }
-
-    render(){
-        return (
-            <div className="row">
-                <div className="col-md-2">
-                    <Card border="success" style={{ width: "10rem" }}>
-                        <Card.Body>
-                            <small>источников</small>
-                            <Card.Text>0</Card.Text>
-                            <small className="text-muted">подключено</small>
-                        </Card.Body>
-                    </Card>
-                </div>
-                <div className="col-md-2">
-                    <Card border="danger" style={{ width: "10rem" }}>
-                        <Card.Body>
-                            <small>источников</small>
-                            <Card.Text>0</Card.Text>
-                            <Card.Text>
-                                <small className="text-muted">не доступно</small>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </div>
-                <div className="col-md-2">
-                    <Card border="dark" style={{ width: "10rem" }}>
-                        <Card.Body>
-                            <small>фильтрация</small>
-                            <Card.Text>0</Card.Text>
-                            <Card.Text>
-                                <small className="text-muted">выполняется</small>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </div>
-                <div className="col-md-3">
-                    <Card border="info" style={{ width: "13rem" }}>
-                        <Card.Body>
-                            <small>загрузка файлов</small>
-                            <Card.Text>0 / 0</Card.Text>
-                            <small className="text-muted"> выполняется / доступна</small>
-                        </Card.Body>
-                    </Card>
-                </div>
-                <div className="col-md-3">
-                    <Card border="info" style={{ width: "13rem" }}>
-                        <Card.Body>
-                            <small>загруженные файлы</small>
-                            <Card.Text>0</Card.Text>
-                            <small className="text-muted">нерассмотренны</small>
-                        </Card.Body>
-                    </Card>
-                </div>
-            </div>
-        );
-    }
-}
-
-CreatingWidgets.propTypes = {
-
-};
-
 export default class PageManagingNetworkInteractions extends React.Component {
     constructor(props){
         super(props);
@@ -96,7 +30,6 @@ export default class PageManagingNetworkInteractions extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <CreatingWidgets/>
                 <br/>
                 <Tabs defaultActiveKey="dynamics" id="uncontrolled-tab-example">
                     <Tab eventKey="dynamics" title="динамика">

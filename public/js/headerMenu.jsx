@@ -46,7 +46,6 @@ class CreateHeaderMenu extends React.Component {
                 placement="bottom"
                 overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
                 <img src={"/images/"+imgIcon} width="30" height="30"/>
-
             </OverlayTrigger>
         );
     }
@@ -104,10 +103,9 @@ class CreateHeaderMenu extends React.Component {
                 continue;
             }
 
-            list.push(
-                <NavDropdown title={this.firstIconIsBig(menuSettings[key].name)} key={`${key}_key`}>
-                    {this.createSubmenu.call(this, menuSettings[key].submenu)}
-                </NavDropdown>);
+            list.push(<NavDropdown title={this.firstIconIsBig(menuSettings[key].name)} key={`${key}_key`}>
+                {this.createSubmenu.call(this, menuSettings[key].submenu)}
+            </NavDropdown>);
         }
 
         return list;

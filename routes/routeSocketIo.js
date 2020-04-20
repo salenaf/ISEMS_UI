@@ -170,6 +170,8 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
     require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
+
+    
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
     socketIo.on("delete rules ids", function(data) {

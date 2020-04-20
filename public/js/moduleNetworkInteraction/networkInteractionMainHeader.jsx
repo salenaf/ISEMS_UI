@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Alert, Card, Spinner, Button, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import CreatingWidgets from "./createWidgets.jsx";
 import PageManagingNetworkInteractions from "./pageManagingNetworkInteractions.jsx";
 
 class CreatePageManagingNetworkInteractions extends React.Component {
@@ -34,17 +35,21 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
     showModuleConnectionError(){
         if(!this.state.connectionModuleNI){
-            return (                <React.Fragment>
-                <Alert variant="danger">
-                    <Alert.Heading>Модуль управления сетевыми взаимодействиями.</Alert.Heading>
-                    <p>
-                        Отсутствует доступ к модулю. Управление сетевыми взаимодействиями
-                        с удаленными источниками невозможно.
-                    </p>
-                </Alert>
-                <h6>Соединение...</h6>
-                <Spinner animation="border" variant="danger"/>
-            </React.Fragment>
+            return (                
+                <React.Fragment>
+                    <br/>
+                    <Alert variant="danger">
+                        <Alert.Heading>Ошибка! Модуль управления сетевыми взаимодействиями.</Alert.Heading>
+                        <p>
+                        Отсутствует доступ к модулю. Невозможно управление сетевыми взаимодействиями
+                        с удаленными источниками.
+                        </p>
+                    </Alert>
+                    <h6>
+                        Соединение&nbsp;<Spinner animation="border" variant="primary" size="sm"/>
+                    </h6>
+                    
+                </React.Fragment>
             );
         }
     }
@@ -52,6 +57,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     render(){
         return (
             <React.Fragment>
+                <CreatingWidgets />
                 {this.showModuleConnectionError.call(this)}
                 <PageManagingNetworkInteractions socketIo={this.props.socketIo} />
             </React.Fragment>

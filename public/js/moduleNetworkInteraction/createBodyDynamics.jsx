@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Card, ProgressBar, Button, Tab, Tabs } from "react-bootstrap";
+import { Col, Card, ProgressBar, Row, Button, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateBodyDynamics extends React.Component {
@@ -10,23 +10,27 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                {"Динамика выполнения задач"}
                 <br/>
-                <Card>
-                    <Card.Body>
-                        Источник №1023 (пример для скачивания файлов)
-                        <ProgressBar now="65" label={"65%"} />
-                        скачанных/всего файлов: 3/12
-                    </Card.Body>
+                <Card className="mb-3">
+                    {"1023 - Sensor MER (задача: скачивание файлов)"}
+                    <div className="pl-2 pr-2">
+                        <ProgressBar now="65" label={"65%"}/>
+                    </div>
+                    <small className="text-muted">
+                        {"файлов загруженных / всего: 3 / 12"}
+                    </small>
+                </Card>
+                <Card className="mb-3">
+                    {"1052 - AO Vladimir (задача: фильтрация файлов)"}
+                    <div className="pl-2 pr-2">
+                        <ProgressBar now="78" label={"132/245"}/>
+                    </div>
+                    <small className="text-muted">
+                        {"файлов найдено / обработано / всего: 13 / 132 / 245"}
+                    </small>
                 </Card>
                 <br/>
-                <Card>
-                    <Card.Body>
-                        Источник №1052 (пример для фильтрации файлов)
-                        <ProgressBar now="78" label={"132/245"} />
-                        найдено файлов: 13
-                    </Card.Body>
-                </Card>
+
             </React.Fragment>
         );
     }

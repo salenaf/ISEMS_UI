@@ -13,31 +13,31 @@ const mongodbQueryProcessor = require("../middleware/mongodbQueryProcessor");
 const usersSessionInformation = require("../libs/mongodb_requests/usersSessionInformation");
 
 exports.authenticate = function(userName, password, cb) {
-    mongodbQueryProcessor.querySelect(models.modelUser, {
-        query: { login: userName }
-    }, (err, user) => {
-        if (err) return cb(null, false, { message: "incorrect username or password" });
+    mongodbQueryProcessor.querySelect(models.modelUser, 
+        { query: { login: userName } }, 
+        (err, user) => {
+            if (err) return cb(null, false, { message: "incorrect username or password" });
 
-        let hashPwd = hashPassword.getHashPassword(password, "isems-ui");
+            let hashPwd = hashPassword.getHashPassword(password, "isems-ui");
 
-        if ((user === null) || (user.password !== hashPwd)) {
-            return cb(null, false, { message: "incorrect username or password" });
-        }
+            if ((user === null) || (user.password !== hashPwd)) {
+                return cb(null, false, { message: "incorrect username or password" });
+            }
 
-        //проверяем использует ли администратор дефолтный пароль
-        let isDefaultPassword = ((userName === "administrator") && (hashPwd === "2ab65043ba1e301ab163c6d336dd1469ea087016c52743c4d51ff2d6c0b1c8c1")) ? true : false;
+            //проверяем использует ли администратор дефолтный пароль
+            let isDefaultPassword = ((userName === "administrator") && (hashPwd === "2ab65043ba1e301ab163c6d336dd1469ea087016c52743c4d51ff2d6c0b1c8c1")) ? true : false;
 
-        //добавляем информацию о пользователе (passport id) в sessions_user_information
-        usersSessionInformation.create(userName, user._id, isDefaultPassword, err => {
-            if (err) writeLogFile("error", err.toString());
-            else writeLogFile("info", `authentication user name '${userName}'`);
+            //добавляем информацию о пользователе (passport id) в sessions_user_information
+            usersSessionInformation.create(userName, user._id, isDefaultPassword, (err) => {
+                if (err) writeLogFile("error", err.toString());
+                else writeLogFile("info", `authentication user name '${userName}'`);
 
-            cb(null, {
-                id: user._id,
-                username: userName
+                cb(null, {
+                    id: user._id,
+                    username: userName
+                });
             });
         });
-    });
 };
 
 exports.serializeUser = function(user, cb) {

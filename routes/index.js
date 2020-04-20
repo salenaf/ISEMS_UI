@@ -92,15 +92,15 @@ module.exports = function(app, socketIo) {
             failureRedirect: "/auth?username=error"
         }));
 
-    app.get("/", isAuthenticated, (req, res) => {
+    app.get("/", isAuthenticated, (req, res) => {       
         //добавляем идентификатор sessionID к сессионным данным о пользователе
-        usersSessionInformation.setSessionID(req.session.passport.user, req.sessionID, err => {
+        usersSessionInformation.setSessionID(req.session.passport.user, req.sessionID, (err) => {
             if (err) writeLogFile("error", err.toString());
 
             headerPage(req)
-                .then(objHeader => {
+                .then((objHeader) => {
                     listPages["/"].call(null, req, res, objHeader);
-                }).catch(err => {
+                }).catch((err) => {
                     writeLogFile("error", err.toString());
                     res.render("500", {});
                 });
@@ -108,7 +108,7 @@ module.exports = function(app, socketIo) {
     });
 
     app.post("/change_password", isAuthenticated, (req, res) => {
-        changeAdministratorPassword(req, jsonObj => {
+        changeAdministratorPassword(req, (jsonObj) => {
             res.json(jsonObj).end();
         });
     });
@@ -151,9 +151,15 @@ module.exports = function(app, socketIo) {
         req.session.destroy();
 
         //удаляем сессионные данные о пользователе
-        usersSessionInformation.delete(req.sessionID, err => {
+        usersSessionInformation.delete(req.sessionID, (err) => {
             if (err) writeLogFile("error", err.toString()+funcName);
         });
+
+        /**
+         * Здесь нужно удалять информацию еще и из
+         * globalObject
+         * 
+         */
 
         res.redirect("/auth");
     });

@@ -35,6 +35,8 @@ module.exports.addHandlers = function(socketIo) {
 
 //обработчик для добавления новых сущностей
 function addNewEntitys(socketIo, data){
+    let funcName = " (func 'addNewEntitys')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -106,12 +108,14 @@ function addNewEntitys(socketIo, data){
                 });    
             }
 
-            writeLogFile("error", err.toString());
+            writeLogFile("error", err.toString()+funcName);
         });    
 }
 
 //получить информацию о сущности
 function getEntityInformation(socketIo, data){
+    let funcName = " (func 'getEntityInformation')";
+
     switch(data.actionType){
     //информация только по источнику
     case "get info only source":
@@ -157,7 +161,7 @@ function getEntityInformation(socketIo, data){
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
 
-                writeLogFile("error", err.toString());
+                writeLogFile("error", err.toString()+funcName);
             });
 
         break;
@@ -231,7 +235,7 @@ function getEntityInformation(socketIo, data){
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
 
-                writeLogFile("error", err.toString());
+                writeLogFile("error", err.toString()+funcName);
             });
 
         break;
@@ -325,7 +329,7 @@ function getEntityInformation(socketIo, data){
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
 
-                writeLogFile("error", err.toString());
+                writeLogFile("error", err.toString()+funcName);
             });
 
         break;
@@ -515,6 +519,8 @@ function changeSourceInfo(socketIo, data){
         callback(null, obj);
     };
 
+    let funcName = " (func 'changeSourceInfo')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -589,12 +595,14 @@ function changeSourceInfo(socketIo, data){
                 message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
-            writeLogFile("error", err.toString());        
+            writeLogFile("error", err.toString()+funcName);        
         });
 }
 
 //удалить всю информацию по источнику
 function deleteSourceInfo(socketIo, data){
+    let funcName = " (func 'deleteSourceInfo')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -662,12 +670,14 @@ function deleteSourceInfo(socketIo, data){
                 message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
-            writeLogFile("error", err.toString());        
+            writeLogFile("error", err.toString()+funcName);        
         });
 }
 
 //изменить информацию о подразделении
 function changeDivisionInfo(socketIo, data){
+    let funcName = " (func 'changeDivisionInfo')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -771,12 +781,14 @@ function changeDivisionInfo(socketIo, data){
                 message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
-            writeLogFile("error", err.toString());        
+            writeLogFile("error", err.toString()+funcName);        
         });
 }
 
 //удалить всю информацию о подразделении
 function deleteDivisionInfo(socketIo, data){
+    let funcName = " (func 'deleteDivisionInfo')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -856,12 +868,14 @@ function deleteDivisionInfo(socketIo, data){
                 message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
-            writeLogFile("error", err.toString());        
+            writeLogFile("error", err.toString()+funcName);        
         });
 }
 
 //изменить информацию об организации
 function changeOrganizationInfo(socketIo, data){
+    let funcName = " (func 'changeOrganizationInfo')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -962,12 +976,14 @@ function changeOrganizationInfo(socketIo, data){
                 message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
-            writeLogFile("error", err.toString());        
+            writeLogFile("error", err.toString()+funcName);        
         });
 }
 
 //удалить всю информацию об организации
 function deleteOrganizationInfo(socketIo, data){
+    let funcName = " (func 'deleteOrganizationInfo')";
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -1031,7 +1047,7 @@ function deleteOrganizationInfo(socketIo, data){
                 message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
             });
 
-            writeLogFile("error", err.toString());        
+            writeLogFile("error", err.toString()+funcName);        
         });
 }
 

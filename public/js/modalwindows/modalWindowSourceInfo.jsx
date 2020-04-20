@@ -50,7 +50,7 @@ export default class ModalWindowSourceInfo extends React.Component {
                     Источник №{this.props.settings.sourceID}, загрузка информации...
                     </div>
                     <div className="col-md-12 text-center">
-                        <Spinner animation="border" role="status">
+                        <Spinner animation="border" role="status" variant="primary">
                             <span className="sr-only">Загрузка...</span>
                         </Spinner>
                     </div>
