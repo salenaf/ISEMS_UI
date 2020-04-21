@@ -108,7 +108,7 @@ module.exports = function(app, express, io) {
     /*
      * Routing
      * */
-    routes(app, socketIo);
+    routes(app);
 
     /* 
     * Module network interaction 

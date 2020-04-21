@@ -1,17 +1,17 @@
-/*
- * Стратегия локальной аутентификации пользователей
- *
- * Версия 0.2, дата релиза 16.01.2019
- * */
-
 "use strict";
 
 const models = require("../controllers/models");
 const hashPassword = require("../libs/hashPassword");
 const writeLogFile = require("../libs/writeLogFile");
 const mongodbQueryProcessor = require("../middleware/mongodbQueryProcessor");
-const usersSessionInformation = require("../libs/mongodb_requests/usersSessionInformation");
 
+/**
+ * Стратегия локальной аутентификации пользователей
+ * 
+ * @param{*} - userName
+ * @param{*} - password
+ * @param{*} - cb
+ */
 exports.authenticate = function(userName, password, cb) {
     mongodbQueryProcessor.querySelect(models.modelUser, 
         { query: { login: userName } }, 
@@ -27,15 +27,14 @@ exports.authenticate = function(userName, password, cb) {
             //проверяем использует ли администратор дефолтный пароль
             let isDefaultPassword = ((userName === "administrator") && (hashPwd === "2ab65043ba1e301ab163c6d336dd1469ea087016c52743c4d51ff2d6c0b1c8c1")) ? true : false;
 
-            //добавляем информацию о пользователе (passport id) в sessions_user_information
-            usersSessionInformation.create(userName, user._id, isDefaultPassword, (err) => {
-                if (err) writeLogFile("error", err.toString());
+            console.log("записываем информацию о пользователе по его passport ID");
+
+            //записываем информацию о пользователе по его passport ID 
+            require("../libs/mongodb_requests/passportAdditionInformation").create(userName, user._id, isDefaultPassword, (err, obj) => {
+                if(err) writeLogFile("error", err.toString());
                 else writeLogFile("info", `authentication user name '${userName}'`);
 
-                cb(null, {
-                    id: user._id,
-                    username: userName
-                });
+                cb(null, obj);
             });
         });
 };

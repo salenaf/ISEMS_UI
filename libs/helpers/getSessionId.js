@@ -46,11 +46,12 @@ function getSessionForSocketIo(objectSession, callback) {
         debug(`current session ID: ${id}`);
         debug(`obj session cookie: ${objectSession.request.headers.cookie}`);
 
-        if (objectSession.request.headers.cookie.includes(id)) {
-            sessionId = id;
+        if(id.length === 0){
+            continue;
+        }
 
-            debug("FIFNIFIFIF");
-            debug(id);
+        if(objectSession.request.headers.cookie.includes(id)) {
+            sessionId = id;
 
             break;
         }

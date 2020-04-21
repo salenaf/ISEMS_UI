@@ -20,45 +20,88 @@ const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
  * @param {*} isDefault
  * @param {*} callback
  */
-module.exports.create = function(login, passportID, isDefault, callback) {
 
-    debug("!!!! создаем новую запись о сессии !!!!");
+module.exports.create = function(passportID, sessionID, callback) {
+    //проверяем есть ли информация о пользователе
+    mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, {
+        query: {
+            passport_id: passportID,
+            session_id: sessionID,
+        },
+    }, (err, result) => {
+        if(err) return callback(err);
 
-    new Promise((resolve, reject) => {
-        mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, {
-            query: { passport_id: passportID }
-        }, (err, doc) => {
-            if (err) reject(err);
-            else resolve(doc);
-        });
-    }).then((sessionInfo) => {
+        debug("проверяем есть ли информация о пользователе");
+
         //проверяем наличие информации о пользователе
-        if(sessionInfo !== null){
+        if(result !== null){
             return callback(null);
         }
 
-        return new Promise((resolve, reject) => {
-            mongodbQueryProcessor.querySelect(models.modelUser, {
-                query: { login: login }
-            }, (err, doc) => {
+        debug("!!!! создаем новую запись о сессии !!!!");
+
+        new Promise((resolve, reject) => {
+
+            debug("получаем логин пользователя по его ID");
+    
+            //получаем логин пользователя по его ID
+            mongodbQueryProcessor.querySelect(models.modelAdditionalPassportInformation, {
+                query: { passport_id: passportID }
+            }, (err, result) => {
                 if (err) reject(err);
-                else resolve(doc);
+                else resolve(result);
             });
-        }).then((userData) => {
+        }).then((passportInfo) => {
+    
+            debug(passportInfo);
+            debug("получаем группу к которой принадлежит пользователь");
+    
+            //получаем группу к которой принадлежит пользователь
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(models.modelUser, {
+                    query: { login: passportInfo.login }
+                }, (err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
+            });
+        }).then((userInfo) => {
+    
+            debug(userInfo);
+            debug("получаем информацию по группе");
+    
+            //получаем информацию по группе
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.querySelect(models.modelGroup, {
-                    query: { group_name: userData.group },
+                    query: { group_name: userInfo.group },
                     select: { _id: 0, __v: 0, date_register: 0, group_name: 0 }
-                }, (err, doc) => {
+                }, (err, result) => {
                     if (err) reject(err);
-                    else resolve({ userData: userData, groupData: doc });
+                    else resolve({ userData: userInfo, groupData: result });
                 });
             });
         }).then((objData) => {
+    
+            debug("записываем информацию о пользователе в globalObject");
+
+            //записываем информацию о пользователе в globalObject
+            globalObject.setData("users", sessionID, {
+                userLogin: objData.userData.login,
+                userName: objData.userData.user_name,
+                userGroup: objData.userData.group,
+                groupSettings: objData.groupData,
+                userSettings: objData.userData.settings,
+            });
+
+            debug(objData);
+            debug("записываем информацию о пользователе в session_user_information");
+    
+            //записываем информацию о пользователе в session_user_information
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryCreate(models.modelSessionUserInformation, {
                     document: {
                         passport_id: passportID,
+                        session_id: sessionID,
                         login: objData.userData.login,
                         user_name: objData.userData.user_name,
                         user_settings: {
@@ -66,7 +109,6 @@ module.exports.create = function(login, passportID, isDefault, callback) {
                         },
                         group_name: objData.userData.group,
                         group_settings: objData.groupData,
-                        isPasswordDefaultAdministrator: isDefault,
                         dateCreate: +(new Date())
                     }
                 }, (err) => {
@@ -76,9 +118,9 @@ module.exports.create = function(login, passportID, isDefault, callback) {
             });
         }).then(() => {
             callback(null);
+        }).catch((err) => {
+            callback(err);
         });
-    }).catch((err) => {
-        callback(err);
     });
 };
 
@@ -161,7 +203,7 @@ module.exports.getInformation = function(req, callback) {
         let passportId = req.user;
 
         mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, 
-            { query: { passport_id: passportId,}}, 
+            { query: { passport_id: passportId }}, 
             (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);

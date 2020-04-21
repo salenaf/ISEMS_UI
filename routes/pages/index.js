@@ -4,10 +4,6 @@
  * Верися 0.1, дата релиза 17.01.2019
  * */
 
-
-//странита аутентификации
-exports.authenticate = require("./authenticate");
-
 //главная страница
 exports.mainPage = require("./mainPage");
 
@@ -19,15 +15,6 @@ exports.securityEventManagement = require("./securityEventManagement");
 
 //сетевые взаимодействия
 exports.networkInteraction = require("./networkInteraction");
-
-/**
- * набор инструментов
- * - инструменты поиска
- * - инструменты декодирования
- */
-
-exports.toolsDecode = require("./tools/toolsDecode");
-exports.toolsSearch = require("./tools/toolsSearch");
 
 /**  
  * управление настройками приложения
