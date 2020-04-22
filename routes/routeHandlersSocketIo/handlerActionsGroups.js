@@ -78,6 +78,9 @@ function addGroup(socketIo, data) {
                     select: { _id: 0, __v: 0, date_register: 0, group_name: 0 }
                 }, (err, results) => {
                     if (err) reject(err);
+                    
+                    console.log(results);
+                    
                     if(!results){
                         resolve();
                     }

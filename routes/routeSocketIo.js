@@ -158,6 +158,21 @@ module.exports.eventHandling = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
     require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
+    /**
+     * "rules soa", {
+            "actionType": "search",
+            "options": {
+                "sid": this.state.filter_search
+            },
+     */
+
+    socketIo.on("rules soa", (msg) => {
+        console.log("---- RESEIVED MSG 'rules soa' ---");
+        console.log(msg);
+
+        socketIo.emit("rules soa", { mes: "many message !!!!" });
+    });
+
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
     socketIo.on("delete rules ids", function(data) {

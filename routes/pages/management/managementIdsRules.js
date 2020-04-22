@@ -6,25 +6,63 @@
 
 "use strict";
 
+const debug = require("debug")("management");
+
 const async = require("async");
 
 const writeLogFile = require("../../../libs/writeLogFile");
+const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 
 //const informationUserGroupPermissions = require('../../../libs/informationUserGroupPermissions');
 //const informationForPageManagementIdsRules = require('../../../libs/management_settings/informationForPageManagementIdsRules');
 
+
 module.exports = function(req, res, objHeader) {
+    debug("func 'managemtIDSRules'");
+    //debug(req);
+
     async.parallel({
+        permissions: (callback) => {
+            checkAccessRightsPage(req, (err, result) => {
+                if (err) callback(err);
+                else callback(null, result);
+            });
+        },
+        getInformationAboutCOARules: (callback) => {
+            require("../../../libs/management_settings/informationForPageSOARules")((err, info) => {
+                debug(err);    
+                debug(info);
+
+                callback(null, {});                
+            });
+            /*
+            require("../../../libs/management_settings/informationForPageManagementIdsRules")((info) => {
+    
+                debug(info);
+
+                callback(null, {});
+            });
+            */
+        },
+
         test: function(callback) {
             callback(null, {});
         }
-    }, function(err) {
+    }, function(err, obj) {
         if (err) {
+
+            debug(err);
+
             writeLogFile("error", err.toString());
             res.render("menu/settings/setting_ids_rules", {});
         } else {
+
+            //            debug(obj.permissions.group_settings);
+
+
             res.render("menu/settings/setting_ids_rules", {
-                header: objHeader
+                header: objHeader,
+                userPermissions: obj.permissions.group_settings.management_ids_rules.element_settings,
             });
         }
     });

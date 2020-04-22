@@ -37,7 +37,7 @@ module.exports = {
         settingUsersPage: "./settings/user/settingUsersPage.jsx",
         settingGroupsPage: "./settings/group/settingGroupsPage.jsx",
         settingOrganizationAndSourcesPage: "./settings/organizationsAndSources/organizationAndSources.jsx",
-        settingIdsRulesPage: "./settingIdsRulesPage.js",
+        settingRulesSAOPage: "./settings/RulesSOA/rulesSOA.jsx",
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",
         styles: "./styles.js"

@@ -10,11 +10,11 @@
 const globalObject = require("../../configure/globalObject");
 const connection = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
-let idsRules = new connection.Schema({
+let rulesSOA = new connection.Schema({
     sid: { type: Number, index: true, unique: true },
     classType: { type: String, index: true },
     msg: String,
     body: String
 }, { autoIndex: true });
 
-module.exports = connection.model("ids.rules", idsRules);
+module.exports = connection.model("rules_soa", rulesSOA);
