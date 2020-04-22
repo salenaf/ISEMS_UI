@@ -170,7 +170,6 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
     require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
-<<<<<<< HEAD
     /**
      * "rules soa", {
             "actionType": "search",
@@ -186,10 +185,6 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
         socketIo.emit("rules soa", { mes: "many message !!!!" });
     });
 
-=======
-
-    
->>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
     /* --- РЕШАЮЩИЕ ПРАВИЛА СОА --- */
     /* удаление решающих правил СОА */
     socketIo.on("delete rules ids", function(data) {

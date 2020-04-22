@@ -37,12 +37,7 @@ module.exports = {
         settingUsersPage: "./settings/user/settingUsersPage.jsx",
         settingGroupsPage: "./settings/group/settingGroupsPage.jsx",
         settingOrganizationAndSourcesPage: "./settings/organizationsAndSources/organizationAndSources.jsx",
-<<<<<<< HEAD
         settingRulesSAOPage: "./settings/RulesSOA/rulesSOA.jsx",
-=======
-        settingIdsRulesPage: "./settingIdsRulesPage.js",
-        networkInteractionMainHeader: "./moduleNetworkInteraction/networkInteractionMainHeader.jsx",
->>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",
         styles: "./styles.js"

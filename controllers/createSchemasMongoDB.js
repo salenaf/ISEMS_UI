@@ -17,16 +17,6 @@ const createUniqID = require("../libs/helpers/createUniqID");
 const hashPassword = require("../libs/hashPassword");
 
 module.exports = function(cb) {
-<<<<<<< HEAD
-
-    //подключаем модели данных
-    let modelUser = require("./models").modelUser;
-    let modelGroup = require("./models").modelGroup;
-    let modelSOARules = require("./models").modelSOARules;
-    let modelAdditionalInformation = require("./models").modelAdditionalInformation;
-
-=======
->>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
     async.parallel([
         //дефолтные значения для пользователя administrator
         (callback) => {
@@ -42,22 +32,9 @@ module.exports = function(cb) {
                 else callback(null);
             });
         },
-<<<<<<< HEAD
-        //создание модели для хранения информации об источниках
-        /*callback => {
-            createModelSource(modelSource, err => {
-                if (err) callback(err);
-                else callback(null);
-            });
-        },*/
-        //создание модели для хранения решающих правил СОА
-        callback => {
-            createModelRulesIDS(modelSOARules, err => {
-=======
         //создание модели для хранения дополнительной информации
         (callback) => {
             createModelAdditionalInformation(require("./models").modelAdditionalInformation, (err) => {
->>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
                 if (err) callback(err);
                 else callback(null);
             });
