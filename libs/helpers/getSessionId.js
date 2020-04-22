@@ -1,20 +1,14 @@
-/*
- * Получаем идентификатор сессии из
- * - socketIo
- * - http request
- *
- * @param {*} typeSession - тип сессии
- * @param {*} objectSession - объект сессии
- * 
- * Версия 0.1, дата релиза 08.08.2017
- * */
-
 "use strict";
-
-const debug = require("debug")("getSessionId");
 
 const globalObject = require("../../configure/globalObject");
 
+/**
+ * Получить ID сессии
+ * 
+ * @param{*} - typeSession
+ * @param{*} - objectSession
+ * @param{*} - callback
+ */
 module.exports = function(typeSession, objectSession, callback) {
     let objTypeSession = {
         //"http": getSessionForHttp,
@@ -39,13 +33,7 @@ function getSessionForSocketIo(objectSession, callback) {
     let sessionId = "";
     let listSessionId = globalObject.getData("users");
 
-    debug(listSessionId);
-
     for (let id in listSessionId) {
-
-        debug(`current session ID: ${id}`);
-        debug(`obj session cookie: ${objectSession.request.headers.cookie}`);
-
         if(id.length === 0){
             continue;
         }
@@ -56,8 +44,6 @@ function getSessionForSocketIo(objectSession, callback) {
             break;
         }
     }
-
-    debug(`Session ID: '${sessionId}'`);
 
     return (sessionId.length === 0) ? callback(new Error("Error socketIo, incorrect cookie (func 'getSessionForSocketIo')")) : callback(null, sessionId);
 }

@@ -1,9 +1,3 @@
-/*
-* Изменение дефолтного пароля администратора
-*
-* Версия 0.1, дата релиза 10.04.2017
-* */
-
 "use strict";
 
 const async = require("async");
@@ -12,11 +6,12 @@ const models = require("../controllers/models");
 const hashPassword = require("./hashPassword");
 const writeLogFile = require("./writeLogFile");
 
-/*
-проверить является ли пользователь администратором
-действительно ли у него дефолтный пароль
-* */
-
+/**
+ * Модуль проверяет является ли пользователь администратором использующем пароль по умолчанию
+ * 
+ * @param{*} - req
+ * @param{*} -func
+ */
 module.exports = function (req, func) {
     models.modelSessionUserInformation.findOne({ session_id: req.sessionID }, {
         login: 1,
@@ -24,6 +19,7 @@ module.exports = function (req, func) {
     }, function (err, document) {
         if(err){
             writeLogFile("error", err.toString());
+
             return func({ type: "danger", message: "внутренняя ошибка сервера, невозможно сменить пароль пользователя 'administrator'", action: "" });
         }
 
@@ -53,6 +49,7 @@ module.exports = function (req, func) {
         ], function (err) {
             if(err){
                 writeLogFile("error", err.toString());
+
                 return func({ type: "danger", message: "внутренняя ошибка сервера, невозможно сменить пароль пользователя 'administrator'", action: "" });
             }
 
