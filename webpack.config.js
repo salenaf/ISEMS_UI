@@ -39,6 +39,7 @@ module.exports = {
         settingOrganizationAndSourcesPage: "./settings/organizationsAndSources/organizationAndSources.jsx",
         settingRulesSAOPage: "./settings/RulesSOA/rulesSOA.jsx",
         networkInteractionMainHeader: "./moduleNetworkInteraction/networkInteractionMainHeader.jsx",
+        managingAnalusisMainHeader: "./moduleAnalysis/pageManagingAnalysis.jsx", 
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",
         styles: "./styles.js"
