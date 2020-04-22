@@ -16,7 +16,7 @@ const informationForPageManagementGroups = require("../../../libs/management_set
 module.exports = function(req, res, objHeader) {
     async.parallel({
         //проверяем наличие прав у пользователя на работу с данной страницей
-        userGroupPermissions: (callback) => {
+        permissions: (callback) => {
             checkAccessRightsPage(req, (err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
@@ -38,12 +38,12 @@ module.exports = function(req, res, objHeader) {
         }
 
         //проверяем права на доступ к странице
-        let readStatus = result.userGroupPermissions.group_settings.menu_items.element_settings.setting_groups.status;
+        let readStatus = result.permissions.group_settings.menu_items.element_settings.setting_groups.status;
         if (readStatus === false) return res.render("403");
 
         let objResult = {
             header: objHeader,
-            userGroupPermissions: result.userGroupPermissions.group_settings.management_groups.element_settings,
+            userGroupPermissions: result.permissions.group_settings.management_groups.element_settings,
             mainInformation: result.mainInformation
         };
 

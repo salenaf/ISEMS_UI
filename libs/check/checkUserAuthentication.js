@@ -15,7 +15,7 @@ module.exports = function(socketIo) {
             if (err) reject(err);
             else resolve(sessionId);
         });
-    }).then(sessionId => {
+    }).then((sessionId) => {
         let userInfo = globalObject.getData("users", sessionId);
 
         return {

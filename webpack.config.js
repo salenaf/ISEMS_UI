@@ -37,7 +37,12 @@ module.exports = {
         settingUsersPage: "./settings/user/settingUsersPage.jsx",
         settingGroupsPage: "./settings/group/settingGroupsPage.jsx",
         settingOrganizationAndSourcesPage: "./settings/organizationsAndSources/organizationAndSources.jsx",
+<<<<<<< HEAD
         settingRulesSAOPage: "./settings/RulesSOA/rulesSOA.jsx",
+=======
+        settingIdsRulesPage: "./settingIdsRulesPage.js",
+        networkInteractionMainHeader: "./moduleNetworkInteraction/networkInteractionMainHeader.jsx",
+>>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",
         styles: "./styles.js"
@@ -80,19 +85,19 @@ module.exports = {
             /*amcharts: 'amcharts/dist/amcharts/amcharts.js',
             amchartsSerial: 'amcharts/dist/amcharts/serial.js',
             amchartsExport: 'amcharts/dist/amcharts/plugins/export/export.min.js',*/
-            react: "react",
-            reactDom: "react-dom",
-            reactBootstrap: "react-bootstrap/dist/react-bootstrap.min.js",
-            bootstrap: "bootstrap/dist/js/bootstrap.min.js",
-            bootstrapNotify: "bootstrap-notify/bootstrap-notify.min.js",
-            bootstrapToggle: "bootstrap-toggle/js/bootstrap-toggle.min.js",
-            datatablesNetBs: "datatables.net-bs/js/dataTables.bootstrap.min.js",
-            bootstrapTokenfield: "bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js",
-            bootstrapDatetimepicker: "bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
-            md5js: "crypto-js/md5.js",
-            moment: "moment/moment.js",
+            "react": "react",
+            "reactDom": "react-dom",
+            "reactBootstrap": "react-bootstrap/dist/react-bootstrap.min.js",
+            "bootstrap": "bootstrap/dist/js/bootstrap.min.js",
+            "bootstrapNotify": "bootstrap-notify/bootstrap-notify.min.js",
+            "bootstrapToggle": "bootstrap-toggle/js/bootstrap-toggle.min.js",
+            "datatablesNetBs": "datatables.net-bs/js/dataTables.bootstrap.min.js",
+            "bootstrapTokenfield": "bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js",
+            "bootstrapDatetimepicker": "bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
+            "md5js": "crypto-js/md5.js",
+            "moment": "moment/moment.js",
             "select2": "select2/dist/js/select2.full.min.js",
-            jquery: "jquery/dist/jquery.min.js",
+            "jquery": "jquery/dist/jquery.min.js",
             "socket.io-client": "socket.io-client/dist/socket.io.js",
             "socket.io-stream": "socket.io-stream/socket.io-stream.js"
         }

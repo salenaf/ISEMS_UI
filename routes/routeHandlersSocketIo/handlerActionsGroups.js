@@ -56,7 +56,7 @@ function addGroup(socketIo, data) {
 
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
+        .then((authData) => {
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("group management", "Пользователь не авторизован.");
@@ -98,7 +98,7 @@ function addGroup(socketIo, data) {
                     else resolve(results);
                 });
             });
-        }).then(results => {
+        }).then((results) => {
             let changeStatus = (groupName, objData) => {
                 let { id, state, listElements, count } = objData;
                 if (count > 10) return;
@@ -147,14 +147,14 @@ function addGroup(socketIo, data) {
             });
 
             return listElements;
-        }).then(newGroup => {
+        }).then((newGroup) => {
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryCreate(models.modelGroup, { document: newGroup }, err => {
                     if (err) reject(err);
                     else resolve(newGroup);
                 });
             });
-        }).then(newGroup => {
+        }).then((newGroup) => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -174,7 +174,7 @@ function addGroup(socketIo, data) {
             sendNewGroup[groupName] = newGroup;
 
             socketIo.emit("add new group", JSON.stringify(sendNewGroup));
-        }).catch(err => {
+        }).catch((err) => {
             if (err.name === "group management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -224,7 +224,7 @@ function updateGroup(socketIo, data) {
 
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
+        .then((authData) => {
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("group management danger", "Пользователь не авторизован.");
@@ -252,7 +252,7 @@ function updateGroup(socketIo, data) {
                     resolve(results);
                 });
             });
-        }).then(groupInfo => {
+        }).then((groupInfo) => {
             let testCountElemStatus = function(obj){
                 let result = {
                     countIsTrue: 0,
@@ -325,24 +325,36 @@ function updateGroup(socketIo, data) {
             }
 
             return listElements;
-        }).then(listElements => {          
+        }).then((listElements) => {          
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryUpdate(models.modelGroup, {
                     id: listElements.id,
                     update: listElements,
-                }, err => {
+                }, (err) => {
                     if (err) reject(err);
                     else resolve();
                 });
             });           
         }).then(() => {
+
+
+
+            /**
+ * Нужно сделать обновление session.user.information 
+ * и объекта globalObject
+ * 
+ */
+
+
+ 
+
             //отправляем информационное сообщение о выполненной задаче
             showNotify({
                 socketIo: socketIo,
                 type: "success",
                 message: `Информация о группе пользователей '${groupName}' была успешно изменена.`
             });
-        }).catch(err => {
+        }).catch((err) => {
             if (err.name === "group management danger") {
                 return showNotify({
                     socketIo: socketIo,
@@ -397,7 +409,7 @@ function deleteGroup(socketIo, data) {
 
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
+        .then((authData) => {
             //авторизован ли пользователь
             if(!authData.isAuthentication) {
                 throw new MyError("group management", "Пользователь не авторизован.");
@@ -440,7 +452,7 @@ function deleteGroup(socketIo, data) {
                     else resolve(users);
                 });
             });
-        }).then(userList => {
+        }).then((userList) => {
             for(let item of userList){
                 if(item.group === groupName.toLowerCase()){
                     throw new MyError("group management", `Невозможно удалить группу пользователей. Есть пользователи входящие в состав группы '${groupName}'.`);
@@ -463,7 +475,7 @@ function deleteGroup(socketIo, data) {
                 type: "success",
                 message: `Группа с именем '${groupName}' была успешно удалена.`,
             });
-        }).catch(err => {
+        }).catch((err) => {
             if (err.name === "group management") {
                 return showNotify({
                     socketIo: socketIo,

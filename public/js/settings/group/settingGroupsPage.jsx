@@ -628,7 +628,7 @@ class CreateTable extends React.Component {
     render() {
         return (
             <div>
-                <h4 className="text-left">Управление группами</h4>
+                <h6 className="text-center">{"управление группами".toUpperCase()}</h6>
                 <Table striped hover>
                     <thead>
                         <tr>

@@ -1,35 +1,53 @@
-/*
- * Формирование страницы сетевых взаимодействий с удаленными источниками
- *
- * Верися 0.1, дата релиза 17.01.2019
- * */
-
 "use strict";
 
 const async = require("async");
 
+//const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
+const checkAccessRightsPage = require("../../libs/check/checkAccessRightsPage");
 
-/*
- const informationForHeader = require('../../libs/informationForHeader');
- const shortNameIdRemoteHosts = require('../../libs/shortNameIdRemoteHosts');
- const informationForMainPage = require('../../libs/informationForMainPage');
- const informationForLeftContent = require('../../libs/informationForLeftContent');
- const informationForRightContent = require('../../libs/informationForRightContent');
+/**
+ * Модуль формирующий страницу на которой реализовано управление
+ * модулем сетевого взаимодействия
+ * 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} objHeader
  */
 module.exports = function(req, res, objHeader) {
     async.parallel({
-        test: function(callback) {
+        permissions: (callback) => {
+            checkAccessRightsPage(req, (err, result) => {
+                if (err) callback(err);
+                else callback(null, result);
+            });
+        },
+        mainInformation: (callback) => {
+
             callback(null, {});
+        
         }
-    }, function(err) {
+    }, (err, result) => {
         if (err) {
             writeLogFile("error", err.toString());
-            res.render("menu/network_interaction", {});
-        } else {
             res.render("menu/network_interaction", {
-                header: objHeader
+                header: objHeader,
+                userPermissions: {},
+                mainInformation: {},
             });
+
+            return;
         }
+        
+        let userPermissions = result.permissions.group_settings;
+        let readStatus = userPermissions.menu_items.network_interaction.status;
+
+        if (readStatus === false) return res.render("403");
+
+        res.render("menu/network_interaction", {
+            header: objHeader,
+            userPermissions: userPermissions.management_network_interaction.element_settings,
+            mainInformation: result.mainInformation,
+        });
     });
 };

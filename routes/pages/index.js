@@ -4,10 +4,6 @@
  * Верися 0.1, дата релиза 17.01.2019
  * */
 
-
-//странита аутентификации
-exports.authenticate = require("./authenticate");
-
 //главная страница
 exports.mainPage = require("./mainPage");
 
@@ -20,15 +16,6 @@ exports.securityEventManagement = require("./securityEventManagement");
 //сетевые взаимодействия
 exports.networkInteraction = require("./networkInteraction");
 
-/**
- * набор инструментов
- * - инструменты поиска
- * - инструменты декодирования
- */
-
-exports.toolsDecode = require("./tools/toolsDecode");
-exports.toolsSearch = require("./tools/toolsSearch");
-
 /**  
  * управление настройками приложения
  * - группами
@@ -40,10 +27,10 @@ exports.toolsSearch = require("./tools/toolsSearch");
  * - репутационными списками
  * - событими
  */
-exports.managementGroups = require("./management/managementGroups");
+exports.managementGeoIp = require("./management/managementGeoIp");
 exports.managementUsers = require("./management/managementUsers");
-exports.managementOrganizationsAndSources = require("./management/managementOrganizationsAndSources");
+exports.managementGroups = require("./management/managementGroups");
 exports.managementIdsRules = require("./management/managementIdsRules");
 exports.managementSearchRules = require("./management/managementSearchRules");
-exports.managementGeoIp = require("./management/managementGeoIp");
 exports.managementReputationalLists = require("./management/managementReputationalLists");
+exports.managementOrganizationsAndSources = require("./management/managementOrganizationsAndSources");

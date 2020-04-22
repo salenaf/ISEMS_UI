@@ -11,8 +11,43 @@ class CreateHeaderMenu extends React.Component {
 
         this.listItems = this.props.listItems;
 
+        this.state = {
+            "connectionModuleNI": this.connModuleNI.call(this),
+        };
+
         this.createMenu = this.createMenu.bind(this);
         this.firstIconIsBig = this.firstIconIsBig.bind(this);
+        this.statusConnectModules = this.statusConnectModules.bind(this);
+
+        this.handlerEvents.call(this);
+    }
+
+    connModuleNI(){
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleNI: false;
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "connectModuleNI"){
+                if(data.options.connectionStatus){
+                    this.setState({ "connectionModuleNI": true });
+                } else {
+                    this.setState({ "connectionModuleNI": false });
+                }
+            }
+        });
+    }
+
+    statusConnectModules(){
+        let imgIcon = (this.state.connectionModuleNI) ? "network_green.png" : "network_red.png";
+        
+        return (
+            <OverlayTrigger
+                placement="bottom"
+                overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
+                <img src={"/images/"+imgIcon} width="30" height="30"/>
+            </OverlayTrigger>
+        );
     }
 
     createSubmenu(listDropDown){
@@ -68,10 +103,9 @@ class CreateHeaderMenu extends React.Component {
                 continue;
             }
 
-            list.push(
-                <NavDropdown title={this.firstIconIsBig(menuSettings[key].name)} key={`${key}_key`}>
-                    {this.createSubmenu.call(this, menuSettings[key].submenu)}
-                </NavDropdown>);
+            list.push(<NavDropdown title={this.firstIconIsBig(menuSettings[key].name)} key={`${key}_key`}>
+                {this.createSubmenu.call(this, menuSettings[key].submenu)}
+            </NavDropdown>);
         }
 
         return list;
@@ -87,12 +121,7 @@ class CreateHeaderMenu extends React.Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav className="mr-auto">{this.createMenu()}</Nav>
                     <Navbar.Collapse className="justify-content-end">
-                        <OverlayTrigger
-                            placement="bottom"
-                            overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
-                            <img src="/images/network_red.png" width="30" height="30"/>
-                            {/*<img src="/images/network_green.png" width="30" height="30"/>*/}
-                        </OverlayTrigger>
+                        {this.statusConnectModules()}
                         &nbsp;&nbsp;
                         <Navbar.Text>{this.listItems.userName}</Navbar.Text>
                         &nbsp;&nbsp;
@@ -108,11 +137,11 @@ class CreateHeaderMenu extends React.Component {
     }
 }
 
-CreateHeaderMenu.protoType = {
+CreateHeaderMenu.protoTypes = {
     socketIo: PropTypes.object.isRequired,
     listItems: PropTypes.object.isRequired,
 };
 
 ReactDOM.render(<CreateHeaderMenu 
-    listItems={resivedFromServer} 
-    socketIo={socket} />, document.getElementById("menu-top"));
+    socketIo={socket}
+    listItems={resivedFromServer} />, document.getElementById("menu-top"));

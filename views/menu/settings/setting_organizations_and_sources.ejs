@@ -10,11 +10,6 @@
     <% include ../../header.ejs %>
 </head>
 <body>
-    <header>
-        <div class="row">
-            <div class="col-md-12" id="menu-top"></div>
-        </div>
-    </header>
     <section id="container">
         <div class="content-wrapper">
             <div class="container">
@@ -28,18 +23,9 @@
                 <div class="col-md-12 text-center" id="main-page-content"></div>
             </div>
         </div>
-        <section class="footer-section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        Система управления событиями информационной безопасности ISEMS-UI, версия 1.1.0 2020
-                    </div>
-                </div>
-            </div>
-        </section>
+        <% include ../../footer.ejs %>
     </section>
 </body>
 
-<!-- формирование основного раздела страницы -->
 <script src="/dist/settingOrganizationAndSourcesPage.js"></script>
 </html>

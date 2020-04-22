@@ -32,27 +32,32 @@ module.exports = function(typeSession, objectSession, callback) {
 //function getSessionForHttp(objectSession, callback) {}
 
 function getSessionForSocketIo(objectSession, callback) {
-    if (typeof objectSession.request === "undefined") return callback(new Error("Error socketIo, incorrect request"));
-    if (typeof objectSession.request.headers === "undefined") return callback(new Error("Error socketIo,there is no title"));
-    if (typeof objectSession.request.headers.cookie === "undefined") return callback(new Error("Error socketIo, missing the cookie"));
+    if (typeof objectSession.request === "undefined") return callback(new Error("Error socketIo, incorrect request (func 'getSessionForSocketIo')"));
+    if (typeof objectSession.request.headers === "undefined") return callback(new Error("Error socketIo,there is no title (func 'getSessionForSocketIo')"));
+    if (typeof objectSession.request.headers.cookie === "undefined") return callback(new Error("Error socketIo, missing the cookie (func 'getSessionForSocketIo')"));
 
-    let sessionID = "";
-    let listSessionID = globalObject.getData("users");
+    let sessionId = "";
+    let listSessionId = globalObject.getData("users");
 
-    debug(listSessionID);
+    debug(listSessionId);
 
-    for (let sID in listSessionID) {
+    for (let id in listSessionId) {
 
-        debug(`current session ID: ${sID}`);
+        debug(`current session ID: ${id}`);
+        debug(`obj session cookie: ${objectSession.request.headers.cookie}`);
 
-        if (objectSession.request.headers.cookie.includes(sID)) {
+        if(id.length === 0){
+            continue;
+        }
 
-            sessionID = sID;
+        if(objectSession.request.headers.cookie.includes(id)) {
+            sessionId = id;
+
             break;
         }
     }
 
-    debug(`Session ID: '${sessionID}'`);
+    debug(`Session ID: '${sessionId}'`);
 
-    return (sessionID.length === 0) ? callback(new Error("Error socketIo, incorrect cookie")) : callback(null, sessionID);
+    return (sessionId.length === 0) ? callback(new Error("Error socketIo, incorrect cookie (func 'getSessionForSocketIo')")) : callback(null, sessionId);
 }

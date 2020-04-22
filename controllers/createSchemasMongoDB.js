@@ -3,7 +3,7 @@
  *
  * создание учетных данных пользователя admininstrator (при отсутствие таковых)
  *
- * Версия 0.1, дата релиза 05.12.2018
+ * Версия 0.2, дата релиза 21.04.2020
  * */
 
 "use strict";
@@ -17,6 +17,7 @@ const createUniqID = require("../libs/helpers/createUniqID");
 const hashPassword = require("../libs/hashPassword");
 
 module.exports = function(cb) {
+<<<<<<< HEAD
 
     //подключаем модели данных
     let modelUser = require("./models").modelUser;
@@ -24,21 +25,24 @@ module.exports = function(cb) {
     let modelSOARules = require("./models").modelSOARules;
     let modelAdditionalInformation = require("./models").modelAdditionalInformation;
 
+=======
+>>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
     async.parallel([
         //дефолтные значения для пользователя administrator
-        callback => {
-            createModelUsers(modelUser, err => {
+        (callback) => {
+            createModelUsers(require("./models").modelUser, (err) => {
                 if (err) callback(err);
                 else callback(null);
             });
         },
         //дефолтные значения для группы administrator
-        callback => {
-            createModelGroups(modelGroup, err => {
+        (callback) => {
+            createModelGroups(require("./models").modelGroup, (err) => {
                 if (err) callback(err);
                 else callback(null);
             });
         },
+<<<<<<< HEAD
         //создание модели для хранения информации об источниках
         /*callback => {
             createModelSource(modelSource, err => {
@@ -49,23 +53,24 @@ module.exports = function(cb) {
         //создание модели для хранения решающих правил СОА
         callback => {
             createModelRulesIDS(modelSOARules, err => {
-                if (err) callback(err);
-                else callback(null);
-            });
-        },
+=======
         //создание модели для хранения дополнительной информации
-        callback => {
-            createModelAdditionalInformation(modelAdditionalInformation, err => {
+        (callback) => {
+            createModelAdditionalInformation(require("./models").modelAdditionalInformation, (err) => {
+>>>>>>> c029566f7293879083d50ab192bd73dde8b51de1
                 if (err) callback(err);
                 else callback(null);
             });
-        }
-    ], err => {
-        if (err) {
-            debug(err);
-            
-            cb(err);
-        }
+        }/*,
+        //создание модели для хранения информации о пользователе по ID passport
+        (callback) => {
+            createModelAdditionalPassportInformation(require("./models").modelAdditionalPassportInformation, (err) => {
+                if (err) callback(err);
+                else callback(null);
+            });
+        }*/
+    ], (err) => {
+        if (err) cb(err);
         else cb(null);
     });
 };
@@ -136,20 +141,6 @@ function createModelGroups(modelGroup, next) {
                     status: true,
                     description: "Сетевые взаимодействия"
                 },
-                /*                element_tools: {
-                    id: createUniqID.getMD5("administrator_menu_items_element_tools"),
-                    name: "инструменты",
-                    search_tools: {
-                        id: createUniqID.getMD5("administrator_menu_items_element_tools_search_tools"),
-                        status: true,
-                        description: "поиск информации"
-                    },
-                    decode_tools: {
-                        id: createUniqID.getMD5("administrator_menu_items_element_tools_decode_tools"),
-                        status: true,
-                        description: "декодирование"
-                    }
-                },*/
                 element_settings: {
                     id: createUniqID.getMD5("administrator_menu_items_element_settings"),
                     name: "Настройки",
@@ -168,11 +159,6 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: "организации и источники"
                     },
-                    /*                    setting_objects_and_subjects: {
-                        id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_objects_and_subjects"),
-                        status: true,
-                        description: "объекты и субъекты"
-                    },*/
                     setting_ids_rules: {
                         id: createUniqID.getMD5("administrator_menu_items_element_settings_setting_setting_ids_rules"),
                         status: true,
@@ -417,27 +403,6 @@ function createModelGroups(modelGroup, next) {
                     },
                 },
             },
-            /*management_objects_and_subjects: {
-                id: createUniqID.getMD5("administrator_management_objects_and_subjects"),
-                name: "объекты и субъекты",
-                element_settings: {
-                    create: {
-                        id: createUniqID.getMD5("administrator_management_objects_and_subjects_create"),
-                        status: true,
-                        description: "создание"
-                    },
-                    edit: {
-                        id: createUniqID.getMD5("administrator_management_objects_and_subjects_edit"),
-                        status: true,
-                        description: "редактирование"
-                    },
-                    delete: {
-                        id: createUniqID.getMD5("administrator_management_objects_and_subjects_delete"),
-                        status: true,
-                        description: "удаление"
-                    }
-                }
-            },*/
             management_ids_rules: {
                 id: createUniqID.getMD5("administrator_management_ids_rules"),
                 name: "правила СОА",
@@ -518,8 +483,13 @@ function createModelGroups(modelGroup, next) {
     });
 }
 
+/*
+function createModelAdditionalPassportInformation(modelAdditionalPassportInformation, next) {
+
+}
+
 //создание модели хранения данных об источнике
-/*function createModelSource(modelSource, next) {
+function createModelSource(modelSource, next) {
 
     debug("find source model");
 
@@ -527,7 +497,7 @@ function createModelGroups(modelGroup, next) {
         if (err) next(err);
         else next(null);
     });
-}*/
+}
 
 //создание модели хранения правил СОА
 function createModelRulesIDS(modelSOARules, next) {
@@ -558,12 +528,10 @@ function createModelRulesIDS(modelSOARules, next) {
         }
     }).limit(1);
 }
+*/
 
 //создание модели хранения дополнительной информации
 function createModelAdditionalInformation(modelAdditionalInformation, next) {
-
-    debug("find model additional informetion");
-
     modelAdditionalInformation.find({}, { _id: 1 }, (err, document) => {
         if (err) return next(err);
         if (document.length > 0) return next(null);
@@ -576,6 +544,7 @@ function createModelAdditionalInformation(modelAdditionalInformation, next) {
                 count_rules: 0
             }
         }).save();
+
         next(null);
     });
 }

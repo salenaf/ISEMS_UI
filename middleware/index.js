@@ -7,7 +7,7 @@
 "use strict";
 
 module.exports = function(app, express, io) {
-    const ss = require("socket.io-stream");
+//    const ss = require("socket.io-stream");
     const ejs = require("ejs-locals");
     const path = require("path");
 
@@ -25,11 +25,14 @@ module.exports = function(app, express, io) {
     const MongoStore = require("connect-mongo")(session);
 
     const routes = require("../routes");
+    const globalObject = require("../configure/globalObject");
+    const writeLogFile = require("../libs/writeLogFile");
     const routeSocketIo = require("../routes/routeSocketIo");
     const AuthenticateStrategy = require("./authenticateStrategy");
 
     //срок окончания хранения постоянных cookie 14 суток
     let expiresDate = new Date(Date.now() + ((60 * 60 * 24 * 14) * 1000));
+    let funcName = " (middleware/index.js)";
 
     /**
      * помогает защитить приложение от некоторых широко известных веб-уязвимостей путем соответствующей настройки заголовков HTTP
@@ -89,7 +92,8 @@ module.exports = function(app, express, io) {
      * Socket.io
      * */
     let socketIo = io.sockets.on("connection", function(socket) {
-        routeSocketIo.eventHandling(socket);
+        //обработчик событий User Interface
+        routeSocketIo.eventHandlingUserInterface(socket);
 
         /* upload file */
         //routeSocketIo.uploadFiles(socket, ss);
@@ -104,7 +108,45 @@ module.exports = function(app, express, io) {
     /*
      * Routing
      * */
-    routes(app, socketIo);
+    routes(app);
+
+    /* 
+    * Module network interaction 
+    * */
+    let connectionWithModuleNetworkInteraction = () => {
+        const TIME_INTERVAL = 7000;
+        if(globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){
+            return;    
+        }
+
+        let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+        connection.createAPIConnection()
+            .on("connect", () => {
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);                
+            })
+            .on("connectFailed", (err) => {
+                writeLogFile("error", err.toString()+funcName);
+            })
+            .on("close", (msg) => {
+                writeLogFile("info", msg.toString()+funcName);
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                
+                setTimeout((()=>{   
+                    connection.createAPIConnection();
+                }), TIME_INTERVAL);
+            })
+            .on("error", () => {
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                
+                setTimeout((()=>{   
+                    connection.createAPIConnection();
+                }), TIME_INTERVAL);
+            });
+    };
+    connectionWithModuleNetworkInteraction();
+
+    //обработчик событий сторонних модулей через API
+    routeSocketIo.modulesEventGenerator(socketIo);
 
     /*
      * Setup passport

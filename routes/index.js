@@ -5,26 +5,15 @@ const passport = require("passport");
 const headerPage = require("./pages/elements/headerPage");
 const writeLogFile = require("../libs/writeLogFile");
 const usersSessionInformation = require("../libs/mongodb_requests/usersSessionInformation");
-//const checkAccessRightsExecute = require("../libs/check/checkAccessRightsExecute");
 const changeAdministratorPassword = require("../libs/changeAdministratorPassword");
-
-//const processingManagementUsers = require("./pages/processing_http_request/processingManagementUsers");
-//const processingManagementSources = require("./pages/processing_http_request/processingManagementSources");
 
 /**
  * Модуль маршрутизации для запросов к HTTP серверу
  * 
  * @param {*} app 
- * @param {*} socketIo 
  */
-module.exports = function(app, socketIo) {
+module.exports = function(app) {
     const pages = require("./pages");
-
-    const listPages = {
-        "/": pages.mainPage,
-        "/auth": pages.authenticate,
-    };
-
     const listCustomPages = {
         "/analysis_sip": {
             access: "menuSettings.analysis_sip.status",
@@ -38,14 +27,6 @@ module.exports = function(app, socketIo) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteraction,
         },
-        /*        "/decode_tools": {
-            access: "menuSettings.element_tools.submenu.decode_tools.status",
-            handler: pages.toolsDecode,
-        },
-        "/search_tools": {
-            access: "menuSettings.element_tools.submenu.search_tools.status",
-            handler: pages.toolsSearch,
-        },*/
         "/setting_users": {
             access: "menuSettings.element_settings.submenu.setting_users.status",
             handler: pages.managementUsers,
@@ -76,6 +57,8 @@ module.exports = function(app, socketIo) {
         },
     };
 
+    let funcName = " (route/index.js)";
+
     function isAuthenticated(req, res, next) {
         if (req.isAuthenticated()) next();
         else res.redirect("/auth");
@@ -83,8 +66,15 @@ module.exports = function(app, socketIo) {
 
     app.route("/auth")
         .get((req, res) => {
-            if (req.isAuthenticated()) pages.mainPage.call(null, req, res, socketIo);
-            else listPages["/auth"].call(null, req, res);
+            if (req.isAuthenticated()){
+                headerPage(req)
+                    .catch((err) => {
+                        writeLogFile("error", err.toString());
+                        res.render("500", {});
+                    });
+            } else {
+                res.render("auth", {});
+            }
         })
         .post(passport.authenticate("local", {
             successRedirect: "/",
@@ -92,14 +82,20 @@ module.exports = function(app, socketIo) {
         }));
 
     app.get("/", isAuthenticated, (req, res) => {
-        //добавляем идентификатор sessionID к сессионным данным о пользователе
-        usersSessionInformation.setSessionID(req.session.passport.user, req.sessionID, err => {
+        //добавляем информацию о пользователе (passport id) в sessions_user_information
+        usersSessionInformation.create(req.session.passport.user, req.sessionID, (err) => {
             if (err) writeLogFile("error", err.toString());
 
             headerPage(req)
-                .then(objHeader => {
-                    listPages["/"].call(null, req, res, objHeader);
-                }).catch(err => {
+                .then((objHeader) => {
+
+                    /**
+                    * потом для главной странице обработчик в
+                    * routes/pages/mainPage.js
+                    */
+
+                    res.render("index", { header: objHeader });
+                }).catch((err) => {
                     writeLogFile("error", err.toString());
                     res.render("500", {});
                 });
@@ -107,7 +103,7 @@ module.exports = function(app, socketIo) {
     });
 
     app.post("/change_password", isAuthenticated, (req, res) => {
-        changeAdministratorPassword(req, jsonObj => {
+        changeAdministratorPassword(req, (jsonObj) => {
             res.json(jsonObj).end();
         });
     });
@@ -115,7 +111,7 @@ module.exports = function(app, socketIo) {
     for(let pathPage in listCustomPages){
         app.get(pathPage, isAuthenticated, (req, res) => {
             headerPage(req)
-                .then(objHeader => {
+                .then((objHeader) => {
                     try {
                         let listElem = listCustomPages[pathPage].access.split(".");
                         let isAccess = objHeader;
@@ -129,33 +125,39 @@ module.exports = function(app, socketIo) {
                     } catch (err) {
                         res.render("403", {});
                     }
-                }).catch(err => {
-                    writeLogFile("error", err.toString());
+                }).catch((err) => {
+                    writeLogFile("error", err.toString()+funcName);
                     res.render("500", {});
                 });
         });
     }
 
-    //УПРАВЛЕНИЕ ИСТОЧНИКАМИ (Экспорт XML файла с настройками источников)
-    /*app.get("/export_file_setup_hosts", isAuthenticated, (req, res) => {
-        return processingDownloadFileSourceSetting(req, res);
-    });*/
-
     //ВЫХОД
     app.get("/logout", (req, res) => {
-        req.logOut();
-        req.session.destroy();
-
-        //удаляем сессионные данные о пользователе
-        usersSessionInformation.delete(req.sessionID, err => {
-            if (err) writeLogFile("error", err.toString());
+        new Promise((resolve, reject) => {
+            usersSessionInformation.delete(req.sessionID, (err) => {
+                if(err) reject(err);
+                else resolve(null); 
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                require("../libs/mongodb_requests/passportAdditionInformation").delete(req.session.passport.user, (err) => {
+                    if(err) reject(err);
+                    else resolve(null);                     
+                });    
+            });
+        }).then(() => {
+            req.logOut();
+            req.session.destroy();
+            
+            res.redirect("/auth");
+        }).catch((err) => {
+            writeLogFile("error", err.toString()+funcName);
         });
-
-        res.redirect("/auth");
     });
 
     if (process.env.NODE_ENV !== "development") {
-        app.use(function(err, req, res) {
+        app.use((err, req, res) => {
             res.render("500", {});
         });
     }

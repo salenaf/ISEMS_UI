@@ -20,7 +20,6 @@ let sessionUserInformation = new connection.Schema({
     },
     group_name: String,
     group_settings: {},
-    isPasswordDefaultAdministrator: { type: Boolean, default: false },
     dateCreate: Number
 });
 

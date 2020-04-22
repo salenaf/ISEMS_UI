@@ -1,6 +1,5 @@
 "use strict";
 
-const debug = require("debug")("handlerChangePassword");
 const crypto = require("crypto");
 
 const models = require("../../controllers/models");
@@ -19,16 +18,12 @@ const checkUserAuthentication = require("../../libs/check/checkUserAuthenticatio
  * @param {*} socketIo 
  */
 module.exports = function(socketIo) {
-    socketIo.on("change password", data => {
-        debug(data);
-
-        changeUserPassword(data.arguments, socketIo, err => {
-            if (err) {
-                debug(err);
-
+    socketIo.on("change password", (data) => {
+        changeUserPassword(data.arguments, socketIo, (err) => {
+            if(err){
                 writeLogFile("error", err.toString());
 
-                if (err.name === "passwd management") {
+                if(err.name === "passwd management"){
                     return showNotify({
                         socketIo: socketIo,
                         type: "danger",
@@ -55,11 +50,7 @@ module.exports = function(socketIo) {
 function changeUserPassword(data, socketIo, callback) {
     //проверка авторизован ли пользователь
     checkUserAuthentication(socketIo)
-        .then(authData => {
-
-            debug("авторизован ли пользователь");
-            debug(authData);
-
+        .then((authData) => {
             if (!authData.isAuthentication) {
                 throw new MyError("passwd management", "Пользователь не авторизован.");
             }
@@ -67,11 +58,15 @@ function changeUserPassword(data, socketIo, callback) {
             if (authData.document.userLogin !== data.user_login) {
                 throw new MyError("passwd management", "Невозможно изменить пароль. Недостаточно прав на выполнение данного действия.");
             }
-
         }).then(() => {
             //проверяем параметры полученные от пользователя
             if (!helpersFunc.checkUserSettingsManagementUsers(data)) {
-                throw new MyError("user management", "Невозможно изменить пароль. Принятый от пользователя пароль некорректен.");
+                throw new MyError("passwd management", "Невозможно изменить пароль. Принятый от пользователя пароль некорректен.");
+            }
+
+            //проверяем является ли пользователь administrator, а пароль по умолчанию
+            if((data.user_login === "administrator") && (data.user_password === "administrator")){
+                throw new MyError("passwd management", "Невозможно изменить пароль. Принятый от пользователя пароль для пользователя 'administrator' является паролем 'по умолчанию'.");
             }
         }).then(() => {
             //ищем пользователя с заданным логином
@@ -85,11 +80,12 @@ function changeUserPassword(data, socketIo, callback) {
                     else resolve(null, userInfo.id);
                 });
             });
-        }).then(userID => {
+        }).then((userID) => {
             let md5string = crypto.createHash("md5")
                 .update(data.user_password)
                 .digest("hex");
 
+            //изменяем пароль по умолчанию для пользователя administrator
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryUpdate(models.modelUser, {
                     id: userID,
@@ -97,14 +93,42 @@ function changeUserPassword(data, socketIo, callback) {
                         date_change: +(new Date()),
                         password: hashPassword.getHashPassword(md5string, "isems-ui"),
                     },
-                }, err => {
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve(null);
+                });
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                require("../../libs/helpers/getSessionId")("socketIo", socketIo, (err, sessionId) => {
+                    if (err) reject(err);
+                    else resolve(sessionId);
+                });
+            });
+        }).then((sessionID) => {
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, {
+                    query: { session_id: sessionID },
+                    select: { passport_id: 1 },
+                }, (err, result) => {
+                    if(err) reject(err);
+                    else resolve(result.passport_id);
+                });
+            });
+        }).then((passportID) => {
+            //меняем параметр is_admin_password_default в коллекции passport_addition_information
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.queryUpdate(models.modelAdditionalPassportInformation, {
+                    query: { passport_id: passportID },
+                    update: { is_admin_password_default: false },
+                }, (err) => {
                     if (err) reject(err);
                     else resolve(null);
                 });
             });
         }).then(() => {
             callback(null);
-        }).catch(err => {
+        }).catch((err) => {
             callback(err);
         });
 }
