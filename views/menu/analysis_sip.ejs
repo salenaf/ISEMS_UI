@@ -6,25 +6,21 @@
     <script>
 
     </script>
+    <% include ../header.ejs %>
 </head>
 <body>
     <section id="container" >
-        <% include ../header.ejs %>
-
-        <!--начало основного контента-->
         <div class="content-wrapper">
             <div class="container">
-                <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                        <h4 class="text-uppercase" style="margin-left: 10px; margin-right: 10px; padding-top: 10px;">
-                            Анализ информационный пакетов безопасности
-                        </h4>
-                    </div>
-                </div>
-                <div class="col-md-12 text-center" id="field_information"></div>
+                    <h4 class="text-uppercase" style="margin-left: 10px; margin-right: 10px; padding-top: 10px;">
+                        Анализ информационный пакетов безопасности
+                    </h4>
+                <div class="col-md-12 text-center" id="main-page-content"></div>
             </div>
         </div>
         <% include ../footer.ejs %>
     </section>
 </body>
+
+<script src="/dist/managingAnalusisMainHeader.js"></script>
 </html>
