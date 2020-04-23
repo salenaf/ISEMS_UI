@@ -37,7 +37,7 @@ class CreateAlert extends React.Component {
                 title: titleObj[level],
                 message: msg.message,
                 level: level,
-                autoDismiss: 5,
+                autoDismiss: 12,
             });
         });       
     }

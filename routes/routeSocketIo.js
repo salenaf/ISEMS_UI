@@ -34,15 +34,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
             setTimeout(() => {
                 console.log("send command \"get an updated list of sources\"");
     
-
-                /* 
-                        !!!!!!
-Поправил в ISEMS-NIH_master в разделе handlerMsgFromDB (я запутался
-    в swith MsgRecipent, теперь вроде поправил)
-    ОДНАКО СТОИТ ЕЩЕ РАЗ ПРОТЕСТИРОВАТЬ СОЕДИНЕНИЕ С ИСТОЧНИКАМИ,
-     ФИЛЬТРАЦИЮ И И СКАЧИВАНИЕ ФАЙЛОВ
-                        !!!!
-                */
                 connModuleNetInteraction.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
@@ -130,7 +121,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             showNotify({
                 socketIo: socketIo,
                 type: notify.options.n.t,
-                message: notify.options.n.d,
+                message: `МОДУЛЬ СЕТЕВОГО ВЗАИМОДЕЙСТВИЯ (${notify.options.n.d})`,
             });
 
         }).on("error", (err) => {
