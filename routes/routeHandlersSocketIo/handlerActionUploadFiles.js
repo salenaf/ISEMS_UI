@@ -22,6 +22,9 @@ function receivedFilesRulesSOA(stream, data){
     console.log("func 'receivedFilesRulesSOA', START...");
     console.log(data);
 
+    console.log(__dirname);
+    console.log(__dirname.substr(0, (__dirname.length - 28)));
+
     let filename = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + path.basename(data.name);
     let tempFile = fs.createWriteStream(filename, { flags: "w", defaultEncoding: "utf8", autoClose: true });
 

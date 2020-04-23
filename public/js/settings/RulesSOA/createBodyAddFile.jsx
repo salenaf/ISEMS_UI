@@ -86,8 +86,9 @@ export default class CreateBodyAddFile extends React.Component {
         };
         
         this.renderListFile = this.renderListFile.bind(this);
-        this.addList   = this.addList.bind(this);
+        this.addList        = this.addList.bind(this);
         this.outPutList     = this.outPutList.bind(this);
+        this.fileUpload     = this.fileUpload.bind(this);
     }
     /*  let updateObj = this.state;
         updateObj.listFiles.push(testStr1);
@@ -121,6 +122,7 @@ export default class CreateBodyAddFile extends React.Component {
                     name: `${this.fileInput.current.files[j].name}`,
                     type: `${this.fileInput.current.files[j].type}`,
                     size: `${this.fileInput.current.files[j].size}`,
+                    file: this.fileInput.current.files[j],
                     lastModifiedDate: `${this.fileInput.current.files[j].lastModifiedDate.toLocaleDateString()}`,
                 };
                 this.fileList[i]= fileOne;
@@ -142,6 +144,7 @@ export default class CreateBodyAddFile extends React.Component {
     {` ${this.fileInput.current.files[j].type}, ${this.fileInput.current.files[j].size} байт`} 
     className="table table-sm"*/
     
+    // ---------------------------- Загрузка файлов из списка (в папочку uploads)---------------------------
     renderListFile(){
         let updateObj = this.state;
         // updateObj.listFiles.push(testStr1);
@@ -151,12 +154,38 @@ export default class CreateBodyAddFile extends React.Component {
         for(let i = 0; i< this.fileList.length; i++){
             if(this.fileList[i].name != undefined){  
                 str += this.fileList[i].name + "; " ;
-               
+                this.fileUpload(this.fileList[i].file); 
             } 
         }
+        
         alert(`Итог: ${str}`); 
         // console.log();
 
+    }
+
+    fileUpload(file){
+        console.log("upload file");
+        console.log(file);
+
+        let stream = this.props.ss.createStream();
+
+        this.props.ss(this.props.socketIo).emit("uploading files with SOA rules", stream, { name: file.name, size: file.size });
+        let blobStream = this.props.ss.createBlobReadStream(file);
+        //let size = 0;
+        blobStream.pipe(stream);
+        blobStream.on("data", function(chunk) {
+            console.log(chunk);
+
+            /*            size += chunk.length;
+            let percent = (Math.floor(size / file.size * 100) + "%");
+            let divProgressBar = document.querySelector("#modalProgressBar .progress-bar");
+            divProgressBar.setAttribute("aria-valuenow", percent);
+            divProgressBar.style.width = percent;
+            divProgressBar.innerHTML = percent;
+
+            if (file.size === size) $("#modalProgressBar").modal("hide");
+            */
+        });
     }
 
     outPutList(){
@@ -228,5 +257,7 @@ export default class CreateBodyAddFile extends React.Component {
 }
 
 CreateBodyAddFile.propTypes ={
+    ss: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,
 };

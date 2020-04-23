@@ -41,7 +41,7 @@ class CreatePageRulesSOASourse extends React.Component {
                         <CreateBodySearchSid socketIo={this.props.socketIo} listSourcesInformation={this.props.listSourcesInformation}/>
                     </div>
                     <div className="tab-pane fade" id="addSid" role="tabpanel" aria-labelledby="nav-profile-tab">
-                        <CreateBodyAddFile    listSourcesInformation={this.props.listSourcesInformation}/>
+                        <CreateBodyAddFile   ss={this.props.ss} socketIo={this.props.socketIo} listSourcesInformation={this.props.listSourcesInformation}/>
                     </div>  
                     <div className="tab-pane fade" id="primer" role="tabpanel" aria-labelledby="nav-body-tab">
                         <CreateBody           listSourcesInformation={this.props.listSourcesInformation}/>
@@ -53,6 +53,7 @@ class CreatePageRulesSOASourse extends React.Component {
 }
 
 CreatePageRulesSOASourse .propTypes ={
+    ss: PropTypes.func.isRequired,
     socketIo:PropTypes.object.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,
 };
@@ -65,7 +66,6 @@ let listSourcesInformation ={
             "advert_key=, http_uri, fast_pattern,  content:app=, http_uri,"  
         ],
         "body": "alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (  msg:\"Downloader.MediaDrug.HTTP.C&C\"; flow:established,to_server;  content:\"GET\"; http_method; content:\"advert_key=\"; http_uri; fast_pattern;   content:\"app=\"; http_uri;  content:\"oslang=\"; http_uri; classtype:trojan-activity; sid:35586741; rev:0;)"
-   
     },
     124: {
         "classType": "unsuccessful-user",
@@ -97,10 +97,7 @@ let listSourcesInformation ={
               </div>
               </React.Fragment>
 
-
-
-
-<div className="input-group">
+              <div className="input-group">
                 <div className="custom-file">
                   <input type="file" className="custom-file-input" name="file" id="inputGroupFile" />
                     <label className="custom-file-label" name="file" for="inputGroupFile"> {text} </label>
@@ -117,6 +114,7 @@ let listSourcesInformation ={
             */
 
 ReactDOM.render(<CreatePageRulesSOASourse 
+    ss={ss}
     socketIo={socket}
     listSourcesInformation={listSourcesInformation}/>, document.getElementById("page-rules-soa"));
 
