@@ -1,9 +1,12 @@
 "use strict";
 
+const async = require("async");
+
 const models = require("../../controllers/models");
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
 const createUniqID = require("../../libs/helpers/createUniqID");
+const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
@@ -321,34 +324,78 @@ function updateGroup(socketIo, data) {
             let afterCountElement = testCountElemStatus(listElements);
 
             if ((beforeCountElement.countIsTrue === afterCountElement.countIsTrue) && (beforeCountElement.countIsFalse === afterCountElement.countIsFalse)) {
-                throw new MyError("group management warning", `Информация о группе '${groupName}' не изменялась, запись в базу данных не осуществляется.`);
+                throw new MyError("group management warning", `Информация о группе '${groupName}' не изменялась, запись в базу данных выполняться не будет.`);
             }
 
             return listElements;
-        }).then((listElements) => {          
-            return new Promise((resolve, reject) => {
-                mongodbQueryProcessor.queryUpdate(models.modelGroup, {
-                    id: listElements.id,
-                    update: listElements,
-                }, (err) => {
-                    if (err) reject(err);
-                    else resolve();
+        }).then((listElements) => {    
+            return new Promise((resolve,reject) => {
+                async.parallel([
+                    //записываем изменение в документ из коллекции groups
+                    (callbackParallel) => {
+                        mongodbQueryProcessor.queryUpdate(models.modelGroup, {
+                            id: listElements.id,
+                            update: listElements,
+                        }, (err) => {
+                            if (err) callbackParallel(err);
+                            else callbackParallel(null);
+                        });
+                    },
+                    //записываем изменение в документ из коллекции session.user.information
+                    (callbackParallel) => {
+                        mongodbQueryProcessor.queryUpdate(models.modelSessionUserInformation, {
+                            query: { "group_name": groupName },
+                            update: {
+                                "group_settings.menu_items": listElements.menu_items,
+                                "group_settings.management_analysis_sip": listElements.management_analysis_sip,
+                                "group_settings.management_security_event_management": listElements.management_security_event_management,
+                                "group_settings.management_network_interaction": listElements.management_network_interaction,
+                                "group_settings.management_users": listElements.management_users,
+                                "group_settings.management_groups": listElements.management_groups,
+                                "group_settings.management_organizations_and_sources": listElements.management_organizations_and_sources,
+                                "group_settings.management_ids_rules": listElements.management_ids_rules,
+                                "group_settings.management_geoip": listElements.management_geoip,
+                                "group_settings.management_search_rules": listElements.management_search_rules,
+                                "group_settings.management_reputational_lists": listElements.management_reputational_lists,
+                            },
+                        }, (err) => {
+                            if (err) callbackParallel(err);
+                            else callbackParallel(null);
+                        });
+                    }
+                ], (err) => {
+                    if(err) reject(err);    
+                    else resolve(listElements);
                 });
-            });           
+            });
+        }).then((listElements) => {
+            return new Promise((resolve, reject) => {
+                let listSettings = {
+                    "menu_items": listElements.menu_items,
+                    "management_analysis_sip": listElements.management_analysis_sip,
+                    "management_security_event_management": listElements.management_security_event_management,
+                    "management_network_interaction": listElements.management_network_interaction,
+                    "management_users": listElements.management_users,
+                    "management_groups": listElements.management_groups,
+                    "management_organizations_and_sources": listElements.management_organizations_and_sources,
+                    "management_ids_rules": listElements.management_ids_rules,
+                    "management_geoip": listElements.management_geoip,
+                    "management_search_rules": listElements.management_search_rules,
+                    "management_reputational_lists": listElements.management_reputational_lists,
+                };
+    
+                mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, {
+                    query: { "group_name": groupName },
+                    select: { session_id: 1 },
+                }, (err, result) => {
+                    if(err) reject(err);
+    
+                    globalObject.modifyData("users", result.session_id, [[ "groupSettings", listSettings ]]);
+
+                    resolve();
+                });
+            });
         }).then(() => {
-
-
-
-            /**
- * Нужно сделать обновление session.user.information 
- * и объекта globalObject
- * 
- */
-
-
- 
-
-            //отправляем информационное сообщение о выполненной задаче
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -459,8 +506,9 @@ function deleteGroup(socketIo, data) {
                 }
             }
         }).then(() => {
+            //удаляем основную группу
             return new Promise((resolve,reject) => {
-                mongodbQueryProcessor.queryDelete(models.modelGroup, { query: { group_name: groupName } }, err => {
+                mongodbQueryProcessor.queryDelete(models.modelGroup, { query: { group_name: groupName } }, (err) => {
                     if (err) reject(err);
                     resolve();
                 });

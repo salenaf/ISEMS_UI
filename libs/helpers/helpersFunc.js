@@ -1,5 +1,7 @@
 "use strict";
 
+const crypto = require("crypto");
+
 const commons = require("./commons");
 
 module.exports.checkUserSettingsManagementUsers = function(userSettings) {
@@ -42,4 +44,8 @@ module.exports.checkInputValidation = (elem) => {
     }
     if (elem.name === "intervalTransmission" && (elem.value < 10)) return false;
     return (!pattern.test(elem.value)) ? false : true;
+};
+
+module.exports.getRandomHex = () => {
+    return crypto.randomBytes(20).toString("hex");
 };

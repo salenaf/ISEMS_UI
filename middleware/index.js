@@ -94,9 +94,6 @@ module.exports = function(app, express, io) {
     let socketIo = io.sockets.on("connection", function(socket) {
         //обработчик событий User Interface
         routeSocketIo.eventHandlingUserInterface(socket);
-
-        /* upload file */
-        //routeSocketIo.uploadFiles(socket, ss);
     });
 
     /*

@@ -1483,18 +1483,59 @@ describe("Тест 8. Проверка прав пользователя на д
 });
 
 
-/*
-describe("Тест 4. Загрузка тестового объекта в БД", () => {
+describe("Тест 9. Проверка вставки списка организаций", () => {
+    it("Список должен быть успешно вставлен, ошибки быть не должно", (done) => {
+        (require("../../middleware/mongodbQueryProcessor")).queryInsertMany(require("../../controllers/models").modelOrganizationName, [
+            {
+                id: "foe3ej9er9r9b9rf9b9fu9dbu9f",
+                date_register: +(new Date),
+                date_change: +(new Date),    
+                name: "Test 1 name",
+                legal_address: "Test 1 address",
+                field_activity: "Test 1 activity",
+                division_or_branch_list_id: [],
+            },
+            {
+                id: "248438r838r83vr8fv38vr8f83v8",
+                date_register: +(new Date),
+                date_change: +(new Date),    
+                name: "Test 2 name",
+                legal_address: "Test 2 address",
+                field_activity: "Test 2 activity",
+                division_or_branch_list_id: [],
+            },
+            {
+                id: "rj99398hr93hrf9h399fh93h9f93",
+                date_register: +(new Date),
+                date_change: +(new Date),    
+                name: "Test 3 name",
+                legal_address: "Test 3 address",
+                field_activity: "Test 3 activity",
+                division_or_branch_list_id: [],
+            }
+        ], (err, doc) => {
+            if(err) console.log(`ERROR: ${err.toString()}`);
 
-    
-        it("Должен быть получено FALSE, так как такого ПОДРАЗДЕЛЕНИЯ нет в БД", () => {
-        
+            console.log("----------- doc ---------");
+            console.log(doc);
+
+            expect(err).toBeNull();
         });
-    
-        it("Должен быть получено FALSE, так как такого ИСТОЧНИКА нет в БД", () => {
-        
-        });
-    
+    });
+});
+
+/*
+
+    id: { type: String, index: true, unique: true },
+    date_register: Number,
+    date_change: Number,    
+    name: String,
+    legal_address: String,
+    field_activity: String,
+    division_or_branch_list_id: [String],
+
+    describe("Тест 4. Загрузка тестового объекта в БД", () => {
+
 });
 
 /**

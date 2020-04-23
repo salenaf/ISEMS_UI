@@ -13,9 +13,6 @@ class PageManagingAnalytics extends React.Component {
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
         this.fileUpload = this.fileUpload.bind(this);
-
-
-        console.log(this.props.ss);
     }
     onFormSubmit(e){
         e.preventDefault(); // Stop form submit
@@ -36,16 +33,6 @@ class PageManagingAnalytics extends React.Component {
         blobStream.pipe(stream);
         blobStream.on("data", function(chunk) {
             console.log(chunk);
-
-            /*            size += chunk.length;
-            let percent = (Math.floor(size / file.size * 100) + "%");
-            let divProgressBar = document.querySelector("#modalProgressBar .progress-bar");
-            divProgressBar.setAttribute("aria-valuenow", percent);
-            divProgressBar.style.width = percent;
-            divProgressBar.innerHTML = percent;
-
-            if (file.size === size) $("#modalProgressBar").modal("hide");
-            */
         });
     }
 

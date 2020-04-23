@@ -3,16 +3,10 @@
 const debug = require("debug")("routeSocketIo");
 
 const ss = require("socket.io-stream");
-const fs = require("fs");
-const path = require("path");
-//const validate = require("validate.js");
 
 const globalObject = require("../configure/globalObject");
 const showNotify = require("../libs/showNotify");
 const writeLogFile = require("../libs/writeLogFile");
-const getSessionId = require("../libs/helpers/getSessionId");
-const checkUserAuthentication = require("../libs/check/checkUserAuthentication");
-//const checkLimitNumberRequestsSocketIo = require('../libs/check/checkLimitNumberRequestsSocketIo');
 
 /**
  * Маршруты для обработки информации передаваемой через протокол socket.io
@@ -40,6 +34,15 @@ module.exports.modulesEventGenerator = function(socketIo) {
             setTimeout(() => {
                 console.log("send command \"get an updated list of sources\"");
     
+
+                /* 
+                        !!!!!!
+Поправил в ISEMS-NIH_master в разделе handlerMsgFromDB (я запутался
+    в swith MsgRecipent, теперь вроде поправил)
+    ОДНАКО СТОИТ ЕЩЕ РАЗ ПРОТЕСТИРОВАТЬ СОЕДИНЕНИЕ С ИСТОЧНИКАМИ,
+     ФИЛЬТРАЦИЮ И И СКАЧИВАНИЕ ФАЙЛОВ
+                        !!!!
+                */
                 connModuleNetInteraction.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
@@ -61,8 +64,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     "connectionStatus": false
                 },
             });
-        })
-        .on("information source control", (msg) => {
+        }).on("information source control", (msg) => {
             debug("----- information source control -----");
             debug(msg);
             debug("--------------------------------------");
@@ -71,6 +73,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("----- command source control ------");
             debug(msg);
             debug("------------------------------------------");
+
+            //обрабатываем запрос ISEMS-NIH на получение актуального списка источников
+            require("./handlersMsgModuleNetworkInteraction/handlerMsgGetNewSourceList")(msg);
 
         }).on("information filtration control", (msg) => {
             debug("----- information filtration control -----");
@@ -104,34 +109,42 @@ module.exports.modulesEventGenerator = function(socketIo) {
             if (err) debug(err);
         });*/
 
-        }).on("information search control", msg => {
+        }).on("information search control", (msg) => {
             debug("====== information search control =====");
             debug(JSON.stringify(msg));
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/
             debug("=======================================");
-        }).on("command information search control", msg => {
+        }).on("command information search control", (msg) => {
             debug("====== command information search control =====");
             debug(JSON.stringify(msg));
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/
             debug("=======================================");
-        }).on("error", err => {
-            debug("ERROR MESSAGE");
-            debug(err);
         }).on("user notification", (notify) => {
             debug("---- RECEIVED user notification ----");
             debug(notify);
 
-        }).on("error", () => {
+            showNotify({
+                socketIo: socketIo,
+                type: notify.options.n.t,
+                message: notify.options.n.d,
+            });
+
+        }).on("error", (err) => {
+            debug("ERROR MESSAGE");
+            debug(err);
+
             socketIo.emit("module NI API", { 
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": false
                 },
             });
+
+            writeLogFile("error", `${err.toString()} (module 'network interaction')`);
         });
 };
 
