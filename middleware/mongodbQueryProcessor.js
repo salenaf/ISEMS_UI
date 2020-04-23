@@ -87,11 +87,17 @@ class QueryProcessor {
      * Вставка новых элементов
      * 
      * @param {*} mongooseModel 
-     * @param {*} settingsQuery 
+     * @param {*} documents (array|object) 
      * @param {*} callback 
      */
-    queryInsert(mongooseModel, settingsQuery, callback) {
-
+    queryInsertMany(mongooseModel, documents, callback) {
+        mongooseModel.insertMany(
+            documents, 
+            { ordered: false }, 
+            (err, doc) => {
+                if (err) callback(err);
+                else callback(null, doc);
+            });
     }
 
     /**
