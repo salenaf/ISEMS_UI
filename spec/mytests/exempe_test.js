@@ -114,12 +114,40 @@ describe("Тест 1. Читаю файл", () => {
 
                 expect(err).toBeNull();
                 done(); 
-            });*/
-            (require("../../middleware/mongodbQueryProcessor")).queryCreate(require("../../controllers/models").modelSOARules, {            
-                document: arrList[2]
-            }, (err) => {
+            });
+            (require("../../middleware/mongodbQueryProcessor")).queryInsertMany(require("../../controllers/models").modelSOARules, [
+                {
+                    sid: 3033,
+                    classType: "test class type 3033",
+                    msg: "any message",
+                    body: "any body",
+                },
+                {
+                    sid: 3034,
+                    classType: "test class type 3034",
+                    msg: "any message",
+                    body: "any body",
+                },
+                {
+                    sid: 3035,
+                    classType: "test class type 3035",
+                    msg: "any message",
+                    body: "any body",
+                },
+            ], (err, doc) => {
                 //if(err) reject(err);
                 if(err) console.log(`ERROR: ${err.toString()}`);
+
+                console.log(doc);
+
+                expect(err).toBeNull();
+                done(); 
+            });*/
+            (require("../../middleware/mongodbQueryProcessor")).queryInsertMany(require("../../controllers/models").modelSOARules, arrList, (err, doc) => {
+                //if(err) reject(err);
+                if(err) console.log(`ERROR: ${err.toString()}`);
+
+                console.log(doc);
 
                 expect(err).toBeNull();
                 done(); 
