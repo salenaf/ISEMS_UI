@@ -9,6 +9,7 @@ const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
 const informationForPageManagementOrganizationAndSource = require("../../libs/management_settings/informationForPageManagementOrganizationAndSource");
 
 /**
@@ -66,13 +67,22 @@ function addNewEntitys(socketIo, data){
             return entityList;
         }).then((entityList) => {
             //добавляем новые сущности в БД
-            return (require("../../libs/processing/routeSocketIo/insertNewEntity"))(entityList);
-        }).then(() => {
-            showNotify({
-                socketIo: socketIo,
-                type: "success",
-                message: "Новые сущности были успешно добавлены."
-            });      
+            return (require("../../libs/processing/routeSocketIo/insertNewEntity"))(entityList)
+                .then(() => {
+                    showNotify({
+                        socketIo: socketIo,
+                        type: "success",
+                        message: "Новые сущности были успешно добавлены в базу данных."
+                    }); 
+                }).then(() => {
+                //подготавливаем список источников
+                    let sourceList = entityList.filter((item) => (item.source_settings && item.network_settings));
+
+                    if(sourceList.length > 0){
+                    //отправляем новые источники, если они есть, модулю сетевого взаимодействия
+                        return sendCommandsModuleNetworkInteraction.sourceManagements(sourceList);
+                    }
+                });
         }).finally(() => {
             //получаем новый краткий список с информацией по сущностям
             return new Promise((resolve, reject) => {
@@ -90,7 +100,7 @@ function addNewEntitys(socketIo, data){
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: err.message
+                    message: err.message.toString()
                 });
             } else if (err.name === "management validation") {               
                 err.message.forEach((msg) => {
@@ -100,11 +110,24 @@ function addNewEntitys(socketIo, data){
                         message: msg
                     });
                 });
+            } else if (err.name === "management network interaction") {
+                //при отсутствии доступа к модулю сетевого взаимодействия
+                showNotify({
+                    socketIo: socketIo,
+                    type: "warning",
+                    message: err.message.toString()
+                });            
             } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                if((err.message.toString()).includes("duplicate key")){
+                    msg = "Совпадение ключевых полей, запись в базу данных невозможен.";
+                }
+
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                    message: msg
                 });    
             }
 

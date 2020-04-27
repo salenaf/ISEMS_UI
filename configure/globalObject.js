@@ -20,6 +20,7 @@ class SocketioEventResponse extends EventEmitter {}
 class GlobalObject {
     constructor() {
         this.obj = {
+            "tasks": {},
             "users": {},
             "sources": {},
             "commonSettings": {},
@@ -129,10 +130,19 @@ class GlobalObject {
     }
 
     //удалить данные по выбранному типу и группе
-    deleteData(type, group) {
+    deleteData(type, group, key = null) {
         if (this._checkKeys(type)) return false;
+        if (key === null) {
+            delete this.obj[type][group];
 
-        delete this.obj[type][group];
+            return true;
+        }
+        if (!Array.isArray(this.obj[type][group])){
+            
+            console.log("func 'globalObject', metod: 'deleteData', DELETE Object ----");
+
+            delete this.obj[type][group][key];
+        }
 
         return true;
     }

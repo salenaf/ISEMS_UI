@@ -9,7 +9,7 @@ const writeLogFile = require("../../libs/writeLogFile");
  * 
  * @param {*} - msg
  */
-module.exports = async (msg) => {
+module.exports = async () => {
     try {
         let sourceList = await getSourceList();
         let optionsJSON = await converSourceListToJSONOptions(sourceList); 

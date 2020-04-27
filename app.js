@@ -81,6 +81,7 @@ async.parallel([
     (callback) => {
         console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to the network interface module");
         
+        //настраиваем дескриптор соединения с модулем
         globalObject.setData(
             "descriptionAPI", 
             "networkInteraction", {
@@ -91,6 +92,9 @@ async.parallel([
                 }),
                 "connectionEstablished": false,
             });
+
+        //настраиваем хранилище задач выполняемые модулем
+        globalObject.setData("tasks", "networkInteractionTaskList", {});
 
         callback(null);
     },
