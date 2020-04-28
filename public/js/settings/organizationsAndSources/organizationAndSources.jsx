@@ -114,10 +114,20 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
 
+        this.handlerEvents.call(this);
         this.listenerSocketIoConnect.call(this);
 
         //устанавливаем тему для всех элементов select2
         $.fn.select2.defaults.set("theme", "bootstrap");
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "change status source"){
+                console.log("--=== change source ===--");
+                console.log(data);
+            }
+        });
     }
 
     createStateCheckboxMarkedSourceDel(shortListSource){

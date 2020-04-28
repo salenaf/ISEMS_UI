@@ -66,6 +66,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
         }).on("information source control", (msg) => {
             debug("----- information source control -----");
             debug(msg);
+            debug(msg.options.sl);
             debug("--------------------------------------");
 
             require("../routes/handlersMsgModuleNetworkInteraction/handlerMsgSources")(msg, socketIo);

@@ -79,8 +79,19 @@ function addNewEntitys(socketIo, data){
                     let sourceList = entityList.filter((item) => (item.source_settings && item.network_settings));
 
                     if(sourceList.length > 0){
-                    //отправляем новые источники, если они есть, модулю сетевого взаимодействия
-                        return sendCommandsModuleNetworkInteraction.sourceManagements(sourceList);
+                    //добавляем новые источники в globalObject
+                        sourceList.forEach((item) => {
+                            globalObject.setData("sources", item.source_id, {
+                                shortName: item.short_name,
+                                description: item.description,
+                                connectStatus: false,
+                                connectTime: 0,
+                                id: item.id,
+                            });
+                        }); 
+
+                        //отправляем новые источники, если они есть, модулю сетевого взаимодействия
+                        return sendCommandsModuleNetworkInteraction.sourceManagementsAdd(sourceList);
                     }
                 });
         }).finally(() => {
@@ -678,7 +689,20 @@ function deleteSourceInfo(socketIo, data){
                 type: "success",
                 message: `Источники с номерами ${data.arguments.listSource.map((item) => item.source).join(",")} были успешно удалены. `
             });      
+        }).then(() => {
+            //удаляем источники из globalObject
+            data.arguments.listSource.forEach((item) => {
+                globalObject.deleteData("sources", item.source);
+                                            
+                console.log(`------- source ${item.source} is: ${globalObject.hasData("sources", item.source)}`);
+            }); 
+
+            //удаляем источники из базы данных модуля сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.sourceManagementsDel(data.arguments.listSource);
         }).catch((err) => {
+
+            console.log(err);
+
             if (err.name === "organization and source management") {
                 return showNotify({
                     socketIo: socketIo,

@@ -4,6 +4,7 @@ const debug = require("debug")("handlerMsgSources");
 
 const showNotify = require("../../libs/showNotify");
 const globalObject = require("../../configure/globalObject");
+const writeLogFile = require("../../libs/writeLogFile");
 
 /**
  * Обработчик информационных сообщений получаемых от
@@ -12,14 +13,73 @@ const globalObject = require("../../configure/globalObject");
  * @param {*} msg - сообщение от модуля сетевого взаимодействия
  */
 module.exports = function(msg, socketIo){
-    let task = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);    
-
-    if(task === null) return;
+//    let task = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);    
+//    if(task === null) return;
 
     //    let isAddSource = task.instructionTask === "add source list";
-    let isSourceControl = task.sectionTask === "source control";
+    //    let isSourceControl = task.sectionTask === "source control";
 
-    if(isSourceControl /*&& isAddSource*/ && msg.options.ti.s === "end"){
+    let task = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);    
+    if(task === null){
+        debug(`instruction: ${msg.instruction}`);
+
+        switch(msg.instruction){
+        //получаем версию ПО ISEMS-NIH_slave
+        case "send version app":
+            require("../../libs/mongodb_requests/moduleNetworkInteraction/addVersionApp")(msg.options, (err) => {
+                if(err){
+                    writeLogFile("error", err.toString());
+                }
+            });
+
+            break;
+
+        //получаем состояние соединения с источником
+        case "change status source":
+
+            debug("case 'change status source'");
+
+            globalObject.modifyData("sources", msg.options.id+"", [
+                [ "connectStatus", (msg.options.s === "connect") ], 
+                [ "connectTime", +(new Date) ]
+            ]);
+
+            let sourceInfo = globalObject.getData("sources", msg.options.id);
+            
+            /**
+            * 
+            * 
+            * Не модифицируется объект
+            * и не возвращается информация по источнику
+            * 
+            *   
+            */
+
+            debug(sourceInfo);
+
+            if(sourceInfo !== null){
+                debug("send message --->");
+
+                socketIo.emit("module NI API", { 
+                    "type": "change status source",
+                    "options": {
+                        sourceID: msg.options.id,
+                        shortName: sourceInfo.shortName,
+                        description: sourceInfo.description,
+                        connectStatus: sourceInfo.connectStatus,
+                        connectTime: sourceInfo.connectTime,
+                        id: sourceInfo.id,
+                    },
+                });
+            }
+
+            break;
+        }
+        
+        return;
+    }
+
+    if((task.sectionTask === "source control") && (msg.options.ti.s === "end")){
         msg.options.sl.forEach((item) => {
 
             debug(item);
@@ -30,7 +90,7 @@ module.exports = function(msg, socketIo){
                 message: item.mf,
             });
         });
-       
+   
         globalObject.deleteData("tasks", "networkInteractionTaskList", msg.taskID);
     }
 

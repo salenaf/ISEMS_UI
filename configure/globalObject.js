@@ -89,6 +89,7 @@ class GlobalObject {
     /**
      * получить данные по выбранным типу, группе и ключу
      * причем группа и ключ являются не обязательными полями
+     * 
      * @param {*} type 
      * @param {*} group 
      * @param {*} key 
@@ -100,6 +101,35 @@ class GlobalObject {
         if (key === null) return this.obj[type][group];
 
         return (typeof this.obj[type][group][key] === "undefined") ? null : this.obj[type][group][key];
+    }
+
+    /**
+    * проверить наличие значений
+    * 
+    * @param {*} type 
+    * @param {*} group 
+    * @param {*} key 
+    */    
+    hasData(type, group = null, key = null){
+        if (this._checkKeys(type)) {
+
+            console.log("func 'hasData', type not found");
+
+            return false;
+        } else if (group === null) {
+            console.log("func 'hasData', group not found");
+
+            return true;
+        } else if (group !== null && key === null){
+            console.log("func 'hasData', group found, key not found");
+
+            return (typeof this.obj[type][group] !== "undefined");
+        } else {
+            console.log(`group:  ${JSON.stringify(this.obj[type][group])}`);
+            console.log("func 'hasData', KEY not found");
+
+            return (typeof this.obj[type][group][key] !== "undefined");
+        }
     }
 
     /**
@@ -118,7 +148,7 @@ class GlobalObject {
         if (this._checkKeys(type)) return false;
         if (typeof group === "undefined") return false;
 
-        arrayData.forEach(element => {
+        arrayData.forEach((element) => {
             if (Array.isArray(element) && (element.length === 2)) {
                 if ((typeof this.obj[type][group] === "undefined") || (typeof this.obj[type][group][element[0]] === "undefined")) return;
 

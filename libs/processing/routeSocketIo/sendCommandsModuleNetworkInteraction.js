@@ -8,11 +8,12 @@ const globalObject = require("../../../configure/globalObject");
 
 /**
   * Обработчик для модуля сетевого взаимодействия осуществляющий
-  * управление удаленными источниками 
+  * управление удаленными источниками
+  * Выполняет добавление новых источников в базу данных модуля 
   * 
   * @param {*} - sourceList
   */
-module.exports.sourceManagements = function(sourceList){
+module.exports.sourceManagementsAdd = function(sourceList){
     return new Promise((resolve, reject) => {
         process.nextTick(() => {          
             if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
@@ -72,4 +73,62 @@ module.exports.sourceManagements = function(sourceList){
             resolve();
         });
     });
+};
+
+/**
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * управление удаленными источниками
+  * Выполняет удаление источников из базы данных модуля 
+  * 
+  * @param {*} - sourceList
+  */
+module.exports.sourceManagementsDel = function(sourceList){
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {          
+            if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+                reject(new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let sources = [];
+            let list = sourceList.map((item) => {
+                console.log(item);
+
+                let sourceID = +(item.source);
+                sources.push(sourceID);
+
+                return {
+                    id: sourceID,
+                    at: "delete", 
+                    arg: {},				
+                };
+            });
+
+            console.log(list);
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            
+            if(conn !== null){
+                let hex = helpersFunc.getRandomHex();
+
+                conn.sendMessage({
+                    msgType: "command",
+                    msgSection: "source control",
+                    msgInstruction: "performing an action",
+                    taskID: hex,
+                    options: { sl: list },
+                });
+
+                //добавляем новую задачу
+                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
+                    createDate: +(new Date),
+                    typeTask: "command",
+                    sectionTask: "source control",
+                    instructionTask: "add source list",
+                    source: sources,
+                });
+            }    
+
+            resolve();
+        });
+    });    
 };
