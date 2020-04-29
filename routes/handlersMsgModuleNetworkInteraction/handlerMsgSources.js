@@ -36,43 +36,50 @@ module.exports = function(msg, socketIo){
 
         //получаем состояние соединения с источником
         case "change status source":
+            msg.options.sl.forEach((item) => {
+                globalObject.modifyData("sources", item.id, [
+                    [ "connectStatus", (item.s === "connect") ], 
+                    [ "connectTime", +(new Date) ]
+                ]);
+    
+                let sourceInfo = globalObject.getData("sources", item.id);  
+                if(sourceInfo !== null){
+                    debug("send message --->");
+    
+                    socketIo.emit("module NI API", { 
+                        "type": "change status source",
+                        "options": {
+                            sourceID: item.id,
+                            shortName: sourceInfo.shortName,
+                            description: sourceInfo.description,
+                            connectStatus: sourceInfo.connectStatus,
+                            connectTime: sourceInfo.connectTime,
+                            id: sourceInfo.id,
+                        },
+                    });
+                }
+            });
 
-            debug("case 'change status source'");
+            break;
 
-            globalObject.modifyData("sources", msg.options.id+"", [
-                [ "connectStatus", (msg.options.s === "connect") ], 
-                [ "connectTime", +(new Date) ]
-            ]);
-
-            let sourceInfo = globalObject.getData("sources", msg.options.id);
-            
+        case "send current source list":
             /**
-            * 
-            * 
-            * Не модифицируется объект
-            * и не возвращается информация по источнику
-            * 
-            *   
-            */
+                 * 
+                 * Здесь получаем список актуальных источников из базы
+                 * данных модуля сетевого взаимодействия.
+                 * 
+                 * Пока из него только извлекаем состояния сетевого соединения
+                 * источников и записываем в глобальный объект
+                 * 
+                 */
 
-            debug(sourceInfo);
-
-            if(sourceInfo !== null){
-                debug("send message --->");
-
-                socketIo.emit("module NI API", { 
-                    "type": "change status source",
-                    "options": {
-                        sourceID: msg.options.id,
-                        shortName: sourceInfo.shortName,
-                        description: sourceInfo.description,
-                        connectStatus: sourceInfo.connectStatus,
-                        connectTime: sourceInfo.connectTime,
-                        id: sourceInfo.id,
-                    },
-                });
-            }
-
+            msg.options.sl.forEach((item) => {
+                globalObject.modifyData("sources", item.id, [
+                    [ "connectStatus", item.cs ], 
+                    [ "connectTime", item.dlc ]
+                ]);
+            });
+                 
             break;
         }
         
@@ -95,8 +102,7 @@ module.exports = function(msg, socketIo){
     }
 
     /**
-     * Добавление источника в модуль сетевого взаимодействия я сделал
-     * теперь, удаление, обновление и реконнект.
+     * теперь реконнект.
      * Кроме того нужно сделать в globalObject объект со списком источников
      * и учет статуса их соединения 
      */

@@ -140,6 +140,12 @@ export default class ModalWindowSourceInfo extends React.Component {
                                             Установлен: <em>{formatter.format(s.date_register)}</em>,&nbsp;
                                             последнее изменение: <em>{formatter.format(s.date_change)}</em>
                                         </div>
+                                        <div className="col-md-12 text-left">
+                                            Статус сетевого соединения: {(this.props.settings.connectionStatus) ? <Badge variant="success">подключен</Badge>: <Badge variant="danger">соединение отсутствует</Badge>}
+                                        </div>
+                                        <div className="col-md-12 text-left">
+                                            Время последнего сетевого соединения: <em>{(this.props.settings.connectTime === 0) ? "не определено": formatter.format(this.props.settings.connectTime)}</em>
+                                        </div>
                                         <div className="col-md-12 text-left">Сетевые настройки:</div>
                                         <div className="col-md-3 text-right"><small>ip адрес:</small></div>
                                         <div className="col-md-9 text-left">

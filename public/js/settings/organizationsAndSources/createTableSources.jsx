@@ -8,6 +8,7 @@ export default class CreateTableSources extends React.Component {
 
         this.createTableBody = this.createTableBody.bind(this);
         this.showIconChangeInfo = this.showIconChangeInfo.bind(this);
+        this.showIconSourceReconnect = this.showIconSourceReconnect.bind(this);
     }
 
     showInfo(sourceID){
@@ -24,6 +25,14 @@ export default class CreateTableSources extends React.Component {
         }
 
         return (<React.Fragment></React.Fragment>);
+    }
+
+    showIconSourceReconnect(objInfo){
+        return (
+            <a href="#" onClick={this.props.handlerSourceReconnect.bind(this, objInfo)}>
+                <img className="clickable_icon" src="./images/icons8-refresh-16.png" alt="переподключить"></img>
+            </a>
+        );
     }
 
     createTableBody() {
@@ -71,6 +80,14 @@ export default class CreateTableSources extends React.Component {
                         {this.showIconChangeInfo({ sid: elem.sid, sourceID: elem.sourceID })}
                     </OverlayTrigger>
                 </td>
+                <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
+                    <OverlayTrigger
+                        key={`tooltip_${elem.sid}_img`}
+                        placement="top"
+                        overlay={<Tooltip>переподключить источник</Tooltip>}>
+                        {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
+                    </OverlayTrigger>
+                </td>
                 <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right">              
                     <OverlayTrigger
                         key={`tooltip_${elem.sid}_checkbox`}
@@ -107,6 +124,7 @@ export default class CreateTableSources extends React.Component {
                         <th colSpan="2">Версия и дата ПО</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 {this.createTableBody()}
@@ -121,4 +139,5 @@ CreateTableSources.propTypes ={
     changeCheckboxMarked: PropTypes.func.isRequired,
     handlerShowInfoWindow: PropTypes.func.isRequired,
     handlerShowChangeInfo: PropTypes.func.isRequired,
+    handlerSourceReconnect: PropTypes.func.isRequired,
 };

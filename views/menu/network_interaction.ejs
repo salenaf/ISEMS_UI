@@ -3,7 +3,9 @@
 <head>
     <% include ../head.ejs %>
     <script>
-
+        var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
+        var receivedFromServerAccess = <%- JSON.stringify(userPermissions) %>
+        var receivedFromServerWidget = <%- JSON.stringify(widgetInformation) %>
     </script>
     <% include ../header.ejs %>
 </head>

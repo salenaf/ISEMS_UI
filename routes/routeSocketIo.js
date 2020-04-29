@@ -5,6 +5,7 @@ const debug = require("debug")("routeSocketIo");
 const ss = require("socket.io-stream");
 
 const showNotify = require("../libs/showNotify");
+const helpersFunc = require("../libs/helpers/helpersFunc");
 const globalObject = require("../configure/globalObject");
 const writeLogFile = require("../libs/writeLogFile");
 
@@ -35,19 +36,19 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             /*
             Запрашиваем ВЕСЬ список источников которые есть в базе
-            данных модуля сетевого взаимодействия
-
+            данных модуля сетевого взаимодействия, что бы получить 
+            актуальный список и в том числе статусы сетевых 
+            соединений источников
+            */
             setTimeout(() => {
-                console.log("send command \"get an updated list of sources\"");
-    
                 connModuleNetInteraction.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
                     msgInstruction: "get an updated list of sources",
-                    taskID: "nv8ej8hd8h8h38c8g49g49",
+                    taskID: helpersFunc.getRandomHex(),
                     options: {}
                 });
-            }, 3000);*/
+            }, 1000);
         }).on("message", (msg) => {
             debug("--- MESSAGE ---");
             debug(msg);
@@ -66,7 +67,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
         }).on("information source control", (msg) => {
             debug("----- information source control -----");
             debug(msg);
-            debug(msg.options.sl);
+            //debug(msg.options.sl);
             debug("--------------------------------------");
 
             require("../routes/handlersMsgModuleNetworkInteraction/handlerMsgSources")(msg, socketIo);

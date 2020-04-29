@@ -19,6 +19,7 @@ const informationForPageManagementOrganizationAndSource = require("../../libs/ma
  */
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
+        "reconnect source": reconnectSource,
         "add new entitys": addNewEntitys,
         "entity information": getEntityInformation,
         "change source info": changeSourceInfo,
@@ -33,6 +34,21 @@ module.exports.addHandlers = function(socketIo) {
         socketIo.on(e, handlers[e].bind(null, socketIo));
     }
 };
+
+//обработчик для переподключения источника
+function reconnectSource(socketIo, data){
+    console.log("func 'reconnectSource', START");
+    console.log(data);
+
+    sendCommandsModuleNetworkInteraction.sourceManagementsReconnect([ data.source_id ])
+        .catch((err) => {
+            showNotify({
+                socketIo: socketIo,
+                type: "warning",
+                message: err.message.toString()
+            });
+        });
+}
 
 //обработчик для добавления новых сущностей
 function addNewEntitys(socketIo, data){
@@ -103,7 +119,7 @@ function addNewEntitys(socketIo, data){
                 });
             }).then((shortSourceList) => {             
                 socketIo.emit("entity: new short source list", {
-                    arguments: shortSourceList,
+                    arguments: changeShortSourceList(shortSourceList),
                 }); 
             });
         }).catch((err) => {
@@ -592,28 +608,36 @@ function changeSourceInfo(socketIo, data){
                     },
                 }, (err) => {
                     if (err) reject(err);
-                    else resolve();
+                    else resolve(validData);
                 });
             });
-        }).then(() => {
+        }).then((validData) => {
+            globalObject.modifyData("sources", validData.source_id, [
+                [ "shortName", validData.source_id ],
+                [ "description", validData.description ],
+            ]);
+
+            //отправляем новые источники, если они есть, модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.sourceManagementsUpdate([ validData ]);
+        }).finally(() => {
             //получаем новый краткий список с информацией по сущностям
             return new Promise((resolve, reject) => {
                 informationForPageManagementOrganizationAndSource((err, result) => {
                     if (err) reject(err);
                     else resolve(result);
                 });
+            }).then((shortSourceList) => {
+                
+                socketIo.emit("entity: new short source list", {
+                    arguments: changeShortSourceList(shortSourceList),
+                }); 
+            
+                showNotify({
+                    socketIo: socketIo,
+                    type: "success",
+                    message: `Информация по источнику ${data.source_id} была успешно изменена.`
+                });
             });
-        }).then((shortSourceList) => {           
-            socketIo.emit("entity: new short source list", {
-                arguments: shortSourceList,
-            });            
-
-            showNotify({
-                socketIo: socketIo,
-                type: "success",
-                message: `Информация по источнику ${data.source_id} была успешно изменена.`
-            });       
-
         }).catch((err) => {
             if (err.name === "organization and source management") {
                 return showNotify({
@@ -681,7 +705,7 @@ function deleteSourceInfo(socketIo, data){
         }).then((shortSourceList) => {           
             //отправляем новый список в интерфейс
             socketIo.emit("entity: new short source list", {
-                arguments: shortSourceList,
+                arguments: changeShortSourceList(shortSourceList),
             });            
 
             showNotify({
@@ -693,16 +717,11 @@ function deleteSourceInfo(socketIo, data){
             //удаляем источники из globalObject
             data.arguments.listSource.forEach((item) => {
                 globalObject.deleteData("sources", item.source);
-                                            
-                console.log(`------- source ${item.source} is: ${globalObject.hasData("sources", item.source)}`);
             }); 
 
             //удаляем источники из базы данных модуля сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.sourceManagementsDel(data.arguments.listSource);
         }).catch((err) => {
-
-            console.log(err);
-
             if (err.name === "organization and source management") {
                 return showNotify({
                     socketIo: socketIo,
@@ -1145,4 +1164,27 @@ function checkListEntitiesBasedUserPrivileges(listEntity, userPermission){
     });
 
     return { entityList: newEntityList, errMsg: null};
+}
+
+function changeShortSourceList(list){
+    let newListObj = Object.assign({}, list);
+    let newShortListSources = list.shortListSource.map((item) => {
+        let newObj = Object.assign({}, item.toObject());
+
+        newObj.connect_status = false;
+        newObj.connect_time = 0;
+
+        let sourceInfo = globalObject.getData("sources", newObj.source_id);
+
+        if(sourceInfo !== null){
+            newObj.connect_status = sourceInfo.connectStatus;
+            newObj.connect_time = sourceInfo.connectTime;
+        }
+
+        return newObj;
+    });
+
+    newListObj.shortListSource = newShortListSources;
+
+    return newListObj;
 }

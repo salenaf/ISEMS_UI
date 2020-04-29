@@ -2,7 +2,7 @@
 
 const async = require("async");
 
-//const globalObject = require("../../../configure/globalObject");
+const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../libs/check/checkAccessRightsPage");
 
@@ -26,6 +26,23 @@ module.exports = function(req, res, objHeader) {
 
             callback(null, {});
         
+        },
+        widgetInformation: (callback) => {
+            let numConnect = 0;
+            let numDisconnect = 0;
+            let listSources = globalObject.getData("sources");
+            for(let source in listSources){
+                if(listSources[source].connectStatus){
+                    numConnect++;
+                } else {
+                    numDisconnect++;
+                }
+            }
+
+            callback(null, {
+                numConnect: numConnect,
+                numDisconnect: numDisconnect,
+            });
         }
     }, (err, result) => {
         if (err) {
@@ -44,10 +61,14 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
+        console.log("func 'networkInteraction'");
+        console.log(result.widgetInformation);
+
         res.render("menu/network_interaction", {
             header: objHeader,
             userPermissions: userPermissions.management_network_interaction.element_settings,
             mainInformation: result.mainInformation,
+            widgetInformation: result.widgetInformation,
         });
     });
 };

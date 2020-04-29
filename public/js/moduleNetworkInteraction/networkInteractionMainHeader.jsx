@@ -57,7 +57,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <CreatingWidgets />
+                <CreatingWidgets  />
                 {this.showModuleConnectionError.call(this)}
                 <PageManagingNetworkInteractions socketIo={this.props.socketIo} />
             </React.Fragment>
@@ -67,12 +67,13 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
 CreatePageManagingNetworkInteractions.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    listItems: PropTypes.object.isRequired,
-/*    listShortEntity: PropTypes.object.isRequired,
-    userPermissions: PropTypes.object.isRequired,
-    listFieldActivity: PropTypes.array.isRequired,*/
+    mainInfo: PropTypes.object.isRequired,
+    userAccess: PropTypes.object.isRequired,
+    widgetInfo: PropTypes.object.isRequired,
 }; 
 
 ReactDOM.render(<CreatePageManagingNetworkInteractions
-    socketIo={socket} 
-    listItems={resivedFromServer} />, document.getElementById("main-page-content"));
+    socketIo={socket}
+    mainInfo={receivedFromServerMain}
+    userAccess={receivedFromServerAccess}
+    widgetInfo={receivedFromServerWidget} />, document.getElementById("main-page-content"));

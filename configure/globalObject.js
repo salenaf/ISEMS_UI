@@ -1,22 +1,12 @@
-/*
- * Глобальный объект для промежуточного хрнения данных
- * содержит:
- *
- * descriptionDB - дискрипторы соединения с СУБД
- * descriptionAPI - дискрипторы соединения с API
- *
- * users - информацию по пользователям
- * sources - информацию об источниках (в том числе отслеживание 'свежесть' полученных от источников данных)
- * 
- * Весрия 0.1, дата релиза 10.01.2019
- * */
-
 "use strict";
 
 const EventEmitter = require("events");
 
 class SocketioEventResponse extends EventEmitter {}
 
+/**
+ * Глобальный объект для промежуточного хрнения данных
+ */
 class GlobalObject {
     constructor() {
         this.obj = {
@@ -60,18 +50,12 @@ class GlobalObject {
      */
     setData(type, group, key = null, value = null) {
         if (this._checkKeys(type)) {
-            console.log("Error 1");
-
             return false;
         }
         if (typeof group === "undefined") {
-            console.log("Error 2");
-
             return false;
         }
         if (key === null) {
-            console.log("Error 3");
-
             return false;
         }
 
@@ -112,22 +96,12 @@ class GlobalObject {
     */    
     hasData(type, group = null, key = null){
         if (this._checkKeys(type)) {
-
-            console.log("func 'hasData', type not found");
-
             return false;
         } else if (group === null) {
-            console.log("func 'hasData', group not found");
-
             return true;
         } else if (group !== null && key === null){
-            console.log("func 'hasData', group found, key not found");
-
             return (typeof this.obj[type][group] !== "undefined");
         } else {
-            console.log(`group:  ${JSON.stringify(this.obj[type][group])}`);
-            console.log("func 'hasData', KEY not found");
-
             return (typeof this.obj[type][group][key] !== "undefined");
         }
     }
@@ -168,9 +142,6 @@ class GlobalObject {
             return true;
         }
         if (!Array.isArray(this.obj[type][group])){
-            
-            console.log("func 'globalObject', metod: 'deleteData', DELETE Object ----");
-
             delete this.obj[type][group][key];
         }
 
