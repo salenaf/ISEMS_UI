@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Alert, Card, Spinner, Button, Tab, Tabs } from "react-bootstrap";
+import { Alert, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
@@ -12,6 +12,11 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
         this.state = {
             "connectionModuleNI": this.connModuleNI.call(this),
+            "widgets": {
+                numConnect: this.props.listItems.widgetsInformation.numConnect,
+                numDisconnect: this.props.listItems.widgetsInformation.numDisconnect,
+            },
+            listSources: this.props.listItems.listSources,
         };
 
         this.handlerEvents.call(this);
@@ -28,8 +33,16 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     this.setState({ "connectionModuleNI": true });
                 } else {
                     this.setState({ "connectionModuleNI": false });
+                    this.setState({"widgets": {
+                        numConnect: 0,
+                        numDisconnect: 0,
+                    }});
                 }
             }
+        });
+
+        this.props.socketIo.on("module-ni:change sources connection", (data) => {
+            this.setState({"widgets": data});
         });
     }
 
@@ -57,9 +70,11 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <CreatingWidgets  />
+                <CreatingWidgets widgets={this.state.widgets} />
                 {this.showModuleConnectionError.call(this)}
-                <PageManagingNetworkInteractions socketIo={this.props.socketIo} />
+                <PageManagingNetworkInteractions
+                    socketIo={this.props.socketIo}
+                    listSources={this.state.listSources} />
             </React.Fragment>
         );
     }
@@ -67,13 +82,9 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
 CreatePageManagingNetworkInteractions.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    mainInfo: PropTypes.object.isRequired,
-    userAccess: PropTypes.object.isRequired,
-    widgetInfo: PropTypes.object.isRequired,
+    listItems: PropTypes.object.isRequired,
 }; 
 
 ReactDOM.render(<CreatePageManagingNetworkInteractions
     socketIo={socket}
-    mainInfo={receivedFromServerMain}
-    userAccess={receivedFromServerAccess}
-    widgetInfo={receivedFromServerWidget} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />, document.getElementById("main-page-content"));

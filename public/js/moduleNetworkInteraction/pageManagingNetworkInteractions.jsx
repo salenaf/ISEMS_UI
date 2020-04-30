@@ -36,7 +36,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
                         <CreateBodyDynamics />
                     </Tab>
                     <Tab eventKey="formation_task" title="формирование задач">
-                        <CreateBodyFormationTask />
+                        <CreateBodyFormationTask 
+                            listSources={this.props.listSources} />
                     </Tab>
                     <Tab eventKey="search_task" title="поиск">
                         <CreateBodySearchTask />
@@ -55,4 +56,5 @@ export default class PageManagingNetworkInteractions extends React.Component {
 
 PageManagingNetworkInteractions.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    listSources: PropTypes.object.isRequired,
 };

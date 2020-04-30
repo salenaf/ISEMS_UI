@@ -15,9 +15,6 @@ module.exports = function(req) {
     return new Promise((resolve, reject) => {
         async.parallel({
             getPasswordInfo: (callback) => {
-
-                console.log(`search info password from passwordID ${req.session.passport.user}`);
-
                 require("../../../middleware/mongodbQueryProcessor").querySelect(models.modelAdditionalPassportInformation, {
                     query: { passport_id: req.session.passport.user }
                 }, (err, result) => {

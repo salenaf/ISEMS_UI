@@ -12,6 +12,8 @@ require("datatablesNetBs");
 require("bootstrapTokenfield");
 require("bootstrapDatetimepicker");
 
+//require("bootstrapDatePicker");
+
 require("moment");
 require("select2");
 //require('moment-with-locales');

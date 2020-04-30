@@ -12,12 +12,12 @@ export default class CreatingWidgets extends React.Component {
             <div className="row d-flex justify-content-center">
                 <Card className="ml-3" border="success" style={{ width: "10rem" }}>
                     <small>источников</small>
-                    <span className="mb-0 text-success">0</span>
+                    <span className="mb-0 text-success">{this.props.widgets.numConnect}</span>
                     <small className="text-muted">подключено</small>
                 </Card>
                 <Card className="ml-3" border="danger" style={{ width: "10rem" }}>
                     <small>источников</small>
-                    <span className="mb-0 text-danger">0</span>
+                    <span className="mb-0 text-danger">{this.props.widgets.numDisconnect}</span>
                     <small className="text-muted">не доступно</small>
                 </Card>
                 <Card className="ml-3" border="dark" style={{ width: "10rem" }}>
@@ -41,5 +41,5 @@ export default class CreatingWidgets extends React.Component {
 }
 
 CreatingWidgets.propTypes = {
-
+    widgets: PropTypes.object.isRequired,
 };

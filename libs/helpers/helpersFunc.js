@@ -49,3 +49,20 @@ module.exports.checkInputValidation = (elem) => {
 module.exports.getRandomHex = () => {
     return crypto.randomBytes(20).toString("hex");
 };
+
+module.exports.getCountConnectionSources = (go) => {
+    let obj = {
+        numConnect: 0,
+        numDisconnect: 0,
+    };
+    let sources = go.getData("sources");
+    for(let source in sources){
+        if(sources[source].connectStatus){
+            obj.numConnect++;
+        } else {
+            obj.numDisconnect++;
+        }
+    }
+
+    return obj;
+};

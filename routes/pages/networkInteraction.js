@@ -27,7 +27,7 @@ module.exports = function(req, res, objHeader) {
             callback(null, {});
         
         },
-        widgetInformation: (callback) => {
+        widgetsInformation: (callback) => {
             let numConnect = 0;
             let numDisconnect = 0;
             let listSources = globalObject.getData("sources");
@@ -62,13 +62,19 @@ module.exports = function(req, res, objHeader) {
         if (readStatus === false) return res.render("403");
 
         console.log("func 'networkInteraction'");
-        console.log(result.widgetInformation);
+        console.log(result.widgetsInformation);
 
         res.render("menu/network_interaction", {
             header: objHeader,
-            userPermissions: userPermissions.management_network_interaction.element_settings,
-            mainInformation: result.mainInformation,
-            widgetInformation: result.widgetInformation,
+            listItems: {
+                connectionModules: {
+                    moduleNI: globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")
+                },
+                userPermissions: userPermissions.management_network_interaction.element_settings,
+                mainInformation: result.mainInformation,
+                widgetsInformation: result.widgetsInformation,
+                listSources: globalObject.getData("sources"),
+            },
         });
     });
 };

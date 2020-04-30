@@ -3,6 +3,7 @@
 const debug = require("debug")("handlerMsgSources");
 
 const showNotify = require("../../libs/showNotify");
+const helpersFunc = require("../../libs/helpers/helpersFunc");
 const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 
@@ -46,8 +47,7 @@ module.exports = function(msg, socketIo){
                 if(sourceInfo !== null){
                     debug("send message --->");
     
-                    socketIo.emit("module NI API", { 
-                        "type": "change status source",
+                    socketIo.emit("module-ni:change status source", { 
                         "options": {
                             sourceID: item.id,
                             shortName: sourceInfo.shortName,
@@ -55,8 +55,10 @@ module.exports = function(msg, socketIo){
                             connectStatus: sourceInfo.connectStatus,
                             connectTime: sourceInfo.connectTime,
                             id: sourceInfo.id,
-                        },
-                    });
+                        }});
+
+                    //для виджетов
+                    socketIo.emit("module-ni:change sources connection", helpersFunc.getCountConnectionSources(globalObject));
                 }
             });
 
@@ -74,11 +76,25 @@ module.exports = function(msg, socketIo){
                  */
 
             msg.options.sl.forEach((item) => {
-                globalObject.modifyData("sources", item.id, [
+                let modifyIsSuccess = globalObject.modifyData("sources", item.id, [
                     [ "connectStatus", item.cs ], 
                     [ "connectTime", item.dlc ]
                 ]);
+
+                //для источников которых нет в globalObject
+                if(!modifyIsSuccess){
+                    globalObject.setData("sources", item.id, {
+                        shortName: item.sn,
+                        description: item.d,
+                        connectStatus: item.cs,
+                        connectTime: item.dlc,
+                        id: "",
+                    });
+                }
             });
+
+            //для виджетов
+            socketIo.emit("module-ni:change sources connection", helpersFunc.getCountConnectionSources(globalObject));
                  
             break;
         }
@@ -100,10 +116,5 @@ module.exports = function(msg, socketIo){
    
         globalObject.deleteData("tasks", "networkInteractionTaskList", msg.taskID);
     }
-
-    /**
-     * теперь реконнект.
-     * Кроме того нужно сделать в globalObject объект со списком источников
-     * и учет статуса их соединения 
-     */
 };
+

@@ -150,21 +150,19 @@ class CreatePageOrganizationAndSources extends React.Component {
             "description"
         ];
 
-        this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "change status source"){
-                let objCopy = Object.assign({}, this.state);
+        this.props.socketIo.on("module-ni:change status source", (data) => {
+            let objCopy = Object.assign({}, this.state);
                 
-                for(let i = 0; i < objCopy.tableSourceList.length; i++){                  
-                    if(data.options.sourceID === objCopy.tableSourceList[i].sourceID){
-                        objCopy.tableSourceList[i].connectionStatus = data.options.connectStatus;
-                        objCopy.tableSourceList[i].connectTime = data.options.connectTime;
+            for(let i = 0; i < objCopy.tableSourceList.length; i++){                  
+                if(data.options.sourceID === objCopy.tableSourceList[i].sourceID){
+                    objCopy.tableSourceList[i].connectionStatus = data.options.connectStatus;
+                    objCopy.tableSourceList[i].connectTime = data.options.connectTime;
                     
-                        break;
-                    }
+                    break;
                 }
-
-                this.setState(objCopy);
             }
+
+            this.setState(objCopy);
         });
 
         this.props.socketIo.on("entity: set info only source", (data) => {

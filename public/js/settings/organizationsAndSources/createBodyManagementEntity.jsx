@@ -212,7 +212,7 @@ class CreateListEntity extends React.Component {
 
     listSource(){
         let listTmp = {};
-        this.props.listShortEntity.shortListSource.forEach((item) => {
+        this.props.listShortEntity.shortListSource.forEach((item) => {           
             let organizationId = "";
             for(let d of this.props.listShortEntity.shortListDivision){
                 if(d.id === item.id_division){
@@ -223,14 +223,15 @@ class CreateListEntity extends React.Component {
             }
 
             listTmp[item.short_name] = {
+                id: item.source_id,
                 sid: item.id,
                 did: item.id_division,
                 oid: organizationId,
             };
         });
 
-        let arrayTmp = Object.keys(listTmp).sort((a, b) => a < b).map((name) => {
-            return <option key={`key_sour_${listTmp[name].sid}`} value={`source:${listTmp[name].sid}`}>{name}</option>;
+        let arrayTmp = Object.keys(listTmp).sort((a, b) => a < b).map((name) => {          
+            return <option key={`key_sour_${listTmp[name].sid}`} value={`source:${listTmp[name].sid}`}>{`${listTmp[name].id} (${name})`}</option>;
         });
 
         return arrayTmp;
