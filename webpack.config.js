@@ -24,6 +24,7 @@ module.exports = {
             "bootstrapTokenfield",
             "bootstrapDatetimepicker",
             "datatablesNetBs",
+            "reactDatePicker",
             "select2",
             "md5js",
             "moment",
@@ -91,6 +92,7 @@ module.exports = {
             "datatablesNetBs": "datatables.net-bs/js/dataTables.bootstrap.min.js",
             "bootstrapTokenfield": "bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js",
             "bootstrapDatetimepicker": "bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
+            "reactDatePicker": "react-datepicker/dist/react-datepicker.min.js",
             "md5js": "crypto-js/md5.js",
             "moment": "moment/moment.js",
             "select2": "select2/dist/js/select2.full.min.js",
@@ -145,7 +147,7 @@ module.exports = {
 
         new webpack.ContextReplacementPlugin(/moment[\\/\\]locale$/, /ru|en-gb/),
 
-        new webpack.optimize.OccurrenceOrderPlugin(true)
+        new webpack.optimize.OccurrenceOrderPlugin(true),
         /*new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
@@ -156,18 +158,19 @@ module.exports = {
 
     module: {
         rules: [{
-            test: /\.js|jsx?$/, // определяем тип файлов
+            test: /\.(js|jsx)$/, // определяем тип файлов
             exclude: /node_modules/, // исключаем из обработки папку node_modules
             loader: "babel-loader", // определяем загрузчик
             options: {
                 presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
             }
         },
-        {
+        /*{
+             test: /\.(js|jsx)$/,
             test: /\.js$/,
             exclude: /node_modules/,
             use: ["babel-loader"] //, 'eslint-loader']
-        },
+        },*/
         {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({

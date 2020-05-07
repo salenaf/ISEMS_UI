@@ -4,6 +4,8 @@ import React from "react";
 import { Accordion, Badge, Button, Card, Col, Row, Form, Modal, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import DatePicker from "react-datepicker";
+
 class CreateProtocolList extends React.Component {
     constructor(props){
         super(props);
@@ -79,11 +81,30 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     constructor(props){
         super(props);
 
+        this.state = {
+            startDate: new Date(),
+            endDate: new Date(),
+        };
+
         this.windowClose = this.windowClose.bind(this);
+        this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
+        this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
     }
 
     windowClose(){
         this.props.onHide();
+    }
+
+    handleChangeStartDate(date){
+        this.setState({
+            startDate: date
+        });
+    }
+
+    handleChangeEndDate(date){
+        this.setState({
+            endDate: date
+        });
     }
 
     render(){       
@@ -99,32 +120,56 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
-                        <Form.Group as={Row} controlId="formListSources">
-                            <Col sm="2">источник</Col>
-                            <Col sm="4" className="text-left">
-                                <CreateSourceList 
-                                    listSources={this.props.listSources}
-                                    handlerChosen={this.props.handlerChosenSource} />
-                            </Col>
-                            <Col sm="2">протокол</Col>
-                            <Col sm="2" className="text-left">
-                                <CreateProtocolList handlerChosen={this.props.handlerChosenProtocol} />
-                            </Col>
-                            <Col sm="2"></Col>                            
-                        </Form.Group>
-                        <Form.Group as={Row} controlId="formListSources">
-                            <Col sm="2"></Col>
-                            <Col sm="10" className="text-left">
-                            </Col>                            
-                        </Form.Group>
-                    </Form>
+                    <Row className="text-center">
+                        <Col sm="6">
+                            <small className="mr-1">начальное время</small>
+                            <DatePicker 
+                                className="form-control form-control-sm green-border"
+                                selected={this.state.startDate}
+                                onChange={this.handleChangeStartDate}
+                                maxDate={new Date()}
+                                showTimeSelect
+                                selectsStart
+                                isClearable
+                                timeFormat="p"
+                                timeIntervals={5}
+                                timeCaption="time"
+                                dateFormat="dd.MM.yyyy hh:mm aa" />
+                        </Col>
+                        <Col sm="6">
+                            <small className="mr-1">конечное время</small>
+                            <DatePicker 
+                                className="form-control form-control-sm red-border"
+                                selected={this.state.endDate}
+                                onChange={this.handleChangeEndDate}
+                                maxDate={new Date()}
+                                selectsEnd
+                                isClearable
+                                timeFormat="p"
+                                timeIntervals={5}
+                                timeCaption="time"
+                                dateFormat="dd.MM.yyyy hh:mm aa" />
+                        </Col>
+                    </Row>
+                    <Row className="mt-2">
+                        <Col sm="8">
+                            <CreateSourceList 
+                                listSources={this.props.listSources}
+                                handlerChosen={this.props.handlerChosenSource} />                        
+                        </Col>
+                        <Col sm="2" className="text-right">
+                            <small className="mr-1">сет. протокол</small>
+                        </Col>
+                        <Col sm="2">
+                            <CreateProtocolList handlerChosen={this.props.handlerChosenProtocol} />
+                        </Col>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-primary" onClick={this.props.handlerButtonSubmit}>
+                    <Button variant="outline-primary" onClick={this.props.handlerButtonSubmit} size="sm">
                         отправить
                     </Button>
-                    <Button variant="outline-secondary" onClick={this.windowClose}>
+                    <Button variant="outline-secondary" onClick={this.windowClose} size="sm">
                         закрыть
                     </Button>
                 </Modal.Footer>

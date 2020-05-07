@@ -30,10 +30,10 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-primary" onClick={this.props.handlerButtonSubmit}>
+                    <Button variant="outline-primary" onClick={this.props.handlerButtonSubmit} size="sm">
                         отправить
                     </Button>
-                    <Button variant="outline-secondary" onClick={this.props.onHide}>
+                    <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
                         закрыть
                     </Button>
                 </Modal.Footer>

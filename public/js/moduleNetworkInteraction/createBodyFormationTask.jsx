@@ -67,10 +67,10 @@ export default class CreateBodyFormationTask extends React.Component {
                 <Row className="mt-3 mb-3">
                     <Col sm="8"></Col>
                     <Col className="text-right">
-                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowFiltration}>
+                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowFiltration} size="sm">
                             фильтрация
                         </Button>
-                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowListDownload} className="ml-1">
+                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowListDownload} size="sm" className="ml-1">
                             загрузка <Badge variant="light">0</Badge>
                             <span className="sr-only">unread messages</span>
                         </Button>

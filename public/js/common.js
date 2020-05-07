@@ -11,6 +11,7 @@ require("bootstrapToggle");
 require("datatablesNetBs");
 require("bootstrapTokenfield");
 require("bootstrapDatetimepicker");
+require("reactDatePicker");
 
 //require("bootstrapDatePicker");
 
