@@ -1,80 +1,38 @@
 import React from "react";
-import { Alert, Button, Card, Col, Spinner, Form, FormControl, InputGroup, Tab, Tabs, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Spinner, Form, FormControl, InputGroup, Tab, Tabs, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-class CreateSourceList extends React.Component {
-    constructor(props){
-        super(props);
-
-        this.getListSource = this.getListSource.bind(this);
-    }
-
-    handlerDropDown(){
-        this.el = $("#dropdown_sources");
-       
-        this.el.select2({
-            placeholder: "выбор источника",
-            containerCssClass: "input-group input-group-sm",
-            width: "100%",
-        });
-
-        this.el.on("change", this.props.handlerChosen);
-    }
-
-    componentDidMount() {
-        this.handlerDropDown.call(this);
-    }
-
-    getListSource(){
-        return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
-            let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
-            return <option key={`key_sour_${this.props.listSources[sourceID].id}`} value={sourceID} disabled={isDisabled}>{`${sourceID} ${this.props.listSources[sourceID].shortName}`}</option>;
-        });
-    }
-
-    render(){
-        return (
-            <select id="dropdown_sources">
-                <option></option>
-                {this.getListSource()}
-            </select>
-        );
-    }
-}
-
-CreateSourceList.propTypes = {
-    listSources: PropTypes.object.isRequired,
-    handlerChosen: PropTypes.func.isRequired,
-};
-
-class CreateProtocolList extends React.Component {
-    constructor(props){
-        super(props);
-    }
-
-    render(){
-        return (
-            <select className="custom-select custom-select-sm" onChange={this.props.handlerChosen} id="protocol_list">
-                <option value="any">любой</option>
-                <option value="tcp">tcp</option>
-                <option value="udp">udp</option>
-            </select>
-        );
-    }
-}
-
-CreateProtocolList.propTypes = {
-    handlerChosen: PropTypes.func.isRequired,
-};
+import CreateBodyDynamics from "./createBodyDynamics.jsx";
+import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
+import ModalWindowListTaskDownloadFiles from "../modalwindows/modalWindowListTaskDownloadFiles.jsx";
 
 export default class CreateBodyFormationTask extends React.Component {
     constructor(props){
         super(props);
 
+        this.state = {
+            showModalWindowFiltration: false,
+            showModalWindowListDownload: false,
+        };
+
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
         this.handlerChosenProtocol = this.handlerChosenProtocol.bind(this);
+        this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
+        this.handlerButtonSubmitWindowDownload = this.handlerButtonSubmitWindowDownload.bind(this);
+        this.handlerShowModalWindowFiltration = this.handlerShowModalWindowFiltration.bind(this);
+        this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
+        this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
+        this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
 
         //        console.log(this.props.listSources);
+    }
+
+    handlerButtonSubmitWindowFilter(){
+        console.log("func 'handlerButtonSubmit', START...");
+    }
+
+    handlerButtonSubmitWindowDownload(){
+        console.log("func 'handlerButtonSubmitWindowDownload', START...");
     }
 
     handlerChosenSource(e){
@@ -87,32 +45,49 @@ export default class CreateBodyFormationTask extends React.Component {
         console.log(e.target.value);
     }
 
+    handlerShowModalWindowFiltration(){
+        this.setState({ showModalWindowFiltration: true });
+    }
+
+    handlerCloseModalWindowFiltration(){
+        this.setState({ showModalWindowFiltration: false });
+    }
+
+    handlerShowModalWindowListDownload(){
+        this.setState({ showModalWindowListDownload: true });
+    }
+
+    handlerCloseModalWindowListDownload(){
+        this.setState({ showModalWindowListDownload: false });
+    }
+
     render(){
         return (
             <React.Fragment>
-                <br/>
-                <Card border="info" body>
-                    <Form>
-                        <Form.Group as={Row} controlId="formListSources">
-                            <Col sm="2">источник</Col>
-                            <Col sm="4" className="text-left">
-                                <CreateSourceList 
-                                    listSources={this.props.listSources}
-                                    handlerChosen={this.handlerChosenSource} />
-                            </Col>
-                            <Col sm="2">протокол</Col>
-                            <Col sm="2" className="text-left">
-                                <CreateProtocolList handlerChosen={this.handlerChosenProtocol} />
-                            </Col>
-                            <Col sm="2"></Col>                            
-                        </Form.Group>
-                        <Form.Group as={Row} controlId="formListSources">
-                            <Col sm="2"></Col>
-                            <Col sm="10" className="text-left">
-                            </Col>                            
-                        </Form.Group>
-                    </Form>
-                </Card>
+                <Row className="mt-3 mb-3">
+                    <Col sm="8"></Col>
+                    <Col className="text-right">
+                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowFiltration}>
+                            фильтрация
+                        </Button>
+                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowListDownload} className="ml-1">
+                            загрузка <Badge variant="light">0</Badge>
+                            <span className="sr-only">unread messages</span>
+                        </Button>
+                    </Col>
+                </Row>
+                <CreateBodyDynamics />
+                <ModalWindowAddFilteringTask 
+                    show={this.state.showModalWindowFiltration}
+                    onHide={this.handlerCloseModalWindowFiltration}
+                    listSources={this.props.listSources}
+                    handlerButtonSubmit={this.handlerButtonSubmitWindowFilter}
+                    handlerChosenSource={this.handlerChosenSource}
+                    handlerChosenProtocol={this.handlerChosenProtocol} />
+                <ModalWindowListTaskDownloadFiles 
+                    show={this.state.showModalWindowListDownload}
+                    onHide={this.handlerCloseModalWindowListDownload}
+                    handlerButtonSubmit={this.handlerButtonSubmitWindowDownload} />
             </React.Fragment>
         );
     }

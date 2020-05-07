@@ -2,7 +2,6 @@ import React from "react";
 import { Alert, Card, Spinner, Button, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import CreateBodyDynamics from "./createBodyDynamics.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import CreateBodyFormationTask from "./createBodyFormationTask.jsx";
 
@@ -31,11 +30,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
         return (
             <React.Fragment>
                 <br/>
-                <Tabs defaultActiveKey="dynamics" id="uncontrolled-tab-example">
-                    <Tab eventKey="dynamics" title="динамика">
-                        <CreateBodyDynamics />
-                    </Tab>
-                    <Tab eventKey="formation_task" title="формирование задач">
+                <Tabs defaultActiveKey="formation_task" id="uncontrolled-tab-example">
+                    <Tab eventKey="formation_task" title="задачи">
                         <CreateBodyFormationTask 
                             listSources={this.props.listSources} />
                     </Tab>

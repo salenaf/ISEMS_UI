@@ -10,7 +10,6 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <br/>
                 <Card className="mb-3">
                     {"1023 - Sensor MER (задача: скачивание файлов)"}
                     <div className="pl-2 pr-2">
@@ -29,8 +28,6 @@ export default class CreateBodyDynamics extends React.Component {
                         {"файлов найдено / обработано / всего: 13 / 132 / 245"}
                     </small>
                 </Card>
-                <br/>
-
             </React.Fragment>
         );
     }
