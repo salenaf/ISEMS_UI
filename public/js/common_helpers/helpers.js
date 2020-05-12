@@ -106,6 +106,7 @@ let helpers = {
             "fullNameHost": new RegExp("^[a-zA-Zа-яА-ЯёЁ0-9_№\"\\-\\s\\.,]{5,}$"),
             "ipaddress": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$"),
             "port": new RegExp("^[0-9]{1,5}$"),
+            "network": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)/[0-9]{1,2}$"),
             "countProcess": new RegExp("^[0-9]{1}$"),
             "intervalTransmission": new RegExp("^[0-9]{1,}$"),
             "folderStorage": new RegExp("^[\\w\\/_-]{3,}$"),

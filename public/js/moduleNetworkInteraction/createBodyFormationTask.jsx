@@ -15,8 +15,6 @@ export default class CreateBodyFormationTask extends React.Component {
             showModalWindowListDownload: false,
         };
 
-        this.handlerChosenSource = this.handlerChosenSource.bind(this);
-        this.handlerChosenProtocol = this.handlerChosenProtocol.bind(this);
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerButtonSubmitWindowDownload = this.handlerButtonSubmitWindowDownload.bind(this);
         this.handlerShowModalWindowFiltration = this.handlerShowModalWindowFiltration.bind(this);
@@ -27,23 +25,15 @@ export default class CreateBodyFormationTask extends React.Component {
         //        console.log(this.props.listSources);
     }
 
-    handlerButtonSubmitWindowFilter(){
+    handlerButtonSubmitWindowFilter(objTaskInfo){
         console.log("func 'handlerButtonSubmit', START...");
+        console.log(objTaskInfo);
     }
 
     handlerButtonSubmitWindowDownload(){
         console.log("func 'handlerButtonSubmitWindowDownload', START...");
     }
 
-    handlerChosenSource(e){
-        console.log("func 'handlerChosenSource'");
-        console.log(e.target.value);
-    }
-
-    handlerChosenProtocol(e){
-        console.log("func 'handlerChosenProtocol'");
-        console.log(e.target.value);
-    }
 
     handlerShowModalWindowFiltration(){
         this.setState({ showModalWindowFiltration: true });
@@ -81,9 +71,7 @@ export default class CreateBodyFormationTask extends React.Component {
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}
                     listSources={this.props.listSources}
-                    handlerButtonSubmit={this.handlerButtonSubmitWindowFilter}
-                    handlerChosenSource={this.handlerChosenSource}
-                    handlerChosenProtocol={this.handlerChosenProtocol} />
+                    handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
                 <ModalWindowListTaskDownloadFiles 
                     show={this.state.showModalWindowListDownload}
                     onHide={this.handlerCloseModalWindowListDownload}
