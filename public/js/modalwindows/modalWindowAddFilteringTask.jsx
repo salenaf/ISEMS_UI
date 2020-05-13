@@ -80,38 +80,59 @@ class CreateMainFields extends React.Component {
         this.state = {
             typeValueInput: "none",
             valueInput: "",
+            inputRadioType: "any",
             showDirectionAndButton: false,
             inputFieldIsValid: false,
             inputFieldIsInvalid: false,
+            inputValue: {
+                ip: { any: [], src: [], dst: [] },
+                pt: { any: [], src: [], dst: [] },
+                nw: { any: [], src: [], dst: [] },
+            },
         };
 
         this.handlerInput = this.handlerInput.bind(this);
+        this.checkRadioInput = this.checkRadioInput.bind(this);
+        this.addPortNetworkIP = this.addPortNetworkIP.bind(this);
     }
     
-    createDirectionAndButton(){
-        if(!this.state.showDirectionAndButton){
-            return <Col sm="6"></Col>;
+    addPortNetworkIP(){
+        if(this.state.typeValueInput === "none"){
+            return;
         }
 
-        return (
-            <Form>
-                <Col sm="6">
-                    <Form.Check custom type="radio" id="r_direction_any" label="any" defaultChecked />
-                    <Form.Check custom type="radio" id="r_direction_src" label="src" />
-                    <Form.Check custom type="radio" id="r_direction_dst" label="dst" />
-                    
-                    {this.state.typeValueInput /**только для теста*/}
-                </Col>
-            </Form>
-        );
+        let objUpdate = Object.assign({}, this.state);
+        if(Array.isArray(objUpdate.inputValue[this.state.typeValueInput][this.state.inputRadioType])){
+            if(objUpdate.inputValue[this.state.typeValueInput][this.state.inputRadioType].includes(this.state.valueInput)){
+                return;
+            }
+
+            objUpdate.inputValue[this.state.typeValueInput][this.state.inputRadioType].push(this.state.valueInput);
+            objUpdate.inputFieldIsValid = false;
+            objUpdate.inputFieldIsInvalid = false;
+
+            this.setState(objUpdate);
+
+            document.getElementById("input_ip_network_port").value = "";
+        }
+    }
+
+    delAddedElem(objDel){
+        let objUpdate = Object.assign({}, this.state);
+        if(Array.isArray(objUpdate.inputValue[objDel.type][objDel.direction])){
+            let list = objUpdate.inputValue[objDel.type][objDel.direction];
+            objUpdate.inputValue[objDel.type][objDel.direction] = list.filter((item) => (item !== objDel.value));
+
+            this.setState(objUpdate);
+        }
+    }
+
+    checkRadioInput(e){
+        this.setState({ inputRadioType: e.target.value });
     }
 
     handlerInput(e){
         let value = e.target.value;
-
-        console.log(`handler input: ${value}`);
-
-
 
         if(value.includes(".")){
             if(value.includes("/")){
@@ -123,7 +144,7 @@ class CreateMainFields extends React.Component {
                         inputFieldIsValid: true,
                         inputFieldIsInvalid: false,
                         valueInput: value,
-                        typeValueInput: "network",
+                        typeValueInput: "nw",
                     });
                 } else {  
                     this.setState({
@@ -134,14 +155,10 @@ class CreateMainFields extends React.Component {
                     });
                 }
             } else {
-                console.log("IP");
-
                 if(helpers.checkInputValidation({
                     "name": "ipaddress", 
                     "value": value, 
-                })){
-                    console.log("IP VALID");
-                    
+                })){                  
                     this.setState({
                         inputFieldIsValid: true,
                         inputFieldIsInvalid: false,
@@ -149,8 +166,6 @@ class CreateMainFields extends React.Component {
                         typeValueInput: "ip",
                     });
                 } else {  
-                    console.log("IP INVALID");
-
                     this.setState({
                         inputFieldIsValid: false,
                         inputFieldIsInvalid: true,
@@ -168,7 +183,7 @@ class CreateMainFields extends React.Component {
                     inputFieldIsValid: true,
                     inputFieldIsInvalid: false,
                     valueInput: value,
-                    typeValueInput: "port",
+                    typeValueInput: "pt",
                 });
             } else {
                 this.setState({
@@ -183,6 +198,106 @@ class CreateMainFields extends React.Component {
         this.setState({
             showDirectionAndButton: true,
         });
+    }
+
+    listInputValue(){
+        let isEmpty = true;
+
+        done: 
+        for(let et in this.state.inputValue){
+            for(let d in this.state.inputValue[et]){
+                if(this.state.inputValue[et][d].length > 0){
+                    isEmpty = false;
+
+                    break done;
+                }
+            }
+        }
+
+        if(isEmpty){
+            return <React.Fragment></React.Fragment>;
+        }
+
+        let getList = (type) => {
+            let getListDirection = (d) => {
+                if(this.state.inputValue[type][d].length === 0){
+                    return { value: "", success: false };
+                }
+
+                let result = this.state.inputValue[type][d].map((item) => {
+                    if(d === "src"){
+                        return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
+                            <small className="text-danger">{d}&#8592; </small>{item}
+                                &nbsp;<a onClick={this.delAddedElem.bind(this, {
+                                type: type,
+                                direction: d,
+                                value: item
+                            })} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                        </div>; 
+                    }
+                    if(d === "dst"){
+                        return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
+                            <small className="text-danger">{d}&#8594; </small>{item}
+                                &nbsp;<a onClick={this.delAddedElem.bind(this, {
+                                type: type,
+                                direction: d,
+                                value: item
+                            })} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                        </div>; 
+                    }
+
+                    return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
+                        <small className="text-danger">{d}&#8596; </small>{item}
+                            &nbsp;<a onClick={this.delAddedElem.bind(this, {
+                            type: type,
+                            direction: d,
+                            value: item
+                        })} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                    </div>; 
+                });
+
+                return { value: result, success: true };
+            };
+
+            let resultAny = getListDirection("any");
+            let resultSrc = getListDirection("src");
+            let resultDst = getListDirection("dst");
+
+            return (
+                <React.Fragment>
+                    <div>{resultAny.value}</div>
+                    {(resultAny.success && (resultSrc.success || resultDst.success)) ? <div className="text-danger text-center">&laquo;ИЛИ&raquo;</div> : <div></div>}                   
+                    <div>{resultSrc.value}</div>
+                    {(resultSrc.success && resultDst.success) ? <div className="text-danger text-center">&laquo;И&raquo;</div> : <div></div>}                   
+                    <div>{resultDst.value}</div>
+                </React.Fragment>
+            );
+        };
+
+        return (
+            <React.Fragment>
+                <Row>
+                    <Col sm="3" className="text-center">
+                        <Badge variant="dark">ip адрес</Badge>
+                    </Col>
+                    <Col sm="1" className="text-danger text-center">&laquo;ИЛИ&raquo;</Col>
+                    <Col sm="3" className="text-center">
+                        <Badge variant="dark">сеть</Badge>
+                    </Col>
+                    <Col sm="1" className="text-danger text-center">&laquo;И&raquo;</Col>
+                    <Col sm="3" className="text-center">
+                        <Badge  variant="dark">сетевой порт</Badge>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="4">{getList("ip")}</Col>
+
+                    <Col sm="4">{getList("nw")}</Col>
+
+                    <Col sm="4">{getList("pt")}</Col>
+                </Row>
+            </React.Fragment>
+        );
     }
 
     render(){
@@ -229,19 +344,32 @@ class CreateMainFields extends React.Component {
                         <CreateProtocolList handlerChosen={this.props.handlerChosenProtocol} />
                     </Col>
                 </Row>
-                <Row className="mt-2">
-                    <Col sm="6">
-                        <InputGroup size="sm">
-                            <FormControl 
-                                id="input_value" 
+                <Row className="mt-3">
+                    <Col className="text-center" sm="4">
+                        <Form inline>
+                            <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
+                            <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
+                            <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
+                        </Form>
+                    </Col>
+                    <Col sm="8">
+                        <InputGroup className="mb-3" size="sm">
+                            <FormControl
+                                id="input_ip_network_port"
+                                aria-describedby="basic-addon2"
                                 onChange={this.handlerInput}
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 
                                 placeholder="введите ip адрес, сетевой порт или подсеть" />
+                            <InputGroup.Append>
+                                <Button onClick={this.addPortNetworkIP} variant="outline-secondary">
+                                    добавить
+                                </Button>
+                            </InputGroup.Append>
                         </InputGroup>
                     </Col>
-                    {this.createDirectionAndButton.call(this)}
                 </Row>
+                {this.listInputValue.call(this)}
             </React.Fragment>
         );
     }

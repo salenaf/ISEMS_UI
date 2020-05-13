@@ -18,10 +18,12 @@ class ListFolder extends React.Component {
     listFolders(){
         return this.props.directoriesNetworkTraffic.map((item) => {
             let num = 0;
-            return <li key={`new_folder_${item}_${num++}`}>
-                {item}&nbsp;
-                <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
-            </li>;
+            return (
+                <li key={`new_folder_${item}_${num++}`}>
+                    {item}&nbsp;
+                    <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                </li>
+            );
         });
     }
 
