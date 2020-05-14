@@ -74,7 +74,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 {this.showModuleConnectionError.call(this)}
                 <PageManagingNetworkInteractions
                     socketIo={this.props.socketIo}
-                    listSources={this.state.listSources} />
+                    listSources={this.state.listSources}
+                    userPermission={this.props.listItems.userPermissions} />
             </React.Fragment>
         );
     }

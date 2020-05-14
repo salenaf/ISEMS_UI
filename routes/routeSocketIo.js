@@ -191,4 +191,7 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
 
     /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ ПОЛУЧАЕМЫХ С User Interface --- */
     require("./routeHandlersSocketIo/handlerActionUploadFiles").addHandlers(ss, socketIo);
+
+    /* --- УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ ФАЙЛОВ --- */
+    require("./routeHandlersSocketIo/handlerActionsFiltrationTask").addHandlers(socketIo);
 };

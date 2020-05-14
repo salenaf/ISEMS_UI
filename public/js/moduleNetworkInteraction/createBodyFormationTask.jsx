@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge, Button, Card, Col, Spinner, Form, FormControl, InputGroup, Tab, Tabs, Row } from "react-bootstrap";
+import { Badge, Button, Col, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateBodyDynamics from "./createBodyDynamics.jsx";
@@ -21,13 +21,45 @@ export default class CreateBodyFormationTask extends React.Component {
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
-
-        //        console.log(this.props.listSources);
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
-        console.log("func 'handlerButtonSubmit', START...");
-        console.log(objTaskInfo);
+        let checkExistInputValue = () => {
+            let isEmpty = true;
+
+            done:
+            for(let et in objTaskInfo.inputValue){
+                for(let d in objTaskInfo.inputValue[et]){
+                    if(Array.isArray(objTaskInfo.inputValue[et][d]) && objTaskInfo.inputValue[et][d].length > 0){
+                        isEmpty = false;
+
+                        break done;  
+                    }
+                }
+            }
+
+            return isEmpty;
+        };
+
+        //проверяем наличие хотябы одного параметра в inputValue
+        if(checkExistInputValue()){
+            return;
+        }
+
+        this.props.socketIo.emit("start new filtration task", {
+            actionType: "add new task",
+            arguments: {
+                source: objTaskInfo.source,
+                dateTime: {
+                    start: +(new Date(objTaskInfo.startDate)),
+                    end: +(new Date(objTaskInfo.endDate)),
+                },
+                networkProtocol: objTaskInfo.networkProtocol,
+                inputValue: objTaskInfo.inputValue,
+            },
+        });
+
+        this.handlerCloseModalWindowFiltration();
     }
 
     handlerButtonSubmitWindowDownload(){
@@ -51,13 +83,25 @@ export default class CreateBodyFormationTask extends React.Component {
         this.setState({ showModalWindowListDownload: false });
     }
 
+    isDisabledFiltering(){
+        if(!this.props.userPermission.management_tasks_filter.element_settings.create.status){
+            return "disabled";
+        }
+
+        return (this.props.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
+    }
+
     render(){
         return (
             <React.Fragment>
                 <Row className="mt-3 mb-3">
                     <Col sm="8"></Col>
                     <Col className="text-right">
-                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowFiltration} size="sm">
+                        <Button 
+                            variant="outline-primary" 
+                            disabled={this.isDisabledFiltering.call(this)}
+                            onClick={this.handlerShowModalWindowFiltration} 
+                            size="sm">
                             фильтрация
                         </Button>
                         <Button variant="outline-primary" onClick={this.handlerShowModalWindowListDownload} size="sm" className="ml-1">
@@ -82,5 +126,7 @@ export default class CreateBodyFormationTask extends React.Component {
 }
 
 CreateBodyFormationTask.propTypes = {
-    listSources: PropTypes.object.isRequired
+    socketIo: PropTypes.object.isRequired,
+    listSources: PropTypes.object.isRequired,
+    userPermission: PropTypes.object.isRequired,
 };

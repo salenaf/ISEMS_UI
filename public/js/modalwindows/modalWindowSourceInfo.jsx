@@ -81,7 +81,7 @@ export default class ModalWindowSourceInfo extends React.Component {
                                 <div className="col-md-12 text-center"><strong>{o.name}</strong></div>
                                 <div className="row">
                                     <div className="col-md-12 text-left">
-                                        Добавлено: <em>{formatter.format(o.date_register)}</em>,&nbsp;
+                                        Добавлена: <em>{formatter.format(o.date_register)}</em>,&nbsp;
                                         последнее изменение: <em>{formatter.format(o.date_change)}</em>
                                     </div>
                                     <div className="col-md-4 text-right"><small>Подразделений:</small></div>
@@ -109,7 +109,7 @@ export default class ModalWindowSourceInfo extends React.Component {
                                 <div className="col-md-12 text-center"><strong>{d.name}</strong></div>
                                 <div className="row">
                                     <div className="col-md-12 text-left">
-                                        Добавлено: <em>{formatter.format(d.date_register)}</em>,&nbsp;
+                                        Добавлена: <em>{formatter.format(d.date_register)}</em>,&nbsp;
                                         последнее изменение: <em>{formatter.format(d.date_change)}</em>
                                     </div>
                                     <div className="col-md-4 text-right"><small>Установленных источников:</small></div>
@@ -137,14 +137,14 @@ export default class ModalWindowSourceInfo extends React.Component {
                                 <Form>              
                                     <Form.Row>
                                         <div className="col-md-12 text-left">
-                                            Установлен: <em>{formatter.format(s.date_register)}</em>,&nbsp;
+                                            Добавлена: <em>{formatter.format(s.date_register)}</em>,&nbsp;
                                             последнее изменение: <em>{formatter.format(s.date_change)}</em>
                                         </div>
                                         <div className="col-md-12 text-left">
                                             Статус сетевого соединения: {(this.props.settings.connectionStatus) ? <Badge variant="success">подключен</Badge>: <Badge variant="danger">соединение отсутствует</Badge>}
                                         </div>
                                         <div className="col-md-12 text-left">
-                                            Время последнего сетевого соединения: <em>{(this.props.settings.connectTime === 0) ? "не определено": formatter.format(this.props.settings.connectTime)}</em>
+                                            Время последнего сетевого соединения: <em>{(this.props.settings.connectTime === 0) ? "не определено": formatter.format(this.props.settings.connectTime * 1000)}</em>
                                         </div>
                                         <div className="col-md-12 text-left">Сетевые настройки:</div>
                                         <div className="col-md-3 text-right"><small>ip адрес:</small></div>

@@ -37,9 +37,6 @@ module.exports.addHandlers = function(socketIo) {
 
 //обработчик для переподключения источника
 function reconnectSource(socketIo, data){
-    console.log("func 'reconnectSource', START");
-    console.log(data);
-
     sendCommandsModuleNetworkInteraction.sourceManagementsReconnect([ data.source_id ])
         .catch((err) => {
             showNotify({
@@ -1118,8 +1115,8 @@ function deleteOrganizationInfo(socketIo, data){
 }
 
 /**
- * Функция проверяет права пользователя на добавление новых сущьностей
- * возвращает список сущьностей которые текущий пользователь может добавлять  
+ * Функция проверяет права пользователя на добавление новых сущностей
+ * возвращает список сущностей которые текущий пользователь может добавлять  
  * 
  * @param {*} listEntity 
  * @param {*} userPermission 

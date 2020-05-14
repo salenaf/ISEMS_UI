@@ -80,15 +80,10 @@ class CreateMainFields extends React.Component {
         this.state = {
             typeValueInput: "none",
             valueInput: "",
-            inputRadioType: "any",
-            showDirectionAndButton: false,
             inputFieldIsValid: false,
             inputFieldIsInvalid: false,
-            inputValue: {
-                ip: { any: [], src: [], dst: [] },
-                pt: { any: [], src: [], dst: [] },
-                nw: { any: [], src: [], dst: [] },
-            },
+            showDirectionAndButton: false,           
+            inputRadioType: "any",
         };
 
         this.handlerInput = this.handlerInput.bind(this);
@@ -101,30 +96,18 @@ class CreateMainFields extends React.Component {
             return;
         }
 
-        let objUpdate = Object.assign({}, this.state);
-        if(Array.isArray(objUpdate.inputValue[this.state.typeValueInput][this.state.inputRadioType])){
-            if(objUpdate.inputValue[this.state.typeValueInput][this.state.inputRadioType].includes(this.state.valueInput)){
-                return;
-            }
+        this.props.addPortNetworkIP({
+            "typeValueInput": this.state.typeValueInput,
+            "inputRadioType": this.state.inputRadioType,
+            "valueInput": this.state.valueInput,
+        });
 
-            objUpdate.inputValue[this.state.typeValueInput][this.state.inputRadioType].push(this.state.valueInput);
-            objUpdate.inputFieldIsValid = false;
-            objUpdate.inputFieldIsInvalid = false;
+        this.setState({
+            "inputFieldIsValid": false,
+            "inputFieldIsInvalid": false,
+        });
 
-            this.setState(objUpdate);
-
-            document.getElementById("input_ip_network_port").value = "";
-        }
-    }
-
-    delAddedElem(objDel){
-        let objUpdate = Object.assign({}, this.state);
-        if(Array.isArray(objUpdate.inputValue[objDel.type][objDel.direction])){
-            let list = objUpdate.inputValue[objDel.type][objDel.direction];
-            objUpdate.inputValue[objDel.type][objDel.direction] = list.filter((item) => (item !== objDel.value));
-
-            this.setState(objUpdate);
-        }
+        document.getElementById("input_ip_network_port").value = "";
     }
 
     checkRadioInput(e){
@@ -204,9 +187,9 @@ class CreateMainFields extends React.Component {
         let isEmpty = true;
 
         done: 
-        for(let et in this.state.inputValue){
-            for(let d in this.state.inputValue[et]){
-                if(this.state.inputValue[et][d].length > 0){
+        for(let et in this.props.inputValue){
+            for(let d in this.props.inputValue[et]){
+                if(this.props.inputValue[et][d].length > 0){
                     isEmpty = false;
 
                     break done;
@@ -220,15 +203,15 @@ class CreateMainFields extends React.Component {
 
         let getList = (type) => {
             let getListDirection = (d) => {
-                if(this.state.inputValue[type][d].length === 0){
+                if(this.props.inputValue[type][d].length === 0){
                     return { value: "", success: false };
                 }
 
-                let result = this.state.inputValue[type][d].map((item) => {
+                let result = this.props.inputValue[type][d].map((item) => {
                     if(d === "src"){
                         return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                            <small className="text-danger">{d}&#8592; </small>{item}
-                                &nbsp;<a onClick={this.delAddedElem.bind(this, {
+                            <small className="text-info">{d}&#8592; </small>{item}
+                                &nbsp;<a onClick={this.props.delAddedElem.bind(this, {
                                 type: type,
                                 direction: d,
                                 value: item
@@ -237,8 +220,8 @@ class CreateMainFields extends React.Component {
                     }
                     if(d === "dst"){
                         return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                            <small className="text-danger">{d}&#8594; </small>{item}
-                                &nbsp;<a onClick={this.delAddedElem.bind(this, {
+                            <small className="text-info">{d}&#8594; </small>{item}
+                                &nbsp;<a onClick={this.props.delAddedElem.bind(this, {
                                 type: type,
                                 direction: d,
                                 value: item
@@ -247,8 +230,8 @@ class CreateMainFields extends React.Component {
                     }
 
                     return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                        <small className="text-danger">{d}&#8596; </small>{item}
-                            &nbsp;<a onClick={this.delAddedElem.bind(this, {
+                        <small className="text-info">{d}&#8596; </small>{item}
+                            &nbsp;<a onClick={this.props.delAddedElem.bind(this, {
                             type: type,
                             direction: d,
                             value: item
@@ -291,9 +274,7 @@ class CreateMainFields extends React.Component {
                 </Row>
                 <Row>
                     <Col sm="4">{getList("ip")}</Col>
-
                     <Col sm="4">{getList("nw")}</Col>
-
                     <Col sm="4">{getList("pt")}</Col>
                 </Row>
             </React.Fragment>
@@ -315,12 +296,11 @@ class CreateMainFields extends React.Component {
                             selected={this.props.startDate}
                             onChange={this.props.handleChangeStartDate}
                             maxDate={new Date()}
-                            showTimeSelect
+                            showTimeInput
                             selectsStart
                             isClearable
                             timeFormat="p"
-                            timeIntervals={5}
-                            timeCaption="time"
+                            timeInputLabel="Time:"
                             dateFormat="dd.MM.yyyy hh:mm aa" />
                     </Col>
                     <Col sm="4">
@@ -330,12 +310,11 @@ class CreateMainFields extends React.Component {
                             selected={this.props.endDate}
                             onChange={this.props.handleChangeEndDate}
                             maxDate={new Date()}
-                            showTimeSelect
+                            showTimeInput
                             selectsEnd
                             isClearable
                             timeFormat="p"
-                            timeIntervals={5}
-                            timeCaption="time"
+                            timeInputLabel="Time:"
                             dateFormat="dd.MM.yyyy hh:mm aa" />
                     </Col>
                     <Col sm="1"></Col>
@@ -360,7 +339,7 @@ class CreateMainFields extends React.Component {
                                 onChange={this.handlerInput}
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 
-                                placeholder="введите ip адрес, сетевой порт или подсеть" />
+                                placeholder="введите ip адрес, подсеть или сетевой порт" />
                             <InputGroup.Append>
                                 <Button onClick={this.addPortNetworkIP} variant="outline-secondary">
                                     добавить
@@ -379,6 +358,9 @@ CreateMainFields.propTypes = {
     showMainFields: PropTypes.bool.isRequired,
     startDate: PropTypes.instanceOf(Date),
     endDate: PropTypes.instanceOf(Date),
+    inputValue: PropTypes.object.isRequired,
+    delAddedElem: PropTypes.func.isRequired,
+    addPortNetworkIP: PropTypes.func.isRequired,
     handleChangeStartDate: PropTypes.func.isRequired,
     handleChangeEndDate: PropTypes.func.isRequired,
     handlerChosenProtocol: PropTypes.func.isRequired,
@@ -394,9 +376,16 @@ export default class ModalWindowAddFilteringTask extends React.Component {
             startDate: new Date(),
             endDate: new Date(),
             networkProtocol: "any",
+            inputValue: {
+                ip: { any: [], src: [], dst: [] },
+                pt: { any: [], src: [], dst: [] },
+                nw: { any: [], src: [], dst: [] },
+            },
         };
 
         this.windowClose = this.windowClose.bind(this);
+        this.delAddedElem = this.delAddedElem.bind(this);
+        this.addPortNetworkIP = this.addPortNetworkIP.bind(this);
         this.handlerButtonSubmit = this.handlerButtonSubmit.bind(this);
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
         this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
@@ -416,18 +405,40 @@ export default class ModalWindowAddFilteringTask extends React.Component {
         this.props.onHide();
     }
 
+    addPortNetworkIP(objAdd){
+        let objUpdate = Object.assign({}, this.state);
+        if(Array.isArray(objUpdate.inputValue[objAdd.typeValueInput][objAdd.inputRadioType])){
+            if(objUpdate.inputValue[objAdd.typeValueInput][objAdd.inputRadioType].includes(objAdd.valueInput)){
+                return;
+            }
+
+            objUpdate.inputValue[objAdd.typeValueInput][objAdd.inputRadioType].push(objAdd.valueInput);
+
+            this.setState(objUpdate);
+        }
+    }
+
+    delAddedElem(objDel){
+        let objUpdate = Object.assign({}, this.state);
+        if(Array.isArray(objUpdate.inputValue[objDel.type][objDel.direction])){
+            let list = objUpdate.inputValue[objDel.type][objDel.direction];
+            objUpdate.inputValue[objDel.type][objDel.direction] = list.filter((item) => (item !== objDel.value));
+
+            this.setState(objUpdate);
+        }
+    }
+
     handlerButtonSubmit(){
         this.props.handlerButtonSubmit({
+            source: this.state.source,
             startDate: this.state.startDate,
             endDate: this.state.endDate,
             networkProtocol: this.state.networkProtocol,
+            inputValue: this.state.inputValue,
         });
     }
 
     handlerChosenSource(e){
-        console.log("func 'handlerChosenSource', START...");
-        console.log(`chosen source: ${e.target.value}`);
-
         this.setState({
             showMainFields: true,
             source: +(e.target.value),
@@ -447,9 +458,6 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     handlerChosenProtocol(e){
-        console.log("func 'handlerChosenProtocol', START...");
-        console.log(`chosen protocol: ${e.target.value}`);
-
         this.setState({
             networkProtocol: e.target.value
         });
@@ -479,16 +487,18 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                         showMainFields={this.state.showMainFields}
                         startDate={this.state.startDate}
                         endDate={this.state.endDate}
+                        inputValue={this.state.inputValue}
+                        delAddedElem={this.delAddedElem}
+                        addPortNetworkIP={this.addPortNetworkIP}
                         handleChangeStartDate={this.handleChangeStartDate}
                         handleChangeEndDate={this.handleChangeEndDate}
-                        handlerChosenProtocol={this.handlerChosenProtocol}
-                    />
+                        handlerChosenProtocol={this.handlerChosenProtocol} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-secondary" onClick={this.windowClose} size="sm">
                         закрыть
                     </Button>
-                    <Button variant="outline-primary" onClick={this.props.handlerButtonSubmit} size="sm">
+                    <Button variant="outline-primary" onClick={this.handlerButtonSubmit} size="sm">
                         отправить
                     </Button>
                 </Modal.Footer>

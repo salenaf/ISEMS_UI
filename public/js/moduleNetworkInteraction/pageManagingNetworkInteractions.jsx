@@ -33,7 +33,9 @@ export default class PageManagingNetworkInteractions extends React.Component {
                 <Tabs defaultActiveKey="formation_task" id="uncontrolled-tab-example">
                     <Tab eventKey="formation_task" title="задачи">
                         <CreateBodyFormationTask 
-                            listSources={this.props.listSources} />
+                            socketIo={this.props.socketIo}
+                            listSources={this.props.listSources} 
+                            userPermission={this.props.userPermission} />
                     </Tab>
                     <Tab eventKey="search_task" title="поиск">
                         <CreateBodySearchTask />
@@ -53,4 +55,5 @@ export default class PageManagingNetworkInteractions extends React.Component {
 PageManagingNetworkInteractions.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listSources: PropTypes.object.isRequired,
+    userPermission: PropTypes.object.isRequired,
 };
