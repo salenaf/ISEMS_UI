@@ -10,9 +10,9 @@ const helpersFunc = require("../../helpers/helpersFunc");
 module.exports = function(filteringParameters) {
     let checkNetworkPortIP = (section, type) => {
         let validInput = { 
-            ip: [],
-            nt: [],
-            pt: [],
+            any: [],
+            src: [],
+            dst: [],
         };
 
         for(let d in filteringParameters.inputValue[section]){
@@ -79,7 +79,7 @@ module.exports = function(filteringParameters) {
 
     let newInputValue = {
         ip: checkNetworkPortIP("ip", "ipaddress"),
-        nt: checkNetworkPortIP("nt", "network"),
+        nw: checkNetworkPortIP("nt", "network"),
         pt: checkNetworkPortIP("pt", "port"),
     };
 
@@ -96,8 +96,8 @@ module.exports = function(filteringParameters) {
         filteringParameters: {
             source: +filteringParameters.source,
             dateTime: { 
-                start: filteringParameters.dateTime.start,
-                end: filteringParameters.dateTime.end,
+                start: Math.trunc(+filteringParameters.dateTime.start / 1000),
+                end: Math.trunc(+filteringParameters.dateTime.end / 1000),
             },
             networkProtocol: ((filteringParameters.networkProtocol !== "tcp") || (filteringParameters.networkProtocol !== "udp")) ? "any": filteringParameters.networkProtocol,
             inputValue: newInputValue,

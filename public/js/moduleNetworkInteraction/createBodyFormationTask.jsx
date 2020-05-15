@@ -110,7 +110,7 @@ export default class CreateBodyFormationTask extends React.Component {
                         </Button>
                     </Col>
                 </Row>
-                <CreateBodyDynamics />
+                <CreateBodyDynamics socketIo={this.props.socketIo} />
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}

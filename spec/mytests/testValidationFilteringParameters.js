@@ -24,10 +24,11 @@ describe("Тест 1. Валидация параметров полученны
         });
 
         if(obj.isValid){
+            console.log(obj.filteringParameters.dateTime);
             console.log("IP");
             console.log(obj.filteringParameters.inputValue.ip);
             console.log("Network");
-            console.log(obj.filteringParameters.inputValue.nt);
+            console.log(obj.filteringParameters.inputValue.nw);
             console.log("Port");
             console.log(obj.filteringParameters.inputValue.pt);
         }

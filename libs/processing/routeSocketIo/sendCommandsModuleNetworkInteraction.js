@@ -4,10 +4,13 @@ const MyError = require("../../helpers/myError");
 const helpersFunc = require("../../helpers/helpersFunc");
 const globalObject = require("../../../configure/globalObject");
 
+/** ---  УПРАВЛЕНИЕ ИСТОЧНИКАМИ --- **/
+
 /**
   * Обработчик для модуля сетевого взаимодействия осуществляющий
-  * управление удаленными источниками
-  * Выполняет добавление новых источников в базу данных модуля 
+  * управление удаленными источниками.
+  * 
+  * Выполняет добавление новых источников в базу данных модуля. 
   * 
   * @param {*} - sourceList
   */
@@ -75,8 +78,9 @@ module.exports.sourceManagementsAdd = function(sourceList){
 
 /**
   * Обработчик для модуля сетевого взаимодействия осуществляющий
-  * управление удаленными источниками
-  * Выполняет обновление информации об источнике в базе данных модуля 
+  * управление удаленными источниками.
+  * 
+  * Выполняет обновление информации об источнике в базе данных модуля. 
   * 
   * @param {*} - sourceList
   */
@@ -144,8 +148,9 @@ module.exports.sourceManagementsUpdate = function(sourceList){
 
 /**
   * Обработчик для модуля сетевого взаимодействия осуществляющий
-  * управление удаленными источниками
-  * Выполняет удаление источников из базы данных модуля 
+  * управление удаленными источниками.
+  * 
+  * Выполняет удаление источников из базы данных модуля. 
   * 
   * @param {*} - sourceList
   */
@@ -169,8 +174,6 @@ module.exports.sourceManagementsDel = function(sourceList){
                     arg: {},				
                 };
             });
-
-            console.log(list);
 
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
             
@@ -202,14 +205,13 @@ module.exports.sourceManagementsDel = function(sourceList){
 
 /**
   * Обработчик для модуля сетевого взаимодействия осуществляющий
-  * управление удаленными источниками
-  * Выполняет удаление источников из базы данных модуля 
+  * управление удаленными источниками.
+  * 
+  * Выполняет удаление источников из базы данных модуля. 
   * 
   * @param {*} - sourceList
   */
 module.exports.sourceManagementsReconnect = function(sourceList){
-    console.log("func 'sourceManagementsReconnect'");
-
     return new Promise((resolve, reject) => {
         process.nextTick(() => {          
             if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
@@ -234,9 +236,6 @@ module.exports.sourceManagementsReconnect = function(sourceList){
                     });
                 }
             });
-
-            console.log(`sourceNotFound: ${sourceNotFound.length}, sourceNotConnection: ${sourceNotConnection.length}`);
-            console.log(sources);
 
             if(sourceNotFound.length > 0){
                 let textOne = (sourceNotFound.length > 1) ? "Источники": "Источник";
@@ -264,31 +263,82 @@ module.exports.sourceManagementsReconnect = function(sourceList){
                     taskID: hex,
                     options: { sl: sources },
                 });
-
-
-                /**
-                * Переподключение вроде работает,
-                *   но неплохо бы еще потестировать
-                * 
-                * !!! При переходе с любой страницы на страницу управления
-                * модулем сетевого взаимодействия почему то страница считает
-                * что модуль не подключен!!!
-                * 
-                * Дальше доделать виджеты
-                * 
-                */
-
-                //добавляем новую задачу
-                /*globalObject.setData("tasks", "networkInteractionTaskList", hex, {
-                    createDate: +(new Date),
-                    typeTask: "command",
-                    sectionTask: "source control",
-                    instructionTask: "add source list",
-                    source: sources,
-                });*/
             }
 
             resolve();
         });
     });    
+};
+
+/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
+
+/**
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * управление задачами по фильтрации сетевого трафика.
+  *  
+  * Осуществляет запуск задачи по фильтрации сет. трафика. 
+  * 
+  * @param {*} - sourceList
+  */
+module.exports.managementTaskFilteringStart = function(filteringParameters){
+    console.log("func 'managementTaskFilteringStart'");
+    console.log(filteringParameters);
+ 
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {          
+            if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            //проверяем существование источника и статус его соединения
+            let sourceInfo = globalObject.getData("sources", filteringParameters.source);
+            if(sourceInfo === null){
+                return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не найден.`));
+
+            } 
+            if(!sourceInfo.connectStatus){
+                return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не подключен.`));                                        
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            
+            if(conn !== null){
+                let hex = helpersFunc.getRandomHex();
+
+                let tmp = {
+                    msgType: "command",
+                    msgSection: "filtration control",
+                    msgInstruction: "to start filtering",
+                    taskID: hex,
+                    options: { 
+                        id: filteringParameters.source,
+                        dt: {
+                            s: filteringParameters.dateTime.start,
+                            e: filteringParameters.dateTime.end,
+                        },
+                        p: filteringParameters.networkProtocol,
+                        f: filteringParameters.inputValue,
+                    },
+                };
+
+                console.log("---------- forming Request ----------");
+                console.log(JSON.stringify(tmp));
+            
+                conn.sendMessage(tmp);
+
+                //добавляем новую задачу
+                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
+                    createDate: +(new Date),
+                    typeTask: "command",
+                    sectionTask: "filtration control",
+                    instructionTask: "to start filtering",
+                    moduleTaskID: "",
+                    source: filteringParameters.source,
+                    information: {},
+                });
+            }    
+
+            resolve();
+        });
+    }); 
 };

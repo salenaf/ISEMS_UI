@@ -1,27 +1,12 @@
 "use strict";
 
-/*
-const models = require("../../controllers/models");
-const MyError = require("../../libs/helpers/myError");
-const commons = require("../../libs/helpers/commons");
-const showNotify = require("../../libs/showNotify");
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const globalObject = require("../../configure/globalObject");
-const writeLogFile = require("../../libs/writeLogFile");
-const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
-const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
-const informationForPageManagementOrganizationAndSource = require("../../libs/management_settings/informationForPageManagementOrganizationAndSource");
-*/
-
 const debug = require("debug")("handlerActionsFiltrationTask");
 
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
 
 /**
  * Модуль обработчик действий связанных с фильтрацией файлов
@@ -40,24 +25,16 @@ module.exports.addHandlers = function(socketIo) {
 };
 
 function startNewTask(socketIo, data){
-    debug("func 'startNewTask', START...");
-    debug(data);
-
     let funcName = " (func 'startNewTask')";
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
-            debug("Авторизован ли пользователь");
-
             //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
 
             let filtrTaskParametr = authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_filter.element_settings;
-
-            debug(filtrTaskParametr);
-
             //может ли пользователь создавать задачи на фильтрацию
             if(!filtrTaskParametr.create.status){
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
@@ -65,40 +42,21 @@ function startNewTask(socketIo, data){
 
             return;
         }).then(() => {
-
-            debug("проверяем параметры полученные от пользователя");
-
             let obj = (require("../../libs/processing/routeSocketIo/validationFileFilteringParameters"))(data.arguments);
-            
-            debug(obj);
-
             if(!obj.isValid){
                 throw new MyError("management validation", obj.errorMsg);
             }
 
             return obj.filteringParameters;
         }).then((filteringParameters) => {
-            debug("отправляем новые источники, если они есть, модулю сетевого взаимодействия");
-
-            /**
- * Проверку на корректность входных параметров сделал,
- * по тестам все выполняется успешно. Следующим нужно
- * написать функцию которая отправляет информацию модулю и
- * заодно проверяет наличие подключения к модулю.
- * 
- * Кроме того нужно добавить информацию о задаче в globalObject,
- * туда добавляем ID задачи полученный из UI и по нему потом ищем задачу
- * и добавляем ID NIH_master. Это нужно что бы потом можно было остановить
- * выполнение задачи. 
- * 
- */
-
-            //отправляем новые источники, если они есть, модулю сетевого взаимодействия
-            //return sendCommandsModuleNetworkInteraction.sourceManagementsAdd(sourceList);
-            return;
-        }).then(() => {
-            debug("запрос на фильтрацию сетевого трафика успешно отправлен");
-
+            //отправляем задачу модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(filteringParameters);
+        }).then(() => {          
+            showNotify({
+                socketIo: socketIo,
+                type: "success",
+                message: "Запрос на выполнение задачи по фильтрации сетевого трафика успешно отправлен.",
+            });
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({

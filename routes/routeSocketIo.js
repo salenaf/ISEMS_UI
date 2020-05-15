@@ -85,7 +85,97 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug(msg);
             debug("------------------------------------------");
 
-            /*writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
+            //сохраняем информацию о ходе фильтрации в globalObject
+
+            /**
+ * 
+ *              !!! ВОПРОС !!!
+ * Стоит ли храить информацию о выполняемой задачи по фильтрации
+ * в globalObject??? Вроде вся информация доступна через модуль сетевого
+ * взаимодействия по ID задачи присвоенной ИМ.
+ * 
+ * Кроме того если UI будет перезагружана при выполнении задачи модулем,
+ * они ведь могут работать не зависимо друг от друга, то надо как то
+ * востанавливать данные в globalObject при приеме сообщения от модуля.
+ *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * 
+ * ПОКА НЕ БУДУ НИЧЕГО ДОБАВЛЯТЬ В GLOBALOBJECT "tasks", "networkInteractionTaskList"
+ * надо еще подумать
+ */
+
+            let sourceInfo = globalObject.getData("sources", msg.options.id);
+
+            //формируем сообщение о выполнении процесса фильтрации
+            socketIo.emit("module NI API", { 
+                "type": "filtrationProcessing",
+                "options": {
+                    sourceID: msg.options.id,
+                    name: sourceInfo.shortName,
+                    taskID: msg.taskID,
+                    taskIDModuleNI: msg.options.tidapp,
+                    status: msg.options.s,
+                    fileParameter: {
+                        numAllFiles: msg.options.nfmfp,
+                        numProcessedFiles: msg.options.npf,
+                        numFindFiles: msg.options.nffrf,
+                        sizeAllFiles: msg.options.sfmfp,
+                        sizeFindFiles: msg.options.sffrf,
+                    },
+                },
+            });
+
+            /**
+ * пример сообщения о выполнении процесса фильтрации
+ 
+ {
+  routeSocketIo   instruction: 'task processing',
+  routeSocketIo   taskID: '65390d4b0afe6b1c54c07141969c8f0f029dcf51',
+  routeSocketIo   options: {
+  routeSocketIo     id: 1221,
+  routeSocketIo     tidapp: '81f2188acb045917582242b4af68a79a',
+  routeSocketIo     s: 'execute',
+  routeSocketIo     nfmfp: 32,
+  routeSocketIo     npf: 29,
+  routeSocketIo     nffrf: 0,
+  routeSocketIo     nepf: 0,
+  routeSocketIo     ndf: 3,
+  routeSocketIo     sfmfp: 1563821543,
+  routeSocketIo     sffrf: 0,
+  routeSocketIo     pss: '/home/ISEMS_NIH_slave/ISEMS_NIH_slave_RAW/2019_June_16_11_39_81f2188acb045917582242b4af68a79a',
+  routeSocketIo     ffi: {}
+  routeSocketIo   }
+  routeSocketIo } +0ms
+
+  {
+  routeSocketIo   instruction: 'task processing',
+  routeSocketIo   taskID: '65390d4b0afe6b1c54c07141969c8f0f029dcf51',
+  routeSocketIo   options: {
+  routeSocketIo     id: 1221,
+  routeSocketIo     tidapp: '81f2188acb045917582242b4af68a79a',
+  routeSocketIo     s: 'complete',
+  routeSocketIo     nfmfp: 32,
+  routeSocketIo     npf: 32,
+  routeSocketIo     nffrf: 0,
+  routeSocketIo     nepf: 0,
+  routeSocketIo     ndf: 3,
+  routeSocketIo     sfmfp: 1563821543,
+  routeSocketIo     sffrf: 0,
+  routeSocketIo     pss: '/home/ISEMS_NIH_slave/ISEMS_NIH_slave_RAW/2019_June_16_11_39_81f2188acb045917582242b4af68a79a',
+  routeSocketIo     ffi: {}
+  routeSocketIo   }
+  routeSocketIo } +0ms
+ */
+            /*
+            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished",  false );
+
+            socketIo.emit("module NI API", { 
+                "type": "connectModuleNI",
+                "options": {
+                    "connectionStatus": false
+                },
+            });
+
+            writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
             if (err) debug(err);
         });*/
 
