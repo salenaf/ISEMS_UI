@@ -6,6 +6,60 @@ class SocketioEventResponse extends EventEmitter {}
 
 /**
  * Глобальный объект для промежуточного хрнения данных
+ * 
+ *   {
+ *       только для задач по фильтрации и скачиванию
+ *       tasks: { 
+ *           networkInteractionTaskList: {
+ *               <taskID UI app>: {
+ *                  createDate: дата создания записи,
+ *                  typeTask: тип задачи "filtration/download",
+ *                  statusTask: статус задачи "wait/refused/execute/complete/stop",
+ *                  userLogin: логин пользователя,
+ *                  userName: имя пользователя,
+ *                  sourceID: id источника,
+ *                  sourceName: название источника,
+ *                  filteringOptions: {
+ *                      dateTime: {
+ *                          start: начало,
+ *                          end: окончание
+ *                      },
+ *                      networkProtocol: протокол транспортного уровня,
+ *                      inputValue: основные параметры фильтрации
+ *                  },
+ *                  parameters: {
+ *                      appTaskID: "",
+ *                      numDirectoryFiltration: "",
+ *                      numAllFiles: 0,
+ *                      numProcessedFiles: 0,
+ *                      numProcessedFilesError: 0,
+ *                      numFindFiles: 0,
+ *                      sizeAllFiles: 0,
+ *                      sizeFindFiles: 0,
+ *                  }}},
+ *       параметры пользователя все из БД
+ *       users: {
+ *          userLogin: логин,
+ *          userName: имя,
+ *          userGroup: группа,
+ *          groupSettings: групповые настройки пользователя,
+ *          userSettings: общие настройки пользователя,
+ *       },
+ *       параметры истчников
+ *       sources: {
+ *          shortName: название источника,
+ *          description: описание,
+ *          connectStatus: статус соединения,
+ *          connectTime: время соединения,
+ *          id: id источника,
+ *       },
+ * 
+ *       дескрипторы соединения с API
+ *       descriptionAPI: {
+ *           networkInteraction: {
+ *               connection: object,
+ *               connectionEstablished: bool }}
+ *   } 
  */
 class GlobalObject {
     constructor() {

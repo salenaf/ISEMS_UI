@@ -56,13 +56,13 @@ export default class CreateBodyDynamics extends React.Component {
         var formatter = new Intl.NumberFormat("ru");
         let list = [];
         for(let pf in this.state.filtration){
-            let numAllFiles = this.state.filtration[pf].fileParameter.numAllFiles;
-            let numProcessedFiles = this.state.filtration[pf].fileParameter.numProcessedFiles;
+            let numAllFiles = this.state.filtration[pf].parameters.numAllFiles;
+            let numProcessedFiles = this.state.filtration[pf].parameters.numProcessedFiles;
             let percent = (numProcessedFiles*100) / numAllFiles;
 
-            let numFindFiles = this.state.filtration[pf].fileParameter.numFindFiles;
-            let sizeAllFiles = this.state.filtration[pf].fileParameter.sizeAllFiles;
-            let sizeFindFiles = this.state.filtration[pf].fileParameter.sizeFindFiles;
+            let numFindFiles = this.state.filtration[pf].parameters.numFindFiles;
+            let sizeAllFiles = this.state.filtration[pf].parameters.sizeAllFiles;
+            let sizeFindFiles = this.state.filtration[pf].parameters.sizeFindFiles;
 
             list.push(
                 <Card className="mb-3" key={`card_filter_${pf}`}>

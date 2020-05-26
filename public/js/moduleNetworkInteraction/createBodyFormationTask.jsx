@@ -11,9 +11,12 @@ export default class CreateBodyFormationTask extends React.Component {
         super(props);
 
         this.state = {
+            connectionModuleNI: this.props.connectionModuleNI,
             showModalWindowFiltration: false,
             showModalWindowListDownload: false,
         };
+
+        this.handlerEvents.call(this);
 
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerButtonSubmitWindowDownload = this.handlerButtonSubmitWindowDownload.bind(this);
@@ -21,6 +24,18 @@ export default class CreateBodyFormationTask extends React.Component {
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "connectModuleNI"){
+                if(data.options.connectionStatus){
+                    this.setState({ "connectionModuleNI": true });
+                } else {
+                    this.setState({ "connectionModuleNI": false });
+                }
+            }
+        });
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
@@ -84,11 +99,25 @@ export default class CreateBodyFormationTask extends React.Component {
     }
 
     isDisabledFiltering(){
-        if(!this.props.userPermission.management_tasks_filter.element_settings.create.status){
+        //если нет соединения с модулем сетевого взаимодействия
+        if(!this.state.connectionModuleNI){
             return "disabled";
         }
 
+        if(!this.props.userPermission.management_tasks_filter.element_settings.create.status){
+            return "disabled";
+        }      
+
         return (this.props.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
+    }
+
+    isDisabledDownload(){
+        //если нет соединения с модулем сетевого взаимодействия
+        if(!this.state.connectionModuleNI){
+            return "disabled";
+        }
+
+        return "";
     }
 
     render(){
@@ -104,7 +133,12 @@ export default class CreateBodyFormationTask extends React.Component {
                             size="sm">
                             фильтрация
                         </Button>
-                        <Button variant="outline-primary" onClick={this.handlerShowModalWindowListDownload} size="sm" className="ml-1">
+                        <Button 
+                            variant="outline-primary" 
+                            disabled={this.isDisabledDownload.call(this)}
+                            onClick={this.handlerShowModalWindowListDownload} 
+                            size="sm" 
+                            className="ml-1">
                             загрузка <Badge variant="light">0</Badge>
                             <span className="sr-only">unread messages</span>
                         </Button>
@@ -129,4 +163,5 @@ CreateBodyFormationTask.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listSources: PropTypes.object.isRequired,
     userPermission: PropTypes.object.isRequired,
+    connectionModuleNI: PropTypes.bool.isRequired,
 };

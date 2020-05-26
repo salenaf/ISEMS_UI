@@ -35,7 +35,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
                         <CreateBodyFormationTask 
                             socketIo={this.props.socketIo}
                             listSources={this.props.listSources} 
-                            userPermission={this.props.userPermission} />
+                            userPermission={this.props.userPermission}
+                            connectionModuleNI={this.props.connectionModuleNI} />
                     </Tab>
                     <Tab eventKey="search_task" title="поиск">
                         <CreateBodySearchTask />
@@ -56,4 +57,5 @@ PageManagingNetworkInteractions.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listSources: PropTypes.object.isRequired,
     userPermission: PropTypes.object.isRequired,
+    connectionModuleNI: PropTypes.bool.isRequired,
 };

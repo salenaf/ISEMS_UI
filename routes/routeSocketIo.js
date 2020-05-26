@@ -85,23 +85,60 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug(msg);
             debug("------------------------------------------");
 
-            //сохраняем информацию о ходе фильтрации в globalObject
-
-            /**
- * 
- *              !!! ВОПРОС !!!
- * Стоит ли храить информацию о выполняемой задачи по фильтрации
- * в globalObject??? Вроде вся информация доступна через модуль сетевого
- * взаимодействия по ID задачи присвоенной ИМ.
- * 
- * Кроме того если UI будет перезагружана при выполнении задачи модулем,
- * они ведь могут работать не зависимо друг от друга, то надо как то
- * востанавливать данные в globalObject при приеме сообщения от модуля.
- *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * 
- * ПОКА НЕ БУДУ НИЧЕГО ДОБАВЛЯТЬ В GLOBALOBJECT "tasks", "networkInteractionTaskList"
- * надо еще подумать
- */
+            /* проверяем наличие информации по данной задачи, информация о
+             задаче в globalObject нужна как минимум для виджетов (кол-во задач по фильтрации и скачиванию)
+            */
+            if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.taskID)){
+                //если задача с заданным ID существует, то есть UI не перезапускалась
+                globalObject.modifyData("tasks", "networkInteractionTaskList", [
+                    [ "statusTask", msg.options.s ],
+                    [ "parameters", {
+                        appTaskID: msg.options.tidapp,
+                        numDirectoryFiltration: msg.options.ndf,
+                        numAllFiles: msg.options.nfmfp,
+                        numProcessedFiles: msg.options.npf,
+                        numProcessedFilesError: msg.options.nepf,
+                        numFindFiles: msg.options.nffrf,
+                        sizeAllFiles: msg.options.sfmfp,
+                        sizeFindFiles: msg.options.sffrf,
+                    } ],
+                ]);
+            } else {
+                //если UI перезапускалась, востанавливаем информацию, всю кроме логина и имени пользователя
+                let sourceInfo = globalObject.getData("sources", msg.options.id);
+                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
+                    createDate: +(new Date),
+                    typeTask: "filtration",
+                    statusTask: msg.options.s,
+                    userLogin: "",
+                    userName: "",
+                    sourceID: msg.options.id,
+                    sourceName: sourceInfo.shortName,
+                    filteringOptions: {},
+                    parameters: {
+                        appTaskID: msg.options.tidapp,
+                        numDirectoryFiltration: msg.options.ndf,
+                        numAllFiles: msg.options.nfmfp,
+                        numProcessedFiles: msg.options.npf,
+                        numProcessedFilesError: msg.options.nepf,
+                        numFindFiles: msg.options.nffrf,
+                        sizeAllFiles: msg.options.sfmfp,
+                        sizeFindFiles: msg.options.sffrf,
+                    }
+                });
+ 
+                //отправляем модулю сет. взаимодействия запрос на получение информации по задаче
+                let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
+                if(conn !== null){               
+                    conn.sendMessage({
+                        msgType: "command",
+                        msgSection: "information search control",
+                        msgInstruction: "get all information by task ID",
+                        taskID: helpersFunc.getRandomHex(),
+                        options: { rtid: msg.options.tidapp },
+                    });
+                }
+            }
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
 
@@ -114,7 +151,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     taskID: msg.taskID,
                     taskIDModuleNI: msg.options.tidapp,
                     status: msg.options.s,
-                    fileParameter: {
+                    parameters: {
                         numAllFiles: msg.options.nfmfp,
                         numProcessedFiles: msg.options.npf,
                         numFindFiles: msg.options.nffrf,
@@ -164,16 +201,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
   routeSocketIo     ffi: {}
   routeSocketIo   }
   routeSocketIo } +0ms
- */
-            /*
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished",  false );
 
-            socketIo.emit("module NI API", { 
-                "type": "connectModuleNI",
-                "options": {
-                    "connectionStatus": false
-                },
-            });
 
             writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
             if (err) debug(err);
@@ -205,6 +233,25 @@ module.exports.modulesEventGenerator = function(socketIo) {
         }).on("information search control", (msg) => {
             debug("====== information search control =====");
             debug(JSON.stringify(msg));
+
+            /* при получении информации о задаче по ее ID проверяем 
+             надо ли востановить информацию о задаче в globalObject */
+            if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.taskID)){
+                if(globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID).typeTask === "filtration"){
+                    globalObject.modifyData("tasks", "networkInteractionTaskList", [
+                        [ "statusTask", msg.options.s ],
+                        [ "filteringOptions", {
+                            dateTime: {
+                                start: msg.options.tp.fo.dt.s,
+                                end: msg.options.tp.fo.dt.e
+                            },
+                            networkProtocol: msg.options.tp.fo.p,
+                            inputValue: msg.options.tp.fo.f,
+                        }],
+                    ]);
+                }
+            }
+            
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/

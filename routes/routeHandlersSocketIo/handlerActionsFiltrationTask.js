@@ -33,6 +33,16 @@ function startNewTask(socketIo, data){
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
+            
+            /**
+             * authData.document: {
+                userLogin: objData.userData.login,
+                userName: objData.userData.user_name,
+                userGroup: objData.userData.group,
+                groupSettings: objData.groupData,
+                userSettings: objData.userData.settings,
+            }
+             */
 
             let filtrTaskParametr = authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_filter.element_settings;
             //может ли пользователь создавать задачи на фильтрацию
@@ -40,17 +50,17 @@ function startNewTask(socketIo, data){
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
             }
 
-            return;
-        }).then(() => {
+            return { login: authData.document.userLogin, name: authData.document.name };
+        }).then((userInfo) => {
             let obj = (require("../../libs/processing/routeSocketIo/validationFileFilteringParameters"))(data.arguments);
             if(!obj.isValid){
                 throw new MyError("management validation", obj.errorMsg);
             }
 
-            return obj.filteringParameters;
-        }).then((filteringParameters) => {
+            return { userInfo: userInfo, filterParam: obj.filteringParameters };
+        }).then((parameters) => {
             //отправляем задачу модулю сетевого взаимодействия
-            return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(filteringParameters);
+            return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.login, parameters.name);
         }).then(() => {          
             showNotify({
                 socketIo: socketIo,

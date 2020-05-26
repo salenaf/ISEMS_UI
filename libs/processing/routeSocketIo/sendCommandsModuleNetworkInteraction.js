@@ -12,7 +12,7 @@ const globalObject = require("../../../configure/globalObject");
   * 
   * Выполняет добавление новых источников в базу данных модуля. 
   * 
-  * @param {*} - sourceList
+  * @param {*} sourceList - список источников
   */
 module.exports.sourceManagementsAdd = function(sourceList){
     return new Promise((resolve, reject) => {
@@ -60,15 +60,6 @@ module.exports.sourceManagementsAdd = function(sourceList){
                     taskID: hex,
                     options: { sl: list },
                 });
-
-                //добавляем новую задачу
-                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
-                    createDate: +(new Date),
-                    typeTask: "command",
-                    sectionTask: "source control",
-                    instructionTask: "add source list",
-                    source: sources,
-                });
             }    
 
             resolve();
@@ -82,7 +73,7 @@ module.exports.sourceManagementsAdd = function(sourceList){
   * 
   * Выполняет обновление информации об источнике в базе данных модуля. 
   * 
-  * @param {*} - sourceList
+  * @param {*} sourceList - список источников
   */
 module.exports.sourceManagementsUpdate = function(sourceList){
     return new Promise((resolve, reject) => {
@@ -130,15 +121,6 @@ module.exports.sourceManagementsUpdate = function(sourceList){
                     taskID: hex,
                     options: { sl: list },
                 });
-
-                //добавляем новую задачу
-                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
-                    createDate: +(new Date),
-                    typeTask: "command",
-                    sectionTask: "source control",
-                    instructionTask: "update source list",
-                    source: sources,
-                });
             }    
 
             resolve();
@@ -152,7 +134,7 @@ module.exports.sourceManagementsUpdate = function(sourceList){
   * 
   * Выполняет удаление источников из базы данных модуля. 
   * 
-  * @param {*} - sourceList
+  * @param {*} sourceList - список источников
   */
 module.exports.sourceManagementsDel = function(sourceList){
     return new Promise((resolve, reject) => {
@@ -187,15 +169,6 @@ module.exports.sourceManagementsDel = function(sourceList){
                     taskID: hex,
                     options: { sl: list },
                 });
-
-                //добавляем новую задачу
-                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
-                    createDate: +(new Date),
-                    typeTask: "command",
-                    sectionTask: "source control",
-                    instructionTask: "add source list",
-                    source: sources,
-                });
             }    
 
             resolve();
@@ -209,7 +182,7 @@ module.exports.sourceManagementsDel = function(sourceList){
   * 
   * Выполняет удаление источников из базы данных модуля. 
   * 
-  * @param {*} - sourceList
+  * @param {*} sourceList - список источников
   */
 module.exports.sourceManagementsReconnect = function(sourceList){
     return new Promise((resolve, reject) => {
@@ -278,9 +251,11 @@ module.exports.sourceManagementsReconnect = function(sourceList){
   *  
   * Осуществляет запуск задачи по фильтрации сет. трафика. 
   * 
-  * @param {*} - sourceList
+  * @param {*} filteringParameters - параметры фильтрации
+  * @param {*} userLogin - логин пользователя
+  * @param {*} userName - имя пользователя
   */
-module.exports.managementTaskFilteringStart = function(filteringParameters){
+module.exports.managementTaskFilteringStart = function(filteringParameters, userLogin, userName){
     console.log("func 'managementTaskFilteringStart'");
     console.log(filteringParameters);
  
@@ -300,8 +275,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters){
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не подключен.`));                                        
             }
 
-            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
             if(conn !== null){
                 let hex = helpersFunc.getRandomHex();
 
@@ -326,15 +300,39 @@ module.exports.managementTaskFilteringStart = function(filteringParameters){
             
                 conn.sendMessage(tmp);
 
-                //добавляем новую задачу
+                /* Формируем объект с информацией о задаче. Будет наполнятся
+                    при получении информации о ходе фильтрации от модуля сетевого
+                    взаимодействия. Может быть потерян при перезагрузки UI, но
+                    частично востановлен (все кроме логина и имени пользователя) при 
+                    получении инфор. о ходе фильтрации и отправке дополнительного запроса
+                    к модулю сетевого взаимодействия */
+                let sourceInfo = globalObject.getData("sources", filteringParameters.source);
                 globalObject.setData("tasks", "networkInteractionTaskList", hex, {
                     createDate: +(new Date),
-                    typeTask: "command",
-                    sectionTask: "filtration control",
-                    instructionTask: "to start filtering",
-                    moduleTaskID: "",
-                    source: filteringParameters.source,
-                    information: {},
+                    typeTask: "filtration",
+                    statusTask: "wait",
+                    userLogin: userLogin,
+                    userName: userName,
+                    sourceID: filteringParameters.source,
+                    sourceName: sourceInfo.shortName,
+                    filteringOptions: {
+                        dateTime: {
+                            start: filteringParameters.dateTime.start,
+                            end: filteringParameters.dateTime.end
+                        },
+                        networkProtocol: filteringParameters.networkProtocol,
+                        inputValue: filteringParameters.inputValue,
+                    },
+                    parameters: {
+                        appTaskID: "",
+                        numDirectoryFiltration: "",
+                        numAllFiles: 0,
+                        numProcessedFiles: 0,
+                        numProcessedFilesError: 0,
+                        numFindFiles: 0,
+                        sizeAllFiles: 0,
+                        sizeFindFiles: 0,
+                    }
                 });
             }    
 

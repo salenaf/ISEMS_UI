@@ -92,7 +92,7 @@ async.parallel([
                 }),
                 "connectionEstablished": false,
             });
-
+     
         //настраиваем хранилище задач выполняемые модулем
         globalObject.setData("tasks", "networkInteractionTaskList", {});
 
