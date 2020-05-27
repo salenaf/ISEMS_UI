@@ -123,7 +123,7 @@ async.parallel([
         port: config.get("httpServer:port"),
         host: config.get("httpServer:host")
     }, () => {
-    //формируем список источников в globalObject
+        //формируем список источников в globalObject
         require("./libs/management_settings/createSourceListForGlobalObject")()
             .then(() => {
                 return new Promise((resolve,reject) => {

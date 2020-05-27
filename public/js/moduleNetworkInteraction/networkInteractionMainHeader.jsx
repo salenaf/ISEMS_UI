@@ -44,6 +44,25 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.props.socketIo.on("module-ni:change sources connection", (data) => {
             this.setState({"widgets": data});
         });
+
+        //изменяем статус подключения источника для списка выбопа источника
+        this.props.socketIo.on("module-ni:change status source", (data) => {
+            let objCopy = Object.assign({}, this.state);
+            
+            console.log("received event 'module-ni:change status source'");
+            console.log(data);
+
+            for(let source in objCopy.listSources){
+                if(+data.options.sourceID === +source){
+                    objCopy.listSources[source].connectTime = data.options.connectTime;
+                    objCopy.listSources[source].connectStatus = data.options.connectStatus;
+
+                    this.setState(objCopy);
+
+                    break;
+                }
+            }
+        });
     }
 
     showModuleConnectionError(){

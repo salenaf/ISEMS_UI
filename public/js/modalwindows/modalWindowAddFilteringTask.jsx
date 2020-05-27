@@ -36,7 +36,7 @@ class CreateSourceList extends React.Component {
     }
 
     handlerDropDown(){
-        this.el = $("#dropdown_sources");
+        this.el = $("#dropdown_list_sources");
        
         this.el.select2({
             placeholder: "выбор источника",
@@ -51,18 +51,39 @@ class CreateSourceList extends React.Component {
         this.handlerDropDown.call(this);
     }
 
+    /*    componentDidUpdate(){
+
+        console.log("component did update");
+
+        this.handlerDropDown.call(this);
+    }*/
+
     getListSource(){
+
+        console.log("func 'getListSource', create source list...");
+
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
             let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
+
+            if(+sourceID > 3000 && +sourceID < 4007){
+                isDisabled = false;
+            }
+
+            if(sourceID == 1221){
+                console.log(`source id = ${sourceID}, status: '${this.props.listSources[sourceID].connectStatus}'`);
+            }
+
             return <option key={`key_sour_${this.props.listSources[sourceID].id}`} value={sourceID} disabled={isDisabled}>{`${sourceID} ${this.props.listSources[sourceID].shortName}`}</option>;
         });
     }
 
     render(){
         return (
-            <select id="dropdown_sources">
+            <select id="dropdown_list_sources">
                 <option></option>
-                {this.getListSource()}
+                <optgroup label="источники">
+                    {this.getListSource()}
+                </optgroup>
             </select>
         );
     }
@@ -476,13 +497,9 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="mt-2">
-                        <Col sm="12">
-                            <CreateSourceList 
-                                listSources={this.props.listSources}
-                                handlerChosen={this.handlerChosenSource} />                        
-                        </Col>
-                    </Row>
+                    <CreateSourceList 
+                        listSources={this.props.listSources}
+                        handlerChosen={this.handlerChosenSource} />
                     <CreateMainFields
                         showMainFields={this.state.showMainFields}
                         startDate={this.state.startDate}

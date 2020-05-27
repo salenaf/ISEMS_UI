@@ -19,6 +19,125 @@ const writeLogFile = require("../libs/writeLogFile");
 module.exports.modulesEventGenerator = function(socketIo) {
     let connModuleNetInteraction = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
+
+
+
+    /** ТЕСТОВЫЙ РАЗДЕЛ --- начало */
+    function testProcessFiltering(filePath, callback) {
+        console.log(`чтение файла: ${filePath}`);
+
+        const fs = require("fs");
+        const EventEmitter = require("events");
+
+        class MyEmitter extends EventEmitter {}
+
+        new Promise((resolve, reject) => {
+            fs.readFile(filePath, "utf8", (err, data) => {
+                if(err){
+                    reject(err);
+                }
+
+                resolve(data);
+            });
+        }).then((data) => {
+            let stringList = data.split("\n");
+
+            console.log(stringList.length);
+
+            let count = 0;
+            let listFilterProcess = [];
+            stringList.forEach((item) => {
+                if(item.length > 0){
+                    let objTmp = JSON.parse(item);
+
+                    //только для процесса фильтрации
+                    if(objTmp.instruction === "task processing" && (typeof objTmp.options.ffi !== "undefined")){
+                        count++;
+                        listFilterProcess.push(item);
+                    }
+                }
+            });
+
+            //console.log(data);
+
+            return { count: count, list: listFilterProcess };
+        }).then((obj) => {
+            const myEmitter = new MyEmitter();
+
+            let numInterval = 0;
+            let timerID = setInterval(() => {
+                if(numInterval === (obj.count - 1)){
+                    clearInterval(timerID);
+
+                    myEmitter.emit("finish", {});
+                }
+
+                console.log(`received next emit, num: ${numInterval}`);
+                //console.log(obj.list[numInterval]);
+
+                let objTmp = JSON.parse(obj.list[numInterval]);
+                myEmitter.emit("next emit", { 
+                    "type": "filtrationProcessing",
+                    "options": {
+                        sourceID: objTmp.options.id,
+                        name: "shortName",
+                        taskID: objTmp.taskID,
+                        taskIDModuleNI: objTmp.options.tidapp,
+                        status: objTmp.options.s,
+                        parameters: {
+                            numDirectoryFiltration: objTmp.options.ndf,
+                            numAllFiles: objTmp.options.nfmfp,
+                            numProcessedFiles: objTmp.options.npf,
+                            numProcessedFilesError: objTmp.options.nepf,
+                            numFindFiles: objTmp.options.nffrf,
+                            sizeAllFiles: objTmp.options.sfmfp,
+                            sizeFindFiles: objTmp.options.sffrf,
+                        },
+                    }});                    
+
+                numInterval++;
+            },500);
+
+            callback(null, { 
+                count: obj.count, 
+                list: obj.list,
+                myEmitter: myEmitter,
+            });
+        }).catch((err) => {
+            callback(err);
+        });
+    }
+
+    setTimeout(() => {
+        testProcessFiltering("/home/development/modul_api_interaction/information_response_1589542887119.txt", (err, obj) => {
+            debug("запуск тестовый функции");
+
+            obj.myEmitter.on("next emit", (data) => {
+    
+                //console.log(data);
+                socketIo.emit("module NI API", data);
+    
+            }).on("finish", () => {
+                debug(`received event 'finish' (${new Date})`);
+    
+            });
+        });
+    }, 3000);
+
+    setTimeout(() => {
+        testProcessFiltering("/home/development/modul_api_interaction/information_response_1590584597947.txt", (err, obj) => {
+            obj.myEmitter.on("next emit", (data) => {
+                socketIo.emit("module NI API", data);
+            }).on("finish", () => {
+                debug(`received event 'finish' (${new Date})`);    
+            });
+        });
+    }, 6000);
+    /** ТЕСТОВЫЙ РАЗДЕЛ --- окончание */
+
+
+
+
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
         .on("connect", (msg) => {
@@ -152,8 +271,10 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     taskIDModuleNI: msg.options.tidapp,
                     status: msg.options.s,
                     parameters: {
+                        numDirectoryFiltration: msg.options.ndf,
                         numAllFiles: msg.options.nfmfp,
                         numProcessedFiles: msg.options.npf,
+                        numProcessedFilesError: msg.options.nepf,
                         numFindFiles: msg.options.nffrf,
                         sizeAllFiles: msg.options.sfmfp,
                         sizeFindFiles: msg.options.sffrf,
