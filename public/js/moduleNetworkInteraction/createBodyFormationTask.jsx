@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import CreateBodyDynamics from "./createBodyDynamics.jsx";
 import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
+import ModalWindowShowTaskFiltraion from "../modalwindows/modalWindowShowTaskFiltraion.jsx";
 import ModalWindowListTaskDownloadFiles from "../modalwindows/modalWindowListTaskDownloadFiles.jsx";
 
 export default class CreateBodyFormationTask extends React.Component {
@@ -14,6 +15,11 @@ export default class CreateBodyFormationTask extends React.Component {
             connectionModuleNI: this.props.connectionModuleNI,
             showModalWindowFiltration: false,
             showModalWindowListDownload: false,
+            showModalWindowShowTaskFiltraion: false,
+            shortFilteringTaskInformation: { 
+                sourceID: 11111, 
+                sourceName: "тестовое название" 
+            },
         };
 
         this.handlerEvents.call(this);
@@ -24,6 +30,10 @@ export default class CreateBodyFormationTask extends React.Component {
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
+        this.handlerShowModalWindowShowTaskFiltraion = this.handlerShowModalWindowShowTaskFiltraion.bind(this);
+        this.handlerCloseModalWindowShowTaskFiltraion = this.handlerCloseModalWindowShowTaskFiltraion.bind(this);
+
+        this.handlerButtonStopFiltering = this.handlerButtonStopFiltering.bind(this);
     }
 
     handlerEvents(){
@@ -77,10 +87,13 @@ export default class CreateBodyFormationTask extends React.Component {
         this.handlerCloseModalWindowFiltration();
     }
 
+    handlerButtonStopFiltering(){
+        console.log("func 'handlerButtonStopFiltering', START...");
+    }
+
     handlerButtonSubmitWindowDownload(){
         console.log("func 'handlerButtonSubmitWindowDownload', START...");
     }
-
 
     handlerShowModalWindowFiltration(){
         this.setState({ showModalWindowFiltration: true });
@@ -96,6 +109,16 @@ export default class CreateBodyFormationTask extends React.Component {
 
     handlerCloseModalWindowListDownload(){
         this.setState({ showModalWindowListDownload: false });
+    }
+
+    handlerShowModalWindowShowTaskFiltraion(){
+        console.log("func 'handlerShowModalWindowShowTaskFiltraion', START...");
+
+        this.setState({ showModalWindowShowTaskFiltraion: true });
+    }
+
+    handlerCloseModalWindowShowTaskFiltraion(){
+        this.setState({ showModalWindowShowTaskFiltraion: false });
     }
 
     isDisabledFiltering(){
@@ -144,7 +167,9 @@ export default class CreateBodyFormationTask extends React.Component {
                         </Button>
                     </Col>
                 </Row>
-                <CreateBodyDynamics socketIo={this.props.socketIo} />
+                <CreateBodyDynamics 
+                    socketIo={this.props.socketIo}
+                    handlerShowModalWindowShowTaskFiltraion={this.handlerShowModalWindowShowTaskFiltraion} />
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}
@@ -154,6 +179,11 @@ export default class CreateBodyFormationTask extends React.Component {
                     show={this.state.showModalWindowListDownload}
                     onHide={this.handlerCloseModalWindowListDownload}
                     handlerButtonSubmit={this.handlerButtonSubmitWindowDownload} />
+                <ModalWindowShowTaskFiltraion 
+                    show={this.state.showModalWindowShowTaskFiltraion}
+                    onHide={this.handlerCloseModalWindowShowTaskFiltraion}
+                    shortTaskInfo={this.state.shortFilteringTaskInformation}
+                    handlerButtonStopFiltering={this.handlerButtonStopFiltering} />
             </React.Fragment>
         );
     }

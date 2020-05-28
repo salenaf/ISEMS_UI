@@ -35,29 +35,6 @@ class CreateSourceList extends React.Component {
         this.getListSource = this.getListSource.bind(this);
     }
 
-    handlerDropDown(){
-        this.el = $("#dropdown_list_sources");
-       
-        this.el.select2({
-            placeholder: "выбор источника",
-            containerCssClass: "input-group input-group-sm",
-            width: "100%",
-        });
-
-        this.el.on("change", this.props.handlerChosen);
-    }
-
-    componentDidMount() {
-        this.handlerDropDown.call(this);
-    }
-
-    /*    componentDidUpdate(){
-
-        console.log("component did update");
-
-        this.handlerDropDown.call(this);
-    }*/
-
     getListSource(){
 
         console.log("func 'getListSource', create source list...");
@@ -73,18 +50,25 @@ class CreateSourceList extends React.Component {
                 console.log(`source id = ${sourceID}, status: '${this.props.listSources[sourceID].connectStatus}'`);
             }
 
-            return <option key={`key_sour_${this.props.listSources[sourceID].id}`} value={sourceID} disabled={isDisabled}>{`${sourceID} ${this.props.listSources[sourceID].shortName}`}</option>;
+            return (
+                <option 
+                    key={`key_sour_${this.props.listSources[sourceID].id}`} 
+                    value={sourceID} 
+                    disabled={isDisabled} >
+                    {`${sourceID} ${this.props.listSources[sourceID].shortName}`}
+                </option>
+            );
         });
     }
 
     render(){
         return (
-            <select id="dropdown_list_sources">
-                <option></option>
-                <optgroup label="источники">
+            <Form.Group>
+                <Form.Control onChange={this.props.handlerChosen} as="select" size="sm" id="dropdown_list_sources">
+                    <option></option>
                     {this.getListSource()}
-                </optgroup>
-            </select>
+                </Form.Control>
+            </Form.Group>
         );
     }
 }
@@ -460,6 +444,10 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     handlerChosenSource(e){
+        
+        console.log("func 'handlerChosenSource'");
+        console.log(e);
+
         this.setState({
             showMainFields: true,
             source: +(e.target.value),
@@ -487,6 +475,7 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     render(){       
         return (
             <Modal
+                id="modal_create_task_filter"
                 size="lg"
                 show={this.props.show} 
                 onHide={this.windowClose}

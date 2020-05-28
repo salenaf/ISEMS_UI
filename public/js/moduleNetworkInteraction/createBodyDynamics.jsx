@@ -88,7 +88,7 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Card className="mb-3">
+                <Card className="mb-3" onClick={this.props.handlerShowModalWindowShowTaskFiltraion} >
                     {"1023 - Sensor MER (задача: скачивание файлов, это только примеры шаблонов)"}
                     <div className="pl-2 pr-2">
                         <ProgressBar now="65" label={"65%"}/>
@@ -115,4 +115,5 @@ export default class CreateBodyDynamics extends React.Component {
 
 CreateBodyDynamics.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    handlerShowModalWindowShowTaskFiltraion: PropTypes.func.isRequired,
 };
