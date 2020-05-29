@@ -39,3 +39,7 @@
 .clickable_icon:not(:disabled):not(.disabled):focus {
     opacity: .75;
 }
+
+.clicabe_cursor {
+    cursor: pointer;
+}

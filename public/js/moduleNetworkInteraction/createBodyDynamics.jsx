@@ -47,15 +47,9 @@ export default class CreateBodyDynamics extends React.Component {
     }
 
     createFiltrationWidget(){
-
-        /**
- * Нужно сделать формирование шаблона на сонове статуса задачи
- * усли статус "complete" то шаблон должен быть другой. 
- * 
- */
-
         var formatter = new Intl.NumberFormat("ru");
         let list = [];
+
         for(let pf in this.state.filtration){
             let numAllFiles = this.state.filtration[pf].parameters.numAllFiles;
             let numProcessedFiles = this.state.filtration[pf].parameters.numProcessedFiles;
@@ -72,7 +66,7 @@ export default class CreateBodyDynamics extends React.Component {
             }
 
             list.push(
-                <Card className="mb-3" key={`card_filter_${pf}`}>
+                <Card className="mb-3 clicabe_cursor" key={`card_filter_${pf}`}>
                     {`${this.state.filtration[pf].sourceID} - ${this.state.filtration[pf].name}`}
                     <div className="pl-2 pr-2">{progress}</div>
                     <small className="text-muted">
@@ -88,7 +82,7 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Card className="mb-3" onClick={this.props.handlerShowModalWindowShowTaskFiltraion} >
+                <Card className="mb-3 clicabe_cursor" onClick={this.props.handlerShowModalWindowShowTaskFiltraion} >
                     {"1023 - Sensor MER (задача: скачивание файлов, это только примеры шаблонов)"}
                     <div className="pl-2 pr-2">
                         <ProgressBar now="65" label={"65%"}/>
