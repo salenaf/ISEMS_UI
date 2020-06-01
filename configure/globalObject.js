@@ -18,25 +18,7 @@ class SocketioEventResponse extends EventEmitter {}
  *                  userLogin: логин пользователя,
  *                  userName: имя пользователя,
  *                  sourceID: id источника,
- *                  sourceName: название источника,
- *                  filteringOptions: {
- *                      dateTime: {
- *                          start: начало,
- *                          end: окончание
- *                      },
- *                      networkProtocol: протокол транспортного уровня,
- *                      inputValue: основные параметры фильтрации
- *                  },
- *                  parameters: {
- *                      appTaskID: "",
- *                      numDirectoryFiltration: "",
- *                      numAllFiles: 0,
- *                      numProcessedFiles: 0,
- *                      numProcessedFilesError: 0,
- *                      numFindFiles: 0,
- *                      sizeAllFiles: 0,
- *                      sizeFindFiles: 0,
- *                  }}},
+ *                  sourceName: название источника },
  *       параметры пользователя все из БД
  *       users: {
  *          userLogin: логин,

@@ -211,21 +211,11 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 //если задача с заданным ID существует, то есть UI не перезапускалась
                 globalObject.modifyData("tasks", "networkInteractionTaskList", [
                     [ "statusTask", msg.options.s ],
-                    [ "parameters", {
-                        appTaskID: msg.options.tidapp,
-                        numDirectoryFiltration: msg.options.ndf,
-                        numAllFiles: msg.options.nfmfp,
-                        numProcessedFiles: msg.options.npf,
-                        numProcessedFilesError: msg.options.nepf,
-                        numFindFiles: msg.options.nffrf,
-                        sizeAllFiles: msg.options.sfmfp,
-                        sizeFindFiles: msg.options.sffrf,
-                    } ],
                 ]);
             } else {
                 //если UI перезапускалась, востанавливаем информацию, всю кроме логина и имени пользователя
                 let sourceInfo = globalObject.getData("sources", msg.options.id);
-                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
+                globalObject.setData("tasks", "networkInteractionTaskList", msg.taskID, {
                     createDate: +(new Date),
                     typeTask: "filtration",
                     statusTask: msg.options.s,
@@ -233,30 +223,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     userName: "",
                     sourceID: msg.options.id,
                     sourceName: sourceInfo.shortName,
-                    filteringOptions: {},
-                    parameters: {
-                        appTaskID: msg.options.tidapp,
-                        numDirectoryFiltration: msg.options.ndf,
-                        numAllFiles: msg.options.nfmfp,
-                        numProcessedFiles: msg.options.npf,
-                        numProcessedFilesError: msg.options.nepf,
-                        numFindFiles: msg.options.nffrf,
-                        sizeAllFiles: msg.options.sfmfp,
-                        sizeFindFiles: msg.options.sffrf,
-                    }
                 });
- 
-                //отправляем модулю сет. взаимодействия запрос на получение информации по задаче
-                let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
-                if(conn !== null){               
-                    conn.sendMessage({
-                        msgType: "command",
-                        msgSection: "information search control",
-                        msgInstruction: "get all information by task ID",
-                        taskID: helpersFunc.getRandomHex(),
-                        options: { rtid: msg.options.tidapp },
-                    });
-                }
             }
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
@@ -355,24 +322,35 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("====== information search control =====");
             debug(JSON.stringify(msg));
 
+            let typeTask = "не определен",
+                statusTask = "не определен",
+                userLogin = "не определен",
+                userName = "не определен";
+
+
             /* при получении информации о задаче по ее ID проверяем 
              надо ли востановить информацию о задаче в globalObject */
             if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.taskID)){
-                if(globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID).typeTask === "filtration"){
-                    globalObject.modifyData("tasks", "networkInteractionTaskList", [
-                        [ "statusTask", msg.options.s ],
-                        [ "filteringOptions", {
-                            dateTime: {
-                                start: msg.options.tp.fo.dt.s,
-                                end: msg.options.tp.fo.dt.e
-                            },
-                            networkProtocol: msg.options.tp.fo.p,
-                            inputValue: msg.options.tp.fo.f,
-                        }],
-                    ]);
-                }
+                let taskInfo = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);
+                typeTask = taskInfo.typeTask;
+                statusTask = taskInfo.statusTask;
+                userLogin = taskInfo.userLogin;
+                userName = taskInfo.userName;
             }
             
+            //формируем сообщение о выполнении процесса фильтрации
+            socketIo.emit("module NI API", { 
+                "type": "processingGetAllInformationByTaskID",
+                "options": {
+                    typeTask: typeTask,
+                    statusTask: statusTask,
+                    userLogin: userLogin,
+                    userName: userName,
+                    status: msg.options.s,
+                    taskParameter: msg.options.tp,
+                }
+            });
+
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/
@@ -452,4 +430,7 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
 
     /* --- УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ ФАЙЛОВ --- */
     require("./routeHandlersSocketIo/handlerActionsFiltrationTask").addHandlers(socketIo);
+
+    /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ О ЗАДАЧАХ ВЫПОЛНЯЕМЫХ МОДУЛЕМ СЕТЕВОГО ВЗАИМОДЕЙСТВИЯ --- */
+    require("./routeHandlersSocketIo/networkInteractionHandlerRequestShowTaskInfo").addHandlers(socketIo);
 };

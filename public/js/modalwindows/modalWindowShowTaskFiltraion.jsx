@@ -9,14 +9,47 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
         super(props);
 
         this.state = {
-            sourceID: this.props.shortTaskInfo.sourceID,
-            sourceName: this.props.shortTaskInfo.sourceName,
-            dateCreateTask: +(new Date), //так только для теста
-
+            showInfo: false,
+            parametersFiltration: {},
+            filteringStatus: {
+                dateCreateTask: 0,
+                dateFinishTask: 0,
+            },
+            downloadingStatus: {}
         };
+
+        this.handlerEvents.call(this);
     }
 
-    render(){
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (msg) => {
+            if(msg.type === "processingGetAllInformationByTaskID"){
+                console.log(msg.options);
+
+                this.setState({
+                    showInfo: true,
+                    parametersFiltration: {},
+                    filteringStatus: {
+                        dateCreateTask: 0,
+                        dateFinishTask: 0,
+                    },
+                    downloadingStatus: {}
+                });
+            }
+        });
+    }
+
+    createModalBody(){
+        if(!this.state.showInfo){
+            return (
+                <div className="col-md-12 text-center">
+                    <Spinner animation="border" role="status" variant="primary">
+                        <span className="sr-only">Загрузка...</span>
+                    </Spinner>
+                </div>
+            );
+        }
+
         let formatter = Intl.DateTimeFormat("ru-Ru", {
             timeZone: "Europe/Moscow",
             day: "numeric",
@@ -26,14 +59,35 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             minute: "numeric",
         });
 
-        /**
- * 
- * Доделать модельное окно с информацией о выполняемой
- * задачи с расчетом что данное модальное окно будет
- * выводится еще и при поиске
- * 
- */
+        return (
+            <React.Fragment>
+                <Row>
+                    <Col>Задача по фильтрации</Col>
+                </Row>
+                <Row>
+                    <Col sm="6" className="mt-0 text-muted">
+                        <small>задание добавлено: {formatter.format(this.state.dateCreateTask)}</small>
+                    </Col>
+                    <Col sm="6" className="mt-0 text-muted">
+                        <small>завершено: {formatter.format(this.state.dateFinishTask)}</small>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="6" className="text-muted">
+                        <small>параметры
+                        </small></Col>
+                    <Col sm="6" className="text-muted">
+                        <small>ход выполнения</small>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>Задача по скачиванию файлов</Col>
+                </Row>
+            </React.Fragment>
+        );
+    }
 
+    render(){
         return (
             <Modal
                 size="lg"
@@ -42,30 +96,15 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                 aria-labelledby="example-modal-sizes-title-lg" >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Источник №{this.state.sourceID} ({this.state.sourceName})</h5>
+                        <h5>Источник №{this.props.shortTaskInfo.sourceID} ({this.props.shortTaskInfo.sourceName})</h5>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row>
-                        <Col className="text-center mt-0 text-muted">
-                            <small>задание добавлено {formatter.format(this.state.dateCreateTask)}</small>
-                        </Col>
-                    </Row>
-                    <Row></Row>
-                    <Row>
-                        <Col sm="6">Параметры фильтрации</Col>
-                        <Col sm="6">Ход выполнения фильтрации</Col>
-                    </Row>
-
-                    <div className="col-md-12 text-center">
-                        <Spinner animation="border" role="status" variant="primary">
-                            <span className="sr-only">Загрузка...</span>
-                        </Spinner>
-                    </div>
+                    {this.createModalBody.call(this)}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-danger" onClick={this.props.handlerButtonStopFiltering} size="sm">
-                        отменить
+                        остановить задачу
                     </Button>
                     <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
                         закрыть
@@ -81,4 +120,5 @@ ModalWindowShowTaskFiltraion.propTypes = {
     onHide: PropTypes.func.isRequired,
     shortTaskInfo: PropTypes.object.isRequired,
     handlerButtonStopFiltering: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
 };

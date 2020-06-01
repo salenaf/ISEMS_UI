@@ -11,17 +11,14 @@ export default class CreateBodyDynamics extends React.Component {
             "download": {},
         };
 
-        this.handlerEvents.call(this);
-
         this.deleteItemByTimeout = this.deleteItemByTimeout.bind(this);
+
+        this.handlerEvents.call(this);
     }
 
+    //для удаление виджитов по мере завершения задач
     deleteItemByTimeout(typeProcessing, id){
-        console.log("func 'deleteItemByTimeout', START...");
-
         setTimeout(() => {
-            console.log("delete ---");
-
             let objCopy = Object.assign({}, this.state);
 
             delete(objCopy[typeProcessing][id]);
@@ -46,6 +43,20 @@ export default class CreateBodyDynamics extends React.Component {
         });
     }
 
+    showModalWindow(objInfo){
+        this.props.handlerModalWindowShowTaskTnformation(objInfo);
+        this.sendRequestShowInfo.call(this, objInfo.taskID);
+    }
+
+    sendRequestShowInfo(taskID){
+        console.log("func 'sendRequestShowInfo', START");
+        console.log("send request task info");
+
+        this.props.socketIo.emit("network interaction: show info about all task", {
+            arguments: { taskID: taskID } 
+        });
+    }
+
     createFiltrationWidget(){
         var formatter = new Intl.NumberFormat("ru");
         let list = [];
@@ -65,8 +76,17 @@ export default class CreateBodyDynamics extends React.Component {
                 progress = <span className="text-success">фильтрация сетевого трафика завершена</span>;
             }
 
+            let objInfo = {
+                sourceID: this.state.filtration[pf].sourceID, 
+                sourceName: this.state.filtration[pf].name,
+                taskID: this.state.filtration[pf].taskIDModuleNI,
+            };
+
             list.push(
-                <Card className="mb-3 clicabe_cursor" key={`card_filter_${pf}`}>
+                <Card 
+                    className="mb-3 clicabe_cursor" 
+                    key={`card_filter_${pf}`}
+                    onClick={this.showModalWindow.bind(this, objInfo)} >
                     {`${this.state.filtration[pf].sourceID} - ${this.state.filtration[pf].name}`}
                     <div className="pl-2 pr-2">{progress}</div>
                     <small className="text-muted">
@@ -82,7 +102,7 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Card className="mb-3 clicabe_cursor" onClick={this.props.handlerShowModalWindowShowTaskFiltraion} >
+                <Card className="mb-3 clicabe_cursor" onClick={this.showModalWindow.bind(this, { sourceID: 1023, sourceName: "Sensor MER", taskID: "eb6f7ba872a1b4684edb70aed2b177ff" })} >
                     {"1023 - Sensor MER (задача: скачивание файлов, это только примеры шаблонов)"}
                     <div className="pl-2 pr-2">
                         <ProgressBar now="65" label={"65%"}/>
@@ -109,5 +129,5 @@ export default class CreateBodyDynamics extends React.Component {
 
 CreateBodyDynamics.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    handlerShowModalWindowShowTaskFiltraion: PropTypes.func.isRequired,
+    handlerModalWindowShowTaskTnformation: PropTypes.func.isRequired,
 };

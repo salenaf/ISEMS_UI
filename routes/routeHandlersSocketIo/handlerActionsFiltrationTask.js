@@ -33,16 +33,6 @@ function startNewTask(socketIo, data){
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
-            
-            /**
-             * authData.document: {
-                userLogin: objData.userData.login,
-                userName: objData.userData.user_name,
-                userGroup: objData.userData.group,
-                groupSettings: objData.groupData,
-                userSettings: objData.userData.settings,
-            }
-             */
 
             let filtrTaskParametr = authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_filter.element_settings;
             //может ли пользователь создавать задачи на фильтрацию

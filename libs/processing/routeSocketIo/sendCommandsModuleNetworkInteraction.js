@@ -315,25 +315,46 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                     userName: userName,
                     sourceID: filteringParameters.source,
                     sourceName: sourceInfo.shortName,
-                    filteringOptions: {
-                        dateTime: {
-                            start: filteringParameters.dateTime.start,
-                            end: filteringParameters.dateTime.end
-                        },
-                        networkProtocol: filteringParameters.networkProtocol,
-                        inputValue: filteringParameters.inputValue,
-                    },
-                    parameters: {
-                        appTaskID: "",
-                        numDirectoryFiltration: "",
-                        numAllFiles: 0,
-                        numProcessedFiles: 0,
-                        numProcessedFilesError: 0,
-                        numFindFiles: 0,
-                        sizeAllFiles: 0,
-                        sizeFindFiles: 0,
-                    }
                 });
+            }    
+
+            resolve();
+        });
+    }); 
+};
+
+/** ---  УПРАВЛЕНИЕ ЗАПРОСАМИ ДЛЯ ПОЛУЧЕНИЯ ИНФОРМАЦИИ О ЗАДАЧАХ --- **/
+
+/**
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * запрос всей информации о задаче по ее ID.
+  *  
+  * @param {*} taskID - ID задачи по которой нужно найти информацию
+  */
+module.exports.managementRequestShowTaskAllInfo = function(taskID){
+    console.log("func 'managementRequestShowTaskAllInfo'");
+    console.log(`ID задачи по которой нужно найти информацию '${taskID}'`);
+ 
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {          
+            if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
+            if(conn !== null){
+                let tmp = {
+                    msgType: "command",
+                    msgSection: "information search control",
+                    msgInstruction: "get all information by task ID",
+                    taskID: helpersFunc.getRandomHex(),
+                    options: { rtid: taskID }
+                };
+
+                console.log("---------- forming Request ----------");
+                console.log(JSON.stringify(tmp));
+            
+                conn.sendMessage(tmp);
             }    
 
             resolve();

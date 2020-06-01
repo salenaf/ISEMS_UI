@@ -15,10 +15,11 @@ export default class CreateBodyFormationTask extends React.Component {
             connectionModuleNI: this.props.connectionModuleNI,
             showModalWindowFiltration: false,
             showModalWindowListDownload: false,
-            showModalWindowShowTaskFiltraion: false,
-            shortFilteringTaskInformation: { 
-                sourceID: 11111, 
-                sourceName: "тестовое название" 
+            showModalWindowShowTaskInformation: false,
+            shortTaskInformation: { 
+                sourceID: 0, 
+                sourceName: "",
+                taskID: "",
             },
         };
 
@@ -26,12 +27,13 @@ export default class CreateBodyFormationTask extends React.Component {
 
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerButtonSubmitWindowDownload = this.handlerButtonSubmitWindowDownload.bind(this);
+        this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
+        this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
+        this.handlerCloseModalWindowShowTaskInformation = this.handlerCloseModalWindowShowTaskInformation.bind(this);
         this.handlerShowModalWindowFiltration = this.handlerShowModalWindowFiltration.bind(this);
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
-        this.handlerShowModalWindowShowTaskFiltraion = this.handlerShowModalWindowShowTaskFiltraion.bind(this);
-        this.handlerCloseModalWindowShowTaskFiltraion = this.handlerCloseModalWindowShowTaskFiltraion.bind(this);
 
         this.handlerButtonStopFiltering = this.handlerButtonStopFiltering.bind(this);
     }
@@ -111,14 +113,22 @@ export default class CreateBodyFormationTask extends React.Component {
         this.setState({ showModalWindowListDownload: false });
     }
 
-    handlerShowModalWindowShowTaskFiltraion(){
-        console.log("func 'handlerShowModalWindowShowTaskFiltraion', START...");
+    handlerModalWindowShowTaskTnformation(data){
+        let objCopy = Object.assign({}, this.state);
+        objCopy.shortTaskInformation.sourceID = data.sourceID;
+        objCopy.shortTaskInformation.sourceName = data.sourceName;
+        objCopy.shortTaskInformation.taskID = data.taskID;
+        this.setState(objCopy);
 
-        this.setState({ showModalWindowShowTaskFiltraion: true });
+        this.handlerShowModalWindowShowTaskInformation();
     }
 
-    handlerCloseModalWindowShowTaskFiltraion(){
-        this.setState({ showModalWindowShowTaskFiltraion: false });
+    handlerShowModalWindowShowTaskInformation(){
+        this.setState({ showModalWindowShowTaskInformation: true });
+    }
+
+    handlerCloseModalWindowShowTaskInformation(){
+        this.setState({ showModalWindowShowTaskInformation: false });
     }
 
     isDisabledFiltering(){
@@ -169,7 +179,7 @@ export default class CreateBodyFormationTask extends React.Component {
                 </Row>
                 <CreateBodyDynamics 
                     socketIo={this.props.socketIo}
-                    handlerShowModalWindowShowTaskFiltraion={this.handlerShowModalWindowShowTaskFiltraion} />
+                    handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} />
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}
@@ -180,9 +190,10 @@ export default class CreateBodyFormationTask extends React.Component {
                     onHide={this.handlerCloseModalWindowListDownload}
                     handlerButtonSubmit={this.handlerButtonSubmitWindowDownload} />
                 <ModalWindowShowTaskFiltraion 
-                    show={this.state.showModalWindowShowTaskFiltraion}
-                    onHide={this.handlerCloseModalWindowShowTaskFiltraion}
-                    shortTaskInfo={this.state.shortFilteringTaskInformation}
+                    show={this.state.showModalWindowShowTaskInformation}
+                    onHide={this.handlerCloseModalWindowShowTaskInformation}
+                    socketIo={this.props.socketIo}
+                    shortTaskInfo={this.state.shortTaskInformation}
                     handlerButtonStopFiltering={this.handlerButtonStopFiltering} />
             </React.Fragment>
         );
