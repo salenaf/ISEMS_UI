@@ -27,6 +27,8 @@ module.exports.addHandlers = function(socketIo) {
 function startNewTask(socketIo, data){
     let funcName = " (func 'startNewTask')";
 
+    debug(data);
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -49,6 +51,9 @@ function startNewTask(socketIo, data){
 
             return { userInfo: userInfo, filterParam: obj.filteringParameters };
         }).then((parameters) => {
+
+            debug(parameters);
+
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.login, parameters.name);
         }).then(() => {          

@@ -405,6 +405,11 @@ export default class ModalWindowAddFilteringTask extends React.Component {
             startDate: new Date(),
             endDate: new Date(),
             networkProtocol: "any",
+            inputValue: {
+                ip: { any: [], src: [], dst: [] },
+                pt: { any: [], src: [], dst: [] },
+                nw: { any: [], src: [], dst: [] },
+            },
         });
 
         this.props.onHide();
@@ -434,6 +439,10 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     handlerButtonSubmit(){
+
+        console.log("func 'handlerButtonSubmit'");
+        console.log(`networkProtocol: ${this.state.networkProtocol}`);
+
         this.props.handlerButtonSubmit({
             source: this.state.source,
             startDate: this.state.startDate,
@@ -441,6 +450,8 @@ export default class ModalWindowAddFilteringTask extends React.Component {
             networkProtocol: this.state.networkProtocol,
             inputValue: this.state.inputValue,
         });
+
+        this.windowClose();
     }
 
     handlerChosenSource(e){

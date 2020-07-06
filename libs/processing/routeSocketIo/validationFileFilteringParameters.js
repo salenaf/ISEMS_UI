@@ -99,7 +99,7 @@ module.exports = function(filteringParameters) {
                 start: Math.trunc(+filteringParameters.dateTime.start / 1000),
                 end: Math.trunc(+filteringParameters.dateTime.end / 1000),
             },
-            networkProtocol: ((filteringParameters.networkProtocol !== "tcp") || (filteringParameters.networkProtocol !== "udp")) ? "any": filteringParameters.networkProtocol,
+            networkProtocol: ((filteringParameters.networkProtocol === "tcp") || (filteringParameters.networkProtocol === "udp")) ? filteringParameters.networkProtocol : "any",
             inputValue: newInputValue,
         }, 
         isValid: true, 

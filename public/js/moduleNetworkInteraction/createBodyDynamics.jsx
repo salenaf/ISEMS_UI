@@ -36,7 +36,7 @@ export default class CreateBodyDynamics extends React.Component {
 
                 this.setState(objCopy);
 
-                if(msg.options.status === "complete"){
+                if((msg.options.status === "complete") || (msg.options.status === "refused")){
                     this.deleteItemByTimeout("filtration", msg.options.taskID);
                 }
             }
@@ -75,6 +75,21 @@ export default class CreateBodyDynamics extends React.Component {
             if(this.state.filtration[pf].status === "complete"){
                 progress = <span className="text-success">фильтрация сетевого трафика завершена</span>;
             }
+            if(this.state.filtration[pf].status === "refused"){
+                list.push(
+                    <Card 
+                        className="mb-3 clicabe_cursor" 
+                        key={`card_filter_${pf}`}
+                        onClick={this.showModalWindow.bind(this, objInfo)} >
+                        {`${this.state.filtration[pf].sourceID} - ${this.state.filtration[pf].name}`}
+                        <div className="pl-2 pr-2">
+                            <span className="text-danger">Задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</span>
+                        </div>
+                    </Card>
+                );
+
+                continue;
+            }            
 
             let objInfo = {
                 sourceID: this.state.filtration[pf].sourceID, 

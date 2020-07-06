@@ -68,7 +68,7 @@ export default class CreateBodyFormationTask extends React.Component {
             return isEmpty;
         };
 
-        //проверяем наличие хотябы одного параметра в inputValue
+        //проверяем наличие хотя бы одного параметра в inputValue
         if(checkExistInputValue()){
             return;
         }
