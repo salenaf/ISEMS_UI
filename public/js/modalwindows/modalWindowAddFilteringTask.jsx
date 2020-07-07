@@ -273,7 +273,7 @@ class CreateMainFields extends React.Component {
                         <Badge variant="dark">сеть</Badge>
                     </Col>
                     <Col sm="1" className="text-danger text-center">&laquo;И&raquo;</Col>
-                    <Col sm="3" className="text-center">
+                    <Col sm="4" className="text-center">
                         <Badge  variant="dark">сетевой порт</Badge>
                     </Col>
                 </Row>

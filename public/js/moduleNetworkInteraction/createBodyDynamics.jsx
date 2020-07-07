@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Card, ProgressBar, Row, Button, Tab, Tabs } from "react-bootstrap";
+import { Card, ProgressBar } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateBodyDynamics extends React.Component {
@@ -58,7 +58,7 @@ export default class CreateBodyDynamics extends React.Component {
     }
 
     createFiltrationWidget(){
-        var formatter = new Intl.NumberFormat("ru");
+        let formatter = new Intl.NumberFormat("ru");
         let list = [];
 
         for(let pf in this.state.filtration){
