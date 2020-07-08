@@ -42,14 +42,6 @@ class CreateSourceList extends React.Component {
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
             let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
 
-            if(+sourceID > 3000 && +sourceID < 4007){
-                isDisabled = false;
-            }
-
-            if(sourceID == 1221){
-                console.log(`source id = ${sourceID}, status: '${this.props.listSources[sourceID].connectStatus}'`);
-            }
-
             return (
                 <option 
                     key={`key_sour_${this.props.listSources[sourceID].id}`} 

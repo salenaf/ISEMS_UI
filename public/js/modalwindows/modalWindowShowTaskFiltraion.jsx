@@ -1,8 +1,10 @@
 "use strict";
 
 import React from "react";
-import { Badge, Button, Card, Col, Modal, Row, Spinner } from "react-bootstrap";
+import { Badge, Button, Card, Col, Modal, Row, Spinner, ProgressBar } from "react-bootstrap";
 import PropTypes from "prop-types";
+
+import Circle from "react-circle";
 
 /**
  * Типовое модальное окно для вывода всей информации о выполняемой задаче
@@ -16,6 +18,8 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
 
         this.state = {
             showInfo: false,
+            listTasksProcess: {},
+            
             parametersFiltration: {
                 dt: {s:0, e:0},
                 f: {
@@ -35,10 +39,41 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             }
         };
 
+        /**
+ *                      !!!!!!
+ * Необходимо передалать свойство parametersFiltration
+ * основываясь на том что, одновременно выполняемых задач 
+ * будет много. А сейчас две задачи перезаписываю
+ * одни и теже данные. 
+ * 
+ */
+
         this.getListNetworkParameters = this.getListNetworkParameters.bind(this);
         this.getInformationProgressFiltration = this.getInformationProgressFiltration.bind(this);
 
         this.handlerEvents.call(this);
+    }
+
+    testProgressBar(){
+        /*
+        console.log(`before: ${this.state.filteringStatus.mpf}`);
+
+        let copy = Object.assign(this.state.filteringStatus);
+        copy.mpf = 0;
+        this.setState({filteringStatus: copy});
+
+        console.log(`after ${this.state.filteringStatus.mpf}`);
+*/
+        let numInterval = 0;
+        let timerID = setInterval(() => {
+            if(numInterval === (this.state.filteringStatus.mpf - 1)){
+                clearInterval(timerID);
+            }
+
+            let copy = Object.assign(this.state.filteringStatus);
+            copy.mpf = numInterval++;
+            this.setState({filteringStatus: copy});
+        }, 3000);
     }
 
     handlerEvents(){
@@ -53,6 +88,26 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                     filteringStatus: msg.options.taskParameter.diof,
                     downloadingStatus: msg.options.taskParameter.diod,
                 });
+
+                //this.testProgressBar.call(this);
+                /*let copy = this.state.downloadingStatus;//.nft
+                copy.nft = 30;
+                copy.nfd = 3;
+                copy.pdsdf = "/home/ISEMS_NIH_master/ISEMS_NIH_master_RAW/1221-Test_sensor_1221/2019/June/17/17.06.2019T00:00-18.06.2019T23:00_fb7033262f52a10793187ebf6cb043b9";
+                this.setState({ downloadingStatus: copy });*/
+            }
+            if(msg.type === "filtrationProcessing"){
+                console.log(msg.options);
+
+                let tmpCopy = Object.assign(this.state.filteringStatus);
+                tmpCopy.nfmfp = msg.options.parameters.numAllFiles;
+                tmpCopy.nffrf = msg.options.parameters.numFindFiles;
+                tmpCopy.mpf = msg.options.parameters.numProcessedFiles;
+                tmpCopy.nepf = msg.options.parameters.numProcessedFilesError;
+                tmpCopy.sfmfp = msg.options.parameters.sizeAllFiles;
+                tmpCopy.sffrf = msg.options.parameters.sizeFindFiles;
+                tmpCopy.ts = msg.options.status;
+                this.setState({ filteringStatus: tmpCopy });
             }
         });
     }
@@ -99,58 +154,133 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
     }
 
     getInformationProgressFiltration(){
-        let taskStatus = "";
-        let ts = this.state.filteringStatus.ts;
-        var formatter = new Intl.NumberFormat("ru");
-
-        if(ts === "wait"){
-            taskStatus = <small className="text-info">готовится к выполнению</small>;
+        if(this.state.filteringStatus.nfmfp === 0){
+            return;
         }
-        if(ts === "refused"){
-            taskStatus = <small className="text-danger">oтклонена</small>;
-        }
-        if(ts === "execute"){
-            taskStatus = <small className="text-primary">выполняется</small>;
-        }
-        if(ts === "complete"){
-            taskStatus = <small className="text-success">завершена успешно</small>;
-        }
-        if(ts === "stop"){
-            taskStatus = <small className="text-warning">остановлена пользователем</small>;
-        }
+        
+        let formatter = new Intl.NumberFormat("ru");
 
         return (
             <React.Fragment>
-                <Row className="mb-n2">
-                    <Col md={6}><small>статус задачи:</small></Col>
-                    <Col md={6} className="text-center">{taskStatus}</Col>
-                </Row>
-                <Row className="mb-n2">
-                    <Col md={6}><small>всего файлов:</small></Col>
-                    <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nfmfp}</strong> шт.</small></Col>
-                </Row>
-                <Row className="mb-n2">
-                    <Col md={6}><small>общим размером:</small></Col>
-                    <Col md={6} className="text-right"><small><strong>{formatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
-                </Row>
-                <Row className="mb-n2">
-                    <Col md={6}><small>файлов обработанно:</small></Col>
-                    <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.mpf}</strong> шт.</small></Col>
-                </Row>
-                <Row className="mb-n2">
-                    <Col md={6}><small>файлов найдено:</small></Col>
-                    <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nffrf}</strong> шт.</small></Col>
-                </Row>
-                <Row className="mb-n2">
-                    <Col md={6}><small>общим размером:</small></Col>
-                    <Col md={6} className="text-right"><small><strong>{formatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
+                <Row>
+                    <Col md={12} className="text-muted mt-0">
+                        <small>ход выполнения</small>
+                    </Col>
                 </Row>
                 <Row>
-                    <Col md={6}><small>фильтруемых директорий:</small></Col>
-                    <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.ndf}</strong> шт.</small></Col>
+                    <Col md={12} className="text-muted">
+                        <Card>
+                            <Card.Body className="pt-0 pb-0">
+                                <Row>
+                                    <Col md={8} className="text-muted">                                
+                                        <Row className="mb-n2">
+                                            <Col md={6}><small>всего файлов:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nfmfp}</strong> шт.</small></Col>
+                                        </Row>
+                                        <Row className="mb-n2">
+                                            <Col md={6}><small>общим размером:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{formatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
+                                        </Row>
+                                        <Row className="mb-n2">
+                                            <Col md={6}><small>файлов обработанно:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.mpf}</strong> шт.</small></Col>
+                                        </Row>
+                                        <Row className="mb-n2">
+                                            <Col md={6}><small>файлов обработанно с ошибкой:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nepf}</strong> шт.</small></Col>
+                                        </Row>
+                                        <Row className="mb-n2">
+                                            <Col md={6}><small>файлов найдено:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nffrf}</strong> шт.</small></Col>
+                                        </Row>
+                                        <Row className="mb-n2">
+                                            <Col md={6}><small>общим размером:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{formatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md={6}><small>фильтруемых директорий:</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.ndf}</strong> шт.</small></Col>
+                                        </Row>
+                                    </Col>
+                                    <Col md={4} className="mt-3 text-center">
+                                        {this.createCircleProcessFilter.call(this)}
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
             </React.Fragment>
         );
+    }
+
+    getInformationProgressDownload(){
+    /**
+    // NumberFilesTotal - общее количество файлов подлежащих скачиванию
+// NumberFilesDownloaded - количество уже загруженных файлов
+// NumberFilesDownloadedError - количество файлов загруженных с ошибкой
+     */
+
+        if(this.state.filteringStatus.nffrf === 0){
+            return;
+        }
+
+        let percent = Math.round((this.state.downloadingStatus.nfd*100) / this.state.downloadingStatus.nft);
+
+        return (<React.Fragment>
+            <Row>
+                <Col md={12} className="text-muted">
+                    <small>
+                        общее количество файлов подлежащих скачиванию: <strong>{this.state.downloadingStatus.nft}</strong>, 
+                        загруженных файлов: <strong>{this.state.downloadingStatus.nfd}</strong>, 
+                        из них с ошибкой: <strong>{this.state.downloadingStatus.nfde}</strong>
+                    </small>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12}>
+                    <ProgressBar now={percent} label={`${percent}%`} />
+                </Col>
+            </Row>
+        </React.Fragment>);
+    }
+
+    getStatusFiltering(){
+        let ts = this.state.filteringStatus.ts;
+    
+        if(ts === "wait"){
+            return <small className="text-info">готовится к выполнению</small>;
+        } else if(ts === "refused"){
+            return <small className="text-danger">oтклонена</small>;
+        } else if(ts === "execute"){
+            return <small className="text-primary">выполняется</small>;
+        } else if(ts === "complete"){
+            return <small className="text-success">завершена успешно</small>;
+        } else if(ts === "stop"){
+            return <small className="text-warning">остановлена пользователем</small>;
+        } else {
+            return <small>ts</small>;
+        }
+    }
+
+    getStatusDownload(){
+        let ts = this.state.downloadingStatus.ts;
+    
+        if(ts === "wait"){
+            return <small className="text-info">готовится к выполнению</small>;
+        } else if(ts === "refused"){
+            return <small className="text-danger">oтклонена</small>;
+        } else if(ts === "execute"){
+            return <small className="text-primary">выполняется</small>;       
+        } else if(ts === "complete"){
+            return <small className="text-success">завершена успешно</small>;       
+        } else if(ts === "stop"){
+            return <small className="text-warning">остановлена пользователем</small>;
+        } else if(ts === "not executed"){
+            return <small className="text-light bg-dark">не выполнялась</small>;
+        } else {
+            return <small>ts</small>;
+        }
     }
 
     createNetworkParameters(){
@@ -179,6 +309,59 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
         );
     }
 
+    createCircleProcessFilter() {
+        let percent = (this.state.filteringStatus.mpf*100) / this.state.filteringStatus.nfmfp;
+
+        return (<Circle
+            progress={Math.round(percent)}
+            animate={true} // Boolean: Animated/Static progress
+            animationDuration="1s" // String: Length of animation
+            responsive={false} // Boolean: Make SVG adapt to parent size
+            size="125" // String: Defines the size of the circle.
+            lineWidth="35" // String: Defines the thickness of the circle's stroke.
+            progressColor="rgb(76, 154, 255)" // String: Color of "progress" portion of circle.
+            bgColor="#ecedf0" // String: Color of "empty" portion of circle.
+            textColor="#6b778c" // String: Color of percentage text color.
+            textStyle={{
+                font: "bold 4rem Helvetica, Arial, sans-serif" // CSSProperties: Custom styling for percentage.
+            }}
+            percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
+            roundedStroke={false} // Boolean: Rounded/Flat line ends
+            showPercentage={true} // Boolean: Show/hide percentage.
+            showPercentageSymbol={true} // Boolean: Show/hide only the "%" symbol.
+        />);
+    }
+
+    createPathDirFilterFiles(){
+        if(this.state.filteringStatus.nfmfp === 0){
+            return;
+        }
+
+        return (<Row className="text-center text-muted">                   
+            <Col md={12}>
+                <small>директория содержащая файлы полученные в результате фильтрации</small>
+            </Col>
+            <Col md={12} className="mt-n2">
+                <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
+            </Col>
+        </Row>);
+    }
+
+    createPathDirStorageFiles(){
+        if(this.state.downloadingStatus.nfd === 0){
+            return;
+        }
+
+        return (<Row className="text-center text-muted">                   
+            <Col md={12}>
+                <small>директория для долговременного хранения загруженных файлов</small>
+            </Col>
+            <Col md={12} className="my-n2 py-m2">
+                <small><strong>{this.state.downloadingStatus.pdsdf}</strong></small>
+            </Col>
+        </Row>);
+    }
+
     createModalBody(){
         if(!this.state.showInfo){
             return (
@@ -199,16 +382,42 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             minute: "numeric",
         });
 
-        let dts = this.state.parametersFiltration.dt.s*1000;
-        let dte = this.state.parametersFiltration.dt.e*1000;
+        let fdts = this.state.parametersFiltration.dt.s*1000;
+        let fdte = this.state.parametersFiltration.dt.e*1000;
 
-        console.log(this.state.filteringStatus);
+        let filtrationStart = this.state.filteringStatus.tte.s*1000;
+        if(filtrationStart === 0){
+            filtrationStart = "нет данных";
+        } else {
+            filtrationStart = formatter.format(filtrationStart);
+        }
+
+        let filtrationEnd = this.state.filteringStatus.tte.e*1000;
+        if(filtrationEnd === 0){
+            filtrationEnd = "нет данных";
+        } else {
+            filtrationEnd = formatter.format(filtrationEnd);
+        }
+
+        let downloadStart = this.state.downloadingStatus.tte.s*1000;
+        if(downloadStart === 0){
+            downloadStart = "нет данных";
+        } else {
+            downloadStart = formatter.format(downloadStart);
+        }
+
+        let downloadEnd = this.state.downloadingStatus.tte.e*1000;
+        if(downloadEnd === 0){
+            downloadEnd = "нет данных";
+        } else {
+            downloadEnd = formatter.format(downloadEnd);
+        }
 
         return (
             <React.Fragment>
                 <Row>
                     <Col md={12} className="text-center">
-                    Задача по фильтрации (добавлена: <i>{formatter.format(this.state.filteringStatus.tte.s*1000)}</i>, завершена: <i>{formatter.format(this.state.filteringStatus.tte.e*1000)}</i>)
+                    Задача по фильтрации (добавлена: <i>{filtrationStart}</i>, завершена: <i>{filtrationEnd}</i>)
                     </Col>
                 </Row>
                 <Row>
@@ -222,8 +431,8 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                             <Col md={9} className="text-muted">
                                 <small>
                                 дата и время,
-                                начальное: <strong>{formatter.format(dts)}</strong>, 
-                                конечное: <strong>{formatter.format(dte)}</strong>
+                                начальное: <strong>{formatter.format(fdts)}</strong>, 
+                                конечное: <strong>{formatter.format(fdte)}</strong>
                                 </small>
                             </Col>
                             <Col md={3} className="text-muted"><small>сетевой протокол: <strong>{(this.state.parametersFiltration.p === "any") ? "любой" : this.state.parametersFiltration.p}</strong></small></Col>
@@ -231,32 +440,23 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                         <Row><Col md={12}>{this.createNetworkParameters.call(this)}</Col></Row>
                     </Card.Body>                   
                 </Card>               
-                <Row>
-                    <Col md={12} className="text-muted mt-3">
-                        <small>ход выполнения</small>
-                    </Col>
+                <Row className="text-muted mb-n2">
+                    <Col md={2}><small>статус задачи: </small></Col>
+                    <Col md={10} className="text-center">{this.getStatusFiltering.call(this)}</Col>
                 </Row>
-                <Row>
-                    <Col md={8} className="text-muted">
-                        <Card>
-                            <Card.Body className="pt-0 pb-0">{this.getInformationProgressFiltration()}</Card.Body>
-                        </Card>
-                    </Col>
-                    <Col md={4} className="mt-0 text-muted">график</Col>
-                </Row>
-                <Row className="text-center text-muted">
-                    <Col md={12}>
-                        <small>директория содержащая файлы полученные в результате фильтрации</small>
-                    </Col>
-                    <Col md={12} className="mt-n2">
-                        <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
-                    </Col>
-                </Row>
+                {this.getInformationProgressFiltration()}
+                {this.createPathDirFilterFiles.call(this)}
                 <Row>
                     <Col md={12} className="text-center mt-3">
-                    Задача по скачиванию файлов (добавлена: <i>{formatter.format(this.state.dateCreateTask)}</i>, завершена: <i>{formatter.format(this.state.dateFinishTask)}</i>)
+                    Задача по скачиванию файлов (добавлена: <i>{downloadStart}</i>, завершена: <i>{downloadEnd}</i>)
                     </Col>
                 </Row>
+                <Row className="text-muted mb-n2">
+                    <Col md={2}><small>статус задачи: </small></Col>
+                    <Col md={10} className="text-center">{this.getStatusDownload.call(this)}</Col>
+                </Row>
+                {this.getInformationProgressDownload.call(this)}
+                {this.createPathDirStorageFiles.call(this)}
             </React.Fragment>
         );
     }

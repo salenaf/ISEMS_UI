@@ -18,6 +18,8 @@ require("reactDatePicker");
 require("moment");
 require("select2");
 
+require("react-circle");
+
 //require('moment-with-locales');
 
 global.socket = io.connect();

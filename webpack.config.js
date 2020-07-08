@@ -30,7 +30,8 @@ module.exports = {
             "moment",
             "jquery",
             "socket.io-client",
-            "socket.io-stream"
+            "socket.io-stream",
+            "react-circle",
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -98,7 +99,8 @@ module.exports = {
             "select2": "select2/dist/js/select2.full.min.js",
             "jquery": "jquery/dist/jquery.min.js",
             "socket.io-client": "socket.io-client/dist/socket.io.js",
-            "socket.io-stream": "socket.io-stream/socket.io-stream.js"
+            "socket.io-stream": "socket.io-stream/socket.io-stream.js",
+            "react-circle": "react-circle/dist/index.js",
         }
     },
 

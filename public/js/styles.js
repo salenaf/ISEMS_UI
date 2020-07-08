@@ -13,4 +13,5 @@ require("!style-loader!css-loader!../../node_modules/react-datepicker/dist/react
 require("!style-loader!css-loader!../../node_modules/datatables.net-bs/css/dataTables.bootstrap.min.css");
 
 require("!style-loader!css-loader!../css/mystyle.css");
+
 //require("!style-loader!css-loader!../../node_modules/choices.js/src/styles/");
