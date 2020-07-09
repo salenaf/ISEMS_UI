@@ -18,8 +18,10 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
 
         this.state = {
             showInfo: false,
-            listTasksProcess: {},
-            
+            taskID: "",
+            userTimeCreateTask: 0,
+            userNameCreateTask: "",
+            userCreateTaskType: "",
             parametersFiltration: {
                 dt: {s:0, e:0},
                 f: {
@@ -39,14 +41,14 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             }
         };
 
-        /**
- *                      !!!!!!
- * Необходимо передалать свойство parametersFiltration
- * основываясь на том что, одновременно выполняемых задач 
- * будет много. А сейчас две задачи перезаписываю
- * одни и теже данные. 
- * 
- */
+        this.formatter = Intl.DateTimeFormat("ru-Ru", {
+            timeZone: "Europe/Moscow",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+        });
 
         this.getListNetworkParameters = this.getListNetworkParameters.bind(this);
         this.getInformationProgressFiltration = this.getInformationProgressFiltration.bind(this);
@@ -79,25 +81,26 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
     handlerEvents(){
         this.props.socketIo.on("module NI API", (msg) => {
             if(msg.type === "processingGetAllInformationByTaskID"){
-                
+
                 console.log(msg.options);
 
                 this.setState({
                     showInfo: true,
+                    taskID: msg.options.taskParameter.tid,
+                    userTimeCreateTask: (msg.options.createDate !== 0) ? this.formatter.format(msg.options.createDate): "нет данных",
+                    userNameCreateTask: msg.options.userName,
+                    userCreateTaskType: msg.options.typeTask,
                     parametersFiltration: msg.options.taskParameter.fo,
                     filteringStatus: msg.options.taskParameter.diof,
                     downloadingStatus: msg.options.taskParameter.diod,
                 });
-
-                //this.testProgressBar.call(this);
-                /*let copy = this.state.downloadingStatus;//.nft
-                copy.nft = 30;
-                copy.nfd = 3;
-                copy.pdsdf = "/home/ISEMS_NIH_master/ISEMS_NIH_master_RAW/1221-Test_sensor_1221/2019/June/17/17.06.2019T00:00-18.06.2019T23:00_fb7033262f52a10793187ebf6cb043b9";
-                this.setState({ downloadingStatus: copy });*/
             }
             if(msg.type === "filtrationProcessing"){
                 console.log(msg.options);
+
+                if(this.state.taskID !== msg.options.taskIDModuleNI){
+                    return;
+                }
 
                 let tmpCopy = Object.assign(this.state.filteringStatus);
                 tmpCopy.nfmfp = msg.options.parameters.numAllFiles;
@@ -157,8 +160,6 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
         if(this.state.filteringStatus.nfmfp === 0){
             return;
         }
-        
-        let formatter = new Intl.NumberFormat("ru");
 
         return (
             <React.Fragment>
@@ -179,7 +180,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>общим размером:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{formatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.formatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно:</small></Col>
@@ -195,7 +196,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>общим размером:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{formatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{this.formatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
                                         </Row>
                                         <Row>
                                             <Col md={6}><small>фильтруемых директорий:</small></Col>
@@ -373,15 +374,6 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             );
         }
 
-        let formatter = Intl.DateTimeFormat("ru-Ru", {
-            timeZone: "Europe/Moscow",
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-        });
-
         let fdts = this.state.parametersFiltration.dt.s*1000;
         let fdte = this.state.parametersFiltration.dt.e*1000;
 
@@ -389,32 +381,37 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
         if(filtrationStart === 0){
             filtrationStart = "нет данных";
         } else {
-            filtrationStart = formatter.format(filtrationStart);
+            filtrationStart = this.formatter.format(filtrationStart);
         }
 
         let filtrationEnd = this.state.filteringStatus.tte.e*1000;
         if(filtrationEnd === 0){
             filtrationEnd = "нет данных";
         } else {
-            filtrationEnd = formatter.format(filtrationEnd);
+            filtrationEnd = this.formatter.format(filtrationEnd);
         }
 
         let downloadStart = this.state.downloadingStatus.tte.s*1000;
         if(downloadStart === 0){
             downloadStart = "нет данных";
         } else {
-            downloadStart = formatter.format(downloadStart);
+            downloadStart = this.formatter.format(downloadStart);
         }
 
         let downloadEnd = this.state.downloadingStatus.tte.e*1000;
         if(downloadEnd === 0){
             downloadEnd = "нет данных";
         } else {
-            downloadEnd = formatter.format(downloadEnd);
+            downloadEnd = this.formatter.format(downloadEnd);
         }
 
         return (
             <React.Fragment>
+                <Row className="text-muted text-center">
+                    <Col md={12}>
+                        <small>Пользователь: <strong>{this.state.userNameCreateTask}</strong> добавил задачу по <strong>{this.state.userCreateTaskType}</strong> в <strong>{this.state.userTimeCreateTask}</strong></small>
+                    </Col>
+                </Row>
                 <Row>
                     <Col md={12} className="text-center">
                     Задача по фильтрации (добавлена: <i>{filtrationStart}</i>, завершена: <i>{filtrationEnd}</i>)
@@ -431,8 +428,8 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                             <Col md={9} className="text-muted">
                                 <small>
                                 дата и время,
-                                начальное: <strong>{formatter.format(fdts)}</strong>, 
-                                конечное: <strong>{formatter.format(fdte)}</strong>
+                                начальное: <strong>{this.formatter.format(fdts)}</strong>, 
+                                конечное: <strong>{this.formatter.format(fdte)}</strong>
                                 </small>
                             </Col>
                             <Col md={3} className="text-muted"><small>сетевой протокол: <strong>{(this.state.parametersFiltration.p === "any") ? "любой" : this.state.parametersFiltration.p}</strong></small></Col>
@@ -460,6 +457,13 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             </React.Fragment>
         );
     }
+
+    /**
+ * Сделать отслеживание хода выполнения скачивания файлов как
+ * в модальном окне так и на основной странице.
+ * Сделать обработчик для кнопки "остановить задачу" в модальном окне
+ * 
+ */
 
     render(){
         return (

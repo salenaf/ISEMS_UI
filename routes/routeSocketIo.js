@@ -72,7 +72,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     myEmitter.emit("finish", {});
                 }
 
-                console.log(`received next emit, num: ${numInterval}`);
+                //console.log(`received next emit, num: ${numInterval}`);
                 //console.log(obj.list[numInterval]);
 
                 let objTmp = JSON.parse(obj.list[numInterval]);
@@ -296,9 +296,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
         });*/
 
         }).on("command filtration control", (msg) => {
-            debug("----- command filtration control -----");
+            /*debug("----- command filtration control -----");
             debug(msg);
-            debug("---------------------------------------");
+            debug("---------------------------------------");*/
 
         }).on("information download control", (msg) => {
             debug("----- information download control -----");
@@ -322,30 +322,33 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("====== information search control =====");
             debug(JSON.stringify(msg));
 
-            let typeTask = "не определен",
-                statusTask = "не определен",
-                userLogin = "не определен",
-                userName = "не определен";
-
+            let createDate = 0,
+                typeTask = "нет данных",
+                userLogin = "нет данных",
+                userName = "нет данных";
 
             /* при получении информации о задаче по ее ID проверяем 
              надо ли востановить информацию о задаче в globalObject */
-            if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.taskID)){
-                let taskInfo = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);
+            if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)){
+                let taskInfo = globalObject.getData("tasks", "networkInteractionTaskList", msg.options.tp.ctid);
+                createDate = taskInfo.createDate;
                 typeTask = taskInfo.typeTask;
-                statusTask = taskInfo.statusTask;
                 userLogin = taskInfo.userLogin;
                 userName = taskInfo.userName;
+
+                console.log(`User login: ${taskInfo.userLogin}`);
             }
+
+            console.log(`task ID '${msg.taskID}' is found: '${globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)}'`);
             
             //формируем сообщение о выполнении процесса фильтрации
             socketIo.emit("module NI API", { 
                 "type": "processingGetAllInformationByTaskID",
                 "options": {
                     typeTask: typeTask,
-                    statusTask: statusTask,
                     userLogin: userLogin,
                     userName: userName,
+                    createDate: createDate,
                     status: msg.options.s,
                     taskParameter: msg.options.tp,
                 }

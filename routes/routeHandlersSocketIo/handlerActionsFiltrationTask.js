@@ -42,8 +42,11 @@ function startNewTask(socketIo, data){
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
             }
 
-            return { login: authData.document.userLogin, name: authData.document.name };
+            return { login: authData.document.userLogin, name: authData.document.userName };
         }).then((userInfo) => {
+            debug("user info");
+            debug(userInfo);
+
             let obj = (require("../../libs/processing/routeSocketIo/validationFileFilteringParameters"))(data.arguments);
             if(!obj.isValid){
                 throw new MyError("management validation", obj.errorMsg);
@@ -55,7 +58,7 @@ function startNewTask(socketIo, data){
             debug(parameters);
 
             //отправляем задачу модулю сетевого взаимодействия
-            return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.login, parameters.name);
+            return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.userInfo.login, parameters.userInfo.name);
         }).then(() => {          
             showNotify({
                 socketIo: socketIo,

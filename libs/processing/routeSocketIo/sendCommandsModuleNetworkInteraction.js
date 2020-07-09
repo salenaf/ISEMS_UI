@@ -258,6 +258,7 @@ module.exports.sourceManagementsReconnect = function(sourceList){
 module.exports.managementTaskFilteringStart = function(filteringParameters, userLogin, userName){
     console.log("func 'managementTaskFilteringStart'");
     console.log(filteringParameters);
+    console.log(`user name: '${userName}', user login '${userLogin}'`);
  
     return new Promise((resolve, reject) => {
         process.nextTick(() => {          
