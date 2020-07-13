@@ -23,6 +23,93 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
 
     /** ТЕСТОВЫЙ РАЗДЕЛ --- начало */
+    function testProcessDownload(filePath, callback){
+        console.log(`чтение файла: ${filePath}`);
+
+        const fs = require("fs");
+        const EventEmitter = require("events");
+
+        class MyEmitter extends EventEmitter {}
+
+        new Promise((resolve, reject) => {
+            fs.readFile(filePath, "utf8", (err, data) => {
+                if(err){
+                    reject(err);
+                }
+
+                resolve(data);
+            });
+        }).then((data) => {
+            let stringList = data.split("\n");
+
+            console.log(stringList.length);
+
+            let count = 0;
+            let listFilterProcess = [];
+            stringList.forEach((item) => {
+                if(item.length > 0){
+                    let objTmp = JSON.parse(item);
+
+                    //только для процесса скачивания файлов
+                    if(objTmp.instruction === "task processing" && (typeof objTmp.options.dfi !== "undefined")){
+                        count++;
+                        listFilterProcess.push(item);
+                    }
+                }
+            });
+
+            //console.log(data);
+
+            return { count: count, list: listFilterProcess };
+        }).then((obj) => {
+            const myEmitter = new MyEmitter();
+
+            let numInterval = 0;
+            let timerID = setInterval(() => {
+                if(numInterval === (obj.count - 1)){
+                    clearInterval(timerID);
+
+                    myEmitter.emit("finish", {});
+                }
+
+                //console.log(`received next emit, num: ${numInterval}`);
+                //console.log(obj.list[numInterval]);
+
+                let objTmp = JSON.parse(obj.list[numInterval]);
+                myEmitter.emit("next emit", { 
+                    "type": "downloadProcessing",
+                    "options": {
+                        sourceID: objTmp.options.id,
+                        name: "shortName",
+                        taskID: objTmp.taskID,
+                        taskIDModuleNI: objTmp.options.tidapp,
+                        status: objTmp.options.s,
+                        parameters: {
+                            numberFilesTotal: objTmp.options.nft, //общее количество скачиваемых файлов
+                            numberFilesDownloaded: objTmp.options.nfd, //количество успешно скаченных файлов
+                            numberFilesDownloadedError: objTmp.options.nfde, //количество файлов скаченных с ошибкой
+                            dfi: { //DetailedFileInformation — подробная информация о скачиваемом файле
+                                fileName: objTmp.options.dfi.n, //название файла
+                                fullSizeByte: objTmp.options.dfi.fsb, //полный размер файла в байтах
+                                acceptedSizeByte: objTmp.options.dfi.asb, //скаченный размер файла в байтах
+                                acceptedSizePercent: objTmp.options.dfi.asp, //скаченный размер файла в процентах
+                            }
+                        },
+                    }});                    
+
+                numInterval++;
+            }, 500);
+
+            callback(null, { 
+                count: obj.count, 
+                list: obj.list,
+                myEmitter: myEmitter,
+            });
+        }).catch((err) => {
+            callback(err);
+        });
+    }
+
     function testProcessFiltering(filePath, callback) {
         console.log(`чтение файла: ${filePath}`);
 
@@ -96,7 +183,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     }});                    
 
                 numInterval++;
-            },500);
+            }, 500);
 
             callback(null, { 
                 count: obj.count, 
@@ -111,6 +198,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
     setTimeout(() => {
         testProcessFiltering("/home/development/modul_api_interaction/information_response_1589542887119.txt", (err, obj) => {
             debug("запуск тестовый функции");
+            if(err){
+                debug(err);
+            }
 
             obj.myEmitter.on("next emit", (data) => {
     
@@ -119,13 +209,16 @@ module.exports.modulesEventGenerator = function(socketIo) {
     
             }).on("finish", () => {
                 debug(`received event 'finish' (${new Date})`);
-    
             });
         });
     }, 3000);
 
     setTimeout(() => {
         testProcessFiltering("/home/development/modul_api_interaction/information_response_1590584597947.txt", (err, obj) => {
+            if(err){
+                debug(err);
+            }
+            
             obj.myEmitter.on("next emit", (data) => {
                 socketIo.emit("module NI API", data);
             }).on("finish", () => {
@@ -133,6 +226,20 @@ module.exports.modulesEventGenerator = function(socketIo) {
             });
         });
     }, 6000);
+
+    setTimeout(() => {
+        testProcessDownload("/home/development/modul_api_interaction/information_download_control_23.12.2019.log.txt", (err, obj) => {
+            if(err){
+                debug(err);
+            }
+
+            obj.myEmitter.on("next emit", (data) => {
+                socketIo.emit("module NI API", data);
+            }).on("finish", () => {
+                debug(`received event 'finish' (${new Date})`);    
+            });
+        });
+    }, 8000);
     /** ТЕСТОВЫЙ РАЗДЕЛ --- окончание */
 
 

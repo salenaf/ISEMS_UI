@@ -96,8 +96,6 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                 });
             }
             if(msg.type === "filtrationProcessing"){
-                console.log(msg.options);
-
                 if(this.state.taskID !== msg.options.taskIDModuleNI){
                     return;
                 }
@@ -111,6 +109,18 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                 tmpCopy.sffrf = msg.options.parameters.sizeFindFiles;
                 tmpCopy.ts = msg.options.status;
                 this.setState({ filteringStatus: tmpCopy });
+            }
+            if(msg.type === "downloadProcessing"){
+                if(this.state.taskID !== msg.options.taskIDModuleNI){
+                    return;
+                }
+
+                let tmpCopy = Object.assign(this.state.downloadingStatus);               
+                tmpCopy.ts = msg.options.status;
+                tmpCopy.nft = msg.options.parameters.numberFilesTotal;
+                tmpCopy.nfd = msg.options.parameters.numberFilesDownloaded;
+                tmpCopy.nfde = msg.options.parameters.numberFilesDownloadedError;
+                this.setState({ downloadingStatus: tmpCopy });
             }
         });
     }
@@ -161,6 +171,8 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             return;
         }
 
+        let         numFormatter = new Intl.NumberFormat("ru");
+
         return (
             <React.Fragment>
                 <Row>
@@ -180,7 +192,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>общим размером:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.formatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно:</small></Col>
@@ -196,7 +208,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>общим размером:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.formatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
                                         </Row>
                                         <Row>
                                             <Col md={6}><small>фильтруемых директорий:</small></Col>
@@ -216,12 +228,6 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
     }
 
     getInformationProgressDownload(){
-    /**
-    // NumberFilesTotal - общее количество файлов подлежащих скачиванию
-// NumberFilesDownloaded - количество уже загруженных файлов
-// NumberFilesDownloadedError - количество файлов загруженных с ошибкой
-     */
-
         if(this.state.filteringStatus.nffrf === 0){
             return;
         }
@@ -405,11 +411,19 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             downloadEnd = this.formatter.format(downloadEnd);
         }
 
+        let taskType = "нет данных";
+        if(this.state.userCreateTaskType === "filtration"){
+            taskType = "фильтрации";
+        }
+        if(this.state.userCreateTaskType === "download"){
+            taskType = "скачиванию файлов";
+        }
+
         return (
             <React.Fragment>
                 <Row className="text-muted text-center">
                     <Col md={12}>
-                        <small>Пользователь: <strong>{this.state.userNameCreateTask}</strong> добавил задачу по <strong>{this.state.userCreateTaskType}</strong> в <strong>{this.state.userTimeCreateTask}</strong></small>
+                        <small>Пользователь: <strong>{this.state.userNameCreateTask}</strong> добавил задачу по <strong>{taskType}</strong> в <strong>{this.state.userTimeCreateTask}</strong></small>
                     </Col>
                 </Row>
                 <Row>

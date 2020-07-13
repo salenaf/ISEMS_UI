@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, ProgressBar } from "react-bootstrap";
+import { Card, Col, ProgressBar, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateBodyDynamics extends React.Component {
@@ -16,6 +16,13 @@ export default class CreateBodyDynamics extends React.Component {
         this.handlerEvents.call(this);
     }
 
+    /**
+    1. Сделать информационные виджеты/иконки "фильтрация выполняется" и 
+    "загрузка файлов (выполняется доступна)", что в верхней части страницы,
+    динамическими.
+    2. Написать обработчик кнопки "остановить задачу" модального окна
+ */
+
     //для удаление виджитов по мере завершения задач
     deleteItemByTimeout(typeProcessing, id){
         setTimeout(() => {
@@ -31,13 +38,21 @@ export default class CreateBodyDynamics extends React.Component {
         this.props.socketIo.on("module NI API", (msg) => {
             if(msg.type === "filtrationProcessing"){
                 let objCopy = Object.assign({}, this.state);
-
                 objCopy.filtration[msg.options.taskID] = msg.options;
-
                 this.setState(objCopy);
 
                 if((msg.options.status === "complete") || (msg.options.status === "refused")){
                     this.deleteItemByTimeout("filtration", msg.options.taskID);
+                }
+            }
+
+            if(msg.type === "downloadProcessing"){
+                let objCopy = Object.assign({}, this.state);
+                objCopy.download[msg.options.taskID] = msg.options;
+                this.setState(objCopy);
+
+                if((msg.options.status === "complete") || (msg.options.status === "refused")){
+                    this.deleteItemByTimeout("download", msg.options.taskID);
                 }
             }
         });
@@ -49,9 +64,6 @@ export default class CreateBodyDynamics extends React.Component {
     }
 
     sendRequestShowInfo(taskID){
-        console.log("func 'sendRequestShowInfo', START");
-        console.log("send request task info");
-
         this.props.socketIo.emit("network interaction: show info about all task", {
             arguments: { taskID: taskID } 
         });
@@ -70,44 +82,139 @@ export default class CreateBodyDynamics extends React.Component {
             let sizeAllFiles = this.state.filtration[pf].parameters.sizeAllFiles;
             let sizeFindFiles = this.state.filtration[pf].parameters.sizeFindFiles;
 
-            let progress = <ProgressBar now={percent} label={`${numProcessedFiles} / ${numAllFiles}`}/>;
-
-            if(this.state.filtration[pf].status === "complete"){
-                progress = <span className="text-success">фильтрация сетевого трафика завершена</span>;
-            }
-            if(this.state.filtration[pf].status === "refused"){
-                list.push(
-                    <Card 
-                        className="mb-3 clicabe_cursor" 
-                        key={`card_filter_${pf}`}
-                        onClick={this.showModalWindow.bind(this, objInfo)} >
-                        {`${this.state.filtration[pf].sourceID} - ${this.state.filtration[pf].name}`}
-                        <div className="pl-2 pr-2">
-                            <span className="text-danger">Задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</span>
-                        </div>
-                    </Card>
-                );
-
-                continue;
-            }            
-
             let objInfo = {
                 sourceID: this.state.filtration[pf].sourceID, 
                 sourceName: this.state.filtration[pf].name,
                 taskID: this.state.filtration[pf].taskIDModuleNI,
             };
 
+            let progress = <div className="pl-2 pr-2"><ProgressBar now={percent} label={`${numProcessedFiles} / ${numAllFiles}`}/></div>;
+
+            if(this.state.filtration[pf].status === "complete"){
+                progress = <div className="text-success mt-n1 mb-n1">фильтрация сетевого трафика завершена</div>;
+            }
+
+            if(this.state.filtration[pf].status === "refused"){
+                list.push(
+                    <Row key={`row_card_filter_${pf}`}>
+                        <Col md={3} className="text-muted text-right">
+                            <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
+                            <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
+                            <Row className="mb-n2"><Col><small>действие: <i><strong>фильтрация файлов</strong></i></small></Col></Row>
+                        </Col>
+                        <Col md={9}>
+                            <Card 
+                                className="mb-3 clicabe_cursor text-muted" 
+                                key={`card_filter_${pf}`}
+                                onClick={this.showModalWindow.bind(this, objInfo)} >
+                                <small className="mb-n2">{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
+                                <div className="pl-2 pr-2 mb-n2">
+                                    <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>
+                                </div>
+                                <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, всего: ${formatter.format(sizeAllFiles)} байт`}</small>
+                            </Card>
+                        </Col>
+                    </Row>
+                );
+
+                continue;
+            }            
+
             list.push(
-                <Card 
-                    className="mb-3 clicabe_cursor" 
-                    key={`card_filter_${pf}`}
-                    onClick={this.showModalWindow.bind(this, objInfo)} >
-                    {`${this.state.filtration[pf].sourceID} - ${this.state.filtration[pf].name}`}
-                    <div className="pl-2 pr-2">{progress}</div>
-                    <small className="text-muted">
-                        {`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles} (найдено: ${formatter.format(sizeFindFiles)} байт, всего: ${formatter.format(sizeAllFiles)} байт)`}
-                    </small>
-                </Card>
+                <Row key={`row_card_filter_${pf}`}>
+                    <Col md={3} className="text-muted text-right">
+                        <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
+                        <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
+                        <Row className="mb-n2"><Col><small>действие: <i><strong>фильтрация файлов</strong></i></small></Col></Row>
+                    </Col>
+                    <Col md={9}>
+                        <Card 
+                            className="mb-3 clicabe_cursor text-muted" 
+                            key={`card_filter_${pf}`}
+                            onClick={this.showModalWindow.bind(this, objInfo)} >
+                            <small>{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
+                            {progress}
+                            <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, всего: ${formatter.format(sizeAllFiles)} байт`}</small>
+                        </Card>
+                    </Col>
+                </Row>
+            );
+        }
+
+        return list;
+    }
+
+    createDownloadWidget(){
+        let list = [];
+
+        for(let pf in this.state.download){
+            let fileName = (typeof this.state.download[pf].parameters.dfi.fileName !== "undefined") ? this.state.download[pf].parameters.dfi.fileName: "";
+            let filePercent = this.state.download[pf].parameters.dfi.acceptedSizePercent;
+            let fdt = this.state.download[pf].parameters.numberFilesTotal;
+            let fd = this.state.download[pf].parameters.numberFilesDownloaded;
+            let fde = this.state.download[pf].parameters.numberFilesDownloadedError;
+
+
+            let objInfo = {
+                sourceID: this.state.download[pf].sourceID, 
+                sourceName: this.state.download[pf].name,
+                taskID: this.state.download[pf].taskIDModuleNI,
+            };
+
+            let progress = <div className="pl-2 pr-2"><ProgressBar now={filePercent} label={`${filePercent}%`}/></div>;
+
+            if(this.state.download[pf].status === "complete"){
+                progress = <div className="text-success mt-n1 mb-n1">загрузка файлов завершена</div>;
+            }
+
+            if(this.state.download[pf].status === "refused"){
+                list.push(
+                    <Row key={`row_card_filter_${pf}`}>
+                        <Col md={3} className="text-muted text-right">
+                            <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
+                            <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.download[pf].name}</strong></i></small></Col></Row>
+                            <Row className="mb-n2"><Col><small>действие: <i><strong>загрузка файлов</strong></i></small></Col></Row>
+                        </Col>
+                        <Col md={9}>
+                            <Card 
+                                className="mb-3 clicabe_cursor text-muted" 
+                                key={`card_filter_${pf}`}
+                                onClick={this.showModalWindow.bind(this, objInfo)} >
+                                <small className="text-muted">
+                                    файлов загружено / с ошибкой / всего: 0 / 0 / 0
+                                </small>
+                                <div className="pl-2 pr-2 mb-n2">
+                                    <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>
+                                </div>
+                                <small>загружается файл: </small>
+                            </Card>
+                        </Col>
+                    </Row>
+                );
+
+                continue;
+            }            
+
+            list.push(
+                <Row key={`row_card_filter_${pf}`}>
+                    <Col md={3} className="text-muted text-right">
+                        <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
+                        <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.download[pf].name}</strong></i></small></Col></Row>
+                        <Row className="mb-n2"><Col><small>действие: <i><strong>загрузка файлов</strong></i></small></Col></Row>
+                    </Col>
+                    <Col md={9}>
+                        <Card 
+                            className="mb-3 clicabe_cursor text-muted" 
+                            key={`card_filter_${pf}`}
+                            onClick={this.showModalWindow.bind(this, objInfo)} >
+                            <small className="text-muted">
+                                {`файлов загружено / с ошибкой / всего: ${fd} / ${fde} / ${fdt}`}
+                            </small>
+                            {progress}
+                            <small>{`загружается файл: ${fileName}`}</small>
+                        </Card>
+                    </Col>
+                </Row>
             );
         }
 
@@ -117,26 +224,8 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Card className="mb-3 clicabe_cursor" onClick={this.showModalWindow.bind(this, { sourceID: 1023, sourceName: "Sensor MER", taskID: "eb6f7ba872a1b4684edb70aed2b177ff" })} >
-                    {"1023 - Sensor MER (задача: скачивание файлов, это только примеры шаблонов)"}
-                    <div className="pl-2 pr-2">
-                        <ProgressBar now="65" label={"65%"}/>
-                    </div>
-                    <small className="text-muted">
-                        {"файлов загруженных / всего: 3 / 12"}
-                    </small>
-                </Card>
-                <Card className="mb-3">
-                    {"1052 - AO Vladimir (задача: фильтрация файлов, это только примеры шаблонов)"}
-                    <div className="pl-2 pr-2">
-                        <ProgressBar now="78" label={"132/245"}/>
-                    </div>
-                    <small className="text-muted">
-                        {"файлов найдено / обработано / всего: 13 / 132 / 245 (найдено: 1 433 554 байт, всего: 355 485 866 байт)"}
-                    </small>
-                </Card>
-                <br/>
                 {this.createFiltrationWidget.call(this)}
+                {this.createDownloadWidget.call(this)}
             </React.Fragment>
         );
     }
