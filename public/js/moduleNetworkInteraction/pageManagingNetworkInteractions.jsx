@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Card, Spinner, Button, Tab, Tabs } from "react-bootstrap";
+import { Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateBodySearchTask from "./createBodySearchTask.jsx";

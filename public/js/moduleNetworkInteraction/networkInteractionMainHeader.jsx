@@ -15,6 +15,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             "widgets": {
                 numConnect: this.props.listItems.widgetsInformation.numConnect,
                 numDisconnect: this.props.listItems.widgetsInformation.numDisconnect,
+                numProcessFiltration: this.props.listItems.widgetsInformation.numProcessFiltration,
+                numProcessDownload: this.props.listItems.widgetsInformation.numProcessDownload,
             },
             listSources: this.props.listItems.listSources,
         };
@@ -89,7 +91,9 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <CreatingWidgets widgets={this.state.widgets} />
+                <CreatingWidgets 
+                    widgets={this.state.widgets} 
+                    socketIo={this.props.socketIo} />
                 {this.showModuleConnectionError.call(this)}
                 <PageManagingNetworkInteractions
                     socketIo={this.props.socketIo}

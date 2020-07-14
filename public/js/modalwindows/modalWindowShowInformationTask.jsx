@@ -12,13 +12,15 @@ import Circle from "react-circle";
  * а по мере обновления информации и перехватывания соответсвующих событий
  * обновляется только информация относящаяся к данному событию
  */
-export default class ModalWindowShowTaskFiltraion extends React.Component {
+export default class ModalWindowShowInformationTask extends React.Component {
     constructor(props){
         super(props);
 
         this.state = {
             showInfo: false,
             taskID: "",
+            clientTaskID: "",
+            taskType: "",
             userTimeCreateTask: 0,
             userNameCreateTask: "",
             userCreateTaskType: "",
@@ -56,28 +58,6 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
         this.handlerEvents.call(this);
     }
 
-    testProgressBar(){
-        /*
-        console.log(`before: ${this.state.filteringStatus.mpf}`);
-
-        let copy = Object.assign(this.state.filteringStatus);
-        copy.mpf = 0;
-        this.setState({filteringStatus: copy});
-
-        console.log(`after ${this.state.filteringStatus.mpf}`);
-*/
-        let numInterval = 0;
-        let timerID = setInterval(() => {
-            if(numInterval === (this.state.filteringStatus.mpf - 1)){
-                clearInterval(timerID);
-            }
-
-            let copy = Object.assign(this.state.filteringStatus);
-            copy.mpf = numInterval++;
-            this.setState({filteringStatus: copy});
-        }, 3000);
-    }
-
     handlerEvents(){
         this.props.socketIo.on("module NI API", (msg) => {
             if(msg.type === "processingGetAllInformationByTaskID"){
@@ -87,6 +67,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                 this.setState({
                     showInfo: true,
                     taskID: msg.options.taskParameter.tid,
+                    clientTaskID: msg.options.taskParameter.ctid,
                     userTimeCreateTask: (msg.options.createDate !== 0) ? this.formatter.format(msg.options.createDate): "нет данных",
                     userNameCreateTask: msg.options.userName,
                     userCreateTaskType: msg.options.typeTask,
@@ -100,20 +81,24 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                     return;
                 }
 
+                this.setState({ taskType: "filtration" });
+
                 let tmpCopy = Object.assign(this.state.filteringStatus);
+                tmpCopy.ts = msg.options.status;
                 tmpCopy.nfmfp = msg.options.parameters.numAllFiles;
                 tmpCopy.nffrf = msg.options.parameters.numFindFiles;
                 tmpCopy.mpf = msg.options.parameters.numProcessedFiles;
                 tmpCopy.nepf = msg.options.parameters.numProcessedFilesError;
                 tmpCopy.sfmfp = msg.options.parameters.sizeAllFiles;
                 tmpCopy.sffrf = msg.options.parameters.sizeFindFiles;
-                tmpCopy.ts = msg.options.status;
                 this.setState({ filteringStatus: tmpCopy });
             }
             if(msg.type === "downloadProcessing"){
                 if(this.state.taskID !== msg.options.taskIDModuleNI){
                     return;
                 }
+
+                this.setState({ taskType: "download" });
 
                 let tmpCopy = Object.assign(this.state.downloadingStatus);               
                 tmpCopy.ts = msg.options.status;
@@ -123,6 +108,23 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                 this.setState({ downloadingStatus: tmpCopy });
             }
         });
+    }
+
+    handlerButtonStop(sourceID){
+        let taskTypeStop = "stop filtration task";
+        if(this.state.taskType === "download"){
+            taskTypeStop = "stop download task";
+        }
+
+        this.props.socketIo.emit(taskTypeStop, {
+            actionType: "stop task",
+            arguments: { 
+                taskID: this.state.clientTaskID,
+                sourceID: sourceID,
+            },
+        });
+
+        this.props.onHide();
     }
 
     getListNetworkParameters(type){
@@ -171,7 +173,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             return;
         }
 
-        let         numFormatter = new Intl.NumberFormat("ru");
+        let numFormatter = new Intl.NumberFormat("ru");
 
         return (
             <React.Fragment>
@@ -228,11 +230,14 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
     }
 
     getInformationProgressDownload(){
-        if(this.state.filteringStatus.nffrf === 0){
+        if((this.state.filteringStatus.nffrf === 0) || (this.state.filteringStatus.ts !== "complete")){
             return;
         }
 
-        let percent = Math.round((this.state.downloadingStatus.nfd*100) / this.state.downloadingStatus.nft);
+        let percent = 0;
+        if(this.state.downloadingStatus.nfd > 0){
+            percent = Math.round((this.state.downloadingStatus.nfd*100) / this.state.downloadingStatus.nft);
+        }
 
         return (<React.Fragment>
             <Row>
@@ -348,7 +353,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             <Col md={12}>
                 <small>директория содержащая файлы полученные в результате фильтрации</small>
             </Col>
-            <Col md={12} className="mt-n2">
+            <Col md={12} className="my_line_spacing">
                 <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
             </Col>
         </Row>);
@@ -363,7 +368,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
             <Col md={12}>
                 <small>директория для долговременного хранения загруженных файлов</small>
             </Col>
-            <Col md={12} className="my-n2 py-m2">
+            <Col md={12} className="my_line_spacing">
                 <small><strong>{this.state.downloadingStatus.pdsdf}</strong></small>
             </Col>
         </Row>);
@@ -472,13 +477,6 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
         );
     }
 
-    /**
- * Сделать отслеживание хода выполнения скачивания файлов как
- * в модальном окне так и на основной странице.
- * Сделать обработчик для кнопки "остановить задачу" в модальном окне
- * 
- */
-
     render(){
         return (
             <Modal
@@ -495,7 +493,7 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
                     {this.createModalBody.call(this)}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-danger" onClick={this.props.handlerButtonStopFiltering} size="sm">
+                    <Button variant="outline-danger" onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} size="sm">
                         остановить задачу
                     </Button>
                     <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
@@ -507,10 +505,9 @@ export default class ModalWindowShowTaskFiltraion extends React.Component {
     }
 }
 
-ModalWindowShowTaskFiltraion.propTypes = {
+ModalWindowShowInformationTask.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
-    shortTaskInfo: PropTypes.object.isRequired,
-    handlerButtonStopFiltering: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
+    shortTaskInfo: PropTypes.object.isRequired,
 };

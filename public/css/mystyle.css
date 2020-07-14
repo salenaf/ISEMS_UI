@@ -43,3 +43,7 @@
 .clicabe_cursor {
     cursor: pointer;
 }
+
+.my_line_spacing {
+    line-height: 100%;
+}

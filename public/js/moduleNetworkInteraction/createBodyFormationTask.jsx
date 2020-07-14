@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import CreateBodyDynamics from "./createBodyDynamics.jsx";
 import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
-import ModalWindowShowTaskFiltraion from "../modalwindows/modalWindowShowTaskFiltraion.jsx";
+import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
 import ModalWindowListTaskDownloadFiles from "../modalwindows/modalWindowListTaskDownloadFiles.jsx";
 
 export default class CreateBodyFormationTask extends React.Component {
@@ -34,8 +34,6 @@ export default class CreateBodyFormationTask extends React.Component {
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
-
-        this.handlerButtonStopFiltering = this.handlerButtonStopFiltering.bind(this);
     }
 
     handlerEvents(){
@@ -87,10 +85,6 @@ export default class CreateBodyFormationTask extends React.Component {
         });
 
         this.handlerCloseModalWindowFiltration();
-    }
-
-    handlerButtonStopFiltering(){
-        console.log("func 'handlerButtonStopFiltering', START...");
     }
 
     handlerButtonSubmitWindowDownload(){
@@ -189,12 +183,11 @@ export default class CreateBodyFormationTask extends React.Component {
                     show={this.state.showModalWindowListDownload}
                     onHide={this.handlerCloseModalWindowListDownload}
                     handlerButtonSubmit={this.handlerButtonSubmitWindowDownload} />
-                <ModalWindowShowTaskFiltraion 
+                <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}
                     socketIo={this.props.socketIo}
-                    shortTaskInfo={this.state.shortTaskInformation}
-                    handlerButtonStopFiltering={this.handlerButtonStopFiltering} />
+                    shortTaskInfo={this.state.shortTaskInformation} />
             </React.Fragment>
         );
     }

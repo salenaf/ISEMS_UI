@@ -8,17 +8,6 @@ class SocketioEventResponse extends EventEmitter {}
  * Глобальный объект для промежуточного хрнения данных
  * 
  *   {
- *       только для задач по фильтрации и скачиванию
- *       tasks: { 
- *           networkInteractionTaskList: {
- *               <taskID UI app>: {
- *                  createDate: дата создания записи,
- *                  typeTask: тип задачи "filtration/download",
- *                  statusTask: статус задачи "wait/refused/execute/complete/stop",
- *                  userLogin: логин пользователя,
- *                  userName: имя пользователя,
- *                  sourceID: id источника,
- *                  sourceName: название источника },
  *       параметры пользователя все из БД
  *       users: {
  *          userLogin: логин,

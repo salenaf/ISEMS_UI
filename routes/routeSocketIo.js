@@ -311,30 +311,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug(msg);
             debug("------------------------------------------");
 
-            /* проверяем наличие информации по данной задачи, информация о
-             задаче в globalObject нужна как минимум для виджетов (кол-во задач по фильтрации и скачиванию)
-            */
-            if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.taskID)){
-                //если задача с заданным ID существует, то есть UI не перезапускалась
-                globalObject.modifyData("tasks", "networkInteractionTaskList", [
-                    [ "statusTask", msg.options.s ],
-                ]);
-            } else {
-                //если UI перезапускалась, востанавливаем информацию, всю кроме логина и имени пользователя
-                let sourceInfo = globalObject.getData("sources", msg.options.id);
-                globalObject.setData("tasks", "networkInteractionTaskList", msg.taskID, {
-                    createDate: +(new Date),
-                    typeTask: "filtration",
-                    statusTask: msg.options.s,
-                    userLogin: "",
-                    userName: "",
-                    sourceID: msg.options.id,
-                    sourceName: sourceInfo.shortName,
-                });
-            }
-
             let sourceInfo = globalObject.getData("sources", msg.options.id);
-
             //формируем сообщение о выполнении процесса фильтрации
             socketIo.emit("module NI API", { 
                 "type": "filtrationProcessing",
@@ -355,53 +332,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     },
                 },
             });
-
-            /**
- * пример сообщения о выполнении процесса фильтрации
- 
- {
-  routeSocketIo   instruction: 'task processing',
-  routeSocketIo   taskID: '65390d4b0afe6b1c54c07141969c8f0f029dcf51',
-  routeSocketIo   options: {
-  routeSocketIo     id: 1221,
-  routeSocketIo     tidapp: '81f2188acb045917582242b4af68a79a',
-  routeSocketIo     s: 'execute',
-  routeSocketIo     nfmfp: 32,
-  routeSocketIo     npf: 29,
-  routeSocketIo     nffrf: 0,
-  routeSocketIo     nepf: 0,
-  routeSocketIo     ndf: 3,
-  routeSocketIo     sfmfp: 1563821543,
-  routeSocketIo     sffrf: 0,
-  routeSocketIo     pss: '/home/ISEMS_NIH_slave/ISEMS_NIH_slave_RAW/2019_June_16_11_39_81f2188acb045917582242b4af68a79a',
-  routeSocketIo     ffi: {}
-  routeSocketIo   }
-  routeSocketIo } +0ms
-
-  {
-  routeSocketIo   instruction: 'task processing',
-  routeSocketIo   taskID: '65390d4b0afe6b1c54c07141969c8f0f029dcf51',
-  routeSocketIo   options: {
-  routeSocketIo     id: 1221,
-  routeSocketIo     tidapp: '81f2188acb045917582242b4af68a79a',
-  routeSocketIo     s: 'complete',
-  routeSocketIo     nfmfp: 32,
-  routeSocketIo     npf: 32,
-  routeSocketIo     nffrf: 0,
-  routeSocketIo     nepf: 0,
-  routeSocketIo     ndf: 3,
-  routeSocketIo     sfmfp: 1563821543,
-  routeSocketIo     sffrf: 0,
-  routeSocketIo     pss: '/home/ISEMS_NIH_slave/ISEMS_NIH_slave_RAW/2019_June_16_11_39_81f2188acb045917582242b4af68a79a',
-  routeSocketIo     ffi: {}
-  routeSocketIo   }
-  routeSocketIo } +0ms
-
-
-            writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
-            if (err) debug(err);
-        });*/
-
         }).on("command filtration control", (msg) => {
             /*debug("----- command filtration control -----");
             debug(msg);
@@ -411,6 +341,29 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("----- information download control -----");
             debug(msg);
             debug("----------------------------------------");
+
+            let sourceInfo = globalObject.getData("sources", msg.options.id);
+            //формируем сообщение о выполнении процесса скачивания файлов
+            socketIo.emit("module NI API", { 
+                "type": "downloadProcessing",
+                "options": {
+                    sourceID: msg.options.id,
+                    name: sourceInfo.shortName,
+                    taskID: msg.taskID,
+                    taskIDModuleNI: msg.options.tidapp,
+                    status: msg.options.s,
+                    parameters: {
+                        numberFilesTotal: msg.options.nft, //общее количество скачиваемых файлов
+                        numberFilesDownloaded: msg.options.nfd, //количество успешно скаченных файлов
+                        numberFilesDownloadedError: msg.options.nfde, //количество файлов скаченных с ошибкой
+                        dfi: { //DetailedFileInformation — подробная информация о скачиваемом файле
+                            fileName: msg.options.dfi.n, //название файла
+                            fullSizeByte: msg.options.dfi.fsb, //полный размер файла в байтах
+                            acceptedSizeByte: msg.options.dfi.asb, //скаченный размер файла в байтах
+                            acceptedSizePercent: msg.options.dfi.asp, //скаченный размер файла в процентах
+                        }
+                    },
+                }});
 
             /*writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
             if (err) debug(err);

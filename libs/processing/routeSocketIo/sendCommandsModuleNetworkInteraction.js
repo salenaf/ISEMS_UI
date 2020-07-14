@@ -300,23 +300,56 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                 console.log(JSON.stringify(tmp));
             
                 conn.sendMessage(tmp);
+            }    
 
-                /* Формируем объект с информацией о задаче. Будет наполнятся
-                    при получении информации о ходе фильтрации от модуля сетевого
-                    взаимодействия. Может быть потерян при перезагрузки UI, но
-                    частично востановлен (все кроме логина и имени пользователя) при 
-                    получении инфор. о ходе фильтрации и отправке дополнительного запроса
-                    к модулю сетевого взаимодействия */
-                let sourceInfo = globalObject.getData("sources", filteringParameters.source);
-                globalObject.setData("tasks", "networkInteractionTaskList", hex, {
-                    createDate: +(new Date),
-                    typeTask: "filtration",
-                    statusTask: "wait",
-                    userLogin: userLogin,
-                    userName: userName,
-                    sourceID: filteringParameters.source,
-                    sourceName: sourceInfo.shortName,
-                });
+            resolve();
+        });
+    }); 
+};
+
+/**
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * управление задачами по фильтрации сетевого трафика.
+  *  
+  * Осуществляет останов задачи по фильтрации сет. трафика. 
+  * 
+  * @param {*} taskID - ID останавливаемой задачи
+  * @param {*} sourceID - ID источника
+  */
+module.exports.managementTaskFilteringStop = function(taskID, sourceID){
+    console.log("func 'managementTaskFilteringStop', START...");
+    console.log(`stop task ID: ${taskID}`);
+
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {          
+            if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            //проверяем существование источника и статус его соединения
+            let sourceInfo = globalObject.getData("sources", sourceID);
+            if(sourceInfo === null){
+                return reject(new MyError("management network interaction", `Источник с идентификатором ${sourceID} не найден.`));
+
+            } 
+            if(!sourceInfo.connectStatus){
+                return reject(new MyError("management network interaction", `Источник с идентификатором ${sourceID} не подключен.`));                                        
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
+            if(conn !== null){
+                let tmp = {
+                    msgType: "command",
+                    msgSection: "filtration control",
+                    msgInstruction: "to cancel filtering",
+                    taskID: taskID,
+                    options: {},
+                };
+
+                console.log("---------- forming Request ----------");
+                console.log(JSON.stringify(tmp));
+            
+                conn.sendMessage(tmp);
             }    
 
             resolve();

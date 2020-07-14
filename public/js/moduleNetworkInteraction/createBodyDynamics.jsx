@@ -16,20 +16,11 @@ export default class CreateBodyDynamics extends React.Component {
         this.handlerEvents.call(this);
     }
 
-    /**
-    1. Сделать информационные виджеты/иконки "фильтрация выполняется" и 
-    "загрузка файлов (выполняется доступна)", что в верхней части страницы,
-    динамическими.
-    2. Написать обработчик кнопки "остановить задачу" модального окна
- */
-
     //для удаление виджитов по мере завершения задач
     deleteItemByTimeout(typeProcessing, id){
         setTimeout(() => {
             let objCopy = Object.assign({}, this.state);
-
             delete(objCopy[typeProcessing][id]);
-
             this.setState(objCopy);
         }, 5000);
     }
@@ -41,7 +32,7 @@ export default class CreateBodyDynamics extends React.Component {
                 objCopy.filtration[msg.options.taskID] = msg.options;
                 this.setState(objCopy);
 
-                if((msg.options.status === "complete") || (msg.options.status === "refused")){
+                if((msg.options.status === "complete") || (msg.options.status === "refused") || (msg.options.status === "stop")){
                     this.deleteItemByTimeout("filtration", msg.options.taskID);
                 }
             }
@@ -51,7 +42,7 @@ export default class CreateBodyDynamics extends React.Component {
                 objCopy.download[msg.options.taskID] = msg.options;
                 this.setState(objCopy);
 
-                if((msg.options.status === "complete") || (msg.options.status === "refused")){
+                if((msg.options.status === "complete") || (msg.options.status === "refused") || (msg.options.status === "stop")){
                     this.deleteItemByTimeout("download", msg.options.taskID);
                 }
             }
@@ -94,7 +85,12 @@ export default class CreateBodyDynamics extends React.Component {
                 progress = <div className="text-success mt-n1 mb-n1">фильтрация сетевого трафика завершена</div>;
             }
 
-            if(this.state.filtration[pf].status === "refused"){
+            if((this.state.filtration[pf].status === "refused") || (this.state.filtration[pf].status === "stop")){
+                let msg = <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>;
+                if(this.state.filtration[pf].status === "stop"){
+                    msg = <small className="text-success">задача успешно остановлена.</small>;
+                }
+
                 list.push(
                     <Row key={`row_card_filter_${pf}`}>
                         <Col md={3} className="text-muted text-right">
@@ -108,9 +104,7 @@ export default class CreateBodyDynamics extends React.Component {
                                 key={`card_filter_${pf}`}
                                 onClick={this.showModalWindow.bind(this, objInfo)} >
                                 <small className="mb-n2">{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
-                                <div className="pl-2 pr-2 mb-n2">
-                                    <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>
-                                </div>
+                                <div className="pl-2 pr-2 mb-n2">{msg}</div>
                                 <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, всего: ${formatter.format(sizeAllFiles)} байт`}</small>
                             </Card>
                         </Col>
@@ -167,7 +161,12 @@ export default class CreateBodyDynamics extends React.Component {
                 progress = <div className="text-success mt-n1 mb-n1">загрузка файлов завершена</div>;
             }
 
-            if(this.state.download[pf].status === "refused"){
+            if((this.state.download[pf].status === "refused") || (this.state.download[pf].status === "stop")){
+                let msg = <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>;
+                if(this.state.download[pf].status ===  "stop"){
+                    msg = <small className="text-success">задача успешно остановлена.</small>;
+                }
+
                 list.push(
                     <Row key={`row_card_filter_${pf}`}>
                         <Col md={3} className="text-muted text-right">
@@ -183,9 +182,7 @@ export default class CreateBodyDynamics extends React.Component {
                                 <small className="text-muted">
                                     файлов загружено / с ошибкой / всего: 0 / 0 / 0
                                 </small>
-                                <div className="pl-2 pr-2 mb-n2">
-                                    <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>
-                                </div>
+                                <div className="pl-2 pr-2 mb-n2">{msg}</div>
                                 <small>загружается файл: </small>
                             </Card>
                         </Col>
