@@ -22,10 +22,15 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         };
 
         this.handlerEvents.call(this);
+        this.requestEmiter.call(this);
     }
 
     connModuleNI(){
         return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleNI: false;
+    }
+
+    requestEmiter(){
+        this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
     }
 
     handlerEvents(){

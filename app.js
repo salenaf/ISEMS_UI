@@ -94,7 +94,7 @@ async.parallel([
             });
      
         //настраиваем хранилище задач выполняемые модулем
-        globalObject.setData("tasks", "networkInteractionTaskList", {});
+        globalObject.setData("tasks", {});
 
         callback(null);
     },

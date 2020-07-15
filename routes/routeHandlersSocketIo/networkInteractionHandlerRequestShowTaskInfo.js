@@ -15,6 +15,7 @@ const sendCommandsModuleNetworkInteraction = require("../../libs/processing/rout
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
         "network interaction: show info about all task": showTaskAllInfo,
+        "network interaction: get list tasks to download files": showListTasksDownloadFiles,
     };
 
     for (let e in handlers) {
@@ -52,6 +53,41 @@ function showTaskAllInfo(socketIo, data){
                     type: "warning",
                     message: err.message.toString()
                 });            
+            } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: msg
+                });    
+            }
+
+            writeLogFile("error", err.toString()+funcName);
+        }); 
+}
+
+function showListTasksDownloadFiles(socketIo){
+    let funcName = " (func 'showListTasksDownloadFiles')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            //отправляем задачу модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.managementRequestGetListTasksDownloadFiles();
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
             } else {
                 let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
 

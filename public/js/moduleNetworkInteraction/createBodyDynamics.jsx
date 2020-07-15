@@ -221,6 +221,7 @@ export default class CreateBodyDynamics extends React.Component {
     render(){
         return (
             <React.Fragment>
+                <br/>
                 {this.createFiltrationWidget.call(this)}
                 {this.createDownloadWidget.call(this)}
             </React.Fragment>

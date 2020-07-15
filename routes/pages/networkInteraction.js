@@ -6,29 +6,6 @@ const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../libs/check/checkAccessRightsPage");
 
-function testAddProcessedTasks(){
-
-    globalObject.setData("tasks", "networkInteractionTaskList", "ifnefj939999g9gfffge3", {
-        createDate: +(new Date),
-        typeTask: "filtration",
-        statusTask: "execute",
-        userLogin: "user login test",
-        userName: "user name test",
-        sourceID: 11111,
-        sourceName: "source name Test",
-    });
-    globalObject.setData("tasks", "networkInteractionTaskList", "fievig909j99g9g99gff", {
-        createDate: +(new Date),
-        typeTask: "download",
-        statusTask: "execute",
-        userLogin: "user login test",
-        userName: "user name test",
-        sourceID: 11111,
-        sourceName: "source name Test",
-    });
-    
-}
-
 /**
  * Модуль формирующий страницу на которой реализовано управление
  * модулем сетевого взаимодействия
@@ -38,8 +15,6 @@ function testAddProcessedTasks(){
  * @param {*} objHeader
  */
 module.exports = function(req, res, objHeader) {
-    testAddProcessedTasks();
-
     async.parallel({
         permissions: (callback) => {
             checkAccessRightsPage(req, (err, result) => {
