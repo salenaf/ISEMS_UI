@@ -175,9 +175,15 @@ module.exports.setSessionID = function(passportId, sessionId, callback) {
     }).then((userSession) => {
         debug("Добавляем данные в глобальный объект 'globalObject'");
 
+        //добавляем настройки параметров пользователя 
         let isTrue = globalObject.setData("users", sessionId, userSession);
         debug(`Write data is success: '${isTrue}'`);
 
+        //создаем временное хранилище данных принятых пользователем от модуля сет. взаимодействия
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
+            listTasksDownloadFiles: {},
+            listFoundTasks: {},
+        });
 
         debug("Проверяем записанные данные");
         debug(globalObject.getData("users", userSession.sessionId));
@@ -231,7 +237,11 @@ module.exports.delete = function(sessionId, callback) {
                 else resolve(null);
             });
     }).then(() => {
+        //удаляем хранилище с информацией о конкретном пользователе
         globalObject.deleteData("users", sessionId);
+
+        //удаляем хранилище с временной информацией полученной от модуля сет. взаимодействия
+        globalObject.deleteData("tmpModuleNetworkInteraction", sessionId);
 
         callback(null);
     }).catch((err) => {

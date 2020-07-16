@@ -8,6 +8,23 @@ class SocketioEventResponse extends EventEmitter {}
  * Глобальный объект для промежуточного хрнения данных
  * 
  *   {
+ *       временные данные
+ *       здесь хранится информация о задачах фильтрации и выгрузки
+ *       файлов полученная из модуля сетевого взаимодействия
+ *       доступ по sessionId пользователя (это все для пагинатора)
+ *       tmpModuleNetworkInteraction: {
+ *          <sessionId>: {
+ *              listTasksDownloadFiles: {},
+ *              listFoundTasks: {},
+ *          }
+ *       },
+ *       выполняемые задачи для генерирования событий основываясь на 
+ *       полученном от модуля ID
+ *       tasks: {
+ *          <task ID>: {
+ *              eventName: название события в UI
+ *          },
+ *       },
  *       параметры пользователя все из БД
  *       users: {
  *          userLogin: логин,
@@ -41,7 +58,8 @@ class GlobalObject {
             "commonSettings": {},
             "descriptionDB": {},
             "descriptionAPI": {},
-            "socketioEventResponse": new SocketioEventResponse()
+            "socketioEventResponse": new SocketioEventResponse(),
+            "tmpModuleNetworkInteraction": {},
         };
     }
 

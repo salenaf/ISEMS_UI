@@ -2,6 +2,7 @@
 
 const MyError = require("../../helpers/myError");
 const helpersFunc = require("../../helpers/helpersFunc");
+const getSessionId = require("../../helpers/getSessionId");
 const globalObject = require("../../../configure/globalObject");
 
 /** ---  УПРАВЛЕНИЕ ИСТОЧНИКАМИ --- **/
@@ -401,8 +402,57 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID){
   * запрос списка задач по которым не были выгружены все файлы.
   *  
   */
-module.exports.managementRequestGetListTasksDownloadFiles = function(){
+module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo){
     return new Promise((resolve, reject) => {
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
+        });
+    }).then((sessionId) => {
+        if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
+        if(conn !== null){
+            let hex = helpersFunc.getRandomHex();
+
+            //записываем название события для генерации соответствующего ответа
+            globalObject.setData("tasks", hex, {
+                eventName: "list tasks which need to download files",
+                userSessionID: sessionId,
+            });
+
+            console.log("*-*-*-*-*-*-*-*----*--*-*-*-*");
+            console.log(globalObject.getData("tasks"));
+            console.log("*-*-*-*-*-*-*-*----*--*-*-*-*");
+
+            let tmp = {
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "search common information",
+                taskID: hex,
+                options: { 
+                    sft: "complete",
+                    fd: {
+                        afid: false,
+                    },
+                    iaf: {
+                        fif: true,
+                    } 
+                },
+            };
+
+            console.log("---------- forming Request ----------");
+            console.log(JSON.stringify(tmp));
+        
+            conn.sendMessage(tmp);
+        }    
+    });
+
+/*    return new Promise((resolve, reject) => {
         process.nextTick(() => {          
             if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
@@ -412,12 +462,18 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(){
             if(conn !== null){
                 let hex = helpersFunc.getRandomHex();
 
+//получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+// временную информацию в globalObject.tmp
+
+
                 //записываем название события для генерации соответствующего ответа
                 globalObject.setData("tasks", hex, {
-                    eventName: "list tasks  which need to download files",
+                    eventName: "list tasks which need to download files",
                 });
 
+                console.log("*-*-*-*-*-*-*-*----*--*-*-*-*");
                 console.log(globalObject.getData("tasks"));
+                console.log("*-*-*-*-*-*-*-*----*--*-*-*-*");
 
                 let tmp = {
                     msgType: "command",
@@ -443,5 +499,5 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(){
 
             resolve();
         });
-    }); 
+    }); */
 };

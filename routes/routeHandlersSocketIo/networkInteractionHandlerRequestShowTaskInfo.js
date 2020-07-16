@@ -80,7 +80,7 @@ function showListTasksDownloadFiles(socketIo){
             return;
         }).then(() => {
             //отправляем задачу модулю сетевого взаимодействия
-            return sendCommandsModuleNetworkInteraction.managementRequestGetListTasksDownloadFiles();
+            return sendCommandsModuleNetworkInteraction.managementRequestGetListTasksDownloadFiles(socketIo);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({

@@ -62,7 +62,7 @@ export default class CreatingWidgets extends React.Component {
                 </Card>
                 <Card className="ml-3" border="info" style={{ width: "13rem" }}>
                     <small>загрузка файлов</small>
-                    <span className="my-n2 text-info">{this.state.download.size} / 0</span>
+                    <span className="my-n2 text-info">{this.state.download.size} / {this.props.widgets.numTasksNotDownloadFiles}</span>
                     <small className="text-muted"> выполняется / доступна</small>
                 </Card>
                 <Card className="ml-3" border="info" style={{ width: "13rem" }}>

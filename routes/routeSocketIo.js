@@ -389,7 +389,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             /* при получении информации о задаче по ее ID проверяем 
              надо ли востановить информацию о задаче в globalObject */
-            if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)){
+            /*if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)){
                 let taskInfo = globalObject.getData("tasks", "networkInteractionTaskList", msg.options.tp.ctid);
                 createDate = taskInfo.createDate;
                 typeTask = taskInfo.typeTask;
@@ -400,19 +400,52 @@ module.exports.modulesEventGenerator = function(socketIo) {
             }
 
             console.log(`task ID '${msg.taskID}' is found: '${globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)}'`);
-            
-            //формируем сообщение о выполнении процесса фильтрации
-            socketIo.emit("module NI API", { 
-                "type": "processingGetAllInformationByTaskID",
-                "options": {
-                    typeTask: typeTask,
-                    userLogin: userLogin,
-                    userName: userName,
-                    createDate: createDate,
-                    status: msg.options.s,
-                    taskParameter: msg.options.tp,
+            */
+
+            //получили всю информацию о задаче по ее ID
+            if(msg.instruction === "processing get all information by task ID"){
+                socketIo.emit("module NI API", { 
+                    "type": "processingGetAllInformationByTaskID",
+                    "options": {
+                        typeTask: typeTask,
+                        userLogin: userLogin,
+                        userName: userName,
+                        createDate: createDate,
+                        status: msg.options.s,
+                        taskParameter: msg.options.tp,
+                    }
+                });
+            }
+
+            //получили краткую информацию о всех задачах подходящих под 
+            //заданные условия поиска
+            if(msg.instruction === "processing information search task"){
+                //ищем тип задачи в globalObject.tasks
+                if(globalObject.hasData("tasks", msg.taskID)){
+                    let taskInfo = globalObject.getData("tasks", msg.taskID);
+
+                    //только для вкладки "загрузка файлов" и для виджетов 
+                    if(taskInfo.eventName === "list tasks which need to download files"){
+                        require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);
+                    }
+
+                    //только как результат при поиске во вкладке "поиск"
+                    if(taskInfo.eventName === "list of found tasks"){
+
+                    }
+                } else {
+                    socketIo.emit("module NI API", { 
+                        "type": msg.instruction,
+                        "options": msg.options,
+                        /*typeTask: typeTask,
+            userLogin: userLogin,
+            userName: userName,
+            createDate: createDate,
+            status: msg.options.s,
+            taskParameter: msg.options.tp,*/
+                    });
                 }
-            });
+            }
 
             /*        msg.options.slft.forEach((item) => {
             debug(item);

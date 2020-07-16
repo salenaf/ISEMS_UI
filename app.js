@@ -95,6 +95,10 @@ async.parallel([
      
         //настраиваем хранилище задач выполняемые модулем
         globalObject.setData("tasks", {});
+        //устанавливаем временное хранилище для информации о задачах фильтрации
+        // и выгрузки фалов полученных из модуля сет. взаимодействия. 
+        // Доступ к хранилищу по sessionId пользователя
+        globalObject.setData("tmpModuleNetworkInteraction", {});
 
         callback(null);
     },
