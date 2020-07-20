@@ -95,7 +95,16 @@ module.exports.create = function(passportID, sessionID, callback) {
 
             debug(objData);
             debug("записываем информацию о пользователе в session_user_information");
-    
+
+            debug("создаем хранилище для информации о задачах фильтрации и выгрузки");
+            //создаем хранилище для информации о задачах фильтрации и выгрузки
+            globalObject.setData("tmpModuleNetworkInteraction", sessionID, {
+                tasksDownloadFiles: {},
+                resultFoundTasks: {},
+            });
+
+            debug(globalObject.getData("tmpModuleNetworkInteraction", sessionID));
+
             //записываем информацию о пользователе в session_user_information
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryCreate(models.modelSessionUserInformation, {

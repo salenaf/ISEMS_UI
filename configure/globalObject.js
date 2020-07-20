@@ -14,8 +14,18 @@ class SocketioEventResponse extends EventEmitter {}
  *       доступ по sessionId пользователя (это все для пагинатора)
  *       tmpModuleNetworkInteraction: {
  *          <sessionId>: {
- *              listTasksDownloadFiles: {},
- *              listFoundTasks: {},
+ *              tasksDownloadFiles: {
+ *                  taskID: STRING,                 
+ *                  status: STRING,
+ *                  numFound: INT, //сколько всего найдено
+ *                  paginationOptions: { параметры разбиения частей
+ *			            chunkSize: INT размер сегмента (кол-во задач в сегменте)
+ *			            chunkNumber: INT общее количество сегментов
+ *			            chunkCurrentNumber: INT номер текущего фрагмента
+ *                  }
+ *                  listTasksDownloadFiles: []
+ *              },
+ *              resultFoundTasks: {},
  *          }
  *       },
  *       выполняемые задачи для генерирования событий основываясь на 
