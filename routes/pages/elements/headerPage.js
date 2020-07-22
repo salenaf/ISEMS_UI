@@ -29,6 +29,23 @@ module.exports = function(req) {
                     else callback(null, result);
                 });
             },
+            restoreTmpModuleNetworkInteraction: (callback) => {
+                //восстанавливаем свойство tmpModuleNetworkInteraction в globalObject
+
+                console.log("----==== headerPage ====----");
+                console.log(req.sessionID);
+                console.log("----==== headerPage ====----");
+
+                if(!globalObject.hasData("tmpModuleNetworkInteraction", req.sessionID)){
+                    console.log("session ID from globalObject is not found");
+                    globalObject.setData("tmpModuleNetworkInteraction", req.sessionID, {
+                        tasksDownloadFiles: {},
+                        resultFoundTasks: {},
+                    });
+                }
+
+                callback(null);
+            },
         }, (err, result) => {
             if(err) reject(err);
     

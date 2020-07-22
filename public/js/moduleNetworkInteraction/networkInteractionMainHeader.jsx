@@ -50,20 +50,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 
             //для списка задач трафик по которым не выгружался
             if(data.type === "get list tasks files not downloaded"){
-                // тип надо дописать
-                console.log(data);
-
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;
                 this.setState({ widgets: tmpCopy });
-
-                /**
-                            !!!!!!!!!!!!!!!!!
-                    Здесь придется делать отдельный обработчик
-                основываясь на том что, в зависимости от количества найденных
-                задач, возможно понадобится ПАГИНАТОР
-                */
             }
     
         });

@@ -95,6 +95,7 @@ export default class CreateTableSources extends React.Component {
                         overlay={<Tooltip>отметить для удаления</Tooltip>}>
                         <Form>
                             <Form.Check 
+                                className="mt-1"
                                 custom 
                                 onChange={this.props.changeCheckboxMarked.bind(this, elem.sourceID)}
                                 type="checkbox" 
