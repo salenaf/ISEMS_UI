@@ -477,6 +477,21 @@ export default class ModalWindowShowInformationTask extends React.Component {
         );
     }
 
+    createButtonStop(){
+        if((this.state.filteringStatus.ts === "complete") && (this.state.downloadingStatus.ts === "complete")){
+            return;
+        }
+
+        return (
+            <Button 
+                variant="outline-danger" 
+                onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} 
+                size="sm">
+                остановить задачу
+            </Button>
+        );
+    }
+
     render(){
         return (
             <Modal
@@ -493,9 +508,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                     {this.createModalBody.call(this)}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-danger" onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} size="sm">
-                        остановить задачу
-                    </Button>
+                    {this.createButtonStop.call(this)}
                     <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
                         закрыть
                     </Button>

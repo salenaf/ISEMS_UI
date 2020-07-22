@@ -30,6 +30,24 @@ export default class CreateBodyDownloadFiles extends React.Component {
         });
     }
 
+    headerClickTable(objData, type, e){
+        console.log("func 'headerClickTable'");
+        console.log(`task ID: ${objData.taskID}`);
+        console.log(`source ID: ${objData.sourceID}`);
+        console.log(`type: ${type}`);
+        console.log(e);
+
+        if(type === "info"){
+            this.props.handlerModalWindowShowTaskTnformation(objData);
+            
+            this.props.socketIo.emit("network interaction: show info about all task", {
+                arguments: { taskID: objData.taskID } 
+            });
+        } else {
+            console.log("download");
+        }
+    }
+
     getListNetworkParameters(type, item){
         let getListDirection = (d) => {
             if(item[d].length === 0){
@@ -91,55 +109,47 @@ export default class CreateBodyDownloadFiles extends React.Component {
             let formaterInt = new Intl.NumberFormat();
 
             this.state.listFileDownloadOptions.slft.forEach((item) => {
+                let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: "" };
+
                 tableBody.push(<tr key={`tr_${item.tid}`}>
-                    <td className="align-middle" key={`tr_${item.tid}_num`}>
+                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
                         <small>{`${++num}.`}</small>
                     </td>
-                    <td className="align-middle" key={`tr_${item.tid}_sourceID`}>
+                    <td className="align-middle clicabe_cursor text-info" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sourceID`}>
                         <small>{item.sid}</small>
                     </td>
-                    <td className="align-middle my_line_spacing" key={`tr_${item.tid}_time`}>
+                    <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time`}>
                         <div><small>{formatterDate.format(item.pf.dt.s*1000)}</small></div>
                         <div><small>{formatterDate.format(item.pf.dt.e*1000)}</small></div>
                     </td>
-                    <td className="align-middle my_line_spacing" key={`tr_${item.tid}_proto`}>
+                    <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_proto`}>
                         <small>{item.pf.p}</small>
                     </td>
-                    <td className="my_line_spacing" key={`tr_${item.tid}_ip`}>
+                    <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_ip`}>
                         <small>{this.getListNetworkParameters("ip", item.pf.f.ip)}</small>
                     </td>
-                    <td className="my_line_spacing" key={`tr_${item.tid}_network`}>
+                    <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_network`}>
                         <small>{this.getListNetworkParameters("nw", item.pf.f.nw)}</small>
                     </td>
-                    <td className="my_line_spacing" key={`tr_${item.tid}_port`}>
+                    <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_port`}>
                         <small>{this.getListNetworkParameters("pt", item.pf.f.pt)}</small>
                     </td>
-                    <td className="align-middle" key={`tr_${item.tid}_search_file`}>
+                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_search_file`}>
                         <small>{formaterInt.format(item.nffarf)}</small>
                     </td>
-                    <td className="align-middle" key={`tr_${item.tid}_size_search_files`}>
+                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_size_search_files`}>
                         <small>{`${formaterInt.format(item.tsffarf)} байт.`}</small>
                     </td>
-                    <td className="align-middle" key={`tr_${item.tid}_download_files`}>
+                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_download_files`}>
                         <small>{formaterInt.format(item.nfd)}</small>
                     </td>
-                    <td className="align-middle">
+                    <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "download")}>
                         <OverlayTrigger
                             key={`tooltip_${item.tid}_download_img`}
                             placement="top"
                             overlay={<Tooltip>скачать файлы</Tooltip>}>
                             <a href="#" /*onClick={this.props.handlerTaskInfo.bind(this, item)}*/>
                                 <img className="clickable_icon" src="./images/icons8-download-from-the-cloud-32.png" alt="скачать"></img>
-                            </a>
-                        </OverlayTrigger>
-                    </td>
-                    <td className="align-middle">
-                        <OverlayTrigger
-                            key={`tooltip_${item.tid}_info_img`}
-                            placement="top"
-                            overlay={<Tooltip>информация о задаче</Tooltip>}>
-                            <a href="#" /*onClick={this.props.handlerTaskInfo.bind(this, item)}*/>
-                                <img className="clickable_icon" src="./images/icons8-info-28.png" alt="информация"></img>
                             </a>
                         </OverlayTrigger>
                     </td>
@@ -175,7 +185,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
                                     <th className="my_line_spacing">общий размер найденных файлов</th>
                                     <th className="my_line_spacing">загруженные файлы</th>
                                     <th></th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -205,4 +214,5 @@ export default class CreateBodyDownloadFiles extends React.Component {
 
 CreateBodyDownloadFiles.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    handlerModalWindowShowTaskTnformation: PropTypes.func.isRequired,
 };

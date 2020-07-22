@@ -98,6 +98,10 @@ export default class PageManagingNetworkInteractions extends React.Component {
     }
 
     handlerModalWindowShowTaskTnformation(data){
+
+        console.log("func 'handlerModalWindowShowTaskTnformation'...");
+        console.log(data);
+
         let objCopy = Object.assign({}, this.state);
         objCopy.shortTaskInformation.sourceID = data.sourceID;
         objCopy.shortTaskInformation.sourceName = data.sourceName;
@@ -179,7 +183,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
                             </Tab>
                             <Tab eventKey="download_task" title="загрузка файлов">
                                 <CreateBodyDownloadFiles
-                                    socketIo={this.props.socketIo} />
+                                    socketIo={this.props.socketIo} 
+                                    handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} />
                             </Tab>
                             <Tab eventKey="search_task" title="поиск">
                                 <CreateBodySearchTask />

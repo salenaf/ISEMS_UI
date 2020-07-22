@@ -121,6 +121,12 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
         }
     }
 
+    /**
+ * Нужно сделать что бы в списке было краткое название источника
+ * это можно сделать через globalObject.setData("sources")
+ * и сформировать новый список options
+ */
+
     //отправляем информацию в UI
     socketIo.emit("module NI API", { 
         "type": "get list tasks files not downloaded",
