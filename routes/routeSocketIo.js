@@ -529,4 +529,7 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
 
     /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ О ЗАДАЧАХ ВЫПОЛНЯЕМЫХ МОДУЛЕМ СЕТЕВОГО ВЗАИМОДЕЙСТВИЯ --- */
     require("./routeHandlersSocketIo/networkInteractionHandlerRequestShowTaskInfo").addHandlers(socketIo);
+
+    /* --- ОБРАБОТЧИК ДЕЙСТВИЙ ПРИ СКАЧИВАНИИ ФАЙЛОВ, В ТОМ ЧИСЛЕ ЗАПРОС СПИСКА ЗАДАЧ (пагинатор) --- */
+    require("./routeHandlersSocketIo/handlerActionsDownloadingTasks").addHandlers(socketIo);
 };

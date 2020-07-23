@@ -110,6 +110,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     widgets={this.state.widgets} 
                     socketIo={this.props.socketIo} />
                 {this.showModuleConnectionError.call(this)}
+                <br/>
                 <PageManagingNetworkInteractions
                     socketIo={this.props.socketIo}
                     listSources={this.state.listSources}

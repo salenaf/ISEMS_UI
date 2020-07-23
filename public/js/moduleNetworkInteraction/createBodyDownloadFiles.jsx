@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Col, Row, Table, Tooltip, OverlayTrigger, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateBodyDownloadFiles extends React.Component {
@@ -7,25 +7,30 @@ export default class CreateBodyDownloadFiles extends React.Component {
         super(props);
 
         this.state = {
+            currentTaskID: "",
             listFileDownloadOptions: {
-                P: {},
+                p: { cs: 0, cn: 0, ccn: 0 },
                 slft: [],
                 tntf: 0,
-            }
+            },
+            currentNumPagination: 1,
         };
 
         this.getListNetworkParameters = this.getListNetworkParameters.bind(this);
-            
+        
         this.headerEvents.call(this);
     }
-
+   
     headerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
             if(data.type === "get list tasks files not downloaded"){
 
                 console.log(data);
     
-                this.setState({ listFileDownloadOptions: data.options });
+                this.setState({ 
+                    currentTaskID: data.taskID,
+                    listFileDownloadOptions: data.options 
+                });
             }
         });
     }
@@ -46,6 +51,49 @@ export default class CreateBodyDownloadFiles extends React.Component {
         } else {
             console.log("download");
         }
+    }
+
+    headerNextItemPagination(num){
+        console.log("func 'headerNextItemPagination', START...");
+        console.log(`next num pagination is '${num}'`);
+
+        if(this.state.currentNumPagination === num){
+            return;
+        }
+
+        console.log(`send request to next pagination '${num}'`);
+
+        this.props.socketIo.emit("get next chunk list tasks files not downloaded", {
+            taskID: this.state.currentTaskID,
+            chunkSize: this.state.listFileDownloadOptions.p.cs,
+            nextChunk: num,
+        });
+    }
+
+    createPagination(){
+        if(this.state.listFileDownloadOptions.p.cn <= 1){
+            return;
+        }
+
+        let listItem = [];
+        for(let i = 1; i < this.state.listFileDownloadOptions.p.cn+1; i++){       
+            listItem.push(
+                <Pagination.Item 
+                    key={`pag_${i}`} 
+                    active={this.state.currentNumPagination === i}
+                    onClick={this.headerNextItemPagination.bind(this, i)} >
+                    {i}
+                </Pagination.Item>
+            );
+        }
+
+        return (
+            <Row>
+                <Col md={12} className="d-flex justify-content-center">
+                    <Pagination size="sm">{listItem}</Pagination>
+                </Col>
+            </Row>
+        );
     }
 
     getListNetworkParameters(type, item){
@@ -109,7 +157,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             let formaterInt = new Intl.NumberFormat();
 
             this.state.listFileDownloadOptions.slft.forEach((item) => {
-                let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: "" };
+                let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn };
 
                 tableBody.push(<tr key={`tr_${item.tid}`}>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
@@ -117,6 +165,9 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     </td>
                     <td className="align-middle clicabe_cursor text-info" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sourceID`}>
                         <small>{item.sid}</small>
+                    </td>
+                    <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sourceName`}>
+                        <small>{item.sn}</small>
                     </td>
                     <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time`}>
                         <div><small>{formatterDate.format(item.pf.dt.s*1000)}</small></div>
@@ -168,36 +219,37 @@ export default class CreateBodyDownloadFiles extends React.Component {
         }
 
         return (
-            <React.Fragment>
-                <Row className="py-2">
-                    <Col>
-                        <Table size="sm" striped hover>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th className="my_line_spacing">ID источника</th>
-                                    <th className="my_line_spacing">интервал времени</th>
-                                    <th className="my_line_spacing">сет. протокол</th>
-                                    <th className="my_line_spacing">ip адреса</th>
-                                    <th>сети</th>
-                                    <th>порты</th>
-                                    <th className="my_line_spacing">найденные файлы</th>
-                                    <th className="my_line_spacing">общий размер найденных файлов</th>
-                                    <th className="my_line_spacing">загруженные файлы</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {createTableBody()}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>    
-            </React.Fragment>
+            <Row className="py-2">
+                <Col>
+                    <Table size="sm" striped hover>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th className="my_line_spacing">ID</th>
+                                <th className="my_line_spacing">название</th>
+                                <th className="my_line_spacing">интервал времени</th>
+                                <th className="my_line_spacing">сет. протокол</th>
+                                <th className="my_line_spacing">ip адреса</th>
+                                <th>сети</th>
+                                <th>порты</th>
+                                <th className="my_line_spacing">найденные файлы</th>
+                                <th className="my_line_spacing">общий размер найденных файлов</th>
+                                <th className="my_line_spacing">загруженные файлы</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {createTableBody()}
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row>    
         );
     }
 
     render(){
+        let createPagination = this.createPagination.call(this);
+
         return (
             <React.Fragment>
                 <Row className="text-right">
@@ -205,7 +257,9 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     задач, по которым не выполнялась выгрузка файлов: <span className="text-info">{this.state.listFileDownloadOptions.tntf}</span>
                     </Col>
                 </Row>
+                {createPagination}
                 {this.createTableListDownloadFile.call(this)}
+                {createPagination}
             </React.Fragment>
         );
     }

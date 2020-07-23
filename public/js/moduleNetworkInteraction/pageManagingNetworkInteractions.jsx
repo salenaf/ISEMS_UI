@@ -147,7 +147,7 @@ export default class PageManagingNetworkInteractions extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Row className="mt-3">
+                <Row className="pt-3">
                     <Col md={12} className="text-right">
                         <Button
                             className="mx-1"

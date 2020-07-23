@@ -3,6 +3,7 @@
 const crypto = require("crypto");
 
 const commons = require("./commons");
+const globalObject = require("../../configure/globalObject");
 
 module.exports.checkUserSettingsManagementUsers = function(userSettings) {
     const checkObj = {
@@ -65,4 +66,33 @@ module.exports.getCountConnectionSources = (go) => {
     }
 
     return obj;
+};
+
+module.exports.modifyListFoundTasks = (oldList) => {
+    let tmpSource = {
+        sid: 0,
+        name: "",
+    };
+
+    return oldList.map((item) => {
+        if(tmpSource.sid === item.sid){
+            item.sn = tmpSource.name;
+
+            return item;
+        }
+
+        if(!globalObject.hasData("sources", item.sid)){
+            item.sn = "нет данных";
+        } else {
+            let sourceInfo = globalObject.getData("sources", item.sid);
+            tmpSource = {
+                sid: item.sid,
+                name: sourceInfo.shortName,
+            };
+        
+            item.sn = sourceInfo.shortName;   
+        }
+
+        return item;
+    });
 };
