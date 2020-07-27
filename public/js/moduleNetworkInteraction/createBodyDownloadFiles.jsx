@@ -9,11 +9,10 @@ export default class CreateBodyDownloadFiles extends React.Component {
         this.state = {
             currentTaskID: "",
             listFileDownloadOptions: {
-                p: { cs: 0, cn: 0, ccn: 0 },
+                p: { cs: 0, cn: 0, ccn: 1 },
                 slft: [],
                 tntf: 0,
             },
-            currentNumPagination: 1,
         };
 
         this.getListNetworkParameters = this.getListNetworkParameters.bind(this);
@@ -29,7 +28,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
     
                 this.setState({ 
                     currentTaskID: data.taskID,
-                    listFileDownloadOptions: data.options 
+                    listFileDownloadOptions: data.options, 
                 });
             }
         });
@@ -50,6 +49,16 @@ export default class CreateBodyDownloadFiles extends React.Component {
             });
         } else {
             console.log("download");
+
+            this.props.handlerShowModalWindowListFileDownload(objData);
+
+            this.props.socketIo.emit("network interaction: get a list of files for a task", {
+                arguments: { 
+                    taskID: objData.taskID,
+                    partSize: 25,
+                    offsetListParts: 0,
+                } 
+            });
         }
     }
 
@@ -57,13 +66,13 @@ export default class CreateBodyDownloadFiles extends React.Component {
         console.log("func 'headerNextItemPagination', START...");
         console.log(`next num pagination is '${num}'`);
 
-        if(this.state.currentNumPagination === num){
+        if(this.state.listFileDownloadOptions.p.ccn === num){
             return;
         }
 
         console.log(`send request to next pagination '${num}'`);
 
-        this.props.socketIo.emit("get next chunk list tasks files not downloaded", {
+        this.props.socketIo.emit("network interaction: get next chunk list tasks files not downloaded", {
             taskID: this.state.currentTaskID,
             chunkSize: this.state.listFileDownloadOptions.p.cs,
             nextChunk: num,
@@ -80,7 +89,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             listItem.push(
                 <Pagination.Item 
                     key={`pag_${i}`} 
-                    active={this.state.currentNumPagination === i}
+                    active={this.state.listFileDownloadOptions.p.ccn === i}
                     onClick={this.headerNextItemPagination.bind(this, i)} >
                     {i}
                 </Pagination.Item>
@@ -145,6 +154,10 @@ export default class CreateBodyDownloadFiles extends React.Component {
             }
 
             let num = 0;
+            if(this.state.listFileDownloadOptions.p.ccn > 1){
+                num = (this.state.listFileDownloadOptions.p.ccn - 1) * this.state.listFileDownloadOptions.p.cs;
+            }
+
             let tableBody = [];
             let formatterDate = new Intl.DateTimeFormat("ru-Ru", {
                 timeZone: "Europe/Moscow",
@@ -199,7 +212,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
                             key={`tooltip_${item.tid}_download_img`}
                             placement="top"
                             overlay={<Tooltip>скачать файлы</Tooltip>}>
-                            <a href="#" /*onClick={this.props.handlerTaskInfo.bind(this, item)}*/>
+                            <a href="#">
                                 <img className="clickable_icon" src="./images/icons8-download-from-the-cloud-32.png" alt="скачать"></img>
                             </a>
                         </OverlayTrigger>
@@ -254,7 +267,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             <React.Fragment>
                 <Row className="text-right">
                     <Col className="text-muted mt-3">
-                    задач, по которым не выполнялась выгрузка файлов: <span className="text-info">{this.state.listFileDownloadOptions.tntf}</span>
+                    задач, по которым не выполнялась выгрузка файлов <span className="text-info">{this.state.listFileDownloadOptions.tntf}</span>
                     </Col>
                 </Row>
                 {createPagination}
@@ -269,4 +282,5 @@ export default class CreateBodyDownloadFiles extends React.Component {
 CreateBodyDownloadFiles.propTypes = {
     socketIo: PropTypes.object.isRequired,
     handlerModalWindowShowTaskTnformation: PropTypes.func.isRequired,
+    handlerShowModalWindowListFileDownload: PropTypes.func.isRequired,
 };

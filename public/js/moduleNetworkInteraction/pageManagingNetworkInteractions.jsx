@@ -123,7 +123,13 @@ export default class PageManagingNetworkInteractions extends React.Component {
         console.log("func 'handlerButtonSubmitWindowDownload', START...");
     }
 
-    handlerShowModalWindowListDownload(){
+    handlerShowModalWindowListDownload(data){
+        let objCopy = Object.assign({}, this.state);
+        objCopy.shortTaskInformation.sourceID = data.sourceID;
+        objCopy.shortTaskInformation.sourceName = data.sourceName;
+        objCopy.shortTaskInformation.taskID = data.taskID;
+        this.setState(objCopy);
+
         this.setState({ showModalWindowListDownload: true });
     }
 
@@ -184,7 +190,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
                             <Tab eventKey="download_task" title="загрузка файлов">
                                 <CreateBodyDownloadFiles
                                     socketIo={this.props.socketIo} 
-                                    handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} />
+                                    handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} 
+                                    handlerShowModalWindowListFileDownload={this.handlerShowModalWindowListDownload} />
                             </Tab>
                             <Tab eventKey="search_task" title="поиск">
                                 <CreateBodySearchTask />
@@ -207,6 +214,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
                 <ModalWindowListTaskDownloadFiles 
                     show={this.state.showModalWindowListDownload}
                     onHide={this.handlerCloseModalWindowListDownload}
+                    socketIo={this.props.socketIo}
+                    shortTaskInfo={this.state.shortTaskInformation}
                     handlerButtonSubmit={this.handlerButtonSubmitWindowDownload} />
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}

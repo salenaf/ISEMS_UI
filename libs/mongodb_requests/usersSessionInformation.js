@@ -189,10 +189,10 @@ module.exports.setSessionID = function(passportId, sessionId, callback) {
         debug(`Write data is success: '${isTrue}'`);
 
         //создаем временное хранилище данных принятых пользователем от модуля сет. взаимодействия
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
-            listTasksDownloadFiles: {},
-            listFoundTasks: {},
-        });
+        /*globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
+            tasksDownloadFiles: {},
+            resultFoundTasks: {},
+        });*/
 
         debug("Проверяем записанные данные");
         debug(globalObject.getData("users", userSession.sessionId));

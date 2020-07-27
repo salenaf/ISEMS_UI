@@ -447,6 +447,14 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 }
             }
 
+            if(msg.instruction === "processing list files by task ID"){
+                debug("received information about file list");
+
+                socketIo.emit("module NI API", {
+                    "type": "listFilesByTaskID",
+                    "options": msg.options,
+                });
+            }
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/
