@@ -28,7 +28,6 @@ export default class PageManagingNetworkInteractions extends React.Component {
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerShowModalWindowFiltration = this.handlerShowModalWindowFiltration.bind(this);
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
-        this.handlerButtonSubmitWindowDownload = this.handlerButtonSubmitWindowDownload.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
@@ -119,10 +118,6 @@ export default class PageManagingNetworkInteractions extends React.Component {
         this.setState({ showModalWindowShowTaskInformation: false });
     }
 
-    handlerButtonSubmitWindowDownload(){
-        console.log("func 'handlerButtonSubmitWindowDownload', START...");
-    }
-
     handlerShowModalWindowListDownload(data){
         let objCopy = Object.assign({}, this.state);
         objCopy.shortTaskInformation.sourceID = data.sourceID;
@@ -202,6 +197,9 @@ export default class PageManagingNetworkInteractions extends React.Component {
                             <Tab eventKey="sources_telemetry" title="телеметрия с источников">
                                 {"страница телеметрии источников"}
                             </Tab>
+                            <Tab eventKey="event_log" title="журнал событий">
+                                {"журнал событий"}
+                            </Tab>
                         </Tabs>
                     </Col>
                 </Row>                    
@@ -215,8 +213,8 @@ export default class PageManagingNetworkInteractions extends React.Component {
                     show={this.state.showModalWindowListDownload}
                     onHide={this.handlerCloseModalWindowListDownload}
                     socketIo={this.props.socketIo}
-                    shortTaskInfo={this.state.shortTaskInformation}
-                    handlerButtonSubmit={this.handlerButtonSubmitWindowDownload} />
+                    userPermissionImport={this.props.userPermission.management_tasks_import.element_settings.resume.status}
+                    shortTaskInfo={this.state.shortTaskInformation} />
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}

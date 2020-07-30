@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row, Table, Tooltip, OverlayTrigger, Pagination } from "react-bootstrap";
+import { Col, Row, Table, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateBodyDownloadFiles extends React.Component {
@@ -208,14 +208,9 @@ export default class CreateBodyDownloadFiles extends React.Component {
                         <small>{formaterInt.format(item.nfd)}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "download")}>
-                        <OverlayTrigger
-                            key={`tooltip_${item.tid}_download_img`}
-                            placement="top"
-                            overlay={<Tooltip>скачать файлы</Tooltip>}>
-                            <a href="#">
-                                <img className="clickable_icon" src="./images/icons8-download-from-the-cloud-32.png" alt="скачать"></img>
-                            </a>
-                        </OverlayTrigger>
+                        <a href="#">
+                            <img className="clickable_icon" src="./images/icons8-download-from-the-cloud-32.png" alt="скачать"></img>
+                        </a>
                     </td>
                 </tr>);
             });

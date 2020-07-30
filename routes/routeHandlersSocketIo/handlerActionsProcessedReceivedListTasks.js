@@ -35,7 +35,6 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
         });    
 
         return writeLogFile("error", "the 'listTasksDownloadFiles' property was not found in 'globalObject'"+funcName);
-
     }
 
     let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
