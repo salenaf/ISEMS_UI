@@ -15,15 +15,16 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
             listFileChecked: new Map,
             numFileChecked: 0,
             sizeFileChecked: 0,
-            onScrollChunk: 0,
+            onScrollChunk: 1,
+            disabledButtonNext: false,
         };
-
-        this.myRef = React.createRef();
 
         this.formaterInt = new Intl.NumberFormat();
 
+        this.buttonNext = this.buttonNext.bind(this);
         this.countAndSizeFileChecked = this.countAndSizeFileChecked.bind(this);
         this.handlerDownloadAllFiles = this.handlerDownloadAllFiles.bind(this);
+        this.handlerNextChunkFileList = this.handlerNextChunkFileList.bind(this);
         this.handlerDownloadMarkerFiles = this.handlerDownloadMarkerFiles.bind(this);
 
         this.handlerEvents.call(this);
@@ -32,17 +33,31 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
     handlerEvents(){
         this.props.socketIo.on("module NI API", (msg) => {
 
-            if(msg.type !== "downloadProcessing" && msg.type !== "filtrationProcessing"){
+            /*if(msg.type !== "downloadProcessing" && msg.type !== "filtrationProcessing"){
                 console.log(msg);
-            }
+            }*/
 
             if(msg.type === "listFilesByTaskID"){
-                console.log("--- received file list ---");
-                console.log(msg.options);
-                console.log("--------------------------");
+                //                console.log("--- received file list ---");
+                //                console.log(msg.options);
+                //                console.log("--------------------------");
+
+                if((msg.options.tid !== this.state.taskID) || (msg.options.olp === 0)){
+                    this.setState({
+                        taskID: msg.options.tid,
+                        fullSizeListFile: msg.options.fls,
+                        listFile: msg.options.lf,
+                        listFileChecked: new Map,
+                        numFileChecked: 0,
+                        sizeFileChecked: 0,
+                        onScrollChunk: 1,
+                        disabledButtonNext: false,
+                    });
+
+                    return;
+                }
 
                 let onScrollChunk = this.state.onScrollChunk + 1;
-
                 let listFile = [].concat(this.state.listFile, msg.options.lf);
 
                 this.setState({
@@ -53,6 +68,7 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                     numFileChecked: 0,
                     sizeFileChecked: 0,
                     onScrollChunk: onScrollChunk,
+                    disabledButtonNext: false,
                 });
             }
         });
@@ -79,9 +95,7 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
         });
     }
 
-    handlerDownloadAllFiles(){
-        console.log("func 'handlerDownloadAllFiles'");
-        
+    handlerDownloadAllFiles(){      
         this.props.socketIo.emit("network interaction: start downloading files", {
             arguments: { 
                 o: {
@@ -96,8 +110,6 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
     }
 
     handlerDownloadMarkerFiles(){
-        console.log("func 'handlerDownloadMarkerFiles'");
-
         let fileList = [];
         for(let fn of this.state.listFileChecked.keys()){
             fileList.push(fn);
@@ -116,48 +128,40 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
         this.props.onHide();
     }
 
-    onScroll() {
-        if(this.state.listFile.size === this.state.fullSizeListFile){
+    handlerNextChunkFileList(){
+        //отправляем запрос
+        this.props.socketIo.emit("network interaction: get a list of files for a task", {
+            arguments: { 
+                taskID: this.state.taskID,
+                partSize: 25,
+                offsetListParts: this.state.onScrollChunk*25,
+            } 
+        });
+
+        //выключаем кнопку 'ещё' пока запрос не будет выполнен
+        this.setState({ disabledButtonNext: false });
+    }
+
+    buttonNext(){
+        if(this.state.listFile.length === this.state.fullSizeListFile){
             return;
         }
 
-        //        const scrollY = window.scrollY; //Don't get confused by what's scrolling - It's not the window
-        const scrollTop = this.myRef.current.scrollTop;
-
-        console.log(`scrollTop: '${scrollTop}' > this.state.onScrollChunk * 227: '${this.state.onScrollChunk * 227}'`);
-
-        if(scrollTop > (this.state.onScrollChunk * 227)){
-            console.log(`onScroll, window.scrollY: ${scrollY} myRef.scrollTop: ${scrollTop}`);
-            /*
-ВОТ ЗДЕСь НЕ ПОНЯТНО, через какое то время генерируется
-слишком много запросов
-
-            здесь делаем запрос следующей части списка файлов,
-            принимая следующую часть списка увеличиваем this.state.onScrollChunk 
-            на 1 и добавляем список в массив listFile
-            */
-            this.props.socketIo.emit("network interaction: get a list of files for a task", {
-                arguments: { 
-                    taskID: this.state.taskID,
-                    partSize: 25,
-                    offsetListParts: this.state.onScrollChunk*25,
-                } 
-            });
-        }
-
+        return (
+            <Row>
+                <Col md={12}>
+                    <Button 
+                        className="mr-2"
+                        variant="light" 
+                        onClick={this.handlerNextChunkFileList} 
+                        disabled={this.state.disabledButtonNext}
+                        size="sm">
+                                ещё...
+                    </Button>
+                </Col>
+            </Row>
+        );
     }
-
-    /**
-     * Обработчики на кнопки 'скачать выбранное' 'скачать все' я
-     * сделал, надо лишь протестировать, но не на этих
-     * данных. Нужно все чистить и фильтровать заново.
-     * Кроме того поиск работатет странно, задач найдено больше чем надо,
-     * даже те по которым файлы уже были скачаны.
-     * 
-     * Еще необходим журнал событий модуля сетевого взаимодействия.
-     * 
-     * Сделать обработчик на подгрузку данных при скроле.
-     */
 
     countAndSizeFileChecked() {
         let tmp = { num: 0, size: 0 };
@@ -247,15 +251,8 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col md={12} ref={this.myRef}
-                        onScroll={this.onScroll.bind(this)}
-                        style={{
-                            //border: '1px solid black',
-                            //width: "600px",
-                            height: "800px",
-                            overflow: "scroll",
-                        }}>
-                        <Table onScroll={this.handlerSrollFileList} size="sm" striped hover>
+                    <Col md={12}>
+                        <Table size="sm" striped hover>
                             <thead>
                                 <tr>
                                     <th></th>
@@ -269,12 +266,39 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                                 {createList()}
                             </tbody>
                         </Table>
-                        <div id="table_finish"></div>
                     </Col>
                 </Row>
             </React.Fragment>
         );
     }
+
+    /**
+ * 1. Виджет загрузка файлов выполняется/доступна,
+ * доступна не отображается (не 0 а просто ничего)
+ * если нет задач по которым возможна выгрузка файлов.
+ * 2. Кроме того нет автообновления вкладки 'загрузка файлов'
+ * при выполении фильтрации, если были найдены файлы
+ * необходимые к загрузке, а также нет автообновления
+ * при завершении задачи по скачиванию файло (надо убрать ее
+ * из списка задач для скачивания).
+ * 3. Поиск во вкладке 'загрузка файлов' выдает слишком
+ * много задач, в том числе и задачи по которым файлы выгружались.
+ * 4. Если нет задач для скачивания файлов, то нотификатион
+ * выводит информацию об этом при обновлении страницы.
+ * 5. При выполнении скачивания части файлов, не обновляется модальное
+ * окно со списком файлов возможных к загрузки.
+ * 
+ *          !!!!!
+ * 6, Какого то хрена, при скачивании выбранных файлов в БД
+ * ISEMS-NIH_master не меняется количество скаченных файлов.
+ * (ОКАЗЫВАЕТСЯ ЭТО КОЛ-ВО ЗАГРУЖЕННЫХ ФАЙЛОВ ЗА ОДНУ ЗАДАЧУ,
+ * ТО ЕСТЬ ВЫБРАЛ ДЛЯ ЗАГРУЗКИ 3 ФАЙЛА, 4 БЫЛО ЗАГРУЖЕНО). Зачем
+ * я так сделал не знаю, но для поиска задач ФАЙЛЫ ПО КОТОРЫМ НЕ
+ * БЫЛИ полностью загружены данный параметр не подходит.
+ *  Наверное стоит переделать в ISEMS-NIH_master (или я ошибся где то)
+ * и записывать параметр detailed_information_on_downloading.number_files_downloaded 
+ * основываясь на подсчете загруженных файлов через список list_files_result_task_execution.
+ */
 
     render(){
         return (
@@ -311,7 +335,9 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                     </Row>
                     {this.createModalBody.call(this)}
                 </Modal.Body>
-                <Modal.Footer></Modal.Footer>
+                <Modal.Footer>
+                    {this.buttonNext()}
+                </Modal.Footer>
             </Modal>
         );
     }

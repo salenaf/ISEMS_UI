@@ -68,7 +68,7 @@ export default class CreatingWidgets extends React.Component {
                 <Card className="ml-3" border="info" style={{ width: "13rem" }}>
                     <small>загруженные файлы</small>
                     <span className="my-n2 text-info">0</span>
-                    <small className="text-muted">нерассмотренны</small>
+                    <small className="text-muted">не рассмотренны</small>
                 </Card>
             </div>
         );

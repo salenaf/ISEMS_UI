@@ -23,9 +23,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
     headerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
             if(data.type === "get list tasks files not downloaded"){
-
-                console.log(data);
-    
                 this.setState({ 
                     currentTaskID: data.taskID,
                     listFileDownloadOptions: data.options, 
@@ -35,12 +32,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
     }
 
     headerClickTable(objData, type, e){
-        console.log("func 'headerClickTable'");
-        console.log(`task ID: ${objData.taskID}`);
-        console.log(`source ID: ${objData.sourceID}`);
-        console.log(`type: ${type}`);
-        console.log(e);
-
         if(type === "info"){
             this.props.handlerModalWindowShowTaskTnformation(objData);
             
@@ -48,8 +39,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
                 arguments: { taskID: objData.taskID } 
             });
         } else {
-            console.log("download");
-
             this.props.handlerShowModalWindowListFileDownload(objData);
 
             this.props.socketIo.emit("network interaction: get a list of files for a task", {
@@ -63,14 +52,9 @@ export default class CreateBodyDownloadFiles extends React.Component {
     }
 
     headerNextItemPagination(num){
-        console.log("func 'headerNextItemPagination', START...");
-        console.log(`next num pagination is '${num}'`);
-
         if(this.state.listFileDownloadOptions.p.ccn === num){
             return;
         }
-
-        console.log(`send request to next pagination '${num}'`);
 
         this.props.socketIo.emit("network interaction: get next chunk list tasks files not downloaded", {
             taskID: this.state.currentTaskID,

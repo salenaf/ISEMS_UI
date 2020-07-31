@@ -34,6 +34,9 @@ export default class CreateBodyDynamics extends React.Component {
 
                 if((msg.options.status === "complete") || (msg.options.status === "refused") || (msg.options.status === "stop")){
                     this.deleteItemByTimeout("filtration", msg.options.taskID);
+
+                    //запрашиваем новый список задач файлы по которым не выгружались
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
                 }
             }
 
@@ -44,6 +47,9 @@ export default class CreateBodyDynamics extends React.Component {
 
                 if((msg.options.status === "complete") || (msg.options.status === "refused") || (msg.options.status === "stop")){
                     this.deleteItemByTimeout("download", msg.options.taskID);
+
+                    //запрашиваем новый список задач файлы по которым не выгружались
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
                 }
             }
         });

@@ -73,26 +73,18 @@ function getNextChunk(socketIo, data){
             //debug(tasksDownloadFiles);
 
             if(data.nextChunk === 1){
-                if(tasksDownloadFiles.numFound <= data.chunkSize){
-                    debug(111111);
-                    
+                if(tasksDownloadFiles.numFound <= data.chunkSize){                   
                     return { list: tasksDownloadFiles.listTasksDownloadFiles, taskFound: tasksDownloadFiles.numFound };
                 } else {
-                    debug(222222);
-
                     return { list: tasksDownloadFiles.listTasksDownloadFiles.slice(0, data.chunkSize), taskFound: tasksDownloadFiles.numFound };
                 }
             } else {
                 let numBegin = data.chunkSize * (data.nextChunk - 1);
                 let nextNumBegin = numBegin + data.chunkSize;
 
-                if(tasksDownloadFiles.numFound <= nextNumBegin){
-                    debug(333333);
-                    
+                if(tasksDownloadFiles.numFound <= nextNumBegin){                    
                     return { list: tasksDownloadFiles.listTasksDownloadFiles.slice(numBegin), taskFound: tasksDownloadFiles.numFound };
-                } else {
-                    debug(444444);
-                    
+                } else {                    
                     return { list: tasksDownloadFiles.listTasksDownloadFiles.slice(numBegin, nextNumBegin), taskFound: tasksDownloadFiles.numFound };
                 } 
             }
@@ -119,8 +111,6 @@ function getNextChunk(socketIo, data){
                 }
             });    
         }).catch((err) => {
-            debug(err);
-
             if (err.name === "management auth") {
                 showNotify({
                     socketIo: socketIo,

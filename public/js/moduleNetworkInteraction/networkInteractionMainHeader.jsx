@@ -40,16 +40,26 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 if(data.options.connectionStatus){
                     this.setState({ "connectionModuleNI": true });
                 } else {
-                    this.setState({ "connectionModuleNI": false });
-                    this.setState({"widgets": {
-                        numConnect: 0,
-                        numDisconnect: 0,
-                    }});
+                    this.setState({ 
+                        "connectionModuleNI": false,
+                        "widgets": {
+                            numConnect: 0,
+                            numDisconnect: 0,
+                            numProcessDownload: 0,
+                            numProcessFiltration: 0,
+                            numTasksNotDownloadFiles: 0,
+                        },
+                    });
                 }
             }
                 
             //для списка задач трафик по которым не выгружался
             if(data.type === "get list tasks files not downloaded"){
+                
+                console.log("networkInteractionMainHeader");
+                console.log("EVENT 'get list tasks files not downloaded'");
+                console.log(data);
+
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;

@@ -174,7 +174,7 @@ export default class PageManagingNetworkInteractions extends React.Component {
                         </Button>
                     </Col>
                 </Row>
-                <Row>
+                <Row className="pt-2">
                     <Col md={12}>
                         <Tabs defaultActiveKey="procession_task" id="uncontrolled-tab-example">
                             <Tab eventKey="procession_task" title="выполняемые задачи">
