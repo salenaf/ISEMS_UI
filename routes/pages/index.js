@@ -14,7 +14,9 @@ exports.analysisSIP = require("./analysisSip");
 exports.securityEventManagement = require("./securityEventManagement");
 
 //сетевые взаимодействия
-exports.networkInteraction = require("./networkInteraction");
+exports.networkInteraction = require("./networkInteraction/index");
+exports.networkInteractionPageSearchTasks = require("./networkInteraction/pageSearchTasks");
+exports.networkInteractionPageFileDownload = require("./networkInteraction/pageFileDownload");
 
 /**  
  * управление настройками приложения

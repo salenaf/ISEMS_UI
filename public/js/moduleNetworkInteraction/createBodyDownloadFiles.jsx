@@ -193,7 +193,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "download")}>
                         <a href="#">
-                            <img className="clickable_icon" src="./images/icons8-download-from-the-cloud-32.png" alt="скачать"></img>
+                            <img className="clickable_icon" src="../images/icons8-download-from-the-cloud-32.png" alt="скачать"></img>
                         </a>
                     </td>
                 </tr>);

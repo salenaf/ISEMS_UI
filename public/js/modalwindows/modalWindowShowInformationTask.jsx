@@ -129,7 +129,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
 
     getListNetworkParameters(type){
         let getListDirection = (d) => {
-            if(this.state.parametersFiltration.f[type][d].length === 0){
+            if((this.state.parametersFiltration.f[type][d] === null) || (this.state.parametersFiltration.f[type][d].length === 0)){
                 return { value: "", success: false };
             }
 

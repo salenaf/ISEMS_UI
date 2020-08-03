@@ -1,10 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Alert, Spinner } from "react-bootstrap";
+import { Alert, Button, Col, Row, Spinner, Nav } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
-import PageManagingNetworkInteractions from "./pageManagingNetworkInteractions.jsx";
+
+//import PageManagingNetworkInteractions from "./pageManagingNetworkInteractions.jsx";
+
+import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
+//import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
+//import ModalWindowListTaskDownloadFiles from "../modalwindows/modalWindowListTaskDownloadFiles.jsx";
+
 
 class CreatePageManagingNetworkInteractions extends React.Component {
     constructor(props){
@@ -20,7 +26,32 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 numTasksNotDownloadFiles: 0,
             },
             listSources: this.props.listItems.listSources,
+            shortTaskInformation: { 
+                sourceID: 0, 
+                sourceName: "",
+                taskID: "",
+            },
+            showModalWindowFiltration: false,
+            showModalWindowShowTaskInformation: false,
         };
+
+        /*this.state = {
+            showModalWindowListDownload: false,
+            showModalWindowShowTaskInformation: false,
+            shortTaskInformation: { 
+                sourceID: 0, 
+                sourceName: "",
+                taskID: "",
+            },
+        };*/
+
+        this.userPermission=this.props.listItems.userPermissions;
+
+
+        this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
+        this.handlerShowModalWindowFiltration=this.handlerShowModalWindowFiltration.bind(this);
+        this.handlerCloseModalWindowFiltration=this.handlerCloseModalWindowFiltration.bind(this);
+        this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmiter.call(this);
@@ -92,6 +123,61 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         });
     }
 
+    handlerShowModalWindowFiltration(){
+        this.setState({ showModalWindowFiltration: true });
+    }
+
+    handlerCloseModalWindowFiltration(){
+        this.setState({ showModalWindowFiltration: false });
+    }
+
+    handlerShowModalWindowShowTaskInformation(){
+        this.setState({ showModalWindowShowTaskInformation: true });
+    }
+
+    handlerCloseModalWindowShowTaskInformation(){
+        this.setState({ showModalWindowShowTaskInformation: false });
+    }
+
+    handlerButtonSubmitWindowFilter(objTaskInfo){
+        let checkExistInputValue = () => {
+            let isEmpty = true;
+
+            done:
+            for(let et in objTaskInfo.inputValue){
+                for(let d in objTaskInfo.inputValue[et]){
+                    if(Array.isArray(objTaskInfo.inputValue[et][d]) && objTaskInfo.inputValue[et][d].length > 0){
+                        isEmpty = false;
+
+                        break done;  
+                    }
+                }
+            }
+
+            return isEmpty;
+        };
+
+        //проверяем наличие хотя бы одного параметра в inputValue
+        if(checkExistInputValue()){
+            return;
+        }
+
+        this.props.socketIo.emit("start new filtration task", {
+            actionType: "add new task",
+            arguments: {
+                source: objTaskInfo.source,
+                dateTime: {
+                    start: +(new Date(objTaskInfo.startDate)),
+                    end: +(new Date(objTaskInfo.endDate)),
+                },
+                networkProtocol: objTaskInfo.networkProtocol,
+                inputValue: objTaskInfo.inputValue,
+            },
+        });
+
+        this.handlerCloseModalWindowFiltration();
+    }
+
     showModuleConnectionError(){
         if(!this.state.connectionModuleNI){
             return (                
@@ -113,6 +199,19 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         }
     }
 
+    isDisabledFiltering(){
+        //если нет соединения с модулем сетевого взаимодействия
+        if(!this.state.connectionModuleNI){
+            return "disabled";
+        }
+
+        if(!this.userPermission.management_tasks_filter.element_settings.create.status){
+            return "disabled";
+        }      
+
+        return (this.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
+    }
+
     render(){
         return (
             <React.Fragment>
@@ -120,12 +219,90 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     widgets={this.state.widgets} 
                     socketIo={this.props.socketIo} />
                 {this.showModuleConnectionError.call(this)}
-                <br/>
-                <PageManagingNetworkInteractions
+                <Row className="pt-4">
+                    <Col md={12} className="text-right">
+                        <Button
+                            className="mx-1"
+                            size="sm"
+                            variant="outline-danger"                            
+                            disabled={this.isDisabledFiltering.call(this)}
+                            onClick={this.handlerShowModalWindowFiltration} >
+                            фильтрация
+                        </Button>
+                        <Button 
+                            disabled
+                            className="mx-1"
+                            size="sm"
+                            variant="outline-dark" >                           
+                            сетевой калькулятор
+                        </Button>
+                        <Button
+                            disabled
+                            className="mx-1"
+                            size="sm"
+                            variant="outline-dark" >                           
+                            декодер
+                        </Button>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12} className="mt-2">
+                        <Nav justify variant="tabs">
+                            <Nav.Item>
+                                <Nav.Link href="/network_interaction">
+                                    <small>выполняемые задачи</small>
+                                </Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link href="/network_interaction/page_file_download">
+                                    <small>загрузка файлов</small>
+                                </Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link href="/network_interaction/page_search_tasks">
+                                    <small>поиск</small>
+                                </Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="link-3">
+                                    <small>статистика и аналитика</small>
+                                </Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="link-4">
+                                    <small>телеметрия</small>
+                                </Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="link-5">
+                                    <small>журнал событий</small>
+                                </Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                    </Col>
+                </Row>
+                {/*<PageManagingNetworkInteractions
                     socketIo={this.props.socketIo}
                     listSources={this.state.listSources}
                     userPermission={this.props.listItems.userPermissions}
-                    connectionModuleNI={this.props.listItems.connectionModules.moduleNI} />
+                    connectionModuleNI={this.props.listItems.connectionModules.moduleNI} />*/}
+
+                <ModalWindowAddFilteringTask 
+                    show={this.state.showModalWindowFiltration}
+                    onHide={this.handlerCloseModalWindowFiltration}
+                    listSources={this.state.listSources}
+                    handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
+                {/*<ModalWindowListTaskDownloadFiles 
+                    show={this.state.showModalWindowListDownload}
+                    onHide={this.handlerCloseModalWindowListDownload}
+                    socketIo={this.props.socketIo}
+                    userPermissionImport={this.userPermission.management_tasks_import.element_settings.resume.status}
+                    shortTaskInfo={this.state.shortTaskInformation} />*/}
+                {/*<ModalWindowShowInformationTask 
+                    show={this.state.showModalWindowShowTaskInformation}
+                    onHide={this.handlerCloseModalWindowShowTaskInformation}
+                    socketIo={this.props.socketIo}
+                    shortTaskInfo={this.state.shortTaskInformation} />*/}
             </React.Fragment>
         );
     }
@@ -138,4 +315,4 @@ CreatePageManagingNetworkInteractions.propTypes = {
 
 ReactDOM.render(<CreatePageManagingNetworkInteractions
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />, document.getElementById("header-page-content"));
