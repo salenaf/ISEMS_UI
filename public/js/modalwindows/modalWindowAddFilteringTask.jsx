@@ -212,7 +212,7 @@ class CreateMainFields extends React.Component {
                                 type: type,
                                 direction: d,
                                 value: item
-                            })} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                            })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
                         </div>; 
                     }
                     if(d === "dst"){
@@ -222,7 +222,7 @@ class CreateMainFields extends React.Component {
                                 type: type,
                                 direction: d,
                                 value: item
-                            })} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                            })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
                         </div>; 
                     }
 
@@ -232,7 +232,7 @@ class CreateMainFields extends React.Component {
                             type: type,
                             direction: d,
                             value: item
-                        })} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                        })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
                     </div>; 
                 });
 

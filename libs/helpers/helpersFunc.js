@@ -55,6 +55,9 @@ module.exports.getCountConnectionSources = (go) => {
     let obj = {
         numConnect: 0,
         numDisconnect: 0,
+        numProcessDownload: 0,
+        numProcessFiltration: 0,
+        numTasksNotDownloadFiles: 0,
     };
     let sources = go.getData("sources");
     for(let source in sources){

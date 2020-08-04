@@ -27,11 +27,11 @@ module.exports = function(app) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteraction,
         },
-        "/network_interaction/page_file_download": {
+        "/network_interaction_page_file_download": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageFileDownload,
         },
-        "/network_interaction/page_search_tasks": {
+        "/network_interaction_page_search_tasks": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageSearchTasks,
         },

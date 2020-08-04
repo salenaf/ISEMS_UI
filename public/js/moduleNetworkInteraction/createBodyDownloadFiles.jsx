@@ -27,6 +27,29 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     currentTaskID: data.taskID,
                     listFileDownloadOptions: data.options, 
                 });
+
+                console.log("class CreateBodyDownloadFiles");
+                console.log(this.state.listFileDownloadOptions);
+            }
+        });
+
+        this.props.socketIo.on("module NI API", (msg) => {
+            if((msg.type === "filtrationProcessing") || (msg.type === "downloadProcessing")){          
+                if(msg.options.status !== "complete"){
+                    return;
+                }
+
+                /**
+ * Это надо проверить, так же как и ПАГИНАТОР
+ * после моей модернизации
+ * 
+ */
+                //запрашиваем обновленный список задач, файлы по которым не выгружались
+                this.props.socketIo.emit("network interaction: get next chunk list tasks files not downloaded", {
+                    taskID: this.state.currentTaskID,
+                    chunkSize: this.state.listFileDownloadOptions.p.cs,
+                    nextChunk: 1,
+                });
             }
         });
     }

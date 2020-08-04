@@ -35,18 +35,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowShowTaskInformation: false,
         };
 
-        /*this.state = {
-            showModalWindowListDownload: false,
-            showModalWindowShowTaskInformation: false,
-            shortTaskInformation: { 
-                sourceID: 0, 
-                sourceName: "",
-                taskID: "",
-            },
-        };*/
-
         this.userPermission=this.props.listItems.userPermissions;
-
 
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerShowModalWindowFiltration=this.handlerShowModalWindowFiltration.bind(this);
@@ -86,14 +75,18 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 
             //для списка задач трафик по которым не выгружался
             if(data.type === "get list tasks files not downloaded"){
-                
+                /*                
                 console.log("networkInteractionMainHeader");
                 console.log("EVENT 'get list tasks files not downloaded'");
                 console.log(data);
-
+*/
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;
+                /*
+                console.log(`numTaskNotDownloadFiles: ${data.options.tntf}`);
+                console.log(tmpCopy);
+*/
                 this.setState({ widgets: tmpCopy });
             }
     
@@ -254,12 +247,12 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link href="/network_interaction/page_file_download">
-                                    <small>загрузка файлов</small>
+                                <Nav.Link href="/network_interaction_page_file_download">
+                                    <small>скачивание файлов</small>
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link href="/network_interaction/page_search_tasks">
+                                <Nav.Link href="/network_interaction_page_search_tasks">
                                     <small>поиск</small>
                                 </Nav.Link>
                             </Nav.Item>
