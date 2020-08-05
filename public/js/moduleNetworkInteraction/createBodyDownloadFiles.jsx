@@ -39,17 +39,16 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     return;
                 }
 
+                console.log("--- NEW TASK LIST ----");
+                console.log(msg);
+                console.log("-------");
+
                 /**
  * Это надо проверить, так же как и ПАГИНАТОР
  * после моей модернизации
  * 
  */
-                //запрашиваем обновленный список задач, файлы по которым не выгружались
-                this.props.socketIo.emit("network interaction: get next chunk list tasks files not downloaded", {
-                    taskID: this.state.currentTaskID,
-                    chunkSize: this.state.listFileDownloadOptions.p.cs,
-                    nextChunk: 1,
-                });
+                this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
             }
         });
     }

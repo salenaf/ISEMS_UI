@@ -107,6 +107,7 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
         });
 
         this.props.onHide();
+        window.location.href = "network_interaction";
     }
 
     handlerDownloadMarkerFiles(){
@@ -114,6 +115,9 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
         for(let fn of this.state.listFileChecked.keys()){
             fileList.push(fn);
         }
+
+        console.log("-- func 'handlerDownloadMarkerFiles' ---");
+        console.log(`source id: '${this.props.shortTaskInfo.sourceID}'`);
 
         this.props.socketIo.emit("network interaction: start downloading files", {
             arguments: { 
@@ -127,6 +131,16 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
 
         this.props.onHide();
     }
+
+    /**
+ * Такое впечатление что при отправке 1 задачи на скачивание файлов
+ * в ISEMS-NIH_master начинают выполнятся ТРИ, ОДНА выполняется,
+ * а две отклоняются из-за того что имеют одинаковый taskID
+ * 
+ * Но судя по логам в api_client_requests.log ISEMS-NIH_master
+ * запрос на скачивание файлов приходит один
+ * 
+ */
 
     handlerNextChunkFileList(){
         //отправляем запрос

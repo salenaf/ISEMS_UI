@@ -59,6 +59,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             if(data.type === "connectModuleNI"){
                 if(data.options.connectionStatus){
                     this.setState({ "connectionModuleNI": true });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
                 } else {
                     this.setState({ 
                         "connectionModuleNI": false,
@@ -75,25 +76,19 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 
             //для списка задач трафик по которым не выгружался
             if(data.type === "get list tasks files not downloaded"){
-                /*                
-                console.log("networkInteractionMainHeader");
-                console.log("EVENT 'get list tasks files not downloaded'");
-                console.log(data);
-*/
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;
-                /*
-                console.log(`numTaskNotDownloadFiles: ${data.options.tntf}`);
-                console.log(tmpCopy);
-*/
                 this.setState({ widgets: tmpCopy });
             }
     
         });
 
         this.props.socketIo.on("module-ni:change sources connection", (data) => {
-            this.setState({"widgets": data});
+            let tmpCopy = Object.assign(this.state.widgets);
+            tmpCopy.numConnect = data.numConnect;
+            tmpCopy.numDisconnect = data.numDisconnect;
+            this.setState({ widgets: tmpCopy });
         });
 
         //изменяем статус подключения источника для списка выбопа источника

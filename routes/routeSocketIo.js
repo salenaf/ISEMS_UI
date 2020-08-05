@@ -343,6 +343,15 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("----------------------------------------");
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
+
+            debug("****************************");            
+            debug(sourceInfo);
+            debug("****************************");
+
+            if(sourceInfo === null){
+                return;
+            }
+
             //формируем сообщение о выполнении процесса скачивания файлов
             socketIo.emit("module NI API", { 
                 "type": "downloadProcessing",
@@ -461,7 +470,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("=======================================");
         }).on("command information search control", (msg) => {
             debug("====== command information search control =====");
-            debug(JSON.stringify(msg));
+            //debug(JSON.stringify(msg));
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/
