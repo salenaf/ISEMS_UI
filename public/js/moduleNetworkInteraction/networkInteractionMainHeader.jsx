@@ -262,7 +262,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="link-5">
+                                <Nav.Link href="/network_interaction_page_notification_log">
                                     <small>журнал событий</small>
                                 </Nav.Link>
                             </Nav.Item>

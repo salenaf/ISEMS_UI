@@ -44,6 +44,7 @@ module.exports = {
         networkInteractionMainPageDinamic: "./moduleNetworkInteraction/networkInteractionMainPageDinamic.jsx",
         networkInteractionPageDownloadFile: "./moduleNetworkInteraction/networkInteractionPageDownloadFile.jsx",
         networkInteractionPageSearchTasks: "./moduleNetworkInteraction/networkInteractionPageSearchTasks.jsx",
+        networkInteractionPageNotificationLog: "./moduleNetworkInteraction/networkInteractionPageNotificationLog.jsx",
         managingAnalusisMainHeader: "./moduleAnalysis/pageManagingAnalysis.jsx", 
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",

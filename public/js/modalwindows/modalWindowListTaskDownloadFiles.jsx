@@ -107,10 +107,13 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
         });
 
         this.props.onHide();
-        window.location.href = "network_interaction";
     }
 
     handlerDownloadMarkerFiles(){
+        if(this.state.listFileChecked.size === 0){
+            return;
+        }
+
         let fileList = [];
         for(let fn of this.state.listFileChecked.keys()){
             fileList.push(fn);
@@ -287,9 +290,7 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
     }
 
     /**
- * 1. Виджет загрузка файлов выполняется/доступна,
- * доступна не отображается (не 0 а просто ничего)
- * если нет задач по которым возможна выгрузка файлов.
+
  * 2. Кроме того нет автообновления вкладки 'загрузка файлов'
  * при выполении фильтрации, если были найдены файлы
  * необходимые к загрузке, а также нет автообновления

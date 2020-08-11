@@ -268,7 +268,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             <React.Fragment>
                 <Row className="text-right">
                     <Col className="text-muted mt-3">
-                    задач, по которым не выполнялась выгрузка файлов <span className="text-info">{this.state.listFileDownloadOptions.tntf}</span>
+                    задач, по которым не выполнялась выгрузка файлов: <span className="text-info">{this.state.listFileDownloadOptions.tntf}</span>
                     </Col>
                 </Row>
                 {createPagination}

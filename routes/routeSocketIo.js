@@ -485,6 +485,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 message: `МОДУЛЬ СЕТЕВОГО ВЗАИМОДЕЙСТВИЯ (${notify.options.n.d})`,
             });
 
+            //записываем сообщение в БД
+            require("./handlersMsgModuleNetworkInteraction/handlerMsgNotification")(notify);
         }).on("error", (err) => {
             debug("ERROR MESSAGE");
             debug(err);

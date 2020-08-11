@@ -7,8 +7,8 @@ const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 
 /**
- * Модуль формирующий страницу со списком информационных сообщений
- * принятых от модуля сетевого взаимодействия ISEMS-NIH
+ * Модуль формирующий страницу с информацией о уже выполненных
+ * задачах по фильтрации файлы по которым выгружены не были
  * 
  * @param {*} req
  * @param {*} res
@@ -23,9 +23,22 @@ module.exports = function(req, res, objHeader) {
             });
         },
         mainInformation: (callback) => {
-
-            callback(null, {});
-        
+            require("../../../middleware/mongodbQueryProcessor")
+                .querySelect(require("../../../controllers/models")
+                    .modelNotificationLogISEMSNIH, {
+                    isMany: true,
+                    select: { 
+                        _id: 0, 
+                        __v: 0, 
+                    },
+                    options: {
+                        sort: { date_register: "desc", test: -1 },
+                        limit: 100,
+                    },
+                }, (err, documents) => {
+                    if(err) callback(err);
+                    else callback(null, documents);
+                });
         },
         widgetsInformation: (callback) => {
             let numConnect = 0,
@@ -62,10 +75,11 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
-        console.log("func 'networkInteraction' PAGE FILE DOWNLOAD");
+        console.log("func 'networkInteraction' PAGE NOTIFICATION LOG");
         console.log(result.widgetsInformation);
+        console.log(result.mainInformation);
 
-        res.render("menu/network_interaction/page_file_download", {
+        res.render("menu/network_interaction/page_notification_log", {
             header: objHeader,
             listItems: {
                 connectionModules: {

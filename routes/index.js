@@ -35,6 +35,10 @@ module.exports = function(app) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageSearchTasks,
         },
+        "/network_interaction_page_notification_log": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageNotificationLog,
+        },
         "/setting_users": {
             access: "menuSettings.element_settings.submenu.setting_users.status",
             handler: pages.managementUsers,
