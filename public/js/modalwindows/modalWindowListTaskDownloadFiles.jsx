@@ -32,16 +32,7 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (msg) => {
-
-            /*if(msg.type !== "downloadProcessing" && msg.type !== "filtrationProcessing"){
-                console.log(msg);
-            }*/
-
             if(msg.type === "listFilesByTaskID"){
-                //                console.log("--- received file list ---");
-                //                console.log(msg.options);
-                //                console.log("--------------------------");
-
                 if((msg.options.tid !== this.state.taskID) || (msg.options.olp === 0)){
                     this.setState({
                         taskID: msg.options.tid,
@@ -119,9 +110,6 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
             fileList.push(fn);
         }
 
-        console.log("-- func 'handlerDownloadMarkerFiles' ---");
-        console.log(`source id: '${this.props.shortTaskInfo.sourceID}'`);
-
         this.props.socketIo.emit("network interaction: start downloading files", {
             arguments: { 
                 o: {
@@ -134,16 +122,6 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
 
         this.props.onHide();
     }
-
-    /**
- * Такое впечатление что при отправке 1 задачи на скачивание файлов
- * в ISEMS-NIH_master начинают выполнятся ТРИ, ОДНА выполняется,
- * а две отклоняются из-за того что имеют одинаковый taskID
- * 
- * Но судя по логам в api_client_requests.log ISEMS-NIH_master
- * запрос на скачивание файлов приходит один
- * 
- */
 
     handlerNextChunkFileList(){
         //отправляем запрос
@@ -288,32 +266,6 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
             </React.Fragment>
         );
     }
-
-    /**
-
- * 2. Кроме того нет автообновления вкладки 'загрузка файлов'
- * при выполении фильтрации, если были найдены файлы
- * необходимые к загрузке, а также нет автообновления
- * при завершении задачи по скачиванию файло (надо убрать ее
- * из списка задач для скачивания).
- * 3. Поиск во вкладке 'загрузка файлов' выдает слишком
- * много задач, в том числе и задачи по которым файлы выгружались.
- * 4. Если нет задач для скачивания файлов, то нотификатион
- * выводит информацию об этом при обновлении страницы.
- * 5. При выполнении скачивания части файлов, не обновляется модальное
- * окно со списком файлов возможных к загрузки.
- * 
- *          !!!!!
- * 6, Какого то хрена, при скачивании выбранных файлов в БД
- * ISEMS-NIH_master не меняется количество скаченных файлов.
- * (ОКАЗЫВАЕТСЯ ЭТО КОЛ-ВО ЗАГРУЖЕННЫХ ФАЙЛОВ ЗА ОДНУ ЗАДАЧУ,
- * ТО ЕСТЬ ВЫБРАЛ ДЛЯ ЗАГРУЗКИ 3 ФАЙЛА, 4 БЫЛО ЗАГРУЖЕНО). Зачем
- * я так сделал не знаю, но для поиска задач ФАЙЛЫ ПО КОТОРЫМ НЕ
- * БЫЛИ полностью загружены данный параметр не подходит.
- *  Наверное стоит переделать в ISEMS-NIH_master (или я ошибся где то)
- * и записывать параметр detailed_information_on_downloading.number_files_downloaded 
- * основываясь на подсчете загруженных файлов через список list_files_result_task_execution.
- */
 
     render(){
         return (

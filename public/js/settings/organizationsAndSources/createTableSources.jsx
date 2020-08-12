@@ -50,7 +50,7 @@ export default class CreateTableSources extends React.Component {
             let status = (elem.connectionStatus) ? "my_circle_green":"my_circle_red";
             num++;
 
-            listInfo.push(<tr key={`tr_${elem.sid}`}>
+            listInfo.push(<tr key={`tr_${elem.sid}`} className="text-muted">
                 <td key={`td_${elem.sourceID}_${elem.sid}_status`} className="text-center">
                     <canvas className={status}></canvas>
                 </td>                

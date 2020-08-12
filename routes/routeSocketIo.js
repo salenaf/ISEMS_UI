@@ -551,4 +551,7 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
 
     /* --- ОБРАБОТЧИК ДЕЙСТВИЙ ПРИ СКАЧИВАНИИ ФАЙЛОВ, В ТОМ ЧИСЛЕ ЗАПРОС СПИСКА ЗАДАЧ (пагинатор) --- */
     require("./routeHandlersSocketIo/handlerActionsDownloadingTasks").addHandlers(socketIo);
+
+    /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ ИЗ ЖУРНАЛА ИНФОРМАЦИОННЫХ СООБЩЕНИЙ --- */
+    require("./routeHandlersSocketIo/networkInteractionHandlerNotificationLog").addHandlers(socketIo);
 };

@@ -17,7 +17,6 @@ module.exports = (notification) => {
             if(err) reject(err);
             else resolve();
         });
-    //    require("../../middleware/mongodbQueryProcessor").querySelect(require("../../controllers/models").modelSourcesParameter, {
     }).catch((err) => {
         require("../../libs/writeLogFile")("error", `${err.toString()} (func 'handlerMsgNotificationModuleISEMS-NIH')`);
     });

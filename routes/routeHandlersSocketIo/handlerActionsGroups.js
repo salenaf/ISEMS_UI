@@ -487,11 +487,13 @@ function deleteGroup(socketIo, data) {
             });
         }).then(() => {
             return new Promise((resolve, reject) => {
-                mongodbQueryProcessor.querySelect(models.modelUser, { isMany: true, select: { 
-                    _id: 0, 
-                    login: 1,
-                    group: 1,
-                }}, (err, users) => {
+                mongodbQueryProcessor.querySelect(models.modelUser, { 
+                    isMany: true, 
+                    select: { 
+                        _id: 0, 
+                        login: 1,
+                        group: 1,
+                    }}, (err, users) => {
                     if(err) reject(err);
                     else resolve(users);
                 });

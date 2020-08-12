@@ -6,6 +6,8 @@ const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 
+const MAX_CHUNK_LIMIT = 10;
+
 /**
  * Модуль формирующий страницу с информацией о уже выполненных
  * задачах по фильтрации файлы по которым выгружены не были
@@ -23,22 +25,54 @@ module.exports = function(req, res, objHeader) {
             });
         },
         mainInformation: (callback) => {
-            require("../../../middleware/mongodbQueryProcessor")
-                .querySelect(require("../../../controllers/models")
-                    .modelNotificationLogISEMSNIH, {
-                    isMany: true,
-                    select: { 
-                        _id: 0, 
-                        __v: 0, 
-                    },
-                    options: {
-                        sort: { date_register: "desc", test: -1 },
-                        limit: 100,
-                    },
-                }, (err, documents) => {
-                    if(err) callback(err);
-                    else callback(null, documents);
+            Promise.allSettled([
+                new Promise((resolve, reject) => {
+                    require("../../../middleware/mongodbQueryProcessor")
+                        .queryCountAllDocument(require("../../../controllers/models")
+                            .modelNotificationLogISEMSNIH, (err, countDocument) => {
+                            if(err) reject(err);
+                            else resolve({ reqType: "count", v: countDocument });
+                        });
+                }),
+                new Promise((resolve, reject) => {
+                    require("../../../middleware/mongodbQueryProcessor")
+                        .querySelect(require("../../../controllers/models")
+                            .modelNotificationLogISEMSNIH, {
+                            isMany: true,
+                            select: { 
+                                _id: 0, 
+                                __v: 0, 
+                            },
+                            options: {
+                                sort: { date_register: "desc", test: -1 },
+                                limit: MAX_CHUNK_LIMIT,
+                            },
+                        }, (err, documents) => {
+                            if(err) reject(err);
+                            else resolve({ reqType: "select", v: documents });
+                        });
+                }),
+            ]).then((result) => {
+
+                console.log("=== pageNotificationLog ===");
+                console.log(result);
+                console.log("===========================");
+
+                let objResult = {countDocument: 0, foundList: []};
+
+                result.forEach((item) => {
+                    if(item.status === "fulfilled"){
+                        if(item.value.reqType === "count"){
+                            objResult.countDocument = item.value.v;
+                        }
+                        if(item.value.reqType === "select"){
+                            objResult.foundList = item.value.v;
+                        }
+                    }
                 });
+
+                callback(null, objResult);
+            });
         },
         widgetsInformation: (callback) => {
             let numConnect = 0,
@@ -87,6 +121,7 @@ module.exports = function(req, res, objHeader) {
                 },
                 userPermissions: userPermissions.management_network_interaction.element_settings,
                 mainInformation: result.mainInformation,
+                maxChunkLimit: MAX_CHUNK_LIMIT,
                 widgetsInformation: result.widgetsInformation,
                 listSources: globalObject.getData("sources"),
             },

@@ -556,7 +556,9 @@ export default class CreateBodyManagementEntity extends React.Component {
             <React.Fragment>
                 <br/>
                 <Row>
-                    <Col className="text-left">Всего, организаций: {numOrganization}, подразделений: {numDivision}, источников: {numSource}.</Col>
+                    <Col className="text-left text-muted">
+                        всего, организаций: <span className="text-info">{numOrganization}</span>, подразделений: <span className="text-info">{numDivision}</span>, источников: <span className="text-info">{numSource}</span>
+                    </Col>
                 </Row>
                 <Row>
                     <Col className="text-left">

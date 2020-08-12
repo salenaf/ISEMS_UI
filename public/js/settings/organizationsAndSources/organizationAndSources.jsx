@@ -592,8 +592,10 @@ class CreatePageOrganizationAndSources extends React.Component {
                 <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
                     <Tab eventKey="sources" title="источники">
                         <br/>
-                        <div className="row">
-                            <div className="col-md-9 text-left">Всего источников: {Object.keys(this.state.checkboxMarkedSourceDel).length}</div>
+                        <div className="row mb-2">
+                            <div className="col-md-9 text-left text-muted">
+                                всего источников: <span className="text-info">{Object.keys(this.state.checkboxMarkedSourceDel).length}</span>
+                            </div>
                             <div className="col-md-3 text-right">
                                 <Button 
                                     variant="outline-danger" 

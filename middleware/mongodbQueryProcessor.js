@@ -203,6 +203,19 @@ class QueryProcessor {
     }
 
     /**
+     * Подсчет общего количества ВСЕХ документов в коллекции
+     * 
+     * @param {*} mongooseModel имя модели (таблица)
+     * @param {*} callback функция обратного вызова возвращает error или null
+     */
+    queryCountAllDocument(mongooseModel, callback){
+        mongooseModel.find({}).estimatedDocumentCount((err, count) => {
+            if(err) callback(err);
+            else callback(null, count);
+        });
+    }
+
+    /**
      * Специальные запросы к коллекциям
      * 
      * @param {*} mongooseModel 
