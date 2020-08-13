@@ -3,12 +3,9 @@
  * Данный модуль является оберткой для всех запросов к СУБД и возвращает результат запроса после его 
  * успешной обработки СУБД или исключение. 
  * 
- * Версия 0.1, дата релиза 10.01.2019
  */
 
 "use strict";
-
-const debug = require("debug")("mongodbQueryProcessor");
 
 const globalObject = require("../configure/globalObject");
 
@@ -40,17 +37,6 @@ class QueryProcessor {
     querySelect(mongooseModel, settingsQuery, callback) {
         let { id = null, select = "", options = {}, query = {}, isMany = false } = settingsQuery;
 
-        debug("--- function \"querySelect\"");
-        debug("settingsQuery");
-        debug(settingsQuery);
-
-        debug(`id = ${id}`);
-        debug("query:");
-        debug(query);
-        debug(`select: ${select}`);
-        debug("options");
-        debug(options);
-
         if (id !== null) {
             mongooseModel.findById(id, select, options, (err, doc) => {
                 if (err) callback(err);
@@ -58,8 +44,6 @@ class QueryProcessor {
             });
         } else {
             let commandFind = (isMany) ? "find" : "findOne";
-
-            debug(`commandFind "${commandFind}"`);
 
             mongooseModel[commandFind](query, select, options, (err, docs) => {
                 if (err) callback(err);
@@ -130,24 +114,15 @@ class QueryProcessor {
             isMany = false
         } = settingsQuery;
 
-        debug("--- function \"querySelect\"");
-        debug("settingsQuery");
-        debug(settingsQuery);
-
-        debug(`id = ${id}`);
-        debug("query:");
-        debug(query);
-        debug(`select: ${select}`);
-
         if (id !== null) {
-            mongooseModel.findByIdAndUpdate(id, update, select, err => {
+            mongooseModel.findByIdAndUpdate(id, update, select, (err) => {
                 if (err) callback(err);
                 else callback(null);
             });
         } else {
             let commandFind = (isMany) ? "updateMany" : "findOneAndUpdate";
 
-            mongooseModel[commandFind](query, update, select, err => {
+            mongooseModel[commandFind](query, update, select, (err) => {
                 if (err) callback(err);
                 else callback(null);
             });
@@ -213,6 +188,41 @@ class QueryProcessor {
             if(err) callback(err);
             else callback(null, count);
         });
+    }
+
+    /**
+     * Поиск элементов со сдвигом и ограничением по выводу количества 
+     * найденных документов
+     * 
+     * @param {} mongooseModel 
+     * @param {*} param1 
+     * @param {*} callback 
+     */
+    querySelectWithLimit(mongooseModel, {
+        select = "", 
+        query = {},
+        options = {},
+        skip = null, 
+        limit = null 
+    }, callback){
+        if((skip === null) && (limit === null)){
+            this.querySelect(mongooseModel, { isMany: true, select: select, query: query, options: options }, callback);
+        } else if((skip !== null) && (limit === null)){          
+            mongooseModel.find(query, select, options, (err, docs) => {
+                if(err) callback(err);
+                else callback(null, docs);
+            }).skip(skip);
+        } else if((skip === null) && (limit !== null)){
+            mongooseModel.find(query, select, options, (err, docs) => {
+                if(err) callback(err);
+                else callback(null, docs);
+            }).limit(limit);
+        } else {
+            mongooseModel.find(query, select, options, (err, docs) => {
+                if(err) callback(err);
+                else callback(null, docs);
+            }).skip(skip).limit(limit);
+        }
     }
 
     /**

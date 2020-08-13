@@ -84,6 +84,18 @@ class CreatePageNotificationLog extends React.Component {
             objCopy.buttonNextChunkIsDisabled = false;
             this.setState(objCopy);
         });
+
+        this.props.socketIo.on("module NI API:send notification log next chunk", (data) => {
+            
+            console.log("func 'headerEvents', event: module NI API:send notification log next chunk");
+            console.log(data);
+
+            let msgList = [].concat(this.state.msgList, data.options.foundList);
+            let objCopy = Object.assign({}, this.state);
+            objCopy.msgList = msgList;
+            objCopy.buttonNextChunkIsDisabled = false;
+            this.setState(objCopy);
+        });
     }
 
     handlerChosenSource(e){
@@ -107,6 +119,8 @@ class CreatePageNotificationLog extends React.Component {
                 numberChunk: this.state.numChunk,
             } 
         });
+
+        this.setState({ buttonNextChunkIsDisabled: false });
     }
 
     handlerNextChunk(){
@@ -120,8 +134,16 @@ class CreatePageNotificationLog extends React.Component {
         });
 
         if(this.state.chosenSource === 0){
+            console.log("запрос на получение следующей части всех сообщений ");
+
             //запрос на получение следующей части всех сообщений 
-        
+            this.props.socketIo.emit("network interaction: get notification log next chunk", {
+                arguments: {
+                    sourceID: 0,
+                    numberChunk: nextChunk,
+                }
+            });
+
             return;
         }
 
@@ -166,6 +188,10 @@ class CreatePageNotificationLog extends React.Component {
 
     createButtonNextChunk(){
         if(this.state.countDocument <= this.props.listItems.maxChunkLimit){
+            return;
+        }
+
+        if(this.state.msgList.length >= this.state.countDocument){
             return;
         }
 

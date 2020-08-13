@@ -6,7 +6,7 @@ const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 
-const MAX_CHUNK_LIMIT = 10;
+const MAX_CHUNK_LIMIT = 15;
 
 /**
  * Модуль формирующий страницу с информацией о уже выполненных
@@ -53,11 +53,6 @@ module.exports = function(req, res, objHeader) {
                         });
                 }),
             ]).then((result) => {
-
-                console.log("=== pageNotificationLog ===");
-                console.log(result);
-                console.log("===========================");
-
                 let objResult = {countDocument: 0, foundList: []};
 
                 result.forEach((item) => {
@@ -108,10 +103,6 @@ module.exports = function(req, res, objHeader) {
         let readStatus = userPermissions.menu_items.network_interaction.status;
 
         if (readStatus === false) return res.render("403");
-
-        console.log("func 'networkInteraction' PAGE NOTIFICATION LOG");
-        console.log(result.widgetsInformation);
-        console.log(result.mainInformation);
 
         res.render("menu/network_interaction/page_notification_log", {
             header: objHeader,

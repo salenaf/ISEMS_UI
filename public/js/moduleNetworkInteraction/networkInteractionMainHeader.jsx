@@ -4,13 +4,8 @@ import { Alert, Button, Col, Row, Spinner, Nav } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
-
-//import PageManagingNetworkInteractions from "./pageManagingNetworkInteractions.jsx";
-
+import ModalWindowLanCalc from "../modalwindows/modalWindowLanCalc.jsx";
 import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
-//import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
-//import ModalWindowListTaskDownloadFiles from "../modalwindows/modalWindowListTaskDownloadFiles.jsx";
-
 
 class CreatePageManagingNetworkInteractions extends React.Component {
     constructor(props){
@@ -31,12 +26,15 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 sourceName: "",
                 taskID: "",
             },
+            showModalWindowLanCalc: false,
             showModalWindowFiltration: false,
             showModalWindowShowTaskInformation: false,
         };
 
         this.userPermission=this.props.listItems.userPermissions;
 
+        this.handlerShowModalWindowLanCalc = this.handlerShowModalWindowLanCalc.bind(this);
+        this.handlerCloseModalWindowLanCalc = this.handlerCloseModalWindowLanCalc.bind(this);
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerShowModalWindowFiltration=this.handlerShowModalWindowFiltration.bind(this);
         this.handlerCloseModalWindowFiltration=this.handlerCloseModalWindowFiltration.bind(this);
@@ -94,9 +92,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         //изменяем статус подключения источника для списка выбопа источника
         this.props.socketIo.on("module-ni:change status source", (data) => {
             let objCopy = Object.assign({}, this.state);
-            
-            console.log("received event 'module-ni:change status source'");
-            console.log(data);
 
             for(let source in objCopy.listSources){
                 if(+data.options.sourceID === +source){
@@ -125,6 +120,14 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
     handlerCloseModalWindowShowTaskInformation(){
         this.setState({ showModalWindowShowTaskInformation: false });
+    }
+
+    handlerShowModalWindowLanCalc(){
+        this.setState({ showModalWindowLanCalc: true });        
+    }
+
+    handlerCloseModalWindowLanCalc(){
+        this.setState({ showModalWindowLanCalc: false });
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
@@ -200,6 +203,22 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         return (this.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
     }
 
+    /**
+ * 
+ *      Нужно сделать:
+ * 1. Останов качивание файлов
+ * 2. Разделить запросы на скачивание файлов на автоматические и ручные,
+ *  для ручных будет отправлятся Notification 
+ * 3. Сетевой калькулятор и декодер (для декодера хотя бы наброски)
+ * 4. отправлять в ISEMS-NIH информацию о пользователе инициировавшем задачу
+ *  по скачиванию или фильтрации (ISEM-NIH должен сохранять данную информацию
+ * у себя в БД)
+ * 5. вкладку ПОИСК
+ * 6. подумать о расширении информации о задаче, например об IP адресах (
+ *  возможно добавить geoip)
+ * 
+ */
+
     render(){
         return (
             <React.Fragment>
@@ -218,10 +237,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             фильтрация
                         </Button>
                         <Button 
-                            disabled
                             className="mx-1"
                             size="sm"
-                            variant="outline-dark" >                           
+                            variant="outline-dark" 
+                            onClick={this.handlerShowModalWindowLanCalc} >                           
                             сетевой калькулятор
                         </Button>
                         <Button
@@ -252,12 +271,12 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="link-3">
+                                <Nav.Link eventKey="link-3" disabled>
                                     <small>статистика и аналитика</small>
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="link-4">
+                                <Nav.Link eventKey="link-4" disabled>
                                     <small>телеметрия</small>
                                 </Nav.Link>
                             </Nav.Item>
@@ -269,28 +288,15 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                         </Nav>
                     </Col>
                 </Row>
-                {/*<PageManagingNetworkInteractions
-                    socketIo={this.props.socketIo}
-                    listSources={this.state.listSources}
-                    userPermission={this.props.listItems.userPermissions}
-                    connectionModuleNI={this.props.listItems.connectionModules.moduleNI} />*/}
 
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}
                     listSources={this.state.listSources}
                     handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
-                {/*<ModalWindowListTaskDownloadFiles 
-                    show={this.state.showModalWindowListDownload}
-                    onHide={this.handlerCloseModalWindowListDownload}
-                    socketIo={this.props.socketIo}
-                    userPermissionImport={this.userPermission.management_tasks_import.element_settings.resume.status}
-                    shortTaskInfo={this.state.shortTaskInformation} />*/}
-                {/*<ModalWindowShowInformationTask 
-                    show={this.state.showModalWindowShowTaskInformation}
-                    onHide={this.handlerCloseModalWindowShowTaskInformation}
-                    socketIo={this.props.socketIo}
-                    shortTaskInfo={this.state.shortTaskInformation} />*/}
+                <ModalWindowLanCalc
+                    show={this.state.showModalWindowLanCalc}
+                    onHide={this.handlerCloseModalWindowLanCalc} />
             </React.Fragment>
         );
     }
