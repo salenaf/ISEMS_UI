@@ -100,13 +100,14 @@ class ShowEntityInformation extends React.Component {
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
                             <Row>
-                                <Col><Form.Control 
-                                    type="text" 
-                                    onChange={this.props.handlerInputChange} 
-                                    value={this.props.resivedInfo.organizationName} 
-                                    isValid={this.props.resivedInfo.organizationNameIsValid}
-                                    isInvalid={this.props.resivedInfo.organizationNameIsInvalid}
-                                    id="organization_name" />
+                                <Col>
+                                    <Form.Control 
+                                        type="text" 
+                                        onChange={this.props.handlerInputChange} 
+                                        value={this.props.resivedInfo.organizationName} 
+                                        isValid={this.props.resivedInfo.organizationNameIsValid}
+                                        isInvalid={this.props.resivedInfo.organizationNameIsInvalid}
+                                        id="organization_name" />
                                 </Col>
                                 <Col>
                                     <Form.Control 

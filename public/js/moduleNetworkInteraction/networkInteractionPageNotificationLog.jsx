@@ -57,17 +57,10 @@ class CreatePageNotificationLog extends React.Component {
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
 
         this.headerEvents.call(this);
-
-        console.log("func 'CreatePageNotificationLog'");
-        console.log(this.props.listItems);
     }
 
     headerEvents(){
         this.props.socketIo.on("module NI API:send notification log for source ID", (data) => {
-
-            console.log("func 'headerEvents', event: module NI API:send notification log for source ID");
-            console.log(data);
-
             if(!data.options.addToList){
                 this.setState({
                     countDocument: data.options.countDocument,
@@ -86,10 +79,6 @@ class CreatePageNotificationLog extends React.Component {
         });
 
         this.props.socketIo.on("module NI API:send notification log next chunk", (data) => {
-            
-            console.log("func 'headerEvents', event: module NI API:send notification log next chunk");
-            console.log(data);
-
             let msgList = [].concat(this.state.msgList, data.options.foundList);
             let objCopy = Object.assign({}, this.state);
             objCopy.msgList = msgList;
@@ -111,8 +100,6 @@ class CreatePageNotificationLog extends React.Component {
     }
 
     handlerButtonSubmit(){
-        console.log("func 'handlerButtonSubmit', START...");
-
         this.props.socketIo.emit("network interaction: get notification log for source ID", { 
             arguments: {
                 sourceID: this.state.chosenSource,
@@ -124,8 +111,6 @@ class CreatePageNotificationLog extends React.Component {
     }
 
     handlerNextChunk(){
-        console.log("func 'handlerNextChunk' ***");
-
         let nextChunk = this.state.numChunk + 1;
 
         this.setState({
@@ -134,8 +119,6 @@ class CreatePageNotificationLog extends React.Component {
         });
 
         if(this.state.chosenSource === 0){
-            console.log("запрос на получение следующей части всех сообщений ");
-
             //запрос на получение следующей части всех сообщений 
             this.props.socketIo.emit("network interaction: get notification log next chunk", {
                 arguments: {

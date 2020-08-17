@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
 import ModalWindowLanCalc from "../modalwindows/modalWindowLanCalc.jsx";
+import ModalWindowEncodeDecoder from "../modalwindows/modalWindowEncodeDecoder.jsx";
 import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
 
 class CreatePageManagingNetworkInteractions extends React.Component {
@@ -28,6 +29,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             },
             showModalWindowLanCalc: false,
             showModalWindowFiltration: false,
+            showModalWindowEncodeDecoder: false,
             showModalWindowShowTaskInformation: false,
         };
 
@@ -38,6 +40,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
         this.handlerShowModalWindowFiltration=this.handlerShowModalWindowFiltration.bind(this);
         this.handlerCloseModalWindowFiltration=this.handlerCloseModalWindowFiltration.bind(this);
+        this.handlerShowModalWindowEncodeDecoder = this.handlerShowModalWindowEncodeDecoder.bind(this);
+        this.handlerCloseModalWindowEncodeDecoder = this.handlerCloseModalWindowEncodeDecoder.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
         this.handlerEvents.call(this);
@@ -130,6 +134,14 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.setState({ showModalWindowLanCalc: false });
     }
 
+    handlerShowModalWindowEncodeDecoder(){
+        this.setState({ showModalWindowEncodeDecoder: true });
+    }
+
+    handlerCloseModalWindowEncodeDecoder(){
+        this.setState({ showModalWindowEncodeDecoder: false });
+    }
+
     handlerButtonSubmitWindowFilter(objTaskInfo){
         let checkExistInputValue = () => {
             let isEmpty = true;
@@ -206,10 +218,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     /**
  * 
  *      Нужно сделать:
- * 1. Останов качивание файлов
+ * 1. Останов скачивания файлов
  * 2. Разделить запросы на скачивание файлов на автоматические и ручные,
  *  для ручных будет отправлятся Notification 
- * 3. Сетевой калькулятор и декодер (для декодера хотя бы наброски)
+ * 3. декодер (для декодера хотя бы наброски)
  * 4. отправлять в ISEMS-NIH информацию о пользователе инициировавшем задачу
  *  по скачиванию или фильтрации (ISEM-NIH должен сохранять данную информацию
  * у себя в БД)
@@ -244,10 +256,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             сетевой калькулятор
                         </Button>
                         <Button
-                            disabled
                             className="mx-1"
                             size="sm"
-                            variant="outline-dark" >                           
+                            variant="outline-dark"
+                            onClick={this.handlerShowModalWindowEncodeDecoder} >                           
                             декодер
                         </Button>
                     </Col>
@@ -297,6 +309,9 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 <ModalWindowLanCalc
                     show={this.state.showModalWindowLanCalc}
                     onHide={this.handlerCloseModalWindowLanCalc} />
+                <ModalWindowEncodeDecoder
+                    show={this.state.showModalWindowEncodeDecoder} 
+                    onHide={this.handlerCloseModalWindowEncodeDecoder} />
             </React.Fragment>
         );
     }
