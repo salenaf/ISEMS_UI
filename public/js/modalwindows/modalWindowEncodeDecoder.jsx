@@ -4,6 +4,9 @@ import React from "react";
 import {  Button, Col, Row, Form, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import utf8 from "utf8";
+import quotedPrintable from "quoted-printable";
+
 export default class ModalWindowEncodeDecoder extends React.Component {
     constructor(props){
         super(props);
@@ -15,6 +18,13 @@ export default class ModalWindowEncodeDecoder extends React.Component {
             errorMessage: "",
         };
 
+        this.examples = {
+            "uri": ["%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82", "документ"],
+            "base64": ["ZG9jdW1lbnQ=", "document"],
+            "hex": ["\\x64\\x6f\\x63\\x75\\x6d\\x65\\x6e\\x74", "document"],
+            "qp": ["=D0=B4=D0=BE=D0=BA=D1=83=D0=BC=D0=B5=D0=BD=D1=82", "документ"],
+        };
+
         this.windowClose = this.windowClose.bind(this);
         this.handlerButtonDecode = this.handlerButtonDecode.bind(this);
         this.handlerButtonEncode = this.handlerButtonEncode.bind(this);
@@ -24,33 +34,35 @@ export default class ModalWindowEncodeDecoder extends React.Component {
     }
 
     windowClose(){
+        this.setState({
+            decodeType: "uri",
+            inputDecode: "",
+            inputEncode: "",
+            errorMessage: "",
+        });
+
         this.props.onHide();
     }
 
     hendlerChoseDecodeType(e){
-        console.log("func 'hendlerChoseDecodeType'");
-        console.log(e.target.value);
-
         this.setState({ decodeType: e.target.value });
 
     }
 
-    handlerChangeInputDecode(e){
-        console.log("func 'handlerChangeInputDecode'");
-        console.log(e.target.value);
-        
+    handlerChangeInputDecode(e){       
         this.setState({ inputDecode: e.target.value });
     }
 
     handlerChangeInputEncode(e){
-        console.log("func 'handlerChangeInputEncode'");
-        console.log(e.target.value);
-
         this.setState({ inputEncode: e.target.value });
     }
 
     handlerButtonDecode(){
-        console.log("func 'handlerButtonDecode'");
+        let decodeHex = () => {
+            return this.state.inputDecode.replace(/\\x([0-9A-Fa-f]{2,4})/g, function() {      
+                return String.fromCharCode(parseInt(arguments[1], 16));
+            });
+        };
 
         switch(this.state.decodeType){
         case "uri":
@@ -61,20 +73,32 @@ export default class ModalWindowEncodeDecoder extends React.Component {
             try {
                 this.setState({ inputEncode: atob(this.state.inputDecode) });
             } catch(e) {
-                this.setState({ errorMessage: "Ошибка, недопустимые символы" });
+                this.setState({ errorMessage: "Ошибка! Недопустимые символы." });
             }    
     
             break;
         case "hex":
+            this.setState({ inputEncode: decodeHex() });
+
             break;
 
         case "qp":
+            this.setState({ inputEncode: utf8.decode(quotedPrintable.decode(this.state.inputDecode)) });
+
             break;
         }
     }
 
     handlerButtonEncode(){
-        console.log("func 'handlerButtonEncode'");
+        let encodeHex = () => {
+            let s = unescape(encodeURIComponent(this.state.inputEncode));
+            let h = "";
+            for (let i = 0; i < s.length; i++) {
+                h += s.charCodeAt(i).toString(16);
+            }
+
+            return h;
+        };
 
         switch(this.state.decodeType){
         case "uri":
@@ -85,13 +109,21 @@ export default class ModalWindowEncodeDecoder extends React.Component {
             try {
                 this.setState({ inputDecode: btoa(this.state.inputEncode) });
             } catch(e) {
-                this.setState({ errorMessage: "Ошибка, допустимы только латинские символы" });
+                this.setState({ errorMessage: "Ошибка! Допустимы только латинские символы." });
             }
             break;
         case "hex":
+            try {
+                this.setState({ inputDecode: encodeHex() });
+            } catch(e) {
+                this.setState({ errorMessage: "Ошибка! Допустимы только латинские символы." });                
+            }
+
             break;
 
         case "qp":
+            this.setState({ inputDecode: quotedPrintable.encode(utf8.encode(this.state.inputEncode)) });
+
             break;
         }
     }
@@ -146,7 +178,7 @@ export default class ModalWindowEncodeDecoder extends React.Component {
                                         variant="outline-primary" 
                                         onClick={this.handlerButtonDecode}
                                         size="sm">
-                                        декодирование
+                                        декодировать
                                     </Button>
                                 </Col>
                                 <Col md={6} className="mt-3 text-right">
@@ -154,12 +186,19 @@ export default class ModalWindowEncodeDecoder extends React.Component {
                                         variant="outline-primary" 
                                         onClick={this.handlerButtonEncode}
                                         size="sm">
-                                        кодирование
+                                        кодировать
                                     </Button>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col md={12}>
+                                    <small>
+                                    пример: {this.examples[this.state.decodeType][0]} - {this.examples[this.state.decodeType][1]}
+                                    </small>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={12} className="text-center mt-2">
                                     <small className="text-danger">{this.state.errorMessage}</small>
                                 </Col>
                             </Row>

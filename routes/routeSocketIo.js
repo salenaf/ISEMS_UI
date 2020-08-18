@@ -391,10 +391,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("====== information search control =====");
             debug(JSON.stringify(msg));
 
-            let createDate = 0,
-                typeTask = "нет данных",
-                userLogin = "нет данных",
-                userName = "нет данных";
 
             /* при получении информации о задаче по ее ID проверяем 
              надо ли востановить информацию о задаче в globalObject */
@@ -416,10 +412,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 socketIo.emit("module NI API", { 
                     "type": "processingGetAllInformationByTaskID",
                     "options": {
-                        typeTask: typeTask,
-                        userLogin: userLogin,
-                        userName: userName,
-                        createDate: createDate,
                         status: msg.options.s,
                         taskParameter: msg.options.tp,
                     }

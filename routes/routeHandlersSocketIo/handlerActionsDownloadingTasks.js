@@ -223,8 +223,8 @@ function startDownloadingFiles(socketIo, data){
                 throw new MyError("management auth", "Невозможно отправить запрос на скачивание файлов. Недостаточно прав на выполнение данного действия.");
             }
 
-            return;
-        }).then(() => {
+            return authData.document.userName;
+        }).then((userName) => {
             return new Promise((resolve, reject) => {
                 process.nextTick(() => {          
                     if(!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
@@ -236,6 +236,8 @@ function startDownloadingFiles(socketIo, data){
                     if(conn !== null){ 
                         
                         debug("send request file list--->");
+
+                        data.arguments.un = userName;
 
                         conn.sendMessage({                            
                             msgType: "command",

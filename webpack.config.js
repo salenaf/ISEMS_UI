@@ -15,6 +15,7 @@ module.exports = {
     //точки входа
     entry: {
         vendors: [
+            "utf8",
             "react",
             "reactDom",
             "reactBootstrap",
@@ -32,6 +33,7 @@ module.exports = {
             "socket.io-client",
             "socket.io-stream",
             "react-circle",
+            "quoted-printable",
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -88,6 +90,7 @@ module.exports = {
             /*amcharts: 'amcharts/dist/amcharts/amcharts.js',
             amchartsSerial: 'amcharts/dist/amcharts/serial.js',
             amchartsExport: 'amcharts/dist/amcharts/plugins/export/export.min.js',*/
+            "utf8": "utf8/utf8.js",
             "react": "react",
             "reactDom": "react-dom",
             "reactBootstrap": "react-bootstrap/dist/react-bootstrap.min.js",
@@ -105,6 +108,7 @@ module.exports = {
             "socket.io-client": "socket.io-client/dist/socket.io.js",
             "socket.io-stream": "socket.io-stream/socket.io-stream.js",
             "react-circle": "react-circle/dist/index.js",
+            "quoted-printable": "quoted-printable/quoted-printable.js",
         }
     },
 

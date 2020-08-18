@@ -20,10 +20,9 @@ export default class ModalWindowShowInformationTask extends React.Component {
             showInfo: false,
             taskID: "",
             clientTaskID: "",
-            taskType: "",
-            userTimeCreateTask: 0,
-            userNameCreateTask: "",
-            userCreateTaskType: "",
+            userInitiatedFilteringProcess: "",
+            userInitiatedFileDownloadProcess: "",
+            taskType: "",          
             parametersFiltration: {
                 dt: {s:0, e:0},
                 f: {
@@ -60,17 +59,16 @@ export default class ModalWindowShowInformationTask extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (msg) => {
-            if(msg.type === "processingGetAllInformationByTaskID"){
-
-                console.log(msg.options);
+            if(msg.type === "processingGetAllInformationByTaskID"){               
+                let uifp = (typeof msg.options.taskParameter.uifp === "undefined") ? "": msg.options.taskParameter.uifp;
+                let uifdp = (typeof msg.options.taskParameter.uifdp === "undefined") ? "": msg.options.taskParameter.uifdp;
 
                 this.setState({
                     showInfo: true,
                     taskID: msg.options.taskParameter.tid,
-                    clientTaskID: msg.options.taskParameter.ctid,
-                    userTimeCreateTask: (msg.options.createDate !== 0) ? this.formatter.format(msg.options.createDate): "нет данных",
-                    userNameCreateTask: msg.options.userName,
-                    userCreateTaskType: msg.options.typeTask,
+                    clientTaskID: msg.options.taskParameter.ctid,   
+                    userInitiatedFilteringProcess: uifp,
+                    userInitiatedFileDownloadProcess: uifdp,                
                     parametersFiltration: msg.options.taskParameter.fo,
                     filteringStatus: msg.options.taskParameter.diof,
                     downloadingStatus: msg.options.taskParameter.diod,
@@ -416,25 +414,20 @@ export default class ModalWindowShowInformationTask extends React.Component {
             downloadEnd = this.formatter.format(downloadEnd);
         }
 
-        let taskType = "нет данных";
-        if(this.state.userCreateTaskType === "filtration"){
-            taskType = "фильтрации";
-        }
-        if(this.state.userCreateTaskType === "download"){
-            taskType = "скачиванию файлов";
-        }
+        let userInitiatedFilteringProcess = (this.state.userInitiatedFilteringProcess.length > 0) ? this.state.userInitiatedFilteringProcess: "задача сформирована автоматически";
+        let userInitiatedFileDownloadProcess = (this.state.userInitiatedFileDownloadProcess.length > 0) ? this.state.userInitiatedFileDownloadProcess: "задача сформирована автоматически";
+
+
 
         return (
             <React.Fragment>
-                <Row className="text-muted text-center">
-                    <Col md={12}>
-                        <small>Пользователь: <strong>{this.state.userNameCreateTask}</strong> добавил задачу по <strong>{taskType}</strong> в <strong>{this.state.userTimeCreateTask}</strong></small>
-                    </Col>
-                </Row>
                 <Row>
                     <Col md={12} className="text-center">
                     Задача по фильтрации (добавлена: <i>{filtrationStart}</i>, завершена: <i>{filtrationEnd}</i>)
                     </Col>
+                </Row>
+                <Row>
+                    <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFilteringProcess}</i></Col>
                 </Row>
                 <Row>
                     <Col md={12} className="text-muted mt-2">
@@ -466,6 +459,9 @@ export default class ModalWindowShowInformationTask extends React.Component {
                     <Col md={12} className="text-center mt-3">
                     Задача по скачиванию файлов (добавлена: <i>{downloadStart}</i>, завершена: <i>{downloadEnd}</i>)
                     </Col>
+                </Row>
+                <Row>
+                    <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFileDownloadProcess}</i></Col>
                 </Row>
                 <Row className="text-muted mb-n2">
                     <Col md={2}><small>статус задачи: </small></Col>

@@ -288,6 +288,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                     taskID: hex,
                     options: { 
                         id: filteringParameters.source,
+                        un: userName,
                         dt: {
                             s: filteringParameters.dateTime.start,
                             e: filteringParameters.dateTime.end,

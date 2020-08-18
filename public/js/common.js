@@ -20,6 +20,9 @@ require("select2");
 
 require("react-circle");
 
+require("utf8");
+require("quoted-printable");
+
 //require('moment-with-locales');
 
 global.socket = io.connect();
