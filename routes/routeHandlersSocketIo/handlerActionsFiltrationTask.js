@@ -16,10 +16,10 @@ const sendCommandsModuleNetworkInteraction = require("../../libs/processing/rout
  */
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
-        "start new filtration task": startNewTask,
-        "stop filtration task": stopTask,
+        "network interaction: start new filtration task": startNewTask,
+        "network interaction: stop filtration task": stopTask,
     };
-
+    //network interaction:
     for (let e in handlers) {
         socketIo.on(e, handlers[e].bind(null, socketIo));
     }

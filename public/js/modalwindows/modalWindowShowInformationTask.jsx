@@ -109,9 +109,9 @@ export default class ModalWindowShowInformationTask extends React.Component {
     }
 
     handlerButtonStop(sourceID){
-        let taskTypeStop = "stop filtration task";
+        let taskTypeStop = "network interaction: stop filtration task";
         if(this.state.taskType === "download"){
-            taskTypeStop = "stop download task";
+            taskTypeStop = "network interaction: stop download files";
         }
 
         this.props.socketIo.emit(taskTypeStop, {
@@ -342,6 +342,20 @@ export default class ModalWindowShowInformationTask extends React.Component {
         />);
     }
 
+    createUserDownloadTask(){
+        if(this.state.downloadingStatus.ts === "not executed"){
+            return;
+        }
+
+        let userInitiatedFileDownloadProcess = (this.state.userInitiatedFileDownloadProcess.length > 0) ? this.state.userInitiatedFileDownloadProcess: "задача сформирована автоматически";
+
+        return (
+            <Row>
+                <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFileDownloadProcess}</i></Col>
+            </Row>
+        );
+    }
+
     createPathDirFilterFiles(){
         if(this.state.filteringStatus.nfmfp === 0){
             return;
@@ -415,9 +429,6 @@ export default class ModalWindowShowInformationTask extends React.Component {
         }
 
         let userInitiatedFilteringProcess = (this.state.userInitiatedFilteringProcess.length > 0) ? this.state.userInitiatedFilteringProcess: "задача сформирована автоматически";
-        let userInitiatedFileDownloadProcess = (this.state.userInitiatedFileDownloadProcess.length > 0) ? this.state.userInitiatedFileDownloadProcess: "задача сформирована автоматически";
-
-
 
         return (
             <React.Fragment>
@@ -460,9 +471,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                     Задача по скачиванию файлов (добавлена: <i>{downloadStart}</i>, завершена: <i>{downloadEnd}</i>)
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFileDownloadProcess}</i></Col>
-                </Row>
+                {this.createUserDownloadTask.call(this)}
                 <Row className="text-muted mb-n2">
                     <Col md={2}><small>статус задачи: </small></Col>
                     <Col md={10} className="text-center">{this.getStatusDownload.call(this)}</Col>
@@ -474,18 +483,21 @@ export default class ModalWindowShowInformationTask extends React.Component {
     }
 
     createButtonStop(){
-        if((this.state.filteringStatus.ts === "complete") && (this.state.downloadingStatus.ts === "complete")){
-            return;
+        let filterExecute = (this.state.filteringStatus.ts === "execute") || (this.state.filteringStatus.ts === "wait");
+        let downloadExecute = (this.state.downloadingStatus.ts === "execute") || (this.state.downloadingStatus.ts === "wait");
+
+        if(filterExecute || downloadExecute) {
+            return (
+                <Button 
+                    variant="outline-danger" 
+                    onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} 
+                    size="sm">
+                    остановить задачу
+                </Button>
+            );
         }
 
-        return (
-            <Button 
-                variant="outline-danger" 
-                onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} 
-                size="sm">
-                остановить задачу
-            </Button>
-        );
+        return;
     }
 
     render(){

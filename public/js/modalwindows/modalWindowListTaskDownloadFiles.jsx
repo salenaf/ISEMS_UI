@@ -55,9 +55,6 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                     taskID: msg.options.tid,
                     fullSizeListFile: msg.options.fls,
                     listFile: listFile,
-                    listFileChecked: new Map,
-                    numFileChecked: 0,
-                    sizeFileChecked: 0,
                     onScrollChunk: onScrollChunk,
                     disabledButtonNext: false,
                 });

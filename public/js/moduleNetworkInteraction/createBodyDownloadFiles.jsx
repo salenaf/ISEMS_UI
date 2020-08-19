@@ -27,9 +27,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     currentTaskID: data.taskID,
                     listFileDownloadOptions: data.options, 
                 });
-
-                console.log("class CreateBodyDownloadFiles");
-                console.log(this.state.listFileDownloadOptions);
             }
         });
 
@@ -39,15 +36,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     return;
                 }
 
-                console.log("--- NEW TASK LIST ----");
-                console.log(msg);
-                console.log("-------");
-
-                /**
- * Это надо проверить, так же как и ПАГИНАТОР
- * после моей модернизации
- * 
- */
                 this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
             }
         });

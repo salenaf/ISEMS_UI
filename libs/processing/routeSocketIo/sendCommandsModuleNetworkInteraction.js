@@ -435,7 +435,8 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo){
                 msgSection: "information search control",
                 msgInstruction: "search common information",
                 taskID: hex,
-                options: { 
+                options: {
+                    sriga: true, //отмечаем что задача выполняется в автоматическом режиме
                     sft: "complete",
                     fd: {
                         afid: false,
