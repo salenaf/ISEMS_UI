@@ -438,9 +438,10 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo){
                 options: {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме
                     sft: "complete",
-                    fd: {
-                        afid: false,
-                    },
+                    cpfid: true,
+                    fid: false,
+                    cpafid: true,
+                    afid: false,
                     iaf: {
                         fif: true,
                     } 
