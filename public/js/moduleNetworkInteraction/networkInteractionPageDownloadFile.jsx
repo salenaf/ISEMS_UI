@@ -71,7 +71,7 @@ class CreatePageDownloadFile extends React.Component {
         return (
             <React.Fragment>
                 <Row>
-                    <Col md={12} className="text-left text-muted">скачивание файлов</Col>
+                    <Col md={12} className="text-left text-muted">выгрузка файлов</Col>
                 </Row>
                 <Row>
                     <Col md={12}>

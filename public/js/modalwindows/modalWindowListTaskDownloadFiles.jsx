@@ -274,7 +274,7 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
                 aria-labelledby="example-modal-sizes-title-lg" >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>{`Скачивание файлов, источник №${this.props.shortTaskInfo.sourceID} (${this.props.shortTaskInfo.sourceName}).`}</h5>
+                        <h5>{`Выгрузка файлов, источник №${this.props.shortTaskInfo.sourceID} (${this.props.shortTaskInfo.sourceName}).`}</h5>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

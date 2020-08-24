@@ -20,6 +20,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 numProcessFiltration: this.props.listItems.widgetsInformation.numProcessFiltration,
                 numProcessDownload: this.props.listItems.widgetsInformation.numProcessDownload,
                 numTasksNotDownloadFiles: 0,
+                numUnresolvedTask: 0,
             },
             listSources: this.props.listItems.listSources,
             shortTaskInformation: { 
@@ -54,6 +55,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
     requestEmiter(){
         this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });
     }
 
     handlerEvents(){
@@ -71,6 +73,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             numProcessDownload: 0,
                             numProcessFiltration: 0,
                             numTasksNotDownloadFiles: 0,
+                            numUnresolvedTask: 0,
                         },
                     });
                 }
@@ -84,6 +87,17 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 this.setState({ widgets: tmpCopy });
             }
     
+            //для списка задач не отмеченных пользователем как завершеные
+            if(data.type === "get list unresolved task"){
+
+                console.log("--- event: get list unresolved task ---");
+                console.log(data.options);
+
+                //для виджета
+                let tmpCopy = Object.assign(this.state.widgets);
+                tmpCopy.numUnresolvedTask = data.options.tntf;
+                this.setState({ widgets: tmpCopy });
+            }
         });
 
         this.props.socketIo.on("module-ni:change sources connection", (data) => {
@@ -217,7 +231,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
     /**
  * 
- * 1. Останов скачивания файлов (СДЕЛАЛ но пока проверить не удалось)
+ * 1. + Останов скачивания файлов (СДЕЛАЛ но пока проверить не удалось)
  * 2. + (разделил вроде, теперь только тесты) Разделить запросы на автоматические и ручные,
  *      для ручных будет отправлятся Notification. Данное разделение
  *      будет реализовано на основе информации о пользователе инициировавшем
@@ -281,7 +295,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             </Nav.Item>
                             <Nav.Item>
                                 <Nav.Link href="/network_interaction_page_file_download">
-                                    <small>скачивание файлов</small>
+                                    <small>выгрузка файлов</small>
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>

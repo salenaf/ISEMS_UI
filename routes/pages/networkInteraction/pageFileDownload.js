@@ -62,9 +62,6 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
-        console.log("func 'networkInteraction' PAGE FILE DOWNLOAD");
-        console.log(result.widgetsInformation);
-
         res.render("menu/network_interaction/page_file_download", {
             header: objHeader,
             listItems: {

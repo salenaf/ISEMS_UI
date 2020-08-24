@@ -40,6 +40,7 @@ module.exports = function(req) {
                     console.log("session ID from globalObject is not found");
                     globalObject.setData("tmpModuleNetworkInteraction", req.sessionID, {
                         tasksDownloadFiles: {},
+                        unresolvedTask: {},
                         resultFoundTasks: {},
                     });
                 }

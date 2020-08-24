@@ -78,3 +78,74 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
         });    
     }
 };
+
+/**
+ * Обработчик модуля сетевого взаимодействия осуществляющий обработку
+ * принятого списка задач, не отмеченых пользователем как завершенные
+ * 
+ * @param {*} socketIo - дескриптор socketIo соединения
+ * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
+ * 
+ * Так как список задач, не отмеченых пользователем как завершенные, может
+ * быть СЕГМЕНТИРОВАН и приходить в несколько частей нужно его 
+ * временно сложить в память, а потом вытаскивать по мере запроса.
+ * 
+ * Исключение составляет первая или единственная часть которая
+ * автоматически отправляется в UI
+ */
+module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId){
+    debug("func 'receivedListUnresolvedTask', START...");
+   
+    let funcName = " (func 'receivedListUnresolvedTask')";
+
+    if(!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")){
+        showNotify({
+            socketIo: socketIo,
+            type: "danger",
+            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+        });    
+
+        return writeLogFile("error", "the 'listUnresolvedTask' property was not found in 'globalObject'"+funcName);
+    }
+
+    let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
+
+    if((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)){
+    //если ID задачи не совпадают создаем новую запись
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", { 
+            taskID: data.taskID,                 
+            status: data.options.s,
+            numFound: data.options.tntf,
+            paginationOptions: {
+                chunkSize: data.options.p.cs,
+                chunkNumber: data.options.p.cn,
+                chunkCurrentNumber: data.options.p.ccn
+            },
+            listUnresolvedTask: data.options.slft,
+        });
+    } else {
+        unresolvedTask.listUnresolvedTask.push(data.options.slft);
+    }
+
+    let numFullChunks = 1;
+    if(data.options.tntf > MAX_CHUNK_SIZE){
+        numFullChunks = Math.ceil(data.options.tntf/MAX_CHUNK_SIZE);
+    }
+
+    //отправляем в UI если это первый сегмент
+    if(data.options.p.ccn === 1){
+        socketIo.emit("module NI API", { 
+            "type": "get list unresolved task",
+            "taskID": data.taskID,
+            "options": {
+                p: {
+                    cs: MAX_CHUNK_SIZE, //размер части
+                    cn: numFullChunks, //всего частей
+                    ccn: 1, //номер текущей части
+                },
+                tntf: data.options.tntf,
+                slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+            }
+        });    
+    }
+};

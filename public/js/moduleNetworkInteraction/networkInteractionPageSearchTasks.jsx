@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Col, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
 
 class CreatePageSearchTasks extends React.Component {
@@ -20,9 +21,26 @@ class CreatePageSearchTasks extends React.Component {
 
         this.userPermission=this.props.listItems.userPermissions;
 
+        this.handlerEvents.call(this);
+
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            //для списка задач не отмеченных пользователем как завершеные
+            if(data.type === "get list unresolved task"){
+
+                console.log("--- event: get list unresolved task ---");
+                console.log(data.options);
+    
+                /*                let tmpCopy = Object.assign(this.state.widgets);
+                tmpCopy.numUnresolvedTask = data.options.tntf;
+                this.setState({ widgets: tmpCopy });*/
+            }
+        });
     }
 
     handlerModalWindowShowTaskTnformation(data){
@@ -54,9 +72,10 @@ class CreatePageSearchTasks extends React.Component {
                 <Row>
                     <Col md={12} className="text-left text-muted">поиск задач</Col>
                 </Row>
+                {<CreateBodySearchTask socketIo={this.props.socketIo} />}
                 <Row>
                     <Col md={12}>
-
+                    здесь список найденых задач
                     </Col>
                 </Row>
                 <ModalWindowShowInformationTask 

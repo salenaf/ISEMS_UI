@@ -430,6 +430,13 @@ module.exports.modulesEventGenerator = function(socketIo) {
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);
                     }
 
+                    //только для виджета "выгруженные файлы не рассмотрены" и
+                    // для вкладки поиск, значение "по умолчанию", выводить список
+                    // не закрытых пользователем задач
+                    if(taskInfo.eventName === "list unresolved tasks"){
+                        require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo.userSessionID);
+                    }
+
                     //только как результат при поиске во вкладке "поиск"
                     if(taskInfo.eventName === "list of found tasks"){
 

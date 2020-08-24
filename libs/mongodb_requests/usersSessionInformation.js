@@ -100,6 +100,7 @@ module.exports.create = function(passportID, sessionID, callback) {
             //создаем хранилище для информации о задачах фильтрации и выгрузки
             globalObject.setData("tmpModuleNetworkInteraction", sessionID, {
                 tasksDownloadFiles: {},
+                unresolvedTask: {},
                 resultFoundTasks: {},
             });
 

@@ -12,6 +12,8 @@ export default class CreatingWidgets extends React.Component {
         };
 
         this.handlerEvents.call(this);
+
+        this.handlerClickTonWidgetUnresolvedTask = this.handlerClickTonWidgetUnresolvedTask.bind(this);
     }
 
     handlerEvents(){
@@ -33,13 +35,22 @@ export default class CreatingWidgets extends React.Component {
 
                 if((msg.options.status === "complete") || (msg.options.status === "refused")){
                     objCopy.download.delete(msg.options.taskID);
+                
+                    //если выгрузка файлов завершена успешно
+                    if(msg.options.status === "complete"){
+                        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });
+                    }
                 } else {
                     objCopy.download.add(msg.options.taskID);
-                }
+                }                                                                                                                                                                                                                                                                                                                                                                                                                   
 
                 this.setState(objCopy);
             }
         });
+    }
+
+    handlerClickTonWidgetUnresolvedTask(){
+        window.location.href = "/network_interaction_page_search_tasks";
     }
 
     render(){
@@ -61,13 +72,17 @@ export default class CreatingWidgets extends React.Component {
                     <small className="text-muted">выполняется</small>
                 </Card>
                 <Card className="ml-3" border="info" style={{ width: "13rem" }}>
-                    <small>загрузка файлов</small>
+                    <small>выгрузка файлов</small>
                     <span className="my-n2 text-info">{this.state.download.size} / {this.props.widgets.numTasksNotDownloadFiles}</span>
                     <small className="text-muted"> выполняется / доступна</small>
                 </Card>
-                <Card className="ml-3" border="info" style={{ width: "13rem" }}>
-                    <small>загруженные файлы</small>
-                    <span className="my-n2 text-info">0</span>
+                <Card 
+                    onClick={this.handlerClickTonWidgetUnresolvedTask}
+                    className="ml-3 clicabe_cursor" 
+                    border="info" 
+                    style={{ width: "13rem" }}>
+                    <small>выгруженные файлы</small>
+                    <span className="my-n2 text-info">{this.props.widgets.numUnresolvedTask}</span>
                     <small className="text-muted">не рассмотренны</small>
                 </Card>
             </div>
