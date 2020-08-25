@@ -286,6 +286,11 @@ class CreateMainFields extends React.Component {
         return (
             <React.Fragment>
                 <Row className="mt-2">
+                    <Col sm="3" className="text-right">
+                        <small className="mr-1">сетевой протокол</small>
+                        <CreateProtocolList handlerChosen={this.props.handlerChosenProtocol} />
+                    </Col>
+                    <Col sm="1"></Col>
                     <Col sm="4">
                         <small className="mr-1">начальное время</small>
                         <DatePicker 
@@ -313,11 +318,6 @@ class CreateMainFields extends React.Component {
                             timeFormat="p"
                             timeInputLabel="Time:"
                             dateFormat="dd.MM.yyyy hh:mm aa" />
-                    </Col>
-                    <Col sm="1"></Col>
-                    <Col sm="3" className="text-right">
-                        <small className="mr-1">сетевой протокол</small>
-                        <CreateProtocolList handlerChosen={this.props.handlerChosenProtocol} />
                     </Col>
                 </Row>
                 <Row className="mt-3">

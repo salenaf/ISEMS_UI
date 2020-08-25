@@ -304,7 +304,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                                 </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="link-3" disabled>
+                                <Nav.Link href="/network_interaction_page_statistics_and_analytics">
                                     <small>статистика и аналитика</small>
                                 </Nav.Link>
                             </Nav.Item>

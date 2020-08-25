@@ -79,7 +79,7 @@ module.exports = function(filteringParameters) {
 
     let newInputValue = {
         ip: checkNetworkPortIP("ip", "ipaddress"),
-        nw: checkNetworkPortIP("nt", "network"),
+        nw: checkNetworkPortIP("nw", "network"),
         pt: checkNetworkPortIP("pt", "port"),
     };
 

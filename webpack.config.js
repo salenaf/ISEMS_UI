@@ -47,6 +47,7 @@ module.exports = {
         networkInteractionPageDownloadFile: "./moduleNetworkInteraction/networkInteractionPageDownloadFile.jsx",
         networkInteractionPageSearchTasks: "./moduleNetworkInteraction/networkInteractionPageSearchTasks.jsx",
         networkInteractionPageNotificationLog: "./moduleNetworkInteraction/networkInteractionPageNotificationLog.jsx",
+        networkInteractionPageStatisticsAndAnalytics: "./moduleNetworkInteraction/networkInteractionPageStatisticsAndAnalytics.jsx",
         managingAnalusisMainHeader: "./moduleAnalysis/pageManagingAnalysis.jsx", 
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",

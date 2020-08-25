@@ -50,7 +50,7 @@ export default class CreatingWidgets extends React.Component {
     }
 
     handlerClickTonWidgetUnresolvedTask(){
-        window.location.href = "/network_interaction_page_search_tasks";
+        window.location.href = "/network_interaction_page_statistics_and_analytics";
     }
 
     render(){

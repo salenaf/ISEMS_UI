@@ -2,6 +2,8 @@ import React from "react";
 import { Col, Row, Table, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
+
 export default class CreateBodyDownloadFiles extends React.Component {
     constructor(props){
         super(props);
@@ -14,8 +16,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
                 tntf: 0,
             },
         };
-
-        this.getListNetworkParameters = this.getListNetworkParameters.bind(this);
         
         this.headerEvents.call(this);
     }
@@ -99,48 +99,6 @@ export default class CreateBodyDownloadFiles extends React.Component {
         );
     }
 
-    getListNetworkParameters(type, item){
-        let getListDirection = (d) => {
-            if(item[d].length === 0){
-                return { value: "", success: false };
-            }
-
-            let result = item[d].map((item) => {
-                if(d === "src"){
-                    return (<div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                        <small>{item}</small>
-                    </div>); 
-                }
-                if(d === "dst"){
-                    return (<div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                        <small>{item}</small>
-                    </div>); 
-                }
-
-                return (<div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                    <small>{item}</small>
-                </div>); 
-            });
-
-            return { value: result, success: true };
-        };
-
-        let resultAny = getListDirection("any");
-        let resultSrc = getListDirection("src");
-        let resultDst = getListDirection("dst");
-
-        return (
-            <React.Fragment>
-                {(resultAny.success) ? <div><small className="text-info">any&#8596; </small></div> : ""}
-                <div className="text-left">{resultAny.value}</div>
-                {(resultSrc.success) ? <div><small className="text-info">src&#8592; </small></div> : ""}
-                <div className="text-left">{resultSrc.value}</div>
-                {(resultDst.success) ? <div><small className="text-info">dst&#8594; </small></div> : ""}
-                <div className="text-left">{resultDst.value}</div>
-            </React.Fragment>
-        );
-    }
-
     createTableListDownloadFile(){
         let createTableBody = () => {
             if((typeof this.state.listFileDownloadOptions.slft === "undefined") || (this.state.listFileDownloadOptions.slft.length === 0)){
@@ -184,22 +142,19 @@ export default class CreateBodyDownloadFiles extends React.Component {
                         <small>{item.pf.p}</small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_ip`}>
-                        <small>{this.getListNetworkParameters("ip", item.pf.f.ip)}</small>
+                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_network`}>
-                        <small>{this.getListNetworkParameters("nw", item.pf.f.nw)}</small>
+                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_port`}>
-                        <small>{this.getListNetworkParameters("pt", item.pf.f.pt)}</small>
+                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} /></small>
                     </td>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_search_file`}>
-                        <small>{formaterInt.format(item.nffarf)}</small>
+                        <small>{`${formaterInt.format(item.nffarf)} (${formaterInt.format(item.nfd)})`}</small>
                     </td>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_size_search_files`}>
                         <small>{`${formaterInt.format(item.tsffarf)} байт.`}</small>
-                    </td>
-                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_download_files`}>
-                        <small>{formaterInt.format(item.nfd)}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "download")}>
                         <a href="#">
@@ -227,16 +182,15 @@ export default class CreateBodyDownloadFiles extends React.Component {
                         <thead>
                             <tr>
                                 <th></th>
-                                <th className="my_line_spacing">ID</th>
-                                <th className="my_line_spacing">название</th>
+                                <th>ID</th>
+                                <th>название</th>
                                 <th className="my_line_spacing">интервал времени</th>
                                 <th className="my_line_spacing">сет. протокол</th>
-                                <th className="my_line_spacing">ip адреса</th>
-                                <th>сети</th>
-                                <th>порты</th>
-                                <th className="my_line_spacing">найденные файлы</th>
-                                <th className="my_line_spacing">общий размер найденных файлов</th>
-                                <th className="my_line_spacing">загруженные файлы</th>
+                                <th>ip</th>
+                                <th>network</th>
+                                <th>port</th>
+                                <th className="my_line_spacing">файлы найденны (выгружены)</th>
+                                <th className="my_line_spacing">общим размером</th>
                                 <th></th>
                             </tr>
                         </thead>
