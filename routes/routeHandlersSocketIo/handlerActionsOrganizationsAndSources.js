@@ -540,9 +540,12 @@ function changeSourceInfo(socketIo, data){
             obj.source_settings.maximum_number_simultaneous_filtering_processes = 5;    
         }
     
-        let tclp = obj.source_settings.type_channel_layer_protocol;
-        if((typeof tclp === "undefined") || (tclp != "pppoe")){
+        let tclp = new Set(["ip", "pppoe", "vlan + pppoe", "pppoe + vlan"]);
+        if(typeof obj.source_settings.type_channel_layer_protocol === "undefined"){
             obj.source_settings.type_channel_layer_protocol = "ip";    
+        }
+        if(!tclp.has(obj.source_settings.type_channel_layer_protocol)){
+            obj.source_settings.type_channel_layer_protocol = "ip";
         }
     
         let ldwfnt = obj.source_settings.list_directories_with_file_network_traffic;

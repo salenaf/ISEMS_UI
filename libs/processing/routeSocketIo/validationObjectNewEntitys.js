@@ -210,9 +210,12 @@ module.exports = function(listOrgOrSource) {
             listOrgOrSource.source_settings.maximum_number_simultaneous_filtering_processes = 5;    
         }
 
-        let tclp = listOrgOrSource.source_settings.type_channel_layer_protocol;
-        if((typeof tclp === "undefined") || (tclp != "pppoe")){
+        let tclp = new Set(["ip", "pppoe", "vlan + pppoe", "pppoe + vlan"]);
+        if(typeof listOrgOrSource.source_settings.type_channel_layer_protocol === "undefined"){
             listOrgOrSource.source_settings.type_channel_layer_protocol = "ip";    
+        }
+        if(!tclp.has(listOrgOrSource.source_settings.type_channel_layer_protocol)){
+            listOrgOrSource.source_settings.type_channel_layer_protocol = "ip";
         }
 
         let ldwfnt = listOrgOrSource.source_settings.list_directories_with_file_network_traffic;
