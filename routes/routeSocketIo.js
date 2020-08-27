@@ -425,6 +425,18 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 if(globalObject.hasData("tasks", msg.taskID)){
                     let taskInfo = globalObject.getData("tasks", msg.taskID);
 
+                    debug(taskInfo);
+
+                    /**
+                    * может быть здесь после поиска удалять задачу из списка
+                    */
+
+                    if(taskInfo.eventName === "list all tasks"){
+                        debug("received information from event 'list all tasks'");
+                    
+                        require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
+                    }
+
                     //только для вкладки "загрузка файлов" и для виджетов 
                     if(taskInfo.eventName === "list tasks which need to download files"){
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);

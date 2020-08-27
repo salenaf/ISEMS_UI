@@ -1,7 +1,11 @@
 "use strict";
 
+const debug = require("debug")("nihrsti");
+
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
+const getSessionId = require("../../libs/helpers/getSessionId.js");
+const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
 const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
@@ -14,15 +18,72 @@ const sendCommandsModuleNetworkInteraction = require("../../libs/processing/rout
  */
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
+        "network interaction: get list all tasks": getListAllTasks,
         "network interaction: show info about all task": showTaskAllInfo,
         "network interaction: get list tasks to download files": showListTasksDownloadFiles,
         "network interaction: get list of unresolved tasks": showListUnresolvedTasks,
+        "network interaction: get next chunk list all tasks": getNextChunk,
     };
 
     for (let e in handlers) {
         socketIo.on(e, handlers[e].bind(null, socketIo));
     }
 };
+
+/**
+ * Обработчик запросов для получения списка всех задач
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+function getListAllTasks(socketIo, data){
+    let funcName = " (func 'getListAllTasks')";
+
+    debug("func 'getListAllTasks'");
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+        //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            console.log("func 'getListAllTasks', send network interaction");
+
+            //отправляем задачу модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.managementRequestGetListAllTasks(socketIo);
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else if (err.name === "management network interaction") {
+                //при отсутствии доступа к модулю сетевого взаимодействия
+                showNotify({
+                    socketIo: socketIo,
+                    type: "warning",
+                    message: err.message.toString()
+                });            
+            } else {
+
+                debug(err);
+
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: msg
+                });    
+            }
+
+            writeLogFile("error", err.toString()+funcName);
+        });
+}
 
 /**
  * Обработчик запросов всей информации о задаче по ее ID.
@@ -149,6 +210,104 @@ function showListUnresolvedTasks(socketIo){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
+                });    
+            }
+
+            writeLogFile("error", err.toString()+funcName);
+        }); 
+}
+
+/**
+ * Обработчик запроса следующей части списка задач
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+function getNextChunk(socketIo, data){
+    debug("func 'getNextChunk', START...");
+    debug(data);
+
+    let funcName = " (func 'getNextChunk')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if (err) reject(err);
+                    else resolve(sessionId);
+                });
+            });
+        }).then((sessionId) => {
+            debug(`user session ID: ${sessionId}`);
+
+            if(!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)){
+                throw new MyError("management auth", "Ошибка авторизации. Информация о сессии недоступна.");
+            }
+
+            //            debug(globalObject.getData("tmpModuleNetworkInteraction", sessionId));
+
+            let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
+
+            //debug(globalObject.getData("tmpModuleNetworkInteraction", sessionId));
+            //debug(tasksDownloadFiles);
+
+            if(data.nextChunk === 1){
+                if(resultFoundTasks.numFound <= data.chunkSize){                   
+                    return { list: resultFoundTasks.listTasksDownloadFiles, taskFound: resultFoundTasks.numFound };
+                } else {
+                    return { list: resultFoundTasks.listTasksDownloadFiles.slice(0, data.chunkSize), taskFound: resultFoundTasks.numFound };
+                }
+            } else {
+                let numBegin = data.chunkSize * (data.nextChunk - 1);
+                let nextNumBegin = numBegin + data.chunkSize;
+
+                if(resultFoundTasks.numFound <= nextNumBegin){                    
+                    return { list: resultFoundTasks.listTasksDownloadFiles.slice(numBegin), taskFound: resultFoundTasks.numFound };
+                } else {                    
+                    return { list: resultFoundTasks.listTasksDownloadFiles.slice(numBegin, nextNumBegin), taskFound: resultFoundTasks.numFound };
+                } 
+            }
+        }).then((objInfo) => {
+            debug(`count new tasks: ${objInfo.list.length}`);
+            //debug(objInfo.list);
+
+            let numFullChunks = 1;
+            if(objInfo.taskFound > data.chunkSize){
+                numFullChunks = Math.ceil(objInfo.taskFound/data.chunkSize);
+            }
+
+            socketIo.emit("module NI API", { 
+                "type": "send a list of found tasks",
+                "taskID": data.taskID,
+                "options": {
+                    p: {
+                        cs: data.chunkSize, //размер части
+                        cn: numFullChunks, //всего частей
+                        ccn: data.nextChunk, //номер текущей части
+                    },
+                    tntf: objInfo.taskFound,
+                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(objInfo.list),
+                }
+            });    
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
                 });    
             }
 

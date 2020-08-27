@@ -29,6 +29,7 @@ class CreatePageSearchTasks extends React.Component {
 
         this.userPermission=this.props.listItems.userPermissions;
 
+        this.requestEmitter.call(this);
         this.handlerEvents.call(this);
 
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
@@ -37,12 +38,16 @@ class CreatePageSearchTasks extends React.Component {
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
     }
 
+    requestEmitter(){
+        this.props.socketIo.emit("network interaction: get list all tasks", { arguments: {} });   
+    }
+
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
             //для списка задач не отмеченных пользователем как завершеные
-            if(data.type === "get list unresolved task"){
+            if(data.type === "send a list of found tasks"){
 
-                console.log("--- event: get list unresolved task ---");
+                console.log("--- event: send a list of found issues ---");
                 console.log(data.options);
     
                 if(data.options.tntf === 0){
@@ -120,8 +125,16 @@ class CreatePageSearchTasks extends React.Component {
  * как завершенные). 
  */
 
-    headerNextItemPagination(){
+    headerNextItemPagination(num){
+        if(this.state.listTasksFound.p.ccn === num){
+            return;
+        }
 
+        this.props.socketIo.emit("network interaction: get next chunk list all tasks", {
+            taskID: this.state.currentTaskID,
+            chunkSize: this.state.listTasksFound.p.cs,
+            nextChunk: num,
+        });
     }
 
     createTableListDownloadFile(){
@@ -144,7 +157,6 @@ class CreatePageSearchTasks extends React.Component {
                 hour: "numeric",
                 minute: "numeric",
             });
-            let formaterInt = new Intl.NumberFormat();
 
             this.state.listTasksFound.slft.forEach((item) => {
                 let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn };
@@ -158,6 +170,9 @@ class CreatePageSearchTasks extends React.Component {
                     </td>
                     <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sourceName`}>
                         <small>{item.sn}</small>
+                    </td>
+                    <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time_begin`}>
+                        <div><small className="text-danger">{formatterDate.format(item.stte*1000)}</small></div>
                     </td>
                     <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time`}>
                         <div><small>{formatterDate.format(item.pf.dt.s*1000)}</small></div>
@@ -178,18 +193,10 @@ class CreatePageSearchTasks extends React.Component {
                     <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sd`}>
                         <small><GetStatusDownload status={item.fdts} /></small>
                     </td>
-                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_search_file`}>
-                        <small>{`${formaterInt.format(item.nffarf)} (${formaterInt.format(item.nfd)})`}</small>
-                    </td>
-                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_size_search_files`}>
-                        <small>{`${formaterInt.format(item.tsffarf)} байт.`}</small>
-                    </td>
-                    <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
+                    <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "delete")}>
                         <a href="#">
                             <img className="clickable_icon" src="../images/icons8-repeat-24.png" alt="выполнить повторную фильтрацию"></img>
                         </a>
-                    </td>
-                    <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "delete")}>
                         <a href="#">
                             <img className="clickable_icon" src="../images/icons8-trash-24.png" alt="удалить"></img>
                         </a>
@@ -217,15 +224,13 @@ class CreatePageSearchTasks extends React.Component {
                                 <th></th>
                                 <th>ID</th>
                                 <th>название</th>
-                                <th className="my_line_spacing">интервал времени</th>
+                                <th>задача добавлена</th>
+                                <th>интервал времени</th>
                                 <th>ip</th>
                                 <th>network</th>
                                 <th>port</th>
                                 <th>фильтрация</th>
                                 <th>выгрузка</th>
-                                <th className="my_line_spacing">файлы найденны (выгружены)</th>
-                                <th className="my_line_spacing">общим размером</th>
-                                <th></th>
                                 <th></th>
                             </tr>
                         </thead>

@@ -10,19 +10,19 @@ export default class GetStatusDownload extends React.Component {
         let ts = this.props.status;
     
         if(ts === "wait"){
-            return <small className="text-info">готовится к выполнению</small>;
+            return <span className="text-info">готовится к выполнению</span>;
         } else if(ts === "refused"){
-            return <small className="text-danger">oтклонена</small>;
+            return <span className="text-danger">oтклонена</span>;
         } else if(ts === "execute"){
-            return <small className="text-primary">выполняется</small>;       
+            return <span className="text-primary">выполняется</span>;       
         } else if(ts === "complete"){
-            return <small className="text-success">завершена успешно</small>;       
+            return <span className="text-success">завершена успешно</span>;       
         } else if(ts === "stop"){
-            return <small className="text-warning">остановлена пользователем</small>;
+            return <span className="text-warning">остановлена пользователем</span>;
         } else if(ts === "not executed"){
-            return <small className="text-light bg-dark">не выполнялась</small>;
+            return <span className="text-light bg-dark">не выполнялась</span>;
         } else {
-            return <small>ts</small>;
+            return <span>ts</span>;
         }
     }
 }

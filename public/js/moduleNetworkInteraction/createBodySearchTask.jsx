@@ -10,7 +10,7 @@ export default class CreateBodySearchTask extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Card body>
+                <Card className="mb-2" body>
                     <Row>
                         <Col md={12}>
                     здесь будут параметры поиска информации

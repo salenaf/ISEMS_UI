@@ -46,16 +46,17 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
         this.handlerEvents.call(this);
-        this.requestEmiter.call(this);
+        this.requestEmitter.call(this);
     }
 
     connModuleNI(){
         return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleNI: false;
     }
 
-    requestEmiter(){
+    requestEmitter(){
+        //для виджетов и некоторых страниц
         this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
-        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });
+        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });   
     }
 
     handlerEvents(){

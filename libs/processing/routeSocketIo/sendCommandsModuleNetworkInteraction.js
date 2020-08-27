@@ -1,5 +1,7 @@
 "use strict";
 
+const debug = require("debug")("scmni");
+
 const MyError = require("../../helpers/myError");
 const helpersFunc = require("../../helpers/helpersFunc");
 const getSessionId = require("../../helpers/getSessionId");
@@ -396,6 +398,55 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID){
             resolve();
         });
     }); 
+};
+
+/**
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * запрос всего списка задач 
+ * 
+ * @param {*} socketIo 
+ */
+module.exports.managementRequestGetListAllTasks = function(socketIo){
+    debug("func 'managementRequestGetListAllTasks', START...");
+
+    return new Promise((resolve, reject) => {
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
+        });
+    }).then((sessionId) => {
+        if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
+        if(conn !== null){
+            let hex = helpersFunc.getRandomHex();
+
+            //записываем название события для генерации соответствующего ответа
+            globalObject.setData("tasks", hex, {
+                eventName: "list all tasks",
+                userSessionID: sessionId,
+            });
+
+            let tmp = {
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "search common information",
+                taskID: hex,
+                options: {
+                    sriga: true, //отмечаем что задача выполняется в автоматическом режиме 
+                },
+            };
+        
+            debug("send message ---> to network interaction");
+            debug(tmp);
+
+            conn.sendMessage(tmp);
+        }    
+    });
 };
 
 /**

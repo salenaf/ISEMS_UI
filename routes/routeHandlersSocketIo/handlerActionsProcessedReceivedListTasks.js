@@ -10,10 +10,76 @@ const MAX_CHUNK_SIZE = 10;
 
 /**
  * Обработчик модуля сетевого взаимодействия осуществляющий обработку
+ * принятого списка всех задач (при этом поиск по каким либо критериям не осуществлялся)
+ * 
+ * @param {*} socketIo - дескриптор socketIo соединения
+ * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
+ * @param {*} sessionId - ID сессии
+ */
+module.exports.receivedListAllTasks = function(socketIo, data, sessionId){
+    debug("func 'receivedListAllTasks', START...");
+
+    let funcName = " (func 'receivedListAllTasks')";
+
+    if(!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks")){
+        showNotify({
+            socketIo: socketIo,
+            type: "danger",
+            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+        });    
+
+        return writeLogFile("error", "the 'receivedListAllTasks' property was not found in 'globalObject'"+funcName);
+    }
+
+    let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
+
+    if((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)){
+        //если ID задачи не совпадают создаем новую запись
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks", { 
+            taskID: data.taskID,                 
+            status: data.options.s,
+            numFound: data.options.tntf,
+            paginationOptions: {
+                chunkSize: data.options.p.cs,
+                chunkNumber: data.options.p.cn,
+                chunkCurrentNumber: data.options.p.ccn
+            },
+            listTasksDownloadFiles: data.options.slft,
+        });
+    } else {
+        resultFoundTasks.listTasksDownloadFiles.push(data.options.slft);
+    }
+
+    let numFullChunks = 1;
+    if(data.options.tntf > MAX_CHUNK_SIZE){
+        numFullChunks = Math.ceil(data.options.tntf/MAX_CHUNK_SIZE);
+    }
+
+    //отправляем в UI если это первый сегмент
+    if(data.options.p.ccn === 1){
+        socketIo.emit("module NI API", { 
+            "type": "send a list of found tasks",
+            "taskID": data.taskID,
+            "options": {
+                p: {
+                    cs: MAX_CHUNK_SIZE, //размер части
+                    cn: numFullChunks, //всего частей
+                    ccn: 1, //номер текущей части
+                },
+                tntf: data.options.tntf,
+                slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+            }
+        });    
+    }
+};
+
+/**
+ * Обработчик модуля сетевого взаимодействия осуществляющий обработку
  * принятого списка задач файлы по которым не выгружались
  * 
  * @param {*} socketIo - дескриптор socketIo соединения
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
+ * @param {*} sessionId - ID сессии
  * 
  * Так как список задач файлы по которым не выгружались может
  * быть СЕГМЕНТИРОВАН и приходить в несколько частей нужно его 
