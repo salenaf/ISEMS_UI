@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, Row, Table, Pagination } from "react-bootstrap";
+import { Button, Col, Row, Table, Form, Pagination, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
 import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
+import { ModalWindowConfirmMessage } from "../modalwindows/modalWindowConfirmMessage.jsx";
 import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
 
 class CreatePageSearchTasks extends React.Component {
@@ -19,7 +20,9 @@ class CreatePageSearchTasks extends React.Component {
                 sourceName: "",
                 taskID: "",
             },
+            showModalWindowDeleteTask: false,
             showModalWindowShowTaskInformation: false,
+            listCheckboxMarkedTasksDel: new Set(),
             listTasksFound: {
                 p: { cs: 0, cn: 0, ccn: 1 },
                 slft: [],
@@ -29,10 +32,15 @@ class CreatePageSearchTasks extends React.Component {
 
         this.userPermission=this.props.listItems.userPermissions;
 
-        this.requestEmitter.call(this);
-        this.handlerEvents.call(this);
+        console.log(this.props.listItems);
 
+        this.handlerEvents.call(this);
+        this.requestEmitter.call(this);
+
+        this.handlerChosenSource = this.handlerChosenSource.bind(this);
+        this.handlerTaskDelete = this.handlerTaskDelete.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
+        this.closeModalWindowTasksDelete = this.closeModalWindowTasksDelete.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
@@ -107,23 +115,13 @@ class CreatePageSearchTasks extends React.Component {
         }
 
         if(type === "delete"){
-            //удаление всей информации о задаче
-            /**
- * Открыть модальное окно подтверждения удаления задачи
- */
+            if(this.state.listCheckboxMarkedTasksDel.size === 0){
+                return;
+            }
+
+            this.setState({ showModalWindowDeleteTask: true });
         }
     }
-
-    /**
- * На странице поиска изменить информацию выводимую по умолчанию, без
- * заданных пользователем параметров поиска, на список всех задач
- * когда либо выполняемых на модуле сетевого взаимодействия, но с СОРТИРОВКОЙ
- * ПО ВРЕМЕНИ. Сначало самые новые.
- * 
- * На странице 'статистика и аналитика' выводить ту информацию которая сейчас
- * выводится на странице поиска (вывод всех задач не отмеченных пользователем
- * как завершенные). 
- */
 
     headerNextItemPagination(num){
         if(this.state.listTasksFound.p.ccn === num){
@@ -135,6 +133,47 @@ class CreatePageSearchTasks extends React.Component {
             chunkSize: this.state.listTasksFound.p.cs,
             nextChunk: num,
         });
+    }
+
+    handlerTaskDelete(){
+        console.log("func 'handlerTaskDelete', START...");
+
+        /**
+        * 
+        * Данная функция пока не реализована ни в ISEMS-UI,
+        * ни в ISEMS-NIH_master. Требуется дополнительная
+        * реализация.
+        * 
+        */
+
+    }
+
+    handlerChosenSource(e){
+        console.log("func 'handlerChosenSource', START...");
+        console.log(`был выбран источник с ID '${+(e.target.value)}'`);
+    }
+
+    closeModalWindowTasksDelete(){
+        this.setState({ showModalWindowDeleteTask: false });
+    }
+
+    isDisabledDelete(){       
+        if(!this.userPermission.management_tasks_filter.element_settings.delete.status){
+            return "disabled";
+        }
+
+        return (this.state.listCheckboxMarkedTasksDel.size > 0) ? "" : "disabled";
+    }
+
+    changeCheckboxMarked(tid, e){ 
+        let lcmtd = this.state.listCheckboxMarkedTasksDel;
+        if(e.target.checked){
+            lcmtd.add(tid);
+        } else {
+            lcmtd.delete(tid);
+        }
+                
+        this.setState({ listCheckboxMarkedTasksDel: lcmtd });
     }
 
     createTableListDownloadFile(){
@@ -172,7 +211,7 @@ class CreatePageSearchTasks extends React.Component {
                         <small>{item.sn}</small>
                     </td>
                     <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time_begin`}>
-                        <div><small className="text-danger">{formatterDate.format(item.stte*1000)}</small></div>
+                        <div><small className="text-info">{formatterDate.format(item.stte*1000)}</small></div>
                     </td>
                     <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time`}>
                         <div><small>{formatterDate.format(item.pf.dt.s*1000)}</small></div>
@@ -193,13 +232,30 @@ class CreatePageSearchTasks extends React.Component {
                     <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sd`}>
                         <small><GetStatusDownload status={item.fdts} /></small>
                     </td>
-                    <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "delete")}>
-                        <a href="#">
-                            <img className="clickable_icon" src="../images/icons8-repeat-24.png" alt="выполнить повторную фильтрацию"></img>
-                        </a>
-                        <a href="#">
-                            <img className="clickable_icon" src="../images/icons8-trash-24.png" alt="удалить"></img>
-                        </a>
+                    <td className="align-middle">
+                        <Button 
+                            size="sm" 
+                            variant="outline-light" >
+                            <a href="#">
+                                <img className="clickable_icon" src="../images/icons8-repeat-24.png" alt="выполнить повторную фильтрацию"></img>
+                            </a>
+                        </Button>
+                    </td>
+                    <td className="align-middle">
+                        <OverlayTrigger
+                            key={`tooltip_${item.tid}_checkbox`}
+                            placement="right"
+                            overlay={<Tooltip>отметить для удаления</Tooltip>}>
+                            <Form>
+                                <Form.Check 
+                                    className="mt-1"
+                                    custom 
+                                    onChange={this.changeCheckboxMarked.bind(this, item.tid)}
+                                    type="checkbox" 
+                                    id={`checkbox-${item.tid}`}
+                                    label="" />
+                            </Form>
+                        </OverlayTrigger>
                     </td>
                 </tr>);
             });
@@ -216,30 +272,43 @@ class CreatePageSearchTasks extends React.Component {
         }
 
         return (
-            <Row className="py-2">
-                <Col>
-                    <Table size="sm" striped hover>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>ID</th>
-                                <th>название</th>
-                                <th>задача добавлена</th>
-                                <th>интервал времени</th>
-                                <th>ip</th>
-                                <th>network</th>
-                                <th>port</th>
-                                <th>фильтрация</th>
-                                <th>выгрузка</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {createTableBody()}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>    
+            <React.Fragment>
+                <Row className="pt-4">
+                    <Col md={12} className="text-right">
+                        <Button 
+                            size="sm" 
+                            variant="outline-danger"
+                            disabled={this.isDisabledDelete.call(this)}
+                            onClick={this.headerClickTable.bind(this, {}, "delete")} >
+                            удалить
+                        </Button>
+                    </Col>
+                </Row>
+                <Row className="py-2">
+                    <Col md={12}>
+                        <Table size="sm" striped hover>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>ID</th>
+                                    <th>название</th>
+                                    <th>задача добавлена</th>
+                                    <th>интервал времени</th>
+                                    <th>ip</th>
+                                    <th>network</th>
+                                    <th>port</th>
+                                    <th>фильтрация</th>
+                                    <th>выгрузка</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {createTableBody()}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+            </React.Fragment>
         );
     }
 
@@ -277,8 +346,10 @@ class CreatePageSearchTasks extends React.Component {
                 <Row>
                     <Col md={12} className="text-left text-muted">поиск задач</Col>
                 </Row>
-                {<CreateBodySearchTask socketIo={this.props.socketIo} />}
-                {createPagination}
+                <CreateBodySearchTask 
+                    socketIo={this.props.socketIo} 
+                    handlerChosen={this.handlerChosenSource}
+                    listSources={this.props.listItems.listSources} />
                 {this.createTableListDownloadFile.call(this)}
                 {createPagination}
                 <ModalWindowShowInformationTask 
@@ -286,6 +357,13 @@ class CreatePageSearchTasks extends React.Component {
                     onHide={this.handlerCloseModalWindowShowTaskInformation}
                     socketIo={this.props.socketIo}
                     shortTaskInfo={this.state.shortTaskInformation} />
+                <ModalWindowConfirmMessage 
+                    show={this.state.showModalWindowDeleteTask}
+                    onHide={this.closeModalWindowTasksDelete}
+                    msgBody={`Вы действительно хотите удалить ${(this.state.listCheckboxMarkedTasksDel.size > 1) ? "выбранные задачи": "выбранную задачу"}`}
+                    msgTitle={"Удаление"}
+                    nameDel={""}
+                    handlerConfirm={this.handlerTaskDelete} />
             </React.Fragment>
         );
     }

@@ -447,10 +447,6 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     handlerChosenSource(e){
-        
-        console.log("func 'handlerChosenSource'");
-        console.log(e);
-
         this.setState({
             showMainFields: true,
             source: +(e.target.value),
