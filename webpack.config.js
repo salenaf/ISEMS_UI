@@ -22,10 +22,9 @@ module.exports = {
             "bootstrap",
             "bootstrapNotify",
             "bootstrapToggle",
-            "bootstrapTokenfield",
-            "bootstrapDatetimepicker",
             "datatablesNetBs",
             "reactDatePicker",
+            "reactCustomizeTokenInput",
             "select2",
             "md5js",
             "moment",
@@ -99,9 +98,8 @@ module.exports = {
             "bootstrapNotify": "bootstrap-notify/bootstrap-notify.min.js",
             "bootstrapToggle": "bootstrap-toggle/js/bootstrap-toggle.min.js",
             "datatablesNetBs": "datatables.net-bs/js/dataTables.bootstrap.min.js",
-            "bootstrapTokenfield": "bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js",
-            "bootstrapDatetimepicker": "bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
             "reactDatePicker": "react-datepicker/dist/react-datepicker.min.js",
+            "reactCustomizeTokenInput": "react-customize-token-input/lib/index.js",
             "md5js": "crypto-js/md5.js",
             "moment": "moment/moment.js",
             "select2": "select2/dist/js/select2.full.min.js",
@@ -211,11 +209,11 @@ module.exports = {
                 },
             }, ],
         },
-        {
+        /*{
             test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
             loader: "imports-loader?this=>window&exports=>false&define=>false"
         },
-        /*            {
+                    {
                                         test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
                                         include: /\/node_modules\//,
                                         loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'

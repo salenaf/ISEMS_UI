@@ -9,11 +9,8 @@ require("bootstrap");
 require("bootstrapNotify");
 require("bootstrapToggle");
 require("datatablesNetBs");
-require("bootstrapTokenfield");
-require("bootstrapDatetimepicker");
 require("reactDatePicker");
-
-//require("bootstrapDatePicker");
+require("reactCustomizeTokenInput");
 
 require("moment");
 require("select2");

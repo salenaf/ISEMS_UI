@@ -37,7 +37,6 @@ class CreatePageSearchTasks extends React.Component {
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
 
-        this.handlerChosenSource = this.handlerChosenSource.bind(this);
         this.handlerTaskDelete = this.handlerTaskDelete.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.closeModalWindowTasksDelete = this.closeModalWindowTasksDelete.bind(this);
@@ -146,11 +145,6 @@ class CreatePageSearchTasks extends React.Component {
         * 
         */
 
-    }
-
-    handlerChosenSource(e){
-        console.log("func 'handlerChosenSource', START...");
-        console.log(`был выбран источник с ID '${+(e.target.value)}'`);
     }
 
     closeModalWindowTasksDelete(){
@@ -348,7 +342,6 @@ class CreatePageSearchTasks extends React.Component {
                 </Row>
                 <CreateBodySearchTask 
                     socketIo={this.props.socketIo} 
-                    handlerChosen={this.handlerChosenSource}
                     listSources={this.props.listItems.listSources} />
                 {this.createTableListDownloadFile.call(this)}
                 {createPagination}

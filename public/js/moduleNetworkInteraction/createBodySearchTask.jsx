@@ -3,6 +3,7 @@ import { Button, Card, Col, Form, Row, FormControl, InputGroup } from "react-boo
 import PropTypes from "prop-types";
 
 import DatePicker from "react-datepicker";
+import TokenInput from "react-customize-token-input";
 
 class CreateProtocolList extends React.Component {
     constructor(props){
@@ -28,13 +29,42 @@ export default class CreateBodySearchTask extends React.Component {
     constructor(props){
         super(props);
 
+        this.state = {
+            sourceID: 0,
+            statusFiltering: "",
+            statusDownload: "",
+        };
+
         this.getListSource = this.getListSource.bind(this);
-        this.checkRadioInput = this.checkRadioInput.bind(this);
+        
+        this.handlerChosenSource = this.handlerChosenSource.bind(this);
         this.handlerChosenProtocolList = this.handlerChosenProtocolList.bind(this);
+        this.handlerChosenStatusDownload = this.handlerChosenStatusDownload.bind(this);
+        this.handlerChosenStatusFiltering = this.handlerChosenStatusFiltering.bind(this);
     }
 
-    handlerChosenProtocolList(){
+    handlerChosenSource(e){
+        console.log("func 'handlerChosenSource', START...");
+        console.log(`был выбран источник с ID '${+(e.target.value)}'`);
+    }
 
+    handlerChosenStatusFiltering(e){
+        console.log("func 'handlerChosenStatusFiltering', START...");
+        console.log(`был выбран статус фильтрации '${e.target.value}'`);
+    }
+
+    handlerChosenStatusDownload(e){
+        console.log("func 'handlerChosenStatusDownload', START...");
+        console.log(`был выбран статус скачивания '${e.target.value}'`);
+    }
+
+    handlerChosenProtocolList(e){
+        console.log("func 'handlerChosenProtocolList', START...");
+        console.log(`был выбран сетевой протокол '${e.target.value}'`);
+    }
+
+    onTagsChanged(tags) {
+        this.setState({tags});
     }
 
     checkRadioInput(){
@@ -65,13 +95,13 @@ export default class CreateBodySearchTask extends React.Component {
                 <Card className="mb-2" body>
                     <Form.Row>
                         <Form.Group as={Col}>
-                            <Form.Control onChange={this.props.handlerChosen} as="select" size="sm" id="dropdown_list_sources">
-                                <option>источник</option>
+                            <Form.Control onChange={this.handlerChosenSource} as="select" size="sm">
+                                <option value={0}>источник</option>
                                 {this.getListSource()}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group as={Col}>
-                            <Form.Control as="select" size="sm" id="dropdown_list_sources">
+                            <Form.Control onChange={this.handlerChosenStatusFiltering} as="select" size="sm">
                                 <option value="">статус фильтрации</option>
                                 <option value="wait">готовится к выполнению</option>
                                 <option value="refused">oтклонена</option>
@@ -81,7 +111,7 @@ export default class CreateBodySearchTask extends React.Component {
                             </Form.Control>
                         </Form.Group>
                         <Form.Group as={Col}>
-                            <Form.Control as="select" size="sm" id="dropdown_list_sources">
+                            <Form.Control onChange={this.handlerChosenStatusDownload} as="select" size="sm">
                                 <option value="">статус выгрузки файлов</option>
                                 <option value="wait">готовится к выполнению</option>
                                 <option value="refused">oтклонена</option>
@@ -91,103 +121,112 @@ export default class CreateBodySearchTask extends React.Component {
                                 <option value="stop">остановлена пользователем</option>
                             </Form.Control>
                         </Form.Group>
-                        <Form.Group as={Col} controlId="formBasicCheckbox">
-                            <Form.Check type="checkbox" label="только завершенные задачи" />
+                        <Form.Group as={Col} className="mt-1 ml-3">
+                            <Form.Row>
+                                <Form.Check type="checkbox"/>
+                                <small className="ml-1">задача</small>
+                                <Form.Check  custom type="radio" value={true} label="" className="mt-1 ml-3" name="choseTaskComplete" defaultChecked />
+                                <small className="ml-1">закрыта</small>
+                                <Form.Check  custom type="radio" value={false} label="" className="mt-1 ml-3" name="choseTaskComplete" />
+                                <small className="ml-1">открыта</small>
+                            </Form.Row>
                         </Form.Group>
                     </Form.Row>
-                    <Row>
-                        <Col md={4} className="text-muted text-left">опции выгрузки файлов</Col>
-                        <Col md={8} className="text-muted text-left">опции результатов фильтрации</Col>
-                    </Row>
-                    <Row>
-                        <Col md={4}>
-                            <Form.Group controlId="formBasicCheckbox">
-                                <Form.Check type="checkbox" label="выгрузка выполнялась" />
-                            </Form.Group>
-                            <Form.Group controlId="formBasicCheckbox">
-                                <Form.Check type="checkbox" label="все файлы выгружены" />
-                            </Form.Group>
-                        </Col>
-                        <Col md={8}>
+                    {/**
+                    Нужно сделать активирование checkbox для
+                    - файлы найдены 
+                    - выгрузка выполнялась
+                    - все файлы выгружены
+                     */}
+                    <Form.Row>
+                        <Form.Group as={Col} className="text-left">
+                            <Form.Row className="ml-1 mb-n1">
+                                <Form.Check type="checkbox"/>
+                                <small className="ml-1">файлы найдены</small>
+                            </Form.Row>
+                            <Form.Row className="ml-1 mb-n1">
+                                <Form.Check type="checkbox"/>
+                                <small className="ml-1">выгрузка выполнялась</small>
+                            </Form.Row>
+                            <Form.Row className="ml-1">
+                                <Form.Check type="checkbox"/>
+                                <small className="ml-1">все файлы выгружены</small>
+                            </Form.Row>
+                        </Form.Group>
+                        <Form.Group as={Col} className="text-left">
+                            <small>кол-во файлов</small>
                             <Form.Row>
-                                <Form.Group controlId="formBasicCheckbox">
-                                    <Form.Check type="checkbox" label="были найдены файлы" />
+                                <Form.Group as={Col}>
+                                    <Form.Control type="input" size="sm" placeholder="min" />
                                 </Form.Group>
-                                <Form.Group as={Col} controlId="formGridEmail">
-                                    <Form.Label>min кол-во файлов</Form.Label>
-                                    <Form.Control type="input" placeholder="min кол-во файлов" />
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="formGridEmail">
-                                    <Form.Label>max кол-во файлов</Form.Label>
-                                    <Form.Control type="input" placeholder="max кол-во файлов" />
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="formGridEmail">
-                                    <Form.Label>min размер файлов</Form.Label>
-                                    <Form.Control type="input" placeholder="min кол-во файлов" />
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="formGridEmail">
-                                    <Form.Label>max размер файлов</Form.Label>
-                                    <Form.Control type="input" placeholder="max кол-во файлов" />
+                                <Form.Group as={Col}>
+                                    <Form.Control type="input" size="sm" placeholder="max" />
                                 </Form.Group>
                             </Form.Row>
+                        </Form.Group>
+                        <Form.Group as={Col} className="text-left">
+                            <small>размер файлов</small>
+                            <Form.Row>
+                                <Form.Group as={Col}>
+                                    <Form.Control type="input" size="sm" placeholder="min" />
+                                </Form.Group>
+                                <Form.Group as={Col}>
+                                    <Form.Control type="input" size="sm" placeholder="max" />
+                                </Form.Group>
+                            </Form.Row>
+                        </Form.Group>    
+                    </Form.Row>                    
+                    <Form.Row className="mt-n3">
+                        <Col md={5}>
+                            <Row>
+                                <Col md={6}>
+                                    <small className="mr-1">начальное время</small>
+                                    <Form.Row>
+                                        <DatePicker 
+                                            className="form-control form-control-sm green-border"
+                                            //selected={this.props.startDate}
+                                            //onChange={this.props.handleChangeStartDate}
+                                            maxDate={new Date()}
+                                            showTimeInput
+                                            selectsStart
+                                            isClearable
+                                            timeFormat="p"
+                                            timeInputLabel="Time:"
+                                            dateFormat="dd.MM.yyyy hh:mm aa" />
+                                    </Form.Row>
+                                </Col>
+                                <Col md={6}>
+                                    <small className="mr-1">конечное время</small>
+                                    <Form.Row>
+                                        <DatePicker 
+                                            className="form-control form-control-sm red-border"
+                                            //selected={this.props.endDate}
+                                            //onChange={this.props.handleChangeEndDate}
+                                            maxDate={new Date()}
+                                            showTimeInput
+                                            selectsEnd
+                                            isClearable
+                                            timeFormat="p"
+                                            timeInputLabel="Time:"
+                                            dateFormat="dd.MM.yyyy hh:mm aa" />
+                                    </Form.Row>
+                                </Col>
+                            </Row>
                         </Col>
-                    </Row>
+                        <Col md={2} className="text-right">
+                            <small className="mr-1">сет. протокол</small>
+                            <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
+                        </Col>
+                        <Col md={5}>
+                            <TokenInput 
+                                className="react-token-input"
+                                placeholder="ip адрес, порт или подсеть" />
+                        </Col>
+                    </Form.Row>
                     <Row>
-                        <Col md={12}>
-                            <Col sm="3" className="text-right">
-                                <small className="mr-1">сетевой протокол</small>
-                                <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
-                            </Col>
-                            <Col sm="1"></Col>
-                            <Col sm="4">
-                                <small className="mr-1">начальное время</small>
-                                <DatePicker 
-                                    className="form-control form-control-sm green-border"
-                                    //selected={this.props.startDate}
-                                    //onChange={this.props.handleChangeStartDate}
-                                    maxDate={new Date()}
-                                    showTimeInput
-                                    selectsStart
-                                    isClearable
-                                    timeFormat="p"
-                                    timeInputLabel="Time:"
-                                    dateFormat="dd.MM.yyyy hh:mm aa" />
-                            </Col>
-                            <Col sm="4">
-                                <small className="mr-1">конечное время</small>
-                                <DatePicker 
-                                    className="form-control form-control-sm red-border"
-                                    //selected={this.props.endDate}
-                                    //onChange={this.props.handleChangeEndDate}
-                                    maxDate={new Date()}
-                                    showTimeInput
-                                    selectsEnd
-                                    isClearable
-                                    timeFormat="p"
-                                    timeInputLabel="Time:"
-                                    dateFormat="dd.MM.yyyy hh:mm aa" />
-                            </Col>
-                            <Form inline>
-                                <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
-                                <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
-                                <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
-                            </Form>
-                            <InputGroup className="mb-3" size="sm">
-                                <FormControl
-                                    id="input_ip_network_port"
-                                    aria-describedby="basic-addon2"
-                                    onChange={this.handlerInput}
-                                    //isValid={this.state.inputFieldIsValid}
-                                    //isInvalid={this.state.inputFieldIsInvalid} 
-                                    placeholder="введите ip адрес, подсеть или сетевой порт" />
-                                <InputGroup.Append>
-                                    <Button onClick={this.addPortNetworkIP} variant="outline-secondary">
-                                    добавить
-                                    </Button>
-                                </InputGroup.Append>
-                            </InputGroup>
+                        <Col className="text-right mt-2">
                             <Button size="sm" onClick={this.addPortNetworkIP} variant="outline-primary">
-                                    поиск
+                                поиск
                             </Button>
                         </Col>
                     </Row>
@@ -200,5 +239,4 @@ export default class CreateBodySearchTask extends React.Component {
 CreateBodySearchTask.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listSources: PropTypes.object.isRequired,
-    handlerChosen: PropTypes.func.isRequired,
 };
