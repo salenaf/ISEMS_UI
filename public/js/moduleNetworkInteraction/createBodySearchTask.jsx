@@ -1,9 +1,11 @@
 import React from "react";
-import { Button, Card, Col, Form, Row, FormControl, InputGroup } from "react-bootstrap";
+import { Button, Card, Col, Form, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import DatePicker from "react-datepicker";
 import TokenInput from "react-customize-token-input";
+
+import { helpers } from "../common_helpers/helpers.js";
 
 class CreateProtocolList extends React.Component {
     constructor(props){
@@ -52,8 +54,8 @@ export default class CreateBodySearchTask extends React.Component {
                 },
                 ifo: { //InstalledFilteringOption — искомые опции фильтрации
                     dt: { //DateTime -  дата и время фильтруемых файлов
-                        s: 0, //Start - начальное дата и время фильтруемых файлов
-                        e: 0, //End - конечное дата и время фильтруемых файлов
+                        s: new Date(), //Start - начальное дата и время фильтруемых файлов
+                        e: new Date(), //End - конечное дата и время фильтруемых файлов
                     },
                     p: "any", //Protocol — транспортный протокол
                     nf: { //NetworkFilters — сетевые фильтры
@@ -75,36 +77,174 @@ export default class CreateBodySearchTask extends React.Component {
                     },
                 },
             },
+            inputFieldMinCfIsValid: false,
+            inputFieldMinCfIsInvalid: false,
+            inputFieldMaxCfIsValid: false,
+            inputFieldMaxCfIsInvalid: false,
+            inputFieldMinSfIsValid: false,
+            inputFieldMinSfIsInvalid: false,
+            inputFieldMaxSfIsValid: false,
+            inputFieldMaxSfIsInvalid: false,
         };
 
         this.getListSource = this.getListSource.bind(this);
-        
+
         this.handlerCheckbox = this.handlerCheckbox.bind(this);
         this.handlerRadioChosen = this.handlerRadioChosen.bind(this);
+        this.handlerButtonSearch = this.handlerButtonSearch.bind(this);
+        this.handlerChosenStatus = this.handlerChosenStatus.bind(this);
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
+        this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
+        this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
+        this.handlerCountAndSizeFiles = this.handlerCountAndSizeFiles.bind(this);
         this.handlerChosenProtocolList = this.handlerChosenProtocolList.bind(this);
-        this.handlerChosenStatusDownload = this.handlerChosenStatusDownload.bind(this);
-        this.handlerChosenStatusFiltering = this.handlerChosenStatusFiltering.bind(this);
+
+        this.testCheckObject.call(this);
+    }
+
+    testCheckObject(){
+        let referenceObj = {
+            cptp: false,
+            tp: false,
+            cpfid: false,
+            fid: false,
+            cpafid: false,
+            afid: false,
+            fif: false,
+            id: 0,
+            cafmin: 0,
+            cafmax: 0,
+            safmin: 0,
+            safmax: 0,
+            sft: "",
+            sfdt: "",
+            p: "any",
+            currentDate: new Date(),
+        };
+
+        let obj = {
+            cptp: false, //ConsiderParameterTaskProcessed — учитывать параметр TaskProcessed
+            tp: false, //TaskProcessed — была ли задача отмечена клиентом API как завершенная
+            id: 0, //ID - уникальный цифровой идентификатор источника
+            sft: "", //StatusFilteringTask - статус задачи по фильтрации
+            sfdt: "", //StatusFileDownloadTask - статус задачи по скачиванию файлов
+            cpfid: false, //ConsiderParameterFilesDownloaded — учитывать параметр  FilesIsDownloaded
+            fid: false, //FilesIsDownloaded — выполнялась ли выгрузка файлов
+            cpafid: false, //ConsiderParameterAllFilesIsDownloaded -  учитывать параметр AllFilesIsDownloaded
+            afid: false, //AllFilesIsDownloaded — все ли файлы были выгружены
+            iaf: { //InformationAboutFiltering — поиск информации по результатам фильтрации
+                fif: false, //FilesIsFound — были ли найдены в результате фильтрации какие либо файлы
+                cafmin: 0, //CountAllFilesMin — минимальное общее количество всех найденных в результате фильтрации файлов
+                cafmax: 0, //CountAllFilesMax — максимальное общее количество всех найденных в результате фильтрации файлов
+                safmin: 0, //SizeAllFilesMin — минимальный общий размер всех найденных  в результате фильтрации файлов
+                safmax: 0, //SizeAllFilesMax — минимальный общий размер всех найденных  в результате фильтрации файлов
+            },
+            ifo: { //InstalledFilteringOption — искомые опции фильтрации
+                dt: { //DateTime -  дата и время фильтруемых файлов
+                    s: new Date(), //Start - начальное дата и время фильтруемых файлов
+                    e: new Date(), //End - конечное дата и время фильтруемых файлов
+                },
+                p: "any", //Protocol — транспортный протокол
+                nf: { //NetworkFilters — сетевые фильтры
+                    ip: { //IP — фильтры для поиска по ip адресам
+                        any: [], //Any — вы обе стороны
+                        src: [], //Src — только как источник
+                        dst: [], //Dst — только как получатель
+                    },
+                    pt: { //Port — фильтры для поиска по сетевым портам
+                        any: [], //Any — вы обе стороны
+                        src: [], //Src — только как источник
+                        dst: [], //Dst — только как получатель
+                    },
+                    nw: { //Network — фильтры для поиска по подсетям
+                        any: [], //Any — вы обе стороны
+                        src: [], //Src — только как источник
+                        dst: [], //Dst — только как получатель				
+                    }
+                },
+            },
+        };
+
+        let recursiveLoopFunc = (data) => {
+            for(let n in data){
+                if(Array.isArray(data[n])){
+                    console.log(`value: '${n}' is ARRAY, ${(data[n].length === 0)? "ARRAY is empty": "ARRAY is not empty"}`);
+                    console.log(data[n]);
+
+                    if(data[n].length > 0){
+                        console.log(` -= VALUE: '${n}' =- UPDATED`);
+                    }                        
+
+                    continue;
+                }
+                if(typeof data[n] === "object"){
+                    if(n === "s" || n === "e"){
+                        //                        console.log(`value: '${n}' is DATE, ${()? "DATE is equal" : "DATE is not equal"}`);
+                    
+                        if(data[n] !== referenceObj.currentDate){
+                            console.log(` -= VALUE: '${n}' =- UPDATED`);
+                        }                        
+                    } else {
+                        console.log(`value: '${n}' is OBJECT`);
+    
+                        recursiveLoopFunc(data[n]);
+                    }
+                } else {
+                    console.log(`=== value: '${n}' ANY TYPE`);
+
+                    if(data[n] !== referenceObj[n]){
+                        console.log(` -= VALUE: '${n}' =- UPDATED`);
+                    }
+                }
+            }
+        };
+
+        /**
+ * Протестировать и отладить эту функцию.
+ * Она нужна для отслеживания изменения пользователем 
+ * параметров поискового запроса. Отличие параметров поискового
+ * запроса от значений по умолчанию. 
+ * Если какое либо значение отличается от значения по умолчанию
+ * делать кнопку 'поиск' активной. 
+ */
+
+        recursiveLoopFunc(obj);
     }
 
     handlerChosenSource(e){
         console.log("func 'handlerChosenSource', START...");
         console.log(`был выбран источник с ID '${+(e.target.value)}'`);
+
+        let objCopy = Object.assign({}, this.state.searchParameters);
+        objCopy.id = +(e.target.value);
+        this.setState({ searchParameters: objCopy });
     }
 
-    handlerChosenStatusFiltering(e){
-        console.log("func 'handlerChosenStatusFiltering', START...");
-        console.log(`был выбран статус фильтрации '${e.target.value}'`);
-    }
+    handlerChosenStatus(e){
+        console.log("func 'handlerChosenStatus', START...");
+        console.log(`тип статуса '${e.target.name}', статус '${e.target.value}'`);
 
-    handlerChosenStatusDownload(e){
-        console.log("func 'handlerChosenStatusDownload', START...");
-        console.log(`был выбран статус скачивания '${e.target.value}'`);
+        let objCopy = Object.assign({}, this.state.searchParameters);
+        switch (e.target.name) {
+        case "list_status_filtration":
+            objCopy.sft = e.target.value;
+            break;
+
+        case "list_status_download":
+            objCopy.sfdt = e.target.value; 
+            break;
+        }
+
+        this.setState({ searchParameters: objCopy });
     }
 
     handlerChosenProtocolList(e){
         console.log("func 'handlerChosenProtocolList', START...");
         console.log(`был выбран сетевой протокол '${e.target.value}'`);
+
+        let objCopy = Object.assign({}, this.state.searchParameters);
+        objCopy.ifo.p = e.target.value;
+        this.setState({ searchParameters: objCopy });
     }
 
     handlerCheckbox(e){
@@ -112,37 +252,64 @@ export default class CreateBodySearchTask extends React.Component {
         console.log(` checked = ${e.target.checked}`);
         console.log(`name = '${e.target.name}'`);
 
-        let objCopy = Object.assign({}, this.state);
+        let objCopy = Object.assign({}, this.state.searchParameters);
 
         switch (e.target.name) {
         case "task_checkbox":
             if(e.target.checked){
-                objCopy.searchParameters.cptp = false;
-                this.setState({ disabledRadioChosenTask: false });
+                objCopy.cptp = true;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    disabledRadioChosenTask: false, 
+                });
             } else {
-                objCopy.searchParameters.cptp = true;
-                this.setState({ disabledRadioChosenTask: true });
+                objCopy.cptp = false;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    disabledRadioChosenTask: true, 
+                });
             }       
             break;
 
         case "file_uploaded_check":
             if(e.target.checked){
-                objCopy.searchParameters.cpfid = false;
-                this.setState({ disabledRadioUploadedFile: false });
+                objCopy.cpfid = true;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    disabledRadioUploadedFile: false, 
+                });
             } else {
-                objCopy.searchParameters.cpfid = true;
-                this.setState({ disabledRadioUploadedFile: true });
+                objCopy.cpfid = false;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    disabledRadioUploadedFile: true, 
+                });
             }       
             break;
 
         case "all_file_uploaded_check":
             if(e.target.checked){
-                objCopy.searchParameters.cpafid = false;
-                this.setState({ disabledRadioUploadedAllFile: false });
+                objCopy.cpafid = true;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    disabledRadioUploadedAllFile: false, 
+                });
             } else {
-                objCopy.searchParameters.cpafid = true;
-                this.setState({ disabledRadioUploadedAllFile: true });
+                objCopy.cpafid = false;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    disabledRadioUploadedAllFile: true, 
+                });
             } 
+            break;
+
+        case "files_found":
+            if(e.target.checked){
+                objCopy.iaf.fif = true;
+            } else {
+                objCopy.iaf.fif = false;
+            }
+            this.setState({ searchParameters: objCopy });
             break;
         }
     }
@@ -151,39 +318,134 @@ export default class CreateBodySearchTask extends React.Component {
         console.log("func 'handlerRadioChosen', START...");
         console.log(`radio chosen '${e.target.value}'`);
 
-        let objCopy = Object.assign({}, this.state);
+        let objCopy = Object.assign({}, this.state.searchParameters);
 
         switch (e.target.name) {
-        case "chose_task_complete":
-            if(e.target.checked){
-                objCopy.searchParameters.tp = false;
-                this.setState({ disabledRadioChosenTask: false });
-            } else {
-                objCopy.searchParameters.tp = true;
-                this.setState({ disabledRadioChosenTask: true });
-            }       
+        case "chose_task_complete": 
+            objCopy.tp = (e.target.value === "true") ? true: false;    
             break;
-    
+        
         case "chose_uploaded_file":
-            if(e.target.checked){
-                objCopy.searchParameters.fid = false;
-                this.setState({ disabledRadioUploadedFile: false });
-            } else {
-                objCopy.searchParameters.fid = true;
-                this.setState({ disabledRadioUploadedFile: true });
-            }       
+            objCopy.fid = (e.target.value === "true") ? true: false;
             break;
-    
+        
         case "chose_uploaded_all_file":
-            if(e.target.checked){
-                objCopy.searchParameters.afid = false;
-                this.setState({ disabledRadioUploadedAllFile: false });
-            } else {
-                objCopy.searchParameters.afid = true;
-                this.setState({ disabledRadioUploadedAllFile: true });
-            } 
+            objCopy.afid = (e.target.value === "true") ? true: false;
             break;
         }
+
+        this.setState({ searchParameters: objCopy });
+    }
+
+    handlerButtonSearch(){
+        console.log("func 'handlerButtonSearch', START...");
+        console.log(this.state.searchParameters);
+    }
+
+    handlerCountAndSizeFiles(e){
+        console.log("func 'handlerCountAndSizeFiles', START...");
+        console.log(e.target.value);
+
+        let objCopy = Object.assign({}, this.state.searchParameters);
+
+        if(helpers.checkInputValidation({
+            "name": "integer", 
+            "value": e.target.value, 
+        })){    
+            switch (e.target.name) {
+            case "min_count_files":
+                objCopy.iaf.cafmin = e.target.value;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMinCfIsValid: true,
+                    inputFieldMinCfIsInvalid: false,
+                });
+
+                break;
+                            
+            case "max_count_files":
+                objCopy.iaf.cafmax = e.target.value;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMaxCfIsValid: true,
+                    inputFieldMaxCfIsInvalid: false,
+                });
+                    
+                break;
+                            
+            case "min_size_files":
+                objCopy.iaf.safmin = e.target.value;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMinSfIsValid: true,
+                    inputFieldMinSfIsInvalid: false,
+                });
+                    
+                break;
+        
+            case "max_size_files":
+                objCopy.iaf.safmax = e.target.value;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMaxSfIsValid: true,
+                    inputFieldMaxSfIsInvalid: false,
+                });
+                break;
+            }
+        } else {  
+            switch (e.target.name) {
+            case "min_count_files":
+                objCopy.iaf.cafmin = 0;
+                this.setState({ 
+                    searchParameters: objCopy,
+                    inputFieldMinCfIsValid: false,
+                    inputFieldMinCfIsInvalid: (e.target.value !== "") ? true: false,
+                });
+    
+                break;
+                                
+            case "max_count_files":
+                objCopy.iaf.cafmax = 0;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMaxCfIsValid: false,
+                    inputFieldMaxCfIsInvalid: (e.target.value !== "") ? true: false,
+                });
+                        
+                break;
+                                
+            case "min_size_files":
+                objCopy.iaf.safmin = 0;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMinSfIsValid: false,
+                    inputFieldMinSfIsInvalid: (e.target.value !== "") ? true: false,
+                });
+                        
+                break;
+            
+            case "max_size_files":
+                objCopy.iaf.safmax = 0;
+                this.setState({ 
+                    searchParameters: objCopy, 
+                    inputFieldMaxSfIsValid: false,
+                    inputFieldMaxSfIsInvalid: (e.target.value !== "") ? true: false,
+                });
+                break;
+            }
+        }
+    }
+
+    handleChangeStartDate(date){
+        let objCopy = Object.assign({}, this.state.searchParameters);
+        objCopy.ifo.dt.s = date;
+        this.setState({ searchParameters: objCopy });
+    }
+
+    handleChangeEndDate(date){
+        let objCopy = Object.assign({}, this.state.searchParameters);
+        objCopy.ifo.dt.e = date;
+        this.setState({ searchParameters: objCopy });
     }
 
     getListSource(){
@@ -216,7 +478,7 @@ export default class CreateBodySearchTask extends React.Component {
                             </Form.Control>
                         </Form.Group>
                         <Form.Group as={Col}>
-                            <Form.Control onChange={this.handlerChosenStatusFiltering} as="select" size="sm">
+                            <Form.Control onChange={this.handlerChosenStatus} name="list_status_filtration" as="select" size="sm">
                                 <option value="">статус фильтрации</option>
                                 <option value="wait">готовится к выполнению</option>
                                 <option value="refused">oтклонена</option>
@@ -226,7 +488,7 @@ export default class CreateBodySearchTask extends React.Component {
                             </Form.Control>
                         </Form.Group>
                         <Form.Group as={Col}>
-                            <Form.Control onChange={this.handlerChosenStatusDownload} as="select" size="sm">
+                            <Form.Control onChange={this.handlerChosenStatus} name="list_status_download" as="select" size="sm">
                                 <option value="">статус выгрузки файлов</option>
                                 <option value="wait">готовится к выполнению</option>
                                 <option value="refused">oтклонена</option>
@@ -245,22 +507,22 @@ export default class CreateBodySearchTask extends React.Component {
                                     type="radio"
                                     onClick={this.handlerRadioChosen} 
                                     id="r_task_complete" 
-                                    value={true} 
+                                    value="true" 
                                     label="" 
                                     className="mt-1 ml-3" 
                                     name="chose_task_complete" 
-                                    disabled={this.state.disabledRadioChosenTask}
-                                    defaultChecked />
+                                    disabled={this.state.disabledRadioChosenTask} />
                                 <small className="ml-1">закрыта</small>
                                 <Form.Check 
                                     custom 
                                     type="radio"
                                     onClick={this.handlerRadioChosen}  
                                     id="r_task_not_complete" 
-                                    value={false} 
+                                    value="false" 
                                     label="" 
                                     className="mt-1 ml-3" 
                                     name="chose_task_complete"
+                                    defaultChecked
                                     disabled={this.state.disabledRadioChosenTask} />
                                 <small className="ml-1">открыта</small>
                             </Form>
@@ -269,7 +531,7 @@ export default class CreateBodySearchTask extends React.Component {
                     <Form.Row>
                         <Form.Group as={Col} className="text-left">
                             <Form.Row className="ml-1">
-                                <Form.Check type="checkbox" className="mt-n2"/>
+                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="files_found" className="mt-n2"/>
                                 <small className="ml-1 mt-n2">файлы найдены</small>
                             </Form.Row>
                             <Form.Row className="ml-1">
@@ -280,22 +542,22 @@ export default class CreateBodySearchTask extends React.Component {
                                     type="radio"
                                     onClick={this.handlerRadioChosen} 
                                     id="r_upload_file" 
-                                    value={true} 
+                                    value="true"
                                     label="" 
                                     className="mt-1 ml-3" 
                                     name="chose_uploaded_file" 
-                                    disabled={this.state.disabledRadioUploadedFile}
-                                    defaultChecked />
+                                    disabled={this.state.disabledRadioUploadedFile} />
                                 <small className="ml-1">да</small>
                                 <Form.Check 
                                     custom 
                                     type="radio"
                                     onClick={this.handlerRadioChosen} 
                                     id="r_not_upload_file" 
-                                    value={false} 
+                                    value="false" 
                                     label="" 
                                     className="mt-1 ml-3" 
                                     name="chose_uploaded_file"
+                                    defaultChecked
                                     disabled={this.state.disabledRadioUploadedFile} />
                                 <small className="ml-1">нет</small>
                             </Form.Row>
@@ -307,22 +569,22 @@ export default class CreateBodySearchTask extends React.Component {
                                     type="radio"
                                     onClick={this.handlerRadioChosen} 
                                     id="r_upload_all_file" 
-                                    value={true} 
+                                    value="true" 
                                     label="" 
                                     className="mt-1 ml-3" 
                                     name="chose_uploaded_all_file" 
-                                    disabled={this.state.disabledRadioUploadedAllFile}
-                                    defaultChecked />
+                                    disabled={this.state.disabledRadioUploadedAllFile} />
                                 <small className="ml-1">да</small>
                                 <Form.Check 
                                     custom 
                                     type="radio"
                                     onClick={this.handlerRadioChosen} 
                                     id="r_not_upload_all_file" 
-                                    value={false} 
+                                    value="false" 
                                     label="" 
                                     className="mt-1 ml-3" 
                                     name="chose_uploaded_all_file"
+                                    defaultChecked
                                     disabled={this.state.disabledRadioUploadedAllFile} />
                                 <small className="ml-1">нет</small>
                             </Form.Row>
@@ -331,10 +593,24 @@ export default class CreateBodySearchTask extends React.Component {
                             <small>найдено файлов</small>
                             <Form.Row>
                                 <Form.Group as={Col}>
-                                    <Form.Control type="input" size="sm" placeholder="min" />
+                                    <Form.Control 
+                                        onChange={this.handlerCountAndSizeFiles} 
+                                        isValid={this.state.inputFieldMinCfIsValid}
+                                        isInvalid={this.state.inputFieldMinCfIsInvalid} 
+                                        name="min_count_files" 
+                                        type="input" 
+                                        size="sm" 
+                                        placeholder="min" />
                                 </Form.Group>
                                 <Form.Group as={Col}>
-                                    <Form.Control type="input" size="sm" placeholder="max" />
+                                    <Form.Control 
+                                        onChange={this.handlerCountAndSizeFiles} 
+                                        isValid={this.state.inputFieldMaxCfIsValid}
+                                        isInvalid={this.state.inputFieldMaxCfIsInvalid}
+                                        name="max_count_files" 
+                                        type="input" 
+                                        size="sm" 
+                                        placeholder="max" />
                                 </Form.Group>
                             </Form.Row>
                         </Form.Group>
@@ -342,10 +618,24 @@ export default class CreateBodySearchTask extends React.Component {
                             <small>общий размер найденных файлов</small>
                             <Form.Row>
                                 <Form.Group as={Col}>
-                                    <Form.Control type="input" size="sm" placeholder="min" />
+                                    <Form.Control 
+                                        onChange={this.handlerCountAndSizeFiles} 
+                                        isValid={this.state.inputFieldMinSfIsValid}
+                                        isInvalid={this.state.inputFieldMinSfIsInvalid}
+                                        name="min_size_files" 
+                                        type="input" 
+                                        size="sm" 
+                                        placeholder="min" />
                                 </Form.Group>
                                 <Form.Group as={Col}>
-                                    <Form.Control type="input" size="sm" placeholder="max" />
+                                    <Form.Control 
+                                        onChange={this.handlerCountAndSizeFiles} 
+                                        isValid={this.state.inputFieldMaxSfIsValid}
+                                        isInvalid={this.state.inputFieldMaxSfIsInvalid}
+                                        name="max_size_files" 
+                                        type="input" 
+                                        size="sm" 
+                                        placeholder="max" />
                                 </Form.Group>
                             </Form.Row>
                         </Form.Group>    
@@ -358,8 +648,8 @@ export default class CreateBodySearchTask extends React.Component {
                                     <Form.Row>
                                         <DatePicker 
                                             className="form-control form-control-sm green-border"
-                                            //selected={this.props.startDate}
-                                            //onChange={this.props.handleChangeStartDate}
+                                            selected={this.state.searchParameters.ifo.dt.s}
+                                            onChange={this.handleChangeStartDate}
                                             maxDate={new Date()}
                                             showTimeInput
                                             selectsStart
@@ -374,8 +664,8 @@ export default class CreateBodySearchTask extends React.Component {
                                     <Form.Row>
                                         <DatePicker 
                                             className="form-control form-control-sm red-border"
-                                            //selected={this.props.endDate}
-                                            //onChange={this.props.handleChangeEndDate}
+                                            selected={this.state.searchParameters.ifo.dt.e}
+                                            onChange={this.handleChangeEndDate}
                                             maxDate={new Date()}
                                             showTimeInput
                                             selectsEnd
@@ -392,19 +682,24 @@ export default class CreateBodySearchTask extends React.Component {
                             <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
                         </Col>
                         <Col md={5}>
-                            <Form.Row>
+                            <Form.Row className="ml-2">
                                 <TokenInput 
                                     className="react-token-input"
                                     placeholder="ip адрес, порт или подсеть" />
-                                <a href="#">
-                                    <img className="clickable_icon" src="../images/icons8-help-28.png" alt=""></img>
-                                </a>
+                                <OverlayTrigger
+                                    key="tooltip_question"
+                                    placement="right"
+                                    overlay={<Tooltip>Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.</Tooltip>}>
+                                    <a href="#">
+                                        <img className="clickable_icon ml-1" src="../images/icons8-help-28.png" alt=""></img>
+                                    </a>
+                                </OverlayTrigger>
                             </Form.Row>
                         </Col>
                     </Form.Row>
                     <Row>
                         <Col className="text-right mt-4 mb-n2">
-                            <Button size="sm" onClick={this.addPortNetworkIP} variant="outline-primary">
+                            <Button size="sm" onClick={this.handlerButtonSearch} variant="outline-primary">
                                 поиск
                             </Button>
                         </Col>

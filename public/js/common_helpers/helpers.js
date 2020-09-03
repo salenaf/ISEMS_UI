@@ -109,6 +109,7 @@ let helpers = {
             "network": new RegExp("^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)[.]){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)/[0-9]{1,2}$"),
             "countProcess": new RegExp("^[0-9]{1}$"),
             "intervalTransmission": new RegExp("^[0-9]{1,}$"),
+            "integer": new RegExp("^[0-9]{1,}$"),
             "folderStorage": new RegExp("^[\\w\\/_-]{3,}$"),
             "stringRuNumCharacter": new RegExp("^[а-яА-ЯёЁ0-9\\s.,№-]+$"),
             "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
