@@ -32,6 +32,7 @@ export default class CreateBodySearchTask extends React.Component {
         super(props);
 
         this.state = {
+            disabledButtonSearch: true,
             disabledRadioChosenTask: true,
             disabledRadioUploadedFile: true,
             disabledRadioUploadedAllFile: true,
@@ -87,19 +88,41 @@ export default class CreateBodySearchTask extends React.Component {
             inputFieldMaxSfIsInvalid: false,
         };
 
+        this.referenceObj = {
+            cptp: false,
+            tp: false,
+            cpfid: false,
+            fid: false,
+            cpafid: false,
+            afid: false,
+            fif: false,
+            id: 0,
+            cafmin: 0,
+            cafmax: 0,
+            safmin: 0,
+            safmax: 0,
+            sft: "",
+            sfdt: "",
+            p: "any",
+            currentDate: +this.state.searchParameters.ifo.dt.s,
+        };
+
         this.getListSource = this.getListSource.bind(this);
 
+        this.fieldChange = this.fieldChange.bind(this);
         this.handlerCheckbox = this.handlerCheckbox.bind(this);
+        this.checkFieldChange = this.checkFieldChange.bind(this);
+        this.handlerFieldInput = this.handlerFieldInput.bind(this);
         this.handlerRadioChosen = this.handlerRadioChosen.bind(this);
         this.handlerButtonSearch = this.handlerButtonSearch.bind(this);
         this.handlerChosenStatus = this.handlerChosenStatus.bind(this);
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
-        this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
-        this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
+        this.handlerChangeEndDate = this.handlerChangeEndDate.bind(this);
+        this.handlerChangeStartDate = this.handlerChangeStartDate.bind(this);
         this.handlerCountAndSizeFiles = this.handlerCountAndSizeFiles.bind(this);
         this.handlerChosenProtocolList = this.handlerChosenProtocolList.bind(this);
 
-        this.testCheckObject.call(this);
+        //this.testCheckObject.call(this);
     }
 
     testCheckObject(){
@@ -119,7 +142,7 @@ export default class CreateBodySearchTask extends React.Component {
             sft: "",
             sfdt: "",
             p: "any",
-            currentDate: new Date(),
+            currentDate: +new Date(),
         };
 
         let obj = {
@@ -180,9 +203,11 @@ export default class CreateBodySearchTask extends React.Component {
                 if(typeof data[n] === "object"){
                     if(n === "s" || n === "e"){
                         //                        console.log(`value: '${n}' is DATE, ${()? "DATE is equal" : "DATE is not equal"}`);
-                    
-                        if(data[n] !== referenceObj.currentDate){
-                            console.log(` -= VALUE: '${n}' =- UPDATED`);
+                        console.log(+data[n]);
+                        console.log(`current date: ${referenceObj.currentDate}`);
+
+                        if(+data[n] !== referenceObj.currentDate){
+                            console.log(` -= VALUE: '${n}' =- UPDATED TIME`);
                         }                        
                     } else {
                         console.log(`value: '${n}' is OBJECT`);
@@ -206,6 +231,10 @@ export default class CreateBodySearchTask extends React.Component {
  * запроса от значений по умолчанию. 
  * Если какое либо значение отличается от значения по умолчанию
  * делать кнопку 'поиск' активной. 
+ * 
+ * Сделать проверку поля 'ip адрес, порт или подсеть' основываясь
+ * на regexp как просто для ip адрес, порт или подсеть так и с
+ * использованием приставок src и dst.
  */
 
         recursiveLoopFunc(obj);
@@ -218,11 +247,15 @@ export default class CreateBodySearchTask extends React.Component {
         let objCopy = Object.assign({}, this.state.searchParameters);
         objCopy.id = +(e.target.value);
         this.setState({ searchParameters: objCopy });
+
+        this.fieldChange(+(e.target.value), "id");
     }
 
     handlerChosenStatus(e){
         console.log("func 'handlerChosenStatus', START...");
         console.log(`тип статуса '${e.target.name}', статус '${e.target.value}'`);
+
+        let elemName = "sft";
 
         let objCopy = Object.assign({}, this.state.searchParameters);
         switch (e.target.name) {
@@ -231,11 +264,14 @@ export default class CreateBodySearchTask extends React.Component {
             break;
 
         case "list_status_download":
+            elemName = "sfdt";
             objCopy.sfdt = e.target.value; 
             break;
         }
 
         this.setState({ searchParameters: objCopy });
+
+        this.fieldChange(e.target.value, elemName);
     }
 
     handlerChosenProtocolList(e){
@@ -245,6 +281,8 @@ export default class CreateBodySearchTask extends React.Component {
         let objCopy = Object.assign({}, this.state.searchParameters);
         objCopy.ifo.p = e.target.value;
         this.setState({ searchParameters: objCopy });
+
+        this.fieldChange(e.target.value, "p");
     }
 
     handlerCheckbox(e){
@@ -253,9 +291,11 @@ export default class CreateBodySearchTask extends React.Component {
         console.log(`name = '${e.target.name}'`);
 
         let objCopy = Object.assign({}, this.state.searchParameters);
+        let elemName = "";
 
         switch (e.target.name) {
         case "task_checkbox":
+            elemName = "cptp";
             if(e.target.checked){
                 objCopy.cptp = true;
                 this.setState({ 
@@ -272,6 +312,7 @@ export default class CreateBodySearchTask extends React.Component {
             break;
 
         case "file_uploaded_check":
+            elemName = "cpfid";
             if(e.target.checked){
                 objCopy.cpfid = true;
                 this.setState({ 
@@ -288,6 +329,7 @@ export default class CreateBodySearchTask extends React.Component {
             break;
 
         case "all_file_uploaded_check":
+            elemName = "cpafid";
             if(e.target.checked){
                 objCopy.cpafid = true;
                 this.setState({ 
@@ -304,6 +346,7 @@ export default class CreateBodySearchTask extends React.Component {
             break;
 
         case "files_found":
+            elemName = "fif";
             if(e.target.checked){
                 objCopy.iaf.fif = true;
             } else {
@@ -312,6 +355,8 @@ export default class CreateBodySearchTask extends React.Component {
             this.setState({ searchParameters: objCopy });
             break;
         }
+
+        this.fieldChange(e.target.checked, elemName);
     }
 
     handlerRadioChosen(e){
@@ -319,27 +364,43 @@ export default class CreateBodySearchTask extends React.Component {
         console.log(`radio chosen '${e.target.value}'`);
 
         let objCopy = Object.assign({}, this.state.searchParameters);
+        let elemName = "";
 
         switch (e.target.name) {
         case "chose_task_complete": 
             objCopy.tp = (e.target.value === "true") ? true: false;    
+            elemName = "tp";
             break;
         
         case "chose_uploaded_file":
             objCopy.fid = (e.target.value === "true") ? true: false;
+            elemName = "fid";
             break;
         
         case "chose_uploaded_all_file":
             objCopy.afid = (e.target.value === "true") ? true: false;
+            elemName = "afid";
             break;
         }
 
         this.setState({ searchParameters: objCopy });
+
+        this.fieldChange(((e.target.value === "true") ? true: false), elemName);
     }
 
     handlerButtonSearch(){
         console.log("func 'handlerButtonSearch', START...");
         console.log(this.state.searchParameters);
+
+        if(this.checkFieldChange()){
+            console.log("Изменений НЕТ");
+
+            this.setState({ disabledButtonSearch: true });
+
+            return;
+        }
+
+        console.log("Изменения ЕСТЬ");
     }
 
     handlerCountAndSizeFiles(e){
@@ -351,7 +412,9 @@ export default class CreateBodySearchTask extends React.Component {
         if(helpers.checkInputValidation({
             "name": "integer", 
             "value": e.target.value, 
-        })){    
+        })){  
+            let elemName = "";
+            
             switch (e.target.name) {
             case "min_count_files":
                 objCopy.iaf.cafmin = e.target.value;
@@ -360,6 +423,7 @@ export default class CreateBodySearchTask extends React.Component {
                     inputFieldMinCfIsValid: true,
                     inputFieldMinCfIsInvalid: false,
                 });
+                elemName = "cafmin";
 
                 break;
                             
@@ -370,6 +434,7 @@ export default class CreateBodySearchTask extends React.Component {
                     inputFieldMaxCfIsValid: true,
                     inputFieldMaxCfIsInvalid: false,
                 });
+                elemName = "cafmax";
                     
                 break;
                             
@@ -380,6 +445,7 @@ export default class CreateBodySearchTask extends React.Component {
                     inputFieldMinSfIsValid: true,
                     inputFieldMinSfIsInvalid: false,
                 });
+                elemName = "safmin";
                     
                 break;
         
@@ -390,8 +456,12 @@ export default class CreateBodySearchTask extends React.Component {
                     inputFieldMaxSfIsValid: true,
                     inputFieldMaxSfIsInvalid: false,
                 });
+                elemName = "safmax";
+
                 break;
             }
+
+            this.fieldChange(e.target.value, elemName);
         } else {  
             switch (e.target.name) {
             case "min_count_files":
@@ -431,21 +501,85 @@ export default class CreateBodySearchTask extends React.Component {
                     inputFieldMaxSfIsValid: false,
                     inputFieldMaxSfIsInvalid: (e.target.value !== "") ? true: false,
                 });
+
                 break;
             }
         }
     }
 
-    handleChangeStartDate(date){
+    handlerChangeStartDate(date){
         let objCopy = Object.assign({}, this.state.searchParameters);
         objCopy.ifo.dt.s = date;
         this.setState({ searchParameters: objCopy });
+
+        this.fieldChange(date, "currentDate");
     }
 
-    handleChangeEndDate(date){
+    handlerChangeEndDate(date){
         let objCopy = Object.assign({}, this.state.searchParameters);
         objCopy.ifo.dt.e = date;
         this.setState({ searchParameters: objCopy });
+
+        this.fieldChange(date, "currentDate");
+    }
+
+    handlerFieldInput(e){
+        console.log("func 'handlerFieldInput', START...");
+        console.log(e.target.value);
+    }
+
+    fieldChange(item, elemName){
+        if(Array.isArray(item)){
+            if(item.length > 0){
+                this.setState({ disabledButtonSearch: false });
+            }                        
+        } else {
+            if(typeof item === "object"){
+                if(elemName === "currentDate"){
+                    if(+item !== this.referenceObj.currentDate){
+                        this.setState({ disabledButtonSearch: false });
+                    }                        
+                }
+            } else {
+                if(item !== this.referenceObj[elemName]){
+                    this.setState({ disabledButtonSearch: false });
+                }
+            }
+        }
+    }
+
+    checkFieldChange(){
+        let changeIsExist = true;
+
+        let recursiveLoopFunc = (data) => {
+            for(let n in data){
+                if(Array.isArray(data[n])){
+                    if(data[n].length > 0){
+                        changeIsExist = false;
+                    }                        
+
+                    continue;
+                }
+
+                if(typeof data[n] === "object"){
+                    if(n === "s" || n === "e"){
+                        if(+data[n] !== this.referenceObj.currentDate){
+                            changeIsExist = false;
+                        }                        
+                    } else {  
+                        recursiveLoopFunc(data[n]);
+                    }
+                } else {
+                    if(data[n] !== this.referenceObj[n]){
+                        changeIsExist = false;
+                    }
+                }
+            }
+        };  
+
+        recursiveLoopFunc(this.state.searchParameters);
+
+        return changeIsExist;
     }
 
     getListSource(){
@@ -649,7 +783,7 @@ export default class CreateBodySearchTask extends React.Component {
                                         <DatePicker 
                                             className="form-control form-control-sm green-border"
                                             selected={this.state.searchParameters.ifo.dt.s}
-                                            onChange={this.handleChangeStartDate}
+                                            onChange={this.handlerChangeStartDate}
                                             maxDate={new Date()}
                                             showTimeInput
                                             selectsStart
@@ -665,7 +799,7 @@ export default class CreateBodySearchTask extends React.Component {
                                         <DatePicker 
                                             className="form-control form-control-sm red-border"
                                             selected={this.state.searchParameters.ifo.dt.e}
-                                            onChange={this.handleChangeEndDate}
+                                            onChange={this.handlerChangeEndDate}
                                             maxDate={new Date()}
                                             showTimeInput
                                             selectsEnd
@@ -685,6 +819,14 @@ export default class CreateBodySearchTask extends React.Component {
                             <Form.Row className="ml-2">
                                 <TokenInput 
                                     className="react-token-input"
+                                    validator={() => {
+                                        return "s"; //если пустая то ОК
+                                        //если что то в строке есть то Error
+                                    }}
+                                    onInputValueChange={(value) => {
+                                        console.log(value);
+                                    }}
+                                    onChange={this.handlerFieldInput}
                                     placeholder="ip адрес, порт или подсеть" />
                                 <OverlayTrigger
                                     key="tooltip_question"
@@ -699,7 +841,11 @@ export default class CreateBodySearchTask extends React.Component {
                     </Form.Row>
                     <Row>
                         <Col className="text-right mt-4 mb-n2">
-                            <Button size="sm" onClick={this.handlerButtonSearch} variant="outline-primary">
+                            <Button 
+                                size="sm" 
+                                onClick={this.handlerButtonSearch} 
+                                disabled={this.state.disabledButtonSearch}
+                                variant="outline-primary">
                                 поиск
                             </Button>
                         </Col>
