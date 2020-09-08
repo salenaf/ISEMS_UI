@@ -78,6 +78,8 @@ export default class CreateBodySearchTask extends React.Component {
                     },
                 },
             },
+            listFieldInput: [],
+            errorFieldInput: "",
             inputFieldMinCfIsValid: false,
             inputFieldMinCfIsInvalid: false,
             inputFieldMaxCfIsValid: false,
@@ -109,6 +111,7 @@ export default class CreateBodySearchTask extends React.Component {
 
         this.getListSource = this.getListSource.bind(this);
 
+        this.checkInput = this.checkInput.bind(this);
         this.fieldChange = this.fieldChange.bind(this);
         this.handlerCheckbox = this.handlerCheckbox.bind(this);
         this.checkFieldChange = this.checkFieldChange.bind(this);
@@ -121,123 +124,7 @@ export default class CreateBodySearchTask extends React.Component {
         this.handlerChangeStartDate = this.handlerChangeStartDate.bind(this);
         this.handlerCountAndSizeFiles = this.handlerCountAndSizeFiles.bind(this);
         this.handlerChosenProtocolList = this.handlerChosenProtocolList.bind(this);
-
-        //this.testCheckObject.call(this);
-    }
-
-    testCheckObject(){
-        let referenceObj = {
-            cptp: false,
-            tp: false,
-            cpfid: false,
-            fid: false,
-            cpafid: false,
-            afid: false,
-            fif: false,
-            id: 0,
-            cafmin: 0,
-            cafmax: 0,
-            safmin: 0,
-            safmax: 0,
-            sft: "",
-            sfdt: "",
-            p: "any",
-            currentDate: +new Date(),
-        };
-
-        let obj = {
-            cptp: false, //ConsiderParameterTaskProcessed — учитывать параметр TaskProcessed
-            tp: false, //TaskProcessed — была ли задача отмечена клиентом API как завершенная
-            id: 0, //ID - уникальный цифровой идентификатор источника
-            sft: "", //StatusFilteringTask - статус задачи по фильтрации
-            sfdt: "", //StatusFileDownloadTask - статус задачи по скачиванию файлов
-            cpfid: false, //ConsiderParameterFilesDownloaded — учитывать параметр  FilesIsDownloaded
-            fid: false, //FilesIsDownloaded — выполнялась ли выгрузка файлов
-            cpafid: false, //ConsiderParameterAllFilesIsDownloaded -  учитывать параметр AllFilesIsDownloaded
-            afid: false, //AllFilesIsDownloaded — все ли файлы были выгружены
-            iaf: { //InformationAboutFiltering — поиск информации по результатам фильтрации
-                fif: false, //FilesIsFound — были ли найдены в результате фильтрации какие либо файлы
-                cafmin: 0, //CountAllFilesMin — минимальное общее количество всех найденных в результате фильтрации файлов
-                cafmax: 0, //CountAllFilesMax — максимальное общее количество всех найденных в результате фильтрации файлов
-                safmin: 0, //SizeAllFilesMin — минимальный общий размер всех найденных  в результате фильтрации файлов
-                safmax: 0, //SizeAllFilesMax — минимальный общий размер всех найденных  в результате фильтрации файлов
-            },
-            ifo: { //InstalledFilteringOption — искомые опции фильтрации
-                dt: { //DateTime -  дата и время фильтруемых файлов
-                    s: new Date(), //Start - начальное дата и время фильтруемых файлов
-                    e: new Date(), //End - конечное дата и время фильтруемых файлов
-                },
-                p: "any", //Protocol — транспортный протокол
-                nf: { //NetworkFilters — сетевые фильтры
-                    ip: { //IP — фильтры для поиска по ip адресам
-                        any: [], //Any — вы обе стороны
-                        src: [], //Src — только как источник
-                        dst: [], //Dst — только как получатель
-                    },
-                    pt: { //Port — фильтры для поиска по сетевым портам
-                        any: [], //Any — вы обе стороны
-                        src: [], //Src — только как источник
-                        dst: [], //Dst — только как получатель
-                    },
-                    nw: { //Network — фильтры для поиска по подсетям
-                        any: [], //Any — вы обе стороны
-                        src: [], //Src — только как источник
-                        dst: [], //Dst — только как получатель				
-                    }
-                },
-            },
-        };
-
-        let recursiveLoopFunc = (data) => {
-            for(let n in data){
-                if(Array.isArray(data[n])){
-                    console.log(`value: '${n}' is ARRAY, ${(data[n].length === 0)? "ARRAY is empty": "ARRAY is not empty"}`);
-                    console.log(data[n]);
-
-                    if(data[n].length > 0){
-                        console.log(` -= VALUE: '${n}' =- UPDATED`);
-                    }                        
-
-                    continue;
-                }
-                if(typeof data[n] === "object"){
-                    if(n === "s" || n === "e"){
-                        //                        console.log(`value: '${n}' is DATE, ${()? "DATE is equal" : "DATE is not equal"}`);
-                        console.log(+data[n]);
-                        console.log(`current date: ${referenceObj.currentDate}`);
-
-                        if(+data[n] !== referenceObj.currentDate){
-                            console.log(` -= VALUE: '${n}' =- UPDATED TIME`);
-                        }                        
-                    } else {
-                        console.log(`value: '${n}' is OBJECT`);
-    
-                        recursiveLoopFunc(data[n]);
-                    }
-                } else {
-                    console.log(`=== value: '${n}' ANY TYPE`);
-
-                    if(data[n] !== referenceObj[n]){
-                        console.log(` -= VALUE: '${n}' =- UPDATED`);
-                    }
-                }
-            }
-        };
-
-        /**
- * Протестировать и отладить эту функцию.
- * Она нужна для отслеживания изменения пользователем 
- * параметров поискового запроса. Отличие параметров поискового
- * запроса от значений по умолчанию. 
- * Если какое либо значение отличается от значения по умолчанию
- * делать кнопку 'поиск' активной. 
- * 
- * Сделать проверку поля 'ip адрес, порт или подсеть' основываясь
- * на regexp как просто для ip адрес, порт или подсеть так и с
- * использованием приставок src и dst.
- */
-
-        recursiveLoopFunc(obj);
+        this.handlerFieldInputValidator = this.handlerFieldInputValidator.bind(this);
     }
 
     handlerChosenSource(e){
@@ -400,7 +287,12 @@ export default class CreateBodySearchTask extends React.Component {
             return;
         }
 
-        console.log("Изменения ЕСТЬ");
+        console.log("Изменения ЕСТЬ отправляем --> запрос на сервер");
+
+        this.props.socketIo.emit("network interaction: start search task", {
+            actionType: "search tasks",
+            arguments: this.state.searchParameters,
+        });
     }
 
     handlerCountAndSizeFiles(e){
@@ -523,9 +415,66 @@ export default class CreateBodySearchTask extends React.Component {
         this.fieldChange(date, "currentDate");
     }
 
-    handlerFieldInput(e){
-        console.log("func 'handlerFieldInput', START...");
-        console.log(e.target.value);
+    handlerFieldInputValidator(data){
+        if(data.includes("src_")){
+            let { err: err } = this.checkInput(data.substr((data.indexOf("src_")) + 4));
+            if(err !== null){
+                return err;
+            }
+
+            return;
+        } else if(data.includes("dst_")){
+            let { err: err } = this.checkInput(data.substr((data.indexOf("dst_")) + 4));
+            if(err !== null){
+                return err;
+            }
+
+            return;
+        } else {
+            let { err: err } = this.checkInput(data);
+            if(err !== null){
+                return err;
+            }
+
+            return;
+        }
+    }
+
+    handlerFieldInput(data){
+        let nf = {
+            ip: { any: [], src: [], dst: [] },
+            pt: { any: [], src: [], dst: [] },
+            nw: { any: [], src: [], dst: [] },
+        };
+        let objCopy = Object.assign({}, this.state.searchParameters);
+        data.forEach((item) => {
+            if(item.value.includes("src_")){
+                let { err: err, type: t, value: v } = this.checkInput(item.value.substr((item.value.indexOf("src_")) + 4));
+                if(err === null){
+                    nf[t].src.push(v);
+
+                    this.fieldChange(nf[t].src, "");
+                }
+
+            } else if(item.value.includes("dst_")){
+                let { err: err, type: t, value: v } = this.checkInput(item.value.substr((item.value.indexOf("dst_")) + 4));
+                if(err === null){
+                    nf[t].dst.push(v);
+
+                    this.fieldChange(nf[t].dst, "");
+                }
+            } else {
+                let { err: err, type: t, value: v } = this.checkInput(item.value);
+                if(err === null){
+                    nf[t].any.push(v);
+
+                    this.fieldChange(nf[t].any, "");
+                }
+            }
+        });
+
+        objCopy.ifo.nf = nf;
+        this.setState({ searchParameters: objCopy });
     }
 
     fieldChange(item, elemName){
@@ -544,6 +493,39 @@ export default class CreateBodySearchTask extends React.Component {
                 if(item !== this.referenceObj[elemName]){
                     this.setState({ disabledButtonSearch: false });
                 }
+            }
+        }
+    }
+
+    checkInput(value){   
+        if(value.includes(".")){
+            if(value.includes("/")){
+                if(helpers.checkInputValidation({
+                    "name": "network", 
+                    "value": value, 
+                })){    
+                    return { err: null, type: "nw", value: value };
+                } else {  
+                    return { err: new Error("network invalid"), type: "", value: "" };
+                }
+            } else {
+                if(helpers.checkInputValidation({
+                    "name": "ipaddress", 
+                    "value": value, 
+                })){                  
+                    return { err: null, type: "ip", value: value };
+                } else {  
+                    return { err: new Error("ipaddress invalid"), type: "", value: "" };
+                }
+            }
+        } else {
+            if(helpers.checkInputValidation({
+                "name": "port", 
+                "value": value, 
+            })){
+                return { err: null, type: "pt", value: value };
+            } else {
+                return { err: new Error("port invalid"), type: "", value: "" };
             }
         }
     }
@@ -819,14 +801,9 @@ export default class CreateBodySearchTask extends React.Component {
                             <Form.Row className="ml-2">
                                 <TokenInput 
                                     className="react-token-input"
-                                    validator={() => {
-                                        return "s"; //если пустая то ОК
-                                        //если что то в строке есть то Error
-                                    }}
-                                    onInputValueChange={(value) => {
-                                        console.log(value);
-                                    }}
-                                    onChange={this.handlerFieldInput}
+                                    defaultData={this.listFieldInput}
+                                    validator={this.handlerFieldInputValidator}
+                                    onTokensUpdate={this.handlerFieldInput}
                                     placeholder="ip адрес, порт или подсеть" />
                                 <OverlayTrigger
                                     key="tooltip_question"

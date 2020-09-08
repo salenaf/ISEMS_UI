@@ -23,6 +23,7 @@ module.exports.addHandlers = function(socketIo) {
         "network interaction: get list tasks to download files": showListTasksDownloadFiles,
         "network interaction: get list of unresolved tasks": showListUnresolvedTasks,
         "network interaction: get next chunk list all tasks": getNextChunk,
+        "network interaction: start search task": searchInformationAboutTasks,
     };
 
     for (let e in handlers) {
@@ -313,4 +314,15 @@ function getNextChunk(socketIo, data){
 
             writeLogFile("error", err.toString()+funcName);
         }); 
+}
+
+/**
+ * Обработчик запроса для поиска информации по заданным параметрам
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+function searchInformationAboutTasks(socketIo, data){
+    console.log("func 'searchInformationAboutTasks', START...");
+    console.log(data);
 }
