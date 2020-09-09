@@ -22,8 +22,8 @@ module.exports.addHandlers = function(socketIo) {
         "network interaction: show info about all task": showTaskAllInfo,
         "network interaction: get list tasks to download files": showListTasksDownloadFiles,
         "network interaction: get list of unresolved tasks": showListUnresolvedTasks,
-        "network interaction: get next chunk list all tasks": getNextChunk,
         "network interaction: start search task": searchInformationAboutTasks,
+        "network interaction: get next chunk list all tasks": getNextChunk,
     };
 
     for (let e in handlers) {
@@ -35,9 +35,8 @@ module.exports.addHandlers = function(socketIo) {
  * Обработчик запросов для получения списка всех задач
  * 
  * @param {*} socketIo 
- * @param {*} data 
  */
-function getListAllTasks(socketIo, data){
+function getListAllTasks(socketIo){
     let funcName = " (func 'getListAllTasks')";
 
     debug("func 'getListAllTasks'");
@@ -219,6 +218,52 @@ function showListUnresolvedTasks(socketIo){
 }
 
 /**
+ * Обработчик запроса для поиска информации по заданным параметрам
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+function searchInformationAboutTasks(socketIo, data){
+    console.log("func 'searchInformationAboutTasks', START...");
+    console.log(data);
+    console.log(data.arguments.ifo.dt);
+    console.log(data.arguments.ifo.nf);
+
+    let funcName = " (func 'searchInformationAboutTasks')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            //отправляем задачу модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.managementRequestSearchInformationAboutTasks(socketIo, data.arguments);
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: msg
+                });    
+            }
+
+            writeLogFile("error", err.toString()+funcName);
+        });
+}
+
+/**
  * Обработчик запроса следующей части списка задач
  * 
  * @param {*} socketIo 
@@ -314,15 +359,4 @@ function getNextChunk(socketIo, data){
 
             writeLogFile("error", err.toString()+funcName);
         }); 
-}
-
-/**
- * Обработчик запроса для поиска информации по заданным параметрам
- * 
- * @param {*} socketIo 
- * @param {*} data 
- */
-function searchInformationAboutTasks(socketIo, data){
-    console.log("func 'searchInformationAboutTasks', START...");
-    console.log(data);
 }

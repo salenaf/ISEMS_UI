@@ -287,11 +287,15 @@ export default class CreateBodySearchTask extends React.Component {
             return;
         }
 
+        let sp = this.state.searchParameters;
+        sp.ifo.dt.s = +(this.state.searchParameters.ifo.dt.s);
+        sp.ifo.dt.e = +(this.state.searchParameters.ifo.dt.e);
+
         console.log("Изменения ЕСТЬ отправляем --> запрос на сервер");
 
         this.props.socketIo.emit("network interaction: start search task", {
             actionType: "search tasks",
-            arguments: this.state.searchParameters,
+            arguments: sp,
         });
     }
 

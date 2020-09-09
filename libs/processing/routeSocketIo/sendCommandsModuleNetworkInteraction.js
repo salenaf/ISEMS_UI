@@ -401,11 +401,11 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID){
 };
 
 /**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * запрос всего списка задач 
- * 
- * @param {*} socketIo 
- */
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * запрос всего списка задач 
+  * 
+  * @param {*} socketIo 
+  */
 module.exports.managementRequestGetListAllTasks = function(socketIo){
     debug("func 'managementRequestGetListAllTasks', START...");
 
@@ -500,11 +500,11 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo){
 };
 
 /**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * запрос списка задач, не отмеченных пользователем как завершенные
- * 
- * @param {*} socketIo 
- */
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * запрос списка задач, не отмеченных пользователем как завершенные
+  * 
+  * @param {*} socketIo 
+  */
 module.exports.managementRequestGetListUnresolvedTasks = function(socketIo){
     return new Promise((resolve, reject) => {
         //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
@@ -547,6 +547,127 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo){
             };
         
             conn.sendMessage(tmp);
+        }    
+    });
+};
+
+/**
+  * Обработчик для модуля сетевого взаимодействия осуществляющий
+  * запрос списка задач по заданным критериям поиска
+  * 
+  * @param {*} socketIo 
+  * @param {*} data 
+  */
+module.exports.managementRequestSearchInformationAboutTasks = function(socketIo, data){
+    return new Promise((resolve, reject) => {
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
+        });
+    }).then((sessionId) => {
+        if(!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");           
+        if(conn !== null){
+            let hex = helpersFunc.getRandomHex();
+
+            //записываем название события для генерации соответствующего ответа
+            globalObject.setData("tasks", hex, {
+                eventName: "search information tasks",
+                userSessionID: sessionId,
+            });
+
+            /**
+arguments: {
+    cptp: false,
+    tp: false,
+    id: 1221,
+    sft: '',
+    sfdt: 'complete',
+    cpfid: false,
+    fid: false,
+    cpafid: false,
+    afid: false,
+    iaf: { fif: false, cafmin: 0, cafmax: 0, safmin: 0, safmax: 0 },
+    ifo: { dt: [Object], p: 'any', nf: [Object] }
+  }
+
+  o: {
+		!!! sriga: <BOOL>, //SearchRequestIsGeneratedAutomatically — был ли запрос на поиск сгенерирован автоматически (TRUE — да, FALSE — нет)
+		+cptp: <BOOL>, //ConsiderParameterTaskProcessed — учитывать параметр TaskProcessed
+		+tp: <BOOL>, //TaskProcessed — была ли задача отмечена клиентом API как завершенная
+		+id: <INT>, //ID - уникальный цифровой идентификатор источника
+		+sft: <STRING>, //StatusFilteringTask - статус задачи по фильтрации
+		+sfdt: <STRING>, //StatusFileDownloadTask - статус задачи по скачиванию файлов
+		+cpfid: <BOOL>, //ConsiderParameterFilesDownloaded — учитывать параметр  FilesIsDownloaded
+		+fid: <BOOL>, //FilesIsDownloaded — выполнялась ли выгрузка файлов
+		+cpafid: <BOOL>, //ConsiderParameterAllFilesIsDownloaded -  учитывать параметр AllFilesIsDownloaded
+		+afid: <BOOL>, //AllFilesIsDownloaded — все ли файлы были выгружены
+		+iaf: { //InformationAboutFiltering — поиск информации по результатам фильтрации
+			+fif: <BOOL>, //FilesIsFound — были ли найдены в результате фильтрации какие либо файлы
+			+cafmin: <INT>, //CountAllFilesMin — минимальное общее количество всех найденных в результате фильтрации файлов
+			+cafmax: <INT>, //CountAllFilesMax — максимальное общее количество всех найденных в результате фильтрации файлов
+			+safmin: <INT>, //SizeAllFilesMin — минимальный общий размер всех найденных  в результате фильтрации файлов
+			+safmax: <INT>, //SizeAllFilesMax — минимальный общий размер всех найденных  в результате фильтрации файлов
+		},
+		+ifo: { //InstalledFilteringOption — искомые опции фильтрации
+			+dt: { //DateTime -  дата и время фильтруемых файлов
+				s: <INT>, //Start - начальное дата и время фильтруемых файлов
+				e: <INT>, //End - конечное дата и время фильтруемых файлов
+			},
+			+p: <STRING>, //Protocol — транспортный протокол
+			+nf: { //NetworkFilters — сетевые фильтры
+				ip: { //IP — фильтры для поиска по ip адресам
+					any: <ARRAY>, //Any — вы обе стороны
+					src: <ARRAY>, //Src — только как источник
+					dst: <ARRAY>, //Dst — только как получатель
+				},
+				pt: { //Port — фильтры для поиска по сетевым портам
+					any: <ARRAY>, //Any — вы обе стороны
+					src: <ARRAY>, //Src	 — только как источник
+					dst: <ARRAY>, //Dst — только как получатель
+				},
+				nw: { //Network — фильтры для поиска по подсетям
+					any: <ARRAY>, //Any — вы обе стороны
+					src: <ARRAY>, //Src — только как источник
+					dst: <ARRAY>, //Dst — только как получатель				
+				}
+			},
+		},
+	}
+ */
+
+            data.sriga = true;
+
+            console.log("--=-==-=-=");
+            console.log(data);
+            console.log("--=-==-=-=");
+
+            /*
+            let tmp = {
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "search common information",
+                taskID: hex,
+                options: {
+                    sriga: true, //отмечаем что задача выполняется в автоматическом режиме
+                    sft: "complete",
+                    cptp: true,
+                    tp: false,
+                    cpfid: true,
+                    fid: true,
+                    iaf: {
+                        fif: true,
+                    } 
+                },
+            };
+        
+            conn.sendMessage(tmp);
+            */
         }    
     });
 };

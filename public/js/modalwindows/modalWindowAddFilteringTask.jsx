@@ -296,7 +296,7 @@ class CreateMainFields extends React.Component {
                         <DatePicker 
                             className="form-control form-control-sm green-border"
                             selected={this.props.startDate}
-                            onChange={this.props.handleChangeStartDate}
+                            onChange={this.props.handlerChangeStartDate}
                             maxDate={new Date()}
                             showTimeInput
                             selectsStart
@@ -310,7 +310,7 @@ class CreateMainFields extends React.Component {
                         <DatePicker 
                             className="form-control form-control-sm red-border"
                             selected={this.props.endDate}
-                            onChange={this.props.handleChangeEndDate}
+                            onChange={this.props.handlerChangeEndDate}
                             maxDate={new Date()}
                             showTimeInput
                             selectsEnd
@@ -358,8 +358,8 @@ CreateMainFields.propTypes = {
     inputValue: PropTypes.object.isRequired,
     delAddedElem: PropTypes.func.isRequired,
     addPortNetworkIP: PropTypes.func.isRequired,
-    handleChangeStartDate: PropTypes.func.isRequired,
-    handleChangeEndDate: PropTypes.func.isRequired,
+    handlerChangeStartDate: PropTypes.func.isRequired,
+    handlerChangeEndDate: PropTypes.func.isRequired,
     handlerChosenProtocol: PropTypes.func.isRequired,
 };
 
@@ -385,8 +385,8 @@ export default class ModalWindowAddFilteringTask extends React.Component {
         this.addPortNetworkIP = this.addPortNetworkIP.bind(this);
         this.handlerButtonSubmit = this.handlerButtonSubmit.bind(this);
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
-        this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
-        this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
+        this.handlerChangeStartDate = this.handlerChangeStartDate.bind(this);
+        this.handlerChangeEndDate = this.handlerChangeEndDate.bind(this);
         this.handlerChosenProtocol = this.handlerChosenProtocol.bind(this);
     }
 
@@ -453,13 +453,13 @@ export default class ModalWindowAddFilteringTask extends React.Component {
         });
     }
 
-    handleChangeStartDate(date){
+    handlerChangeStartDate(date){
         this.setState({
             startDate: date
         });
     }
 
-    handleChangeEndDate(date){
+    handlerChangeEndDate(date){
         this.setState({
             endDate: date
         });
@@ -495,8 +495,8 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                         inputValue={this.state.inputValue}
                         delAddedElem={this.delAddedElem}
                         addPortNetworkIP={this.addPortNetworkIP}
-                        handleChangeStartDate={this.handleChangeStartDate}
-                        handleChangeEndDate={this.handleChangeEndDate}
+                        handlerChangeStartDate={this.handlerChangeStartDate}
+                        handlerChangeEndDate={this.handlerChangeEndDate}
                         handlerChosenProtocol={this.handlerChosenProtocol} />
                 </Modal.Body>
                 <Modal.Footer>
