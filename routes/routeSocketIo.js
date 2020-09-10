@@ -15,7 +15,7 @@ const writeLogFile = require("../libs/writeLogFile");
  *
  * @param {*} socketIo 
  * @param {*} object
- */ 
+ */
 module.exports.modulesEventGenerator = function(socketIo) {
     let connModuleNetInteraction = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
@@ -23,7 +23,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
 
     /** ТЕСТОВЫЙ РАЗДЕЛ --- начало */
-    function testProcessDownload(filePath, callback){
+    function testProcessDownload(filePath, callback) {
         console.log(`чтение файла: ${filePath}`);
 
         const fs = require("fs");
@@ -33,7 +33,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
         new Promise((resolve, reject) => {
             fs.readFile(filePath, "utf8", (err, data) => {
-                if(err){
+                if (err) {
                     reject(err);
                 }
 
@@ -47,11 +47,11 @@ module.exports.modulesEventGenerator = function(socketIo) {
             let count = 0;
             let listFilterProcess = [];
             stringList.forEach((item) => {
-                if(item.length > 0){
+                if (item.length > 0) {
                     let objTmp = JSON.parse(item);
 
                     //только для процесса скачивания файлов
-                    if(objTmp.instruction === "task processing" && (typeof objTmp.options.dfi !== "undefined")){
+                    if (objTmp.instruction === "task processing" && (typeof objTmp.options.dfi !== "undefined")) {
                         count++;
                         listFilterProcess.push(item);
                     }
@@ -66,7 +66,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             let numInterval = 0;
             let timerID = setInterval(() => {
-                if(numInterval === (obj.count - 1)){
+                if (numInterval === (obj.count - 1)) {
                     clearInterval(timerID);
 
                     myEmitter.emit("finish", {});
@@ -76,7 +76,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 //console.log(obj.list[numInterval]);
 
                 let objTmp = JSON.parse(obj.list[numInterval]);
-                myEmitter.emit("next emit", { 
+                myEmitter.emit("next emit", {
                     "type": "downloadProcessing",
                     "options": {
                         sourceID: objTmp.options.id,
@@ -95,13 +95,14 @@ module.exports.modulesEventGenerator = function(socketIo) {
                                 acceptedSizePercent: objTmp.options.dfi.asp, //скаченный размер файла в процентах
                             }
                         },
-                    }});                    
+                    }
+                });
 
                 numInterval++;
             }, 500);
 
-            callback(null, { 
-                count: obj.count, 
+            callback(null, {
+                count: obj.count,
                 list: obj.list,
                 myEmitter: myEmitter,
             });
@@ -120,7 +121,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
         new Promise((resolve, reject) => {
             fs.readFile(filePath, "utf8", (err, data) => {
-                if(err){
+                if (err) {
                     reject(err);
                 }
 
@@ -134,11 +135,11 @@ module.exports.modulesEventGenerator = function(socketIo) {
             let count = 0;
             let listFilterProcess = [];
             stringList.forEach((item) => {
-                if(item.length > 0){
+                if (item.length > 0) {
                     let objTmp = JSON.parse(item);
 
                     //только для процесса фильтрации
-                    if(objTmp.instruction === "task processing" && (typeof objTmp.options.ffi !== "undefined")){
+                    if (objTmp.instruction === "task processing" && (typeof objTmp.options.ffi !== "undefined")) {
                         count++;
                         listFilterProcess.push(item);
                     }
@@ -153,7 +154,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             let numInterval = 0;
             let timerID = setInterval(() => {
-                if(numInterval === (obj.count - 1)){
+                if (numInterval === (obj.count - 1)) {
                     clearInterval(timerID);
 
                     myEmitter.emit("finish", {});
@@ -163,7 +164,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 //console.log(obj.list[numInterval]);
 
                 let objTmp = JSON.parse(obj.list[numInterval]);
-                myEmitter.emit("next emit", { 
+                myEmitter.emit("next emit", {
                     "type": "filtrationProcessing",
                     "options": {
                         sourceID: objTmp.options.id,
@@ -180,13 +181,14 @@ module.exports.modulesEventGenerator = function(socketIo) {
                             sizeAllFiles: objTmp.options.sfmfp,
                             sizeFindFiles: objTmp.options.sffrf,
                         },
-                    }});                    
+                    }
+                });
 
                 numInterval++;
             }, 500);
 
-            callback(null, { 
-                count: obj.count, 
+            callback(null, {
+                count: obj.count,
                 list: obj.list,
                 myEmitter: myEmitter,
             });
@@ -196,47 +198,48 @@ module.exports.modulesEventGenerator = function(socketIo) {
     }
 
     setTimeout(() => {
-        testProcessFiltering("/home/development/modul_api_interaction/information_response_1589542887119.txt", (err, obj) => {
+        testProcessFiltering("/home/Development/modul_api_interaction/information_response_1589542887119.txt", (err, obj) => {
             debug("запуск тестовый функции");
-            if(err){
+            if (err) {
                 debug(err);
             }
 
             obj.myEmitter.on("next emit", (data) => {
-    
+
                 //console.log(data);
                 socketIo.emit("module NI API", data);
-    
+
             }).on("finish", () => {
                 debug(`received event 'finish' (${new Date})`);
             });
         });
     }, 3000);
 
+
     setTimeout(() => {
-        testProcessFiltering("/home/development/modul_api_interaction/information_response_1590584597947.txt", (err, obj) => {
-            if(err){
+        testProcessFiltering("/home/Development/modul_api_interaction/information_response_1590584597947.txt", (err, obj) => {
+            if (err) {
                 debug(err);
             }
-            
+
             obj.myEmitter.on("next emit", (data) => {
                 socketIo.emit("module NI API", data);
             }).on("finish", () => {
-                debug(`received event 'finish' (${new Date})`);    
+                debug(`received event 'finish' (${new Date})`);
             });
         });
     }, 6000);
 
     setTimeout(() => {
-        testProcessDownload("/home/development/modul_api_interaction/information_download_control_23.12.2019.log.txt", (err, obj) => {
-            if(err){
+        testProcessDownload("/home/Development/modul_api_interaction/information_download_control_23.12.2019.log.txt", (err, obj) => {
+            if (err) {
                 debug(err);
             }
 
             obj.myEmitter.on("next emit", (data) => {
                 socketIo.emit("module NI API", data);
             }).on("finish", () => {
-                debug(`received event 'finish' (${new Date})`);    
+                debug(`received event 'finish' (${new Date})`);
             });
         });
     }, 8000);
@@ -251,9 +254,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("--- CONNECTION ---");
             debug(msg);
 
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished",  true );
+            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
 
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": true
@@ -282,9 +285,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("--- CONNECTION CLOSE ---");
             debug(msg);
 
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished",  false );
+            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": false
@@ -313,7 +316,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
             //формируем сообщение о выполнении процесса фильтрации
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "filtrationProcessing",
                 "options": {
                     sourceID: msg.options.id,
@@ -344,16 +347,16 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
 
-            debug("****************************");            
+            debug("****************************");
             debug(sourceInfo);
             debug("****************************");
 
-            if(sourceInfo === null){
+            if (sourceInfo === null) {
                 return;
             }
 
             //формируем сообщение о выполнении процесса скачивания файлов
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "downloadProcessing",
                 "options": {
                     sourceID: msg.options.id,
@@ -372,7 +375,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
                             acceptedSizePercent: msg.options.dfi.asp, //скаченный размер файла в процентах
                         }
                     },
-                }});
+                }
+            });
 
             /*writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
             if (err) debug(err);
@@ -408,8 +412,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
             */
 
             //получили всю информацию о задаче по ее ID
-            if(msg.instruction === "processing get all information by task ID"){
-                socketIo.emit("module NI API", { 
+            if (msg.instruction === "processing get all information by task ID") {
+                socketIo.emit("module NI API", {
                     "type": "processingGetAllInformationByTaskID",
                     "options": {
                         status: msg.options.s,
@@ -420,41 +424,41 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             //получили краткую информацию о всех задачах подходящих под 
             //заданные условия поиска
-            if(msg.instruction === "processing information search task"){
+            if (msg.instruction === "processing information search task") {
                 //ищем тип задачи в globalObject.tasks
-                if(globalObject.hasData("tasks", msg.taskID)){
+                if (globalObject.hasData("tasks", msg.taskID)) {
                     let taskInfo = globalObject.getData("tasks", msg.taskID);
 
                     debug(taskInfo);
 
                     /**
-                    * может быть здесь после поиска удалять задачу из списка
-                    */
+                     * может быть здесь после поиска удалять задачу из списка
+                     */
 
-                    if(taskInfo.eventName === "list all tasks"){
+                    if (taskInfo.eventName === "list all tasks") {
                         debug("received information from event 'list all tasks'");
-                    
+
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
                     }
 
                     //только для вкладки "загрузка файлов" и для виджетов 
-                    if(taskInfo.eventName === "list tasks which need to download files"){
+                    if (taskInfo.eventName === "list tasks which need to download files") {
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);
                     }
 
                     //только для виджета "выгруженные файлы не рассмотрены" и
                     // для вкладки поиск, значение "по умолчанию", выводить список
                     // не закрытых пользователем задач
-                    if(taskInfo.eventName === "list unresolved tasks"){
+                    if (taskInfo.eventName === "list unresolved tasks") {
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo.userSessionID);
                     }
 
                     //только как результат при поиске во вкладке "поиск"
-                    if(taskInfo.eventName === "list of found tasks"){
+                    if (taskInfo.eventName === "list of found tasks") {
 
                     }
                 } else {
-                    socketIo.emit("module NI API", { 
+                    socketIo.emit("module NI API", {
                         "type": msg.instruction,
                         "options": msg.options,
                         /*typeTask: typeTask,
@@ -467,7 +471,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 }
             }
 
-            if(msg.instruction === "processing list files by task ID"){
+            if (msg.instruction === "processing list files by task ID") {
                 debug("received information about file list");
 
                 socketIo.emit("module NI API", {
@@ -502,9 +506,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("ERROR MESSAGE");
             debug(err);
 
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished",  false );
+            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": false
