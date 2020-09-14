@@ -56,7 +56,9 @@ class SocketioEventResponse extends EventEmitter {}
  *       полученном от модуля ID
  *       tasks: {
  *          <task ID>: {
- *              eventName: название события в UI
+ *              eventName: название события в UI,
+ *              userSessionID: ID сессии пользователя,
+ *              generationTime: время генерации задачи,
  *          },
  *       },
  *       параметры пользователя все из БД
@@ -95,6 +97,8 @@ class GlobalObject {
             "socketioEventResponse": new SocketioEventResponse(),
             "tmpModuleNetworkInteraction": {},
         };
+
+        this.timerSearchOldInformation.call(this);
     }
 
     _checkKeys(type) {
@@ -165,18 +169,18 @@ class GlobalObject {
     }
 
     /**
-    * проверить наличие значений
-    * 
-    * @param {*} type 
-    * @param {*} group 
-    * @param {*} key 
-    */    
-    hasData(type, group = null, key = null){
+     * проверить наличие значений
+     * 
+     * @param {*} type 
+     * @param {*} group 
+     * @param {*} key 
+     */
+    hasData(type, group = null, key = null) {
         if (this._checkKeys(type)) {
             return false;
         } else if (group === null) {
             return true;
-        } else if (group !== null && key === null){
+        } else if (group !== null && key === null) {
             return (typeof this.obj[type][group] !== "undefined");
         } else {
             return (typeof this.obj[type][group][key] !== "undefined");
@@ -218,11 +222,23 @@ class GlobalObject {
 
             return true;
         }
-        if (!Array.isArray(this.obj[type][group])){
+        if (!Array.isArray(this.obj[type][group])) {
             delete this.obj[type][group][key];
         }
 
         return true;
+    }
+
+    timerSearchOldInformation() {
+        //поиск устаревших 'tasks'
+        setInterval(() => {
+            for (let id in this.obj.tasks) {
+                let tasksIsExist = this.obj.tasks[id].generationTime !== undefined;
+                if (tasksIsExist && (this.obj.tasks[id].generationTime < (+new Date() + 30000))) {
+                    this.deleteData("tasks", id);
+                }
+            }
+        }, 180000);
     }
 }
 

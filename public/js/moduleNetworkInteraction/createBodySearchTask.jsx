@@ -313,7 +313,7 @@ export default class CreateBodySearchTask extends React.Component {
             
             switch (e.target.name) {
             case "min_count_files":
-                objCopy.iaf.cafmin = e.target.value;
+                objCopy.iaf.cafmin = +e.target.value;
                 this.setState({ 
                     searchParameters: objCopy, 
                     inputFieldMinCfIsValid: true,
@@ -324,7 +324,7 @@ export default class CreateBodySearchTask extends React.Component {
                 break;
                             
             case "max_count_files":
-                objCopy.iaf.cafmax = e.target.value;
+                objCopy.iaf.cafmax = +e.target.value;
                 this.setState({ 
                     searchParameters: objCopy, 
                     inputFieldMaxCfIsValid: true,
@@ -335,7 +335,7 @@ export default class CreateBodySearchTask extends React.Component {
                 break;
                             
             case "min_size_files":
-                objCopy.iaf.safmin = e.target.value;
+                objCopy.iaf.safmin = +e.target.value;
                 this.setState({ 
                     searchParameters: objCopy, 
                     inputFieldMinSfIsValid: true,
@@ -346,7 +346,7 @@ export default class CreateBodySearchTask extends React.Component {
                 break;
         
             case "max_size_files":
-                objCopy.iaf.safmax = e.target.value;
+                objCopy.iaf.safmax = +e.target.value;
                 this.setState({ 
                     searchParameters: objCopy, 
                     inputFieldMaxSfIsValid: true,

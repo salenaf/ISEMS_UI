@@ -30,13 +30,10 @@ class CreatePageSearchTasks extends React.Component {
             },
         };
 
-        this.userPermission=this.props.listItems.userPermissions;
-
-        console.log(this.props.listItems);
-
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
 
+        this.getUserPermission = this.getUserPermission.bind(this);
         this.handlerTaskDelete = this.handlerTaskDelete.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.closeModalWindowTasksDelete = this.closeModalWindowTasksDelete.bind(this);
@@ -49,18 +46,17 @@ class CreatePageSearchTasks extends React.Component {
         this.props.socketIo.emit("network interaction: get list all tasks", { arguments: {} });   
     }
 
+    getUserPermission(){
+        return this.props.listItems.userPermissions;
+    }
+
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
-            //для списка задач не отмеченных пользователем как завершеные
             if(data.type === "send a list of found tasks"){
 
                 console.log("--- event: send a list of found issues ---");
                 console.log(data.options);
     
-                if(data.options.tntf === 0){
-                    return;
-                }
-
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -152,7 +148,7 @@ class CreatePageSearchTasks extends React.Component {
     }
 
     isDisabledDelete(){       
-        if(!this.userPermission.management_tasks_filter.element_settings.delete.status){
+        if(!this.getUserPermission().management_tasks_filter.element_settings.delete.status){
             return "disabled";
         }
 
@@ -260,7 +256,12 @@ class CreatePageSearchTasks extends React.Component {
         if(this.state.listTasksFound.tntf === 0){
             return (
                 <React.Fragment>
-                    <Row className="py-2"></Row>    
+                    <Row className="pt-4">
+                        <Col md={10} className="text-left text-muted">
+                        всего задач найдено: <i>{this.state.listTasksFound.tntf}</i>
+                        </Col>
+                        <Col md={2} className="text-right"></Col>
+                    </Row>
                 </React.Fragment>
             );        
         }
@@ -268,7 +269,10 @@ class CreatePageSearchTasks extends React.Component {
         return (
             <React.Fragment>
                 <Row className="pt-4">
-                    <Col md={12} className="text-right">
+                    <Col md={10} className="text-left text-muted">
+                    всего задач найдено: <i>{this.state.listTasksFound.tntf}</i>
+                    </Col>
+                    <Col md={2} className="text-right">
                         <Button 
                             size="sm" 
                             variant="outline-danger"

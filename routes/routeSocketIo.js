@@ -23,7 +23,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
 
     /** ТЕСТОВЫЙ РАЗДЕЛ --- начало */
-    function testProcessDownload(filePath, callback) {
+    /*function testProcessDownload(filePath, callback) {
         console.log(`чтение файла: ${filePath}`);
 
         const fs = require("fs");
@@ -242,7 +242,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 debug(`received event 'finish' (${new Date})`);
             });
         });
-    }, 8000);
+    }, 8000);*/
     /** ТЕСТОВЫЙ РАЗДЕЛ --- окончание */
 
 
@@ -393,7 +393,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
         }).on("information search control", (msg) => {
             debug("====== information search control =====");
-            debug(JSON.stringify(msg));
+            //debug(JSON.stringify(msg));
 
 
             /* при получении информации о задаче по ее ID проверяем 
@@ -437,6 +437,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
                     if (taskInfo.eventName === "list all tasks") {
                         debug("received information from event 'list all tasks'");
+                        debug(msg.options);
 
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
                     }
@@ -453,10 +454,12 @@ module.exports.modulesEventGenerator = function(socketIo) {
                         require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo.userSessionID);
                     }
 
+                    /*
                     //только как результат при поиске во вкладке "поиск"
                     if (taskInfo.eventName === "list of found tasks") {
-
+                        debug(msg.options);
                     }
+                    */
                 } else {
                     socketIo.emit("module NI API", {
                         "type": msg.instruction,

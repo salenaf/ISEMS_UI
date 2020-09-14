@@ -16,7 +16,7 @@ const sendCommandsModuleNetworkInteraction = require("../../libs/processing/rout
  *
  * @param {*} socketIo 
  */
-module.exports.addHandlers = function(socketIo) {   
+module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "network interaction: get list all tasks": getListAllTasks,
         "network interaction: show info about all task": showTaskAllInfo,
@@ -36,14 +36,14 @@ module.exports.addHandlers = function(socketIo) {
  * 
  * @param {*} socketIo 
  */
-function getListAllTasks(socketIo){
+function getListAllTasks(socketIo) {
     let funcName = " (func 'getListAllTasks')";
 
     debug("func 'getListAllTasks'");
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
-        //авторизован ли пользователь
+            //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
@@ -67,7 +67,7 @@ function getListAllTasks(socketIo){
                     socketIo: socketIo,
                     type: "warning",
                     message: err.message.toString()
-                });            
+                });
             } else {
 
                 debug(err);
@@ -78,10 +78,10 @@ function getListAllTasks(socketIo){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
+            writeLogFile("error", err.toString() + funcName);
         });
 }
 
@@ -91,7 +91,7 @@ function getListAllTasks(socketIo){
  * @param {*} socketIo 
  * @param {*} data 
  */
-function showTaskAllInfo(socketIo, data){
+function showTaskAllInfo(socketIo, data) {
     let funcName = " (func 'showTaskAllInfo')";
 
     checkUserAuthentication(socketIo)
@@ -115,12 +115,12 @@ function showTaskAllInfo(socketIo, data){
                     message: err.message.toString()
                 });
             } else if (err.name === "management network interaction") {
-            //при отсутствии доступа к модулю сетевого взаимодействия
+                //при отсутствии доступа к модулю сетевого взаимодействия
                 showNotify({
                     socketIo: socketIo,
                     type: "warning",
                     message: err.message.toString()
-                });            
+                });
             } else {
                 let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
 
@@ -128,11 +128,11 @@ function showTaskAllInfo(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
 
 /**
@@ -140,7 +140,7 @@ function showTaskAllInfo(socketIo, data){
  * 
  * @param {*} socketIo 
  */
-function showListTasksDownloadFiles(socketIo){
+function showListTasksDownloadFiles(socketIo) {
     let funcName = " (func 'showListTasksDownloadFiles')";
 
     checkUserAuthentication(socketIo)
@@ -168,11 +168,11 @@ function showListTasksDownloadFiles(socketIo){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
 
 /**
@@ -182,7 +182,7 @@ function showListTasksDownloadFiles(socketIo){
  * 
  * @param {*} socketIo 
  */
-function showListUnresolvedTasks(socketIo){
+function showListUnresolvedTasks(socketIo) {
     let funcName = " (func 'showListUnresolvedTasks')";
 
     checkUserAuthentication(socketIo)
@@ -210,11 +210,11 @@ function showListUnresolvedTasks(socketIo){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
 
 /**
@@ -223,7 +223,7 @@ function showListUnresolvedTasks(socketIo){
  * @param {*} socketIo 
  * @param {*} data 
  */
-function searchInformationAboutTasks(socketIo, data){
+function searchInformationAboutTasks(socketIo, data) {
     console.log("func 'searchInformationAboutTasks', START...");
     console.log(data);
     console.log(data.arguments.ifo.dt);
@@ -239,7 +239,28 @@ function searchInformationAboutTasks(socketIo, data){
             }
 
             return;
-        }).then(() => {
+        })
+        /*.then(() => {
+                    
+                                !!!!!!!!
+                                arguments: {
+    cptp: false,
+    tp: false,
+    id: 1221,
+    sft: '',
+    sfdt: 'complete',
+    cpfid: false,
+    fid: false,
+    cpafid: false,
+    afid: false,
+    iaf: { fif: false, cafmin: 0, cafmax: 0, safmin: 0, safmax: 0 },
+    ifo: { dt: [Object], p: 'any', nf: [Object] }
+  }
+
+                    //думаю здесь надо сделать проверку параметров поиска полученных
+                    // от пользователя
+                })*/
+        .then(() => {
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementRequestSearchInformationAboutTasks(socketIo, data.arguments);
         }).catch((err) => {
@@ -256,10 +277,10 @@ function searchInformationAboutTasks(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
+            writeLogFile("error", err.toString() + funcName);
         });
 }
 
@@ -269,7 +290,7 @@ function searchInformationAboutTasks(socketIo, data){
  * @param {*} socketIo 
  * @param {*} data 
  */
-function getNextChunk(socketIo, data){
+function getNextChunk(socketIo, data) {
     debug("func 'getNextChunk', START...");
     debug(data);
 
@@ -293,7 +314,7 @@ function getNextChunk(socketIo, data){
         }).then((sessionId) => {
             debug(`user session ID: ${sessionId}`);
 
-            if(!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)){
+            if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
                 throw new MyError("management auth", "Ошибка авторизации. Информация о сессии недоступна.");
             }
 
@@ -304,8 +325,8 @@ function getNextChunk(socketIo, data){
             //debug(globalObject.getData("tmpModuleNetworkInteraction", sessionId));
             //debug(tasksDownloadFiles);
 
-            if(data.nextChunk === 1){
-                if(resultFoundTasks.numFound <= data.chunkSize){                   
+            if (data.nextChunk === 1) {
+                if (resultFoundTasks.numFound <= data.chunkSize) {
                     return { list: resultFoundTasks.listTasksDownloadFiles, taskFound: resultFoundTasks.numFound };
                 } else {
                     return { list: resultFoundTasks.listTasksDownloadFiles.slice(0, data.chunkSize), taskFound: resultFoundTasks.numFound };
@@ -314,22 +335,22 @@ function getNextChunk(socketIo, data){
                 let numBegin = data.chunkSize * (data.nextChunk - 1);
                 let nextNumBegin = numBegin + data.chunkSize;
 
-                if(resultFoundTasks.numFound <= nextNumBegin){                    
+                if (resultFoundTasks.numFound <= nextNumBegin) {
                     return { list: resultFoundTasks.listTasksDownloadFiles.slice(numBegin), taskFound: resultFoundTasks.numFound };
-                } else {                    
+                } else {
                     return { list: resultFoundTasks.listTasksDownloadFiles.slice(numBegin, nextNumBegin), taskFound: resultFoundTasks.numFound };
-                } 
+                }
             }
         }).then((objInfo) => {
             debug(`count new tasks: ${objInfo.list.length}`);
             //debug(objInfo.list);
 
             let numFullChunks = 1;
-            if(objInfo.taskFound > data.chunkSize){
-                numFullChunks = Math.ceil(objInfo.taskFound/data.chunkSize);
+            if (objInfo.taskFound > data.chunkSize) {
+                numFullChunks = Math.ceil(objInfo.taskFound / data.chunkSize);
             }
 
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "send a list of found tasks",
                 "taskID": data.taskID,
                 "options": {
@@ -341,7 +362,7 @@ function getNextChunk(socketIo, data){
                     tntf: objInfo.taskFound,
                     slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(objInfo.list),
                 }
-            });    
+            });
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
@@ -354,9 +375,9 @@ function getNextChunk(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }

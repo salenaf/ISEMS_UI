@@ -16,27 +16,27 @@ const MAX_CHUNK_SIZE = 10;
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
  * @param {*} sessionId - ID сессии
  */
-module.exports.receivedListAllTasks = function(socketIo, data, sessionId){
+module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
     debug("func 'receivedListAllTasks', START...");
 
     let funcName = " (func 'receivedListAllTasks')";
 
-    if(!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks")){
+    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks")) {
         showNotify({
             socketIo: socketIo,
             type: "danger",
             message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });    
+        });
 
-        return writeLogFile("error", "the 'receivedListAllTasks' property was not found in 'globalObject'"+funcName);
+        return writeLogFile("error", "the 'receivedListAllTasks' property was not found in 'globalObject'" + funcName);
     }
 
     let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
 
-    if((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)){
+    if ((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)) {
         //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks", { 
-            taskID: data.taskID,                 
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks", {
+            taskID: data.taskID,
             status: data.options.s,
             numFound: data.options.tntf,
             paginationOptions: {
@@ -51,13 +51,13 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId){
     }
 
     let numFullChunks = 1;
-    if(data.options.tntf > MAX_CHUNK_SIZE){
-        numFullChunks = Math.ceil(data.options.tntf/MAX_CHUNK_SIZE);
+    if (data.options.tntf > MAX_CHUNK_SIZE) {
+        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
     //отправляем в UI если это первый сегмент
-    if(data.options.p.ccn === 1){
-        socketIo.emit("module NI API", { 
+    if (data.options.p.ccn === 1) {
+        socketIo.emit("module NI API", {
             "type": "send a list of found tasks",
             "taskID": data.taskID,
             "options": {
@@ -69,7 +69,7 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId){
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });    
+        });
     }
 };
 
@@ -88,27 +88,27 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId){
  * Исключение составляет первая или единственная часть которая
  * автоматически отправляется в UI
  */
-module.exports.receivedListTasksDownloadFiles = function(socketIo, data, sessionId){
+module.exports.receivedListTasksDownloadFiles = function(socketIo, data, sessionId) {
     debug("func 'receivedListTasksDownloadFiles', START...");
-   
+
     let funcName = " (func 'receivedListTasksDownloadFiles')";
 
-    if(!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")){
+    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
         showNotify({
             socketIo: socketIo,
             type: "danger",
             message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });    
+        });
 
-        return writeLogFile("error", "the 'listTasksDownloadFiles' property was not found in 'globalObject'"+funcName);
+        return writeLogFile("error", "the 'listTasksDownloadFiles' property was not found in 'globalObject'" + funcName);
     }
 
     let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
 
-    if((typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)){
-    //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles", { 
-            taskID: data.taskID,                 
+    if ((typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)) {
+        //если ID задачи не совпадают создаем новую запись
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles", {
+            taskID: data.taskID,
             status: data.options.s,
             numFound: data.options.tntf,
             paginationOptions: {
@@ -123,13 +123,13 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
     }
 
     let numFullChunks = 1;
-    if(data.options.tntf > MAX_CHUNK_SIZE){
-        numFullChunks = Math.ceil(data.options.tntf/MAX_CHUNK_SIZE);
+    if (data.options.tntf > MAX_CHUNK_SIZE) {
+        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
     //отправляем в UI если это первый сегмент
-    if(data.options.p.ccn === 1){
-        socketIo.emit("module NI API", { 
+    if (data.options.p.ccn === 1) {
+        socketIo.emit("module NI API", {
             "type": "get list tasks files not downloaded",
             "taskID": data.taskID,
             "options": {
@@ -141,7 +141,7 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });    
+        });
     }
 };
 
@@ -159,27 +159,27 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
  * Исключение составляет первая или единственная часть которая
  * автоматически отправляется в UI
  */
-module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId){
+module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) {
     debug("func 'receivedListUnresolvedTask', START...");
-   
+
     let funcName = " (func 'receivedListUnresolvedTask')";
 
-    if(!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")){
+    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {
         showNotify({
             socketIo: socketIo,
             type: "danger",
             message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });    
+        });
 
-        return writeLogFile("error", "the 'listUnresolvedTask' property was not found in 'globalObject'"+funcName);
+        return writeLogFile("error", "the 'listUnresolvedTask' property was not found in 'globalObject'" + funcName);
     }
 
     let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
 
-    if((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)){
-    //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", { 
-            taskID: data.taskID,                 
+    if ((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)) {
+        //если ID задачи не совпадают создаем новую запись
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", {
+            taskID: data.taskID,
             status: data.options.s,
             numFound: data.options.tntf,
             paginationOptions: {
@@ -194,13 +194,13 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId){
     }
 
     let numFullChunks = 1;
-    if(data.options.tntf > MAX_CHUNK_SIZE){
-        numFullChunks = Math.ceil(data.options.tntf/MAX_CHUNK_SIZE);
+    if (data.options.tntf > MAX_CHUNK_SIZE) {
+        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
     //отправляем в UI если это первый сегмент
-    if(data.options.p.ccn === 1){
-        socketIo.emit("module NI API", { 
+    if (data.options.p.ccn === 1) {
+        socketIo.emit("module NI API", {
             "type": "get list unresolved task",
             "taskID": data.taskID,
             "options": {
@@ -212,6 +212,6 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId){
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });    
+        });
     }
 };
