@@ -31,53 +31,55 @@ export default class CreateBodySearchTask extends React.Component {
     constructor(props){
         super(props);
 
+        this.sp = {
+            cptp: false, //ConsiderParameterTaskProcessed — учитывать параметр TaskProcessed
+            tp: false, //TaskProcessed — была ли задача отмечена клиентом API как завершенная
+            id: 0, //ID - уникальный цифровой идентификатор источника
+            sft: "", //StatusFilteringTask - статус задачи по фильтрации
+            sfdt: "", //StatusFileDownloadTask - статус задачи по скачиванию файлов
+            cpfid: false, //ConsiderParameterFilesDownloaded — учитывать параметр  FilesIsDownloaded
+            fid: false, //FilesIsDownloaded — выполнялась ли выгрузка файлов
+            cpafid: false, //ConsiderParameterAllFilesIsDownloaded -  учитывать параметр AllFilesIsDownloaded
+            afid: false, //AllFilesIsDownloaded — все ли файлы были выгружены
+            iaf: { //InformationAboutFiltering — поиск информации по результатам фильтрации
+                fif: false, //FilesIsFound — были ли найдены в результате фильтрации какие либо файлы
+                cafmin: 0, //CountAllFilesMin — минимальное общее количество всех найденных в результате фильтрации файлов
+                cafmax: 0, //CountAllFilesMax — максимальное общее количество всех найденных в результате фильтрации файлов
+                safmin: 0, //SizeAllFilesMin — минимальный общий размер всех найденных  в результате фильтрации файлов
+                safmax: 0, //SizeAllFilesMax — минимальный общий размер всех найденных  в результате фильтрации файлов
+            },
+            ifo: { //InstalledFilteringOption — искомые опции фильтрации
+                dt: { //DateTime -  дата и время фильтруемых файлов
+                    s: new Date(), //Start - начальное дата и время фильтруемых файлов
+                    e: new Date(), //End - конечное дата и время фильтруемых файлов
+                },
+                p: "any", //Protocol — транспортный протокол
+                nf: { //NetworkFilters — сетевые фильтры
+                    ip: { //IP — фильтры для поиска по ip адресам
+                        any: [], //Any — вы обе стороны
+                        src: [], //Src — только как источник
+                        dst: [], //Dst — только как получатель
+                    },
+                    pt: { //Port — фильтры для поиска по сетевым портам
+                        any: [], //Any — вы обе стороны
+                        src: [], //Src — только как источник
+                        dst: [], //Dst — только как получатель
+                    },
+                    nw: { //Network — фильтры для поиска по подсетям
+                        any: [], //Any — вы обе стороны
+                        src: [], //Src — только как источник
+                        dst: [], //Dst — только как получатель				
+                    }
+                },
+            },
+        };
+
         this.state = {
             disabledButtonSearch: true,
             disabledRadioChosenTask: true,
             disabledRadioUploadedFile: true,
             disabledRadioUploadedAllFile: true,
-            searchParameters: {
-                cptp: false, //ConsiderParameterTaskProcessed — учитывать параметр TaskProcessed
-                tp: false, //TaskProcessed — была ли задача отмечена клиентом API как завершенная
-                id: 0, //ID - уникальный цифровой идентификатор источника
-                sft: "", //StatusFilteringTask - статус задачи по фильтрации
-                sfdt: "", //StatusFileDownloadTask - статус задачи по скачиванию файлов
-                cpfid: false, //ConsiderParameterFilesDownloaded — учитывать параметр  FilesIsDownloaded
-                fid: false, //FilesIsDownloaded — выполнялась ли выгрузка файлов
-                cpafid: false, //ConsiderParameterAllFilesIsDownloaded -  учитывать параметр AllFilesIsDownloaded
-                afid: false, //AllFilesIsDownloaded — все ли файлы были выгружены
-                iaf: { //InformationAboutFiltering — поиск информации по результатам фильтрации
-                    fif: false, //FilesIsFound — были ли найдены в результате фильтрации какие либо файлы
-                    cafmin: 0, //CountAllFilesMin — минимальное общее количество всех найденных в результате фильтрации файлов
-                    cafmax: 0, //CountAllFilesMax — максимальное общее количество всех найденных в результате фильтрации файлов
-                    safmin: 0, //SizeAllFilesMin — минимальный общий размер всех найденных  в результате фильтрации файлов
-                    safmax: 0, //SizeAllFilesMax — минимальный общий размер всех найденных  в результате фильтрации файлов
-                },
-                ifo: { //InstalledFilteringOption — искомые опции фильтрации
-                    dt: { //DateTime -  дата и время фильтруемых файлов
-                        s: new Date(), //Start - начальное дата и время фильтруемых файлов
-                        e: new Date(), //End - конечное дата и время фильтруемых файлов
-                    },
-                    p: "any", //Protocol — транспортный протокол
-                    nf: { //NetworkFilters — сетевые фильтры
-                        ip: { //IP — фильтры для поиска по ip адресам
-                            any: [], //Any — вы обе стороны
-                            src: [], //Src — только как источник
-                            dst: [], //Dst — только как получатель
-                        },
-                        pt: { //Port — фильтры для поиска по сетевым портам
-                            any: [], //Any — вы обе стороны
-                            src: [], //Src — только как источник
-                            dst: [], //Dst — только как получатель
-                        },
-                        nw: { //Network — фильтры для поиска по подсетям
-                            any: [], //Any — вы обе стороны
-                            src: [], //Src — только как источник
-                            dst: [], //Dst — только как получатель				
-                        }
-                    },
-                },
-            },
+            searchParameters: Object.assign({}, this.sp),
             listFieldInput: [],
             errorFieldInput: "",
             inputFieldMinCfIsValid: false,

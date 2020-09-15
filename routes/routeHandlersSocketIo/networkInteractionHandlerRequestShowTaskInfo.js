@@ -239,28 +239,7 @@ function searchInformationAboutTasks(socketIo, data) {
             }
 
             return;
-        })
-        /*.then(() => {
-                    
-                                !!!!!!!!
-                                arguments: {
-    cptp: false,
-    tp: false,
-    id: 1221,
-    sft: '',
-    sfdt: 'complete',
-    cpfid: false,
-    fid: false,
-    cpafid: false,
-    afid: false,
-    iaf: { fif: false, cafmin: 0, cafmax: 0, safmin: 0, safmax: 0 },
-    ifo: { dt: [Object], p: 'any', nf: [Object] }
-  }
-
-                    //думаю здесь надо сделать проверку параметров поиска полученных
-                    // от пользователя
-                })*/
-        .then(() => {
+        }).then(() => {
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementRequestSearchInformationAboutTasks(socketIo, data.arguments);
         }).catch((err) => {

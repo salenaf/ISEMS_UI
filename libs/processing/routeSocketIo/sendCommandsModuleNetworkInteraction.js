@@ -597,6 +597,8 @@ module.exports.managementRequestSearchInformationAboutTasks = function(socketIo,
 
             debug("search task from set parameters");
             debug(data);
+            debug(data.ifo.nf.ip);
+            debug(`Task HEX: ${hex}`);
 
             let tmp = {
                 msgType: "command",
