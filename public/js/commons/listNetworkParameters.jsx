@@ -14,21 +14,27 @@ export default class ListNetworkParameters extends React.Component {
             return { value: "", success: false };
         }
     
+        let valueIsExistInListInput = (item) => {
+            if(this.props.listInput.length === 0){
+                return false;
+            }
+
+            return this.props.listInput.includes(item);
+        };
+
         let result = this.props.item[d].map((item) => {
+            let elem = <small>{item}</small>;
+            if(valueIsExistInListInput(item)){
+                elem = <small><u>{item}</u></small>;
+            }            
             if(d === "src"){
-                return (<div className="ml-4" key={`elem_${this.props.type}_${d}_${item}`}>
-                    <small>{item}</small>
-                </div>); 
+                return (<div className="ml-4" key={`elem_${this.props.type}_${d}_${item}`}>{elem}</div>); 
             }
             if(d === "dst"){
-                return (<div className="ml-4" key={`elem_${this.props.type}_${d}_${item}`}>
-                    <small>{item}</small>
-                </div>); 
+                return (<div className="ml-4" key={`elem_${this.props.type}_${d}_${item}`}>{elem}</div>); 
             }
     
-            return (<div className="ml-4" key={`elem_${this.props.type}_${d}_${item}`}>
-                <small>{item}</small>
-            </div>); 
+            return (<div className="ml-4" key={`elem_${this.props.type}_${d}_${item}`}>{elem}</div>); 
         });
     
         return { value: result, success: true };
@@ -55,4 +61,5 @@ export default class ListNetworkParameters extends React.Component {
 ListNetworkParameters.propTypes = {
     type: PropTypes.string.isRequired,
     item: PropTypes.object.isRequired,
+    listInput: PropTypes.array.isRequired,
 };

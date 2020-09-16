@@ -80,7 +80,6 @@ export default class CreateBodySearchTask extends React.Component {
             disabledRadioUploadedFile: true,
             disabledRadioUploadedAllFile: true,
             searchParameters: Object.assign({}, this.sp),
-            listFieldInput: [],
             errorFieldInput: "",
             inputFieldMinCfIsValid: false,
             inputFieldMinCfIsInvalid: false,
@@ -130,9 +129,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerChosenSource(e){
-        console.log("func 'handlerChosenSource', START...");
-        console.log(`был выбран источник с ID '${+(e.target.value)}'`);
-
         let objCopy = Object.assign({}, this.state.searchParameters);
         objCopy.id = +(e.target.value);
         this.setState({ searchParameters: objCopy });
@@ -141,9 +137,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerChosenStatus(e){
-        console.log("func 'handlerChosenStatus', START...");
-        console.log(`тип статуса '${e.target.name}', статус '${e.target.value}'`);
-
         let elemName = "sft";
 
         let objCopy = Object.assign({}, this.state.searchParameters);
@@ -164,9 +157,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerChosenProtocolList(e){
-        console.log("func 'handlerChosenProtocolList', START...");
-        console.log(`был выбран сетевой протокол '${e.target.value}'`);
-
         let objCopy = Object.assign({}, this.state.searchParameters);
         objCopy.ifo.p = e.target.value;
         this.setState({ searchParameters: objCopy });
@@ -175,10 +165,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerCheckbox(e){
-        console.log("func 'handlerCheckbox', START...");
-        console.log(` checked = ${e.target.checked}`);
-        console.log(`name = '${e.target.name}'`);
-
         let objCopy = Object.assign({}, this.state.searchParameters);
         let elemName = "";
 
@@ -249,9 +235,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerRadioChosen(e){
-        console.log("func 'handlerRadioChosen', START...");
-        console.log(`radio chosen '${e.target.value}'`);
-
         let objCopy = Object.assign({}, this.state.searchParameters);
         let elemName = "";
 
@@ -278,12 +261,7 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerButtonSearch(){
-        console.log("func 'handlerButtonSearch', START...");
-        console.log(this.state.searchParameters);
-
         if(this.checkFieldChange()){
-            console.log("Изменений НЕТ");
-
             this.setState({ disabledButtonSearch: true });
 
             return;
@@ -293,8 +271,7 @@ export default class CreateBodySearchTask extends React.Component {
         sp.ifo.dt.s = +(this.state.searchParameters.ifo.dt.s);
         sp.ifo.dt.e = +(this.state.searchParameters.ifo.dt.e);
 
-        console.log("Изменения ЕСТЬ отправляем --> запрос на сервер");
-
+        this.props.handlerButtonSearch(sp.ifo.nf);
         this.props.socketIo.emit("network interaction: start search task", {
             actionType: "search tasks",
             arguments: sp,
@@ -302,9 +279,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     handlerCountAndSizeFiles(e){
-        console.log("func 'handlerCountAndSizeFiles', START...");
-        console.log(e.target.value);
-
         let objCopy = Object.assign({}, this.state.searchParameters);
 
         if(helpers.checkInputValidation({
@@ -571,9 +545,6 @@ export default class CreateBodySearchTask extends React.Component {
     }
 
     getListSource(){
-
-        console.log("func 'getListSource', create source list...");
-
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
             let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
 
@@ -651,12 +622,12 @@ export default class CreateBodySearchTask extends React.Component {
                         </Form.Group>
                     </Form.Row>
                     <Form.Row>
-                        <Form.Group as={Col} className="text-left">
-                            <Form.Row className="ml-1">
-                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="files_found" className="mt-n2"/>
+                        <Form.Group as={Col} className="text-left mt-1">
+                            <Form.Row className="ml-1 mt-n1">
+                                <Form.Check className="mt-n2" type="checkbox" onClick={this.handlerCheckbox} name="files_found" />
                                 <small className="ml-1 mt-n2">файлы найдены</small>
                             </Form.Row>
-                            <Form.Row className="ml-1">
+                            <Form.Row className="ml-1 mt-n1">
                                 <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="file_uploaded_check"/>
                                 <small className="ml-1">выгрузка выполнялась</small>
                                 <Form.Check 
@@ -683,7 +654,7 @@ export default class CreateBodySearchTask extends React.Component {
                                     disabled={this.state.disabledRadioUploadedFile} />
                                 <small className="ml-1">нет</small>
                             </Form.Row>
-                            <Form.Row className="ml-1">
+                            <Form.Row className="ml-1 mt-n2">
                                 <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="all_file_uploaded_check"/>
                                 <small className="ml-1">все файлы выгружены</small>
                                 <Form.Check 
@@ -807,7 +778,6 @@ export default class CreateBodySearchTask extends React.Component {
                             <Form.Row className="ml-2">
                                 <TokenInput 
                                     className="react-token-input"
-                                    defaultData={this.listFieldInput}
                                     validator={this.handlerFieldInputValidator}
                                     onTokensUpdate={this.handlerFieldInput}
                                     placeholder="ip адрес, порт или подсеть" />
@@ -842,4 +812,5 @@ export default class CreateBodySearchTask extends React.Component {
 CreateBodySearchTask.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listSources: PropTypes.object.isRequired,
+    handlerButtonSearch: PropTypes.func.isRequired,
 };

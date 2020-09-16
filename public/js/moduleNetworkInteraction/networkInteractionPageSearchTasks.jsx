@@ -8,6 +8,7 @@ import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
 import { ModalWindowConfirmMessage } from "../modalwindows/modalWindowConfirmMessage.jsx";
+import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
 import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
 
 class CreatePageSearchTasks extends React.Component {
@@ -20,13 +21,26 @@ class CreatePageSearchTasks extends React.Component {
                 sourceName: "",
                 taskID: "",
             },
+            showModalWindowFiltration: false,
             showModalWindowDeleteTask: false,
             showModalWindowShowTaskInformation: false,
             listCheckboxMarkedTasksDel: new Set(),
+            listSources: this.props.listItems.listSources,
             listTasksFound: {
                 p: { cs: 0, cn: 0, ccn: 1 },
                 slft: [],
                 tntf: 0,            
+            },
+            listInputForSearch: [],
+            currentFilteringParameters: {
+                dt: { s: +new Date, e: +new Date },
+                sid: 0,
+                p: "any",
+                f: { 
+                    ip: { any: [], src: [], dst: [] },
+                    pt: { any: [], src: [], dst: [] },
+                    nw: { any: [], src: [], dst: [] },
+                },
             },
         };
 
@@ -35,8 +49,11 @@ class CreatePageSearchTasks extends React.Component {
 
         this.getUserPermission = this.getUserPermission.bind(this);
         this.handlerTaskDelete = this.handlerTaskDelete.bind(this);
+        this.handlerButtonSearch = this.handlerButtonSearch.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.closeModalWindowTasksDelete = this.closeModalWindowTasksDelete.bind(this);
+        this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
+        this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
@@ -52,11 +69,7 @@ class CreatePageSearchTasks extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "send a list of found tasks"){
-
-                console.log("--- event: send a list of found issues ---");
-                console.log(data.options);
-    
+            if(data.type === "send a list of found tasks"){   
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -69,10 +82,6 @@ class CreatePageSearchTasks extends React.Component {
     }
 
     handlerModalWindowShowTaskTnformation(data){
-
-        console.log("func 'handlerModalWindowShowTaskTnformation'...");
-        console.log(data);
-
         let objCopy = Object.assign({}, this.state);
         objCopy.shortTaskInformation.sourceID = data.sourceID;
         objCopy.shortTaskInformation.sourceName = data.sourceName;
@@ -86,12 +95,11 @@ class CreatePageSearchTasks extends React.Component {
         this.setState({ showModalWindowShowTaskInformation: true });
     }
 
-
     handlerCloseModalWindowShowTaskInformation(){
         this.setState({ showModalWindowShowTaskInformation: false });
     }
 
-    headerClickTable(objData, type, e){
+    headerClickTable(objData, type){
         if(type === "info"){
             this.handlerModalWindowShowTaskTnformation(objData);
             
@@ -101,12 +109,22 @@ class CreatePageSearchTasks extends React.Component {
         }
         
         if(type === "re-filtering"){
-            //повторная фильтрация
-            /**
-             * Открыть модальное окно фильтрации с 
-             * уже заполненными параметрами
-             * 
-             */
+            console.log("func 'headerClickTable', re-filtering");
+            console.log("информация для повторной фильтрации");
+            console.log(this.state.listTasksFound.slft[objData.index]);
+
+            let objCopy = Object.assign({}, this.state.currentFilteringParameters);
+            objCopy.sid = this.state.listTasksFound.slft[objData.index].sid;
+            objCopy.dt = this.state.listTasksFound.slft[objData.index].pf.dt;
+            objCopy.p = this.state.listTasksFound.slft[objData.index].pf.p;
+            objCopy.f = this.state.listTasksFound.slft[objData.index].pf.f;
+
+            this.setState({ 
+                currentFilteringParameters: objCopy,
+                showModalWindowFiltration: true 
+            });
+
+            console.log(this.state.currentFilteringParameters);
         }
 
         if(type === "delete"){
@@ -116,6 +134,10 @@ class CreatePageSearchTasks extends React.Component {
 
             this.setState({ showModalWindowDeleteTask: true });
         }
+    }
+
+    handlerCloseModalWindowFiltration(){
+        this.setState({ showModalWindowFiltration: false });
     }
 
     headerNextItemPagination(num){
@@ -141,6 +163,62 @@ class CreatePageSearchTasks extends React.Component {
         * 
         */
 
+    }
+
+    handlerButtonSubmitWindowFilter(objTaskInfo){
+        let checkExistInputValue = () => {
+            let isEmpty = true;
+
+            done:
+            for(let et in objTaskInfo.inputValue){
+                for(let d in objTaskInfo.inputValue[et]){
+                    if(Array.isArray(objTaskInfo.inputValue[et][d]) && objTaskInfo.inputValue[et][d].length > 0){
+                        isEmpty = false;
+
+                        break done;  
+                    }
+                }
+            }
+
+            return isEmpty;
+        };
+
+        //проверяем наличие хотя бы одного параметра в inputValue
+        if(checkExistInputValue()){
+            return;
+        }
+
+        this.props.socketIo.emit("network interaction: start new filtration task", {
+            actionType: "add new task",
+            arguments: {
+                source: objTaskInfo.source,
+                dateTime: {
+                    start: +(new Date(objTaskInfo.startDate)),
+                    end: +(new Date(objTaskInfo.endDate)),
+                },
+                networkProtocol: objTaskInfo.networkProtocol,
+                inputValue: objTaskInfo.inputValue,
+            },
+        });
+
+        this.handlerCloseModalWindowFiltration();
+    }
+
+    handlerButtonSearch(list){
+        let listInput = [];
+        for(let type in list){
+            for(let direction in list[type]){
+                if(!Array.isArray(list[type][direction])){
+                    continue;
+                }
+
+                list[type][direction].forEach((item) => {
+                    listInput.push(item);
+                });
+            }    
+        }
+
+        this.setState({ listInputForSearch: listInput });
     }
 
     closeModalWindowTasksDelete(){
@@ -187,8 +265,8 @@ class CreatePageSearchTasks extends React.Component {
                 minute: "numeric",
             });
 
-            this.state.listTasksFound.slft.forEach((item) => {
-                let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn };
+            this.state.listTasksFound.slft.forEach((item, index) => {
+                let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn, index: index };
 
                 tableBody.push(<tr key={`tr_${item.tid}`}>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
@@ -208,13 +286,13 @@ class CreatePageSearchTasks extends React.Component {
                         <div><small>{formatterDate.format(item.pf.dt.e*1000)}</small></div>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_ip`}>
-                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} /></small>
+                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} listInput={this.state.listInputForSearch} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_network`}>
-                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} /></small>
+                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} listInput={this.state.listInputForSearch} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_port`}>
-                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} /></small>
+                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} listInput={this.state.listInputForSearch} /></small>
                     </td>
                     <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sf`}>
                         <small><GetStatusFiltering status={item.fts} /></small>
@@ -226,7 +304,7 @@ class CreatePageSearchTasks extends React.Component {
                         <Button 
                             size="sm" 
                             variant="outline-light" >
-                            <a href="#">
+                            <a href="#" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
                                 <img className="clickable_icon" src="../images/icons8-repeat-24.png" alt="выполнить повторную фильтрацию"></img>
                             </a>
                         </Button>
@@ -337,8 +415,6 @@ class CreatePageSearchTasks extends React.Component {
     }
 
     render(){
-        let createPagination = this.createPagination.call(this);
-
         return (
             <React.Fragment>
                 <Row>
@@ -346,14 +422,22 @@ class CreatePageSearchTasks extends React.Component {
                 </Row>
                 <CreateBodySearchTask 
                     socketIo={this.props.socketIo} 
-                    listSources={this.props.listItems.listSources} />
+                    listSources={this.props.listItems.listSources}
+                    handlerButtonSearch={this.handlerButtonSearch} />
                 {this.createTableListDownloadFile.call(this)}
-                {createPagination}
+                {this.createPagination.call(this)}
+
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}
                     socketIo={this.props.socketIo}
                     shortTaskInfo={this.state.shortTaskInformation} />
+                <ModalWindowAddFilteringTask 
+                    show={this.state.showModalWindowFiltration}
+                    onHide={this.handlerCloseModalWindowFiltration}
+                    listSources={this.state.listSources}
+                    currentFilteringParameters={this.state.currentFilteringParameters}
+                    handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
                 <ModalWindowConfirmMessage 
                     show={this.state.showModalWindowDeleteTask}
                     onHide={this.closeModalWindowTasksDelete}

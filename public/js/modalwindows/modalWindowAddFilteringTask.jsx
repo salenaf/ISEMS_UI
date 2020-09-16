@@ -54,9 +54,12 @@ class CreateSourceList extends React.Component {
     }
 
     render(){
+
+        console.log(`chosen source ID: '${this.props.currentSource}'`);
+
         return (
             <Form.Group>
-                <Form.Control onChange={this.props.handlerChosen} as="select" size="sm" id="dropdown_list_sources">
+                <Form.Control onChange={this.props.handlerChosen} defaultValue={this.props.currentSource} as="select" size="sm" id="dropdown_list_sources">
                     <option></option>
                     {this.getListSource()}
                 </Form.Control>
@@ -67,6 +70,7 @@ class CreateSourceList extends React.Component {
 
 CreateSourceList.propTypes = {
     listSources: PropTypes.object.isRequired,
+    currentSource: PropTypes.number.isRequired,
     handlerChosen: PropTypes.func.isRequired,
 };
 
@@ -367,8 +371,20 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     constructor(props){
         super(props);
 
+        let f = { 
+            ip: { any: [], src: [], dst: [] },
+            pt: { any: [], src: [], dst: [] },
+            nw: { any: [], src: [], dst: [] },
+        };
+
         this.state = {
             showMainFields: false,
+            //            source: this.props.currentFilteringParameters.sid,
+            //            startDate: this.props.currentFilteringParameters.dt.s,
+            //            endDate: this.props.currentFilteringParameters.dt.e,
+            //            networkProtocol: this.props.currentFilteringParameters.p,
+            //            inputValue: this.props.currentFilteringParameters.f,
+
             source: 0,
             startDate: new Date(),
             endDate: new Date(),
@@ -378,7 +394,24 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                 pt: { any: [], src: [], dst: [] },
                 nw: { any: [], src: [], dst: [] },
             },
+
+            //source: ((typeof this.props.currentFilteringParameters.sid === "undefined") ? 0 : this.props.currentFilteringParameters.sid),
+            //startDate: ((typeof this.props.currentFilteringParameters.dt === "undefined") ? new Date : new Date(this.props.currentFilteringParameters.dt.s)),
+            //endDate: ((typeof this.props.currentFilteringParameters.dt === "undefined") ? new Date : new Date(this.props.currentFilteringParameters.dt.e)),
+            //networkProtocol: ((typeof this.props.currentFilteringParameters.p === "undefined") ? "any" : this.props.currentFilteringParameters.p),
+            //inputValue: ((typeof this.props.currentFilteringParameters.f === "undefined") ? f : this.props.currentFilteringParameters.f),
         };
+
+        /**
+dt: { s: +new Date, e: +new Date },
+                        sid: 0,
+                        p: "any",
+                        f: { 
+                            ip: { any: [], src: [], dst: [] },
+                            pt: { any: [], src: [], dst: [] },
+                            nw: { any: [], src: [], dst: [] },
+                        },
+ */
 
         this.windowClose = this.windowClose.bind(this);
         this.delAddedElem = this.delAddedElem.bind(this);
@@ -472,6 +505,17 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     render(){       
+        console.log("render");
+        console.log(this.props.currentFilteringParameters);
+        console.log(`Source ID: '${this.props.currentFilteringParameters.sid}'`);
+
+        let test = "новая";
+        if(this.props.currentFilteringParameters.sid !== 0){
+            test = "повторная";
+
+            console.log(this.props.currentFilteringParameters);
+        }
+
         return (
             <Modal
                 id="modal_create_task_filter"
@@ -481,12 +525,13 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                 aria-labelledby="example-modal-sizes-title-lg" >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Фильтрация сетевого трафика</h5>
+                        <h5>Фильтрация сетевого трафика ({test})</h5>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <CreateSourceList 
                         listSources={this.props.listSources}
+                        currentSource={this.props.currentFilteringParameters.sid}
                         handlerChosen={this.handlerChosenSource} />
                     <CreateMainFields
                         showMainFields={this.state.showMainFields}
@@ -516,5 +561,6 @@ ModalWindowAddFilteringTask.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func,
     listSources: PropTypes.object.isRequired,
+    currentFilteringParameters: PropTypes.object.isRequired,
     handlerButtonSubmit: PropTypes.func.isRequired,
 };

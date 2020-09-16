@@ -90,10 +90,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     
             //для списка задач не отмеченных пользователем как завершеные
             if(data.type === "get list unresolved task"){
-
-                console.log("--- event: get list unresolved task ---");
-                console.log(data.options);
-
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numUnresolvedTask = data.options.tntf;
@@ -240,8 +236,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
  *      инициированной автоматически. ЭТО ФИЛЬТРАЦИЯ И СКАЧИВАНИЕ ФАЙЛОВ,
  *      ПОИСК нужно думать отдельно
  * 3. сделать автоматическое удаление записей из журнала событий
- * 4. проверить ПАГИНАТОР в разделе 'скачивание файлов'
- * 5. вкладку ПОИСК
+ * 4. +проверить ПАГИНАТОР в разделе 'скачивание файлов'
+ * 5. +вкладку ПОИСК
  * 6. доделать виджет, раздел "загруженные файлы" 
  * 7. подумать о расширении информации о задаче, например об IP адресах (
  *  возможно добавить geoip)
@@ -327,6 +323,16 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}
                     listSources={this.state.listSources}
+                    currentFilteringParameters={{
+                        dt: { s: +new Date, e: +new Date },
+                        sid: 0,
+                        p: "any",
+                        f: { 
+                            ip: { any: [], src: [], dst: [] },
+                            pt: { any: [], src: [], dst: [] },
+                            nw: { any: [], src: [], dst: [] },
+                        },
+                    }}
                     handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
                 <ModalWindowLanCalc
                     show={this.state.showModalWindowLanCalc}
