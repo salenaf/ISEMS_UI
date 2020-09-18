@@ -146,13 +146,13 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <div><small>{formatterDate.format(item.pf.dt.e*1000)}</small></div>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_ip`}>
-                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} /></small>
+                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} listInput={[]} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_network`}>
-                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} /></small>
+                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} listInput={[]} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_port`}>
-                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} /></small>
+                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} listInput={[]} /></small>
                     </td>
                     <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sf`}>
                         <small><GetStatusFiltering status={item.fts} /></small>

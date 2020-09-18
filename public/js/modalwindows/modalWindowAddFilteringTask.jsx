@@ -14,17 +14,31 @@ class CreateProtocolList extends React.Component {
     }
 
     render(){
+        let np = [
+            {t:"any", n:"любой"},
+            {t:"tcp", n:"tcp"},
+            {t:"udp", n:"udp"},
+        ];
+
         return (
-            <select className="custom-select custom-select-sm" onChange={this.props.handlerChosen} id="protocol_list">
-                <option value="any">любой</option>
-                <option value="tcp">tcp</option>
-                <option value="udp">udp</option>
+            <select 
+                disabled={this.props.isDisabled} 
+                defaultValue={this.props.networkProtocol}
+                className="custom-select custom-select-sm" 
+                onChange={this.props.handlerChosen} 
+                id="protocol_list">
+                {np.map((item) => {
+                    return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
+                })}
+
             </select>
         );
     }
 }
 
 CreateProtocolList.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    networkProtocol: PropTypes.string.isRequired,
     handlerChosen: PropTypes.func.isRequired,
 };
 
@@ -36,9 +50,6 @@ class CreateSourceList extends React.Component {
     }
 
     getListSource(){
-
-        console.log("func 'getListSource', create source list...");
-
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
             let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
 
@@ -54,12 +65,24 @@ class CreateSourceList extends React.Component {
     }
 
     render(){
-
-        console.log(`chosen source ID: '${this.props.currentSource}'`);
+        let disabled = false;
+        if(this.props.typeModal === "повторная"){
+            if(this.props.hiddenFields){
+                disabled = true;
+            } else {              
+                disabled = false;
+            }
+        }
 
         return (
             <Form.Group>
-                <Form.Control onChange={this.props.handlerChosen} defaultValue={this.props.currentSource} as="select" size="sm" id="dropdown_list_sources">
+                <Form.Control 
+                    disabled={disabled} 
+                    onChange={this.props.handlerChosen} 
+                    defaultValue={this.props.currentSource} 
+                    as="select" 
+                    size="sm" 
+                    id="dropdown_list_sources" >
                     <option></option>
                     {this.getListSource()}
                 </Form.Control>
@@ -69,6 +92,8 @@ class CreateSourceList extends React.Component {
 }
 
 CreateSourceList.propTypes = {
+    typeModal: PropTypes.string.isRequired,
+    hiddenFields: PropTypes.bool.isRequired,
     listSources: PropTypes.object.isRequired,
     currentSource: PropTypes.number.isRequired,
     handlerChosen: PropTypes.func.isRequired,
@@ -287,49 +312,86 @@ class CreateMainFields extends React.Component {
             return <React.Fragment></React.Fragment>;
         }
 
+        let disabled = false;
+        if(this.props.typeModal === "повторная"){
+            if(this.props.hiddenFields){
+                disabled = true;
+            } else {               
+                disabled = false;
+            }
+        }
+
+        let startDate = this.props.startDate;
+        let endDate = this.props.endDate;
+        if(disabled){
+            if(+new Date(this.props.startDate) !== +(new Date(this.props.sd))){
+                startDate = null;
+            }
+
+            if(+new Date(this.props.endDate) !== +(new Date(this.props.ed))){
+                endDate = null;
+            }
+        }
+
+        let formatterDate = new Intl.DateTimeFormat("ru-Ru", {
+            timeZone: "Europe/Moscow",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+        });
+
         return (
             <React.Fragment>
                 <Row className="mt-2">
                     <Col sm="3" className="text-right">
                         <small className="mr-1">сетевой протокол</small>
-                        <CreateProtocolList handlerChosen={this.props.handlerChosenProtocol} />
+                        <CreateProtocolList 
+                            isDisabled={disabled}
+                            networkProtocol={this.props.networkProtocol} 
+                            handlerChosen={this.props.handlerChosenProtocol} />
                     </Col>
                     <Col sm="1"></Col>
                     <Col sm="4">
                         <small className="mr-1">начальное время</small>
                         <DatePicker 
                             className="form-control form-control-sm green-border"
-                            selected={this.props.startDate}
+                            selected={startDate}
                             onChange={this.props.handlerChangeStartDate}
                             maxDate={new Date()}
+                            disabled={disabled}
                             showTimeInput
                             selectsStart
                             isClearable
                             timeFormat="p"
                             timeInputLabel="Time:"
-                            dateFormat="dd.MM.yyyy hh:mm aa" />
+                            dateFormat="dd.MM.yyyy hh:mm aa"
+                            placeholderText={formatterDate.format(this.props.sd)} />
                     </Col>
                     <Col sm="4">
                         <small className="mr-1">конечное время</small>
                         <DatePicker 
                             className="form-control form-control-sm red-border"
-                            selected={this.props.endDate}
+                            selected={endDate}
                             onChange={this.props.handlerChangeEndDate}
                             maxDate={new Date()}
+                            disabled={disabled}
                             showTimeInput
                             selectsEnd
                             isClearable
                             timeFormat="p"
                             timeInputLabel="Time:"
-                            dateFormat="dd.MM.yyyy hh:mm aa" />
+                            dateFormat="dd.MM.yyyy hh:mm aa"
+                            placeholderText={formatterDate.format(this.props.ed)} />
                     </Col>
                 </Row>
                 <Row className="mt-3">
                     <Col className="text-center" sm="4">
                         <Form inline>
-                            <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
-                            <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
-                            <Form.Check onClick={this.checkRadioInput} custom type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
+                            <Form.Check onClick={this.checkRadioInput} custom type="radio" disabled={disabled} id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
+                            <Form.Check onClick={this.checkRadioInput} custom type="radio" disabled={disabled} id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
+                            <Form.Check onClick={this.checkRadioInput} custom type="radio" disabled={disabled} id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
                         </Form>
                     </Col>
                     <Col sm="8">
@@ -338,6 +400,7 @@ class CreateMainFields extends React.Component {
                                 id="input_ip_network_port"
                                 aria-describedby="basic-addon2"
                                 onChange={this.handlerInput}
+                                disabled={disabled}
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 
                                 placeholder="введите ip адрес, подсеть или сетевой порт" />
@@ -356,10 +419,15 @@ class CreateMainFields extends React.Component {
 }
 
 CreateMainFields.propTypes = {
+    typeModal: PropTypes.string.isRequired,
+    hiddenFields: PropTypes.bool.isRequired,
     showMainFields: PropTypes.bool.isRequired,
     startDate: PropTypes.instanceOf(Date),
+    sd:PropTypes.instanceOf(Date),
     endDate: PropTypes.instanceOf(Date),
+    ed:PropTypes.instanceOf(Date),
     inputValue: PropTypes.object.isRequired,
+    networkProtocol: PropTypes.string.isRequired,
     delAddedElem: PropTypes.func.isRequired,
     addPortNetworkIP: PropTypes.func.isRequired,
     handlerChangeStartDate: PropTypes.func.isRequired,
@@ -371,20 +439,9 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     constructor(props){
         super(props);
 
-        let f = { 
-            ip: { any: [], src: [], dst: [] },
-            pt: { any: [], src: [], dst: [] },
-            nw: { any: [], src: [], dst: [] },
-        };
-
         this.state = {
             showMainFields: false,
-            //            source: this.props.currentFilteringParameters.sid,
-            //            startDate: this.props.currentFilteringParameters.dt.s,
-            //            endDate: this.props.currentFilteringParameters.dt.e,
-            //            networkProtocol: this.props.currentFilteringParameters.p,
-            //            inputValue: this.props.currentFilteringParameters.f,
-
+            hiddenFields: true,
             source: 0,
             startDate: new Date(),
             endDate: new Date(),
@@ -394,29 +451,13 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                 pt: { any: [], src: [], dst: [] },
                 nw: { any: [], src: [], dst: [] },
             },
-
-            //source: ((typeof this.props.currentFilteringParameters.sid === "undefined") ? 0 : this.props.currentFilteringParameters.sid),
-            //startDate: ((typeof this.props.currentFilteringParameters.dt === "undefined") ? new Date : new Date(this.props.currentFilteringParameters.dt.s)),
-            //endDate: ((typeof this.props.currentFilteringParameters.dt === "undefined") ? new Date : new Date(this.props.currentFilteringParameters.dt.e)),
-            //networkProtocol: ((typeof this.props.currentFilteringParameters.p === "undefined") ? "any" : this.props.currentFilteringParameters.p),
-            //inputValue: ((typeof this.props.currentFilteringParameters.f === "undefined") ? f : this.props.currentFilteringParameters.f),
         };
-
-        /**
-dt: { s: +new Date, e: +new Date },
-                        sid: 0,
-                        p: "any",
-                        f: { 
-                            ip: { any: [], src: [], dst: [] },
-                            pt: { any: [], src: [], dst: [] },
-                            nw: { any: [], src: [], dst: [] },
-                        },
- */
 
         this.windowClose = this.windowClose.bind(this);
         this.delAddedElem = this.delAddedElem.bind(this);
         this.addPortNetworkIP = this.addPortNetworkIP.bind(this);
         this.handlerButtonSubmit = this.handlerButtonSubmit.bind(this);
+        this.handlerButtonChange = this.handlerButtonChange.bind(this);
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
         this.handlerChangeStartDate = this.handlerChangeStartDate.bind(this);
         this.handlerChangeEndDate = this.handlerChangeEndDate.bind(this);
@@ -438,6 +479,7 @@ dt: { s: +new Date, e: +new Date },
         });
 
         this.props.onHide();
+        this.setState({ hiddenFields: true });
     }
 
     addPortNetworkIP(objAdd){
@@ -464,10 +506,6 @@ dt: { s: +new Date, e: +new Date },
     }
 
     handlerButtonSubmit(){
-
-        console.log("func 'handlerButtonSubmit'");
-        console.log(`networkProtocol: ${this.state.networkProtocol}`);
-
         this.props.handlerButtonSubmit({
             source: this.state.source,
             startDate: this.state.startDate,
@@ -479,6 +517,17 @@ dt: { s: +new Date, e: +new Date },
         this.windowClose();
     }
 
+    handlerButtonChange(){
+        this.setState({ 
+            hiddenFields: false,
+            source: this.props.currentFilteringParameters.sid,
+            startDate: new Date(this.props.currentFilteringParameters.dt.s*1000),
+            endDate: new Date(this.props.currentFilteringParameters.dt.e*1000),
+            networkProtocol: this.props.currentFilteringParameters.p,
+            inputValue: this.props.currentFilteringParameters.f,
+        });
+    }
+
     handlerChosenSource(e){
         this.setState({
             showMainFields: true,
@@ -487,15 +536,11 @@ dt: { s: +new Date, e: +new Date },
     }
 
     handlerChangeStartDate(date){
-        this.setState({
-            startDate: date
-        });
+        this.setState({ startDate: date });
     }
 
     handlerChangeEndDate(date){
-        this.setState({
-            endDate: date
-        });
+        this.setState({ endDate: date });
     }
 
     handlerChosenProtocol(e){
@@ -505,15 +550,37 @@ dt: { s: +new Date, e: +new Date },
     }
 
     render(){       
-        console.log("render");
-        console.log(this.props.currentFilteringParameters);
-        console.log(`Source ID: '${this.props.currentFilteringParameters.sid}'`);
-
-        let test = "новая";
+        let emitOnChange; 
+        let tm = "новая";
+        let showMainFields = this.state.showMainFields;
+        let startDate = this.state.startDate;
+        let sd = this.state.startDate;
+        let endDate = this.state.endDate;
+        let ed = this.state.endDate;
+        let inputValue = this.state.inputValue;
+        let networkProtocol = this.state.networkProtocol;
+        let disabled = false;
+        
         if(this.props.currentFilteringParameters.sid !== 0){
-            test = "повторная";
-
-            console.log(this.props.currentFilteringParameters);
+            tm = "повторная";
+            emitOnChange = <Row>
+                <Col md={12} className="text-right mt-2 mb-n1">
+                    <span onClick={this.handlerButtonChange} className="text-info clicabe_cursor">
+                        <u>изменить параметры фильтрации</u>
+                    </span>
+                </Col>
+            </Row>;
+            sd = new Date(this.props.currentFilteringParameters.dt.s*1000);
+            ed = new Date(this.props.currentFilteringParameters.dt.e*1000);
+            inputValue = this.props.currentFilteringParameters.f;
+            networkProtocol = this.props.currentFilteringParameters.p;
+            showMainFields = true;
+            
+            if(this.state.hiddenFields){
+                disabled = true;
+            } else {              
+                disabled = false;
+            }
         }
 
         return (
@@ -525,30 +592,38 @@ dt: { s: +new Date, e: +new Date },
                 aria-labelledby="example-modal-sizes-title-lg" >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Фильтрация сетевого трафика ({test})</h5>
+                        <h5>Фильтрация сетевого трафика ({tm})</h5>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <CreateSourceList 
+                        typeModal={tm}
+                        hiddenFields={this.state.hiddenFields}
                         listSources={this.props.listSources}
                         currentSource={this.props.currentFilteringParameters.sid}
                         handlerChosen={this.handlerChosenSource} />
                     <CreateMainFields
-                        showMainFields={this.state.showMainFields}
-                        startDate={this.state.startDate}
-                        endDate={this.state.endDate}
-                        inputValue={this.state.inputValue}
+                        typeModal={tm}
+                        hiddenFields={this.state.hiddenFields}
+                        showMainFields={showMainFields}
+                        startDate={startDate}
+                        sd={sd}
+                        endDate={endDate}
+                        ed={ed}
+                        networkProtocol={networkProtocol}
+                        inputValue={inputValue}
                         delAddedElem={this.delAddedElem}
                         addPortNetworkIP={this.addPortNetworkIP}
                         handlerChangeStartDate={this.handlerChangeStartDate}
                         handlerChangeEndDate={this.handlerChangeEndDate}
                         handlerChosenProtocol={this.handlerChosenProtocol} />
+                    {emitOnChange}                    
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-secondary" onClick={this.windowClose} size="sm">
                         закрыть
                     </Button>
-                    <Button variant="outline-primary" onClick={this.handlerButtonSubmit} size="sm">
+                    <Button variant="outline-primary" disabled={disabled} onClick={this.handlerButtonSubmit} size="sm">
                         отправить
                     </Button>
                 </Modal.Footer>

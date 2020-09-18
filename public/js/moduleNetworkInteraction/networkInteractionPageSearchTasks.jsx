@@ -109,10 +109,6 @@ class CreatePageSearchTasks extends React.Component {
         }
         
         if(type === "re-filtering"){
-            console.log("func 'headerClickTable', re-filtering");
-            console.log("информация для повторной фильтрации");
-            console.log(this.state.listTasksFound.slft[objData.index]);
-
             let objCopy = Object.assign({}, this.state.currentFilteringParameters);
             objCopy.sid = this.state.listTasksFound.slft[objData.index].sid;
             objCopy.dt = this.state.listTasksFound.slft[objData.index].pf.dt;
@@ -123,8 +119,6 @@ class CreatePageSearchTasks extends React.Component {
                 currentFilteringParameters: objCopy,
                 showModalWindowFiltration: true 
             });
-
-            console.log(this.state.currentFilteringParameters);
         }
 
         if(type === "delete"){
@@ -163,6 +157,7 @@ class CreatePageSearchTasks extends React.Component {
         * 
         */
 
+        console.log(this.state.listCheckboxMarkedTasksDel);
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){

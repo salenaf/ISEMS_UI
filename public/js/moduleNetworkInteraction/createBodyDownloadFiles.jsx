@@ -142,13 +142,13 @@ export default class CreateBodyDownloadFiles extends React.Component {
                         <small>{item.pf.p}</small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_ip`}>
-                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} /></small>
+                        <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} listInput={[]} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_network`}>
-                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} /></small>
+                        <small><ListNetworkParameters type={"nw"} item={item.pf.f.nw} listInput={[]} /></small>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_port`}>
-                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} /></small>
+                        <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} listInput={[]} /></small>
                     </td>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_search_file`}>
                         <small>{`${formaterInt.format(item.nffarf)} (${formaterInt.format(item.nfd)})`}</small>

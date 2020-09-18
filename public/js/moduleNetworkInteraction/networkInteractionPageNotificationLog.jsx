@@ -39,12 +39,49 @@ CreateSourceList.propTypes = {
     handlerChosen: PropTypes.func.isRequired,
 };
 
+class CreateNotificationTypeList extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.getListNotificationType = this.getListNotificationType.bind(this);
+    }
+
+    getListNotificationType(){
+        let list = [ 
+            { t: "info", n: "информационное" },
+            { t: "success", n: "успешное" },
+            { t: "warning", n: "требует внимания" },
+            { t: "danger", n: "критичное" },
+        ];
+
+        return list.map((item) => {
+            return <option key={`key_n_${item.t}`} value={item.t}>{item.n}</option>;
+        });
+    }
+
+    render(){
+        return (
+            <Form.Group>
+                <Form.Control onChange={this.props.handlerChosen} as="select" size="sm" id="dropdown_list_sources">
+                    <option value="">тип сообщения</option>
+                    {this.getListNotificationType()}
+                </Form.Control>
+            </Form.Group>
+        );
+    }
+}
+
+CreateNotificationTypeList.propTypes = {
+    handlerChosen: PropTypes.func.isRequired,
+};
+
 class CreatePageNotificationLog extends React.Component {
     constructor(props){
         super(props);
 
         this.state = {
             chosenSource: 0,
+            notificationType: "",
             numChunk: 1,
             buttonNextChunkIsDisabled: false,
             countDocument: this.props.listItems.mainInformation.countDocument,
@@ -55,6 +92,7 @@ class CreatePageNotificationLog extends React.Component {
         this.handlerNextChunk = this.handlerNextChunk.bind(this);
         this.handlerButtonSubmit = this.handlerButtonSubmit.bind(this);
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
+        this.handlerChosenNotificationType = this.handlerChosenNotificationType.bind(this);
 
         this.headerEvents.call(this);
     }
@@ -99,10 +137,18 @@ class CreatePageNotificationLog extends React.Component {
         });
     }
 
+    handlerChosenNotificationType(e){
+        this.setState({ 
+            notificationType: e.target.value,
+            numChunk: 1, 
+        });
+    }
+
     handlerButtonSubmit(){
         this.props.socketIo.emit("network interaction: get notification log for source ID", { 
             arguments: {
                 sourceID: this.state.chosenSource,
+                notificationType: this.state.notificationType,
                 numberChunk: this.state.numChunk,
             } 
         });
@@ -118,22 +164,11 @@ class CreatePageNotificationLog extends React.Component {
             buttonNextChunkIsDisabled: true,
         });
 
-        if(this.state.chosenSource === 0){
-            //запрос на получение следующей части всех сообщений 
-            this.props.socketIo.emit("network interaction: get notification log next chunk", {
-                arguments: {
-                    sourceID: 0,
-                    numberChunk: nextChunk,
-                }
-            });
-
-            return;
-        }
-
         //запрос на получение следующей части сообщений для выбранного источника
         this.props.socketIo.emit("network interaction: get notification log for source ID", { 
             arguments: {
                 sourceID: this.state.chosenSource,
+                notificationType: this.state.notificationType,
                 numberChunk: nextChunk,
             } 
         });
@@ -192,27 +227,32 @@ class CreatePageNotificationLog extends React.Component {
     }
 
     render(){
+        let isDisabled = ((this.state.chosenSource === 0) && (this.state.notificationType === ""));
+
         return (
             <React.Fragment>
                 <Row>
                     <Col md={12} className="text-left text-muted">журнал информационных сообщений</Col>
                 </Row>
                 <Row>
-                    <Col md={4} className="mt-2">
+                    <Col md={3} className="mt-2">
                         <CreateSourceList 
                             listSources={this.props.listItems.listSources}
                             handlerChosen={this.handlerChosenSource} />
+                    </Col>
+                    <Col md={2} className="mt-2">
+                        <CreateNotificationTypeList handlerChosen={this.handlerChosenNotificationType} />
                     </Col>
                     <Col md={1} className="mt-2">
                         <Button 
                             variant="outline-primary" 
                             onClick={this.handlerButtonSubmit} 
-                            disabled={(this.state.chosenSource === 0)}
+                            disabled={isDisabled}
                             size="sm">
                             показать
                         </Button>
                     </Col>
-                    <Col md={7} className="text-right text-muted">
+                    <Col md={6} className="text-right text-muted">
                         информационных сообщений найдено:&nbsp; 
                         <span className="text-info">{this.state.countDocument}</span>, 
                         из них на странице:&nbsp;

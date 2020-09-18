@@ -3,6 +3,7 @@
 const models = require("../../controllers/models");
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
+const helpersFunc = require("../../libs/helpers/helpersFunc");
 const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
@@ -15,7 +16,7 @@ const MAX_CHUNK_NUM = 15;
  *
  * @param {*} socketIo 
  */
-module.exports.addHandlers = function(socketIo) {   
+module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "network interaction: get notification log for source ID": showInformationForSourceID,
         "network interaction: get notification log next chunk": showInformationNextChunk,
@@ -26,7 +27,7 @@ module.exports.addHandlers = function(socketIo) {
     }
 };
 
-function showInformationForSourceID(socketIo, data){
+function showInformationForSourceID(socketIo, data) {
     let funcName = " (func 'showInformationForSourceID')";
 
     checkUserAuthentication(socketIo)
@@ -38,31 +39,59 @@ function showInformationForSourceID(socketIo, data){
 
             return;
         }).then(() => {
+            let sourceID = data.arguments.sourceID;
+            let notifayType = data.arguments.notificationType;
+            //проверяем параметры поиска полученные от пользователя
+            if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: data.arguments.sourceID })) {
+                sourceID = 0;
+            }
+
+            let listNotifyType = ["info", "success", "warning", "danger"];
+            if (!listNotifyType.includes(notifayType)) {
+                notifayType = "";
+            }
+
+            return { sid: sourceID, nt: notifayType };
+        }).then((objData) => {
             return new Promise((resolve, reject) => {
+                let query = {};
+                if (objData.sid !== 0 && objData.nt === "") {
+                    query = {
+                        source_id: { $all: [objData.sid] },
+                    };
+                } else if (objData.sid === 0 && objData.nt !== "") {
+                    query = {
+                        type: objData.nt,
+                    };
+                } else if (objData.sid !== 0 && objData.nt !== "") {
+                    query = {
+                        source_id: { $all: [objData.sid] },
+                        type: objData.nt,
+                    };
+                }
+
                 mongodbQueryProcessor.querySelect(models.modelNotificationLogISEMSNIH, {
                     isMany: true,
                     select: {
-                        _id: 0, 
-                        __v: 0, 
+                        _id: 0,
+                        __v: 0,
                     },
-                    query: {
-                        source_id: { $all: [ data.arguments.sourceID ] }
-                    },
+                    query: query,
                     options: {
                         sort: { date_register: "desc", test: -1 },
                     },
                 }, (err, result) => {
-                    if(err) reject(err);
+                    if (err) reject(err);
                     else resolve(result);
                 });
             });
         }).then((result) => {
             let foundList;
 
-            if(result.length <= MAX_CHUNK_NUM){
+            if (result.length <= MAX_CHUNK_NUM) {
                 foundList = result;
             } else {
-                if(data.arguments.numberChunk === 1){
+                if (data.arguments.numberChunk === 1) {
                     foundList = result.slice(0, MAX_CHUNK_NUM);
                 } else {
                     let begin = (MAX_CHUNK_NUM * (data.arguments.numberChunk - 1));
@@ -92,14 +121,14 @@ function showInformationForSourceID(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
 
-function showInformationNextChunk(socketIo, data){
+function showInformationNextChunk(socketIo, data) {
     let funcName = " (func 'showInformationNextChunk')";
 
     checkUserAuthentication(socketIo)
@@ -113,9 +142,9 @@ function showInformationNextChunk(socketIo, data){
         }).then(() => {
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.querySelectWithLimit(models.modelNotificationLogISEMSNIH, {
-                    select: { 
-                        _id: 0, 
-                        __v: 0, 
+                    select: {
+                        _id: 0,
+                        __v: 0,
                     },
                     options: {
                         sort: { date_register: "desc", test: -1 },
@@ -123,7 +152,7 @@ function showInformationNextChunk(socketIo, data){
                         limit: MAX_CHUNK_NUM,
                     },
                 }, (err, documents) => {
-                    if(err) reject(err);
+                    if (err) reject(err);
                     else resolve(documents);
                 });
             });
@@ -145,9 +174,9 @@ function showInformationNextChunk(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
