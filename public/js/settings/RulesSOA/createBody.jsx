@@ -53,44 +53,13 @@ export default class CreateBody extends React.Component {
 
     
     f(){
-        let strBody ="alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (  msg:\"Downloader.MediaDrug.HTTP.C&C\"; flow:established,to_server;  content:\"GET\"; http_method; content:\"advert_key=\"; http_uri; fast_pattern;   content:\"app=\"; http_uri;  content:\"oslang=\"; http_uri; classtype:trojan-activity; sid:35586741; rev:0;)";
-  
-        let pos1 = 0, pos2 = 0;
-        pos1 = strBody.indexOf("classtype");
-        pos2 = strBody.indexOf(";", pos1+1);
-        let classTyp = strBody.slice(pos1 + 10 , pos2-1) ;
-        console.log (`pos1 = ${pos1}; pos2 = ${pos2}; classType = ${classTyp}`);
 
-    
-
-        alert(classTyp);
     }
     
     funOut(){
-        const { elements } = this.state;
+        //const { elements } = this.state;
         let outPutTabl = <React.Fragment>
-            <table>
-                <thead>
-                    <tr>
-                        <th> Название </th><th> Тип файла </th><th> Размер файла </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {elements.map(el => (
-                        <tr key={el.id} >
-                            <td> {el.name} </td> 
-                            <td> {el.type} </td>
-                            <td> {el.size} </td>
-                            <td>  
-                                <button type="button" className="close" onClick={() => { this.handleDeleteElement(el.id); }} aria-label="Close"> 
-                                    <span aria-hidden="true">&times;</span>
-                                </button> 
-                            </td>  
-                        </tr>
-                    ))}
-                </tbody>
-                                
-            </table>
+            
                                
         </React.Fragment>;
         return outPutTabl;
@@ -100,14 +69,14 @@ export default class CreateBody extends React.Component {
        
         return (
             <React.Fragment>
-                <label> что тута началось!</label>
-                {this.funOut()}
-                <button onClick={this.f.bind(this)}> Надоел! </button>
+                
             </React.Fragment>
         );
     }
 }
 
 CreateBody.propTypes ={
+    ss: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,
 };

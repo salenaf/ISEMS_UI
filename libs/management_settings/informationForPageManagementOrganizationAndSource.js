@@ -66,5 +66,7 @@ module.exports = function(callback) {
     }, (err, listEntity) => {
         if (err) callback(err);
         else callback(null, listEntity);
+        //console.log( listEntity);
     });
+    
 };

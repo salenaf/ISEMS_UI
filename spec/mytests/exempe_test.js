@@ -150,7 +150,7 @@ describe("Тест 1. Читаю файл", () => {
                 console.log(doc);
 
                 expect(err).toBeNull();
-                done(); 
+                done();
             });
         });
     });

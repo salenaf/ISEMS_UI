@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Badge, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
+import { data } from "jquery";
 
 //import fs from "fs.realpath";
 
@@ -71,7 +72,6 @@ export default class CreateBodyAddFile extends React.Component {
         this.fileInput = React.createRef();
         this.fileList = [];
         this.NumFileList = 0;
-        
         this.state = {listFiles: []};
 
         this.handleDeleteElement = id => {
@@ -145,25 +145,40 @@ export default class CreateBodyAddFile extends React.Component {
     className="table table-sm"*/
     
     // ---------------------------- Загрузка файлов из списка (в папочку uploads)---------------------------
+
+    
     renderListFile(){
         let updateObj = this.state;
         // updateObj.listFiles.push(testStr1);
         this.setState(updateObj);
-
+        let listFile = [];
         let str = "";
         for(let i = 0; i< this.fileList.length; i++){
             if(this.fileList[i].name != undefined){  
                 str += this.fileList[i].name + "; " ;
-                this.fileUpload(this.fileList[i].file); 
+                listFile.push(this.fileList[i]);
+            }
+        }
+        let verification = confirm(`Загрузить выбранные файлы? (${str})`); 
+        if(verification)
+        {
+            this.loadFils(listFile, console.log("Успех!")); 
+        }
+        // console.log();
+    }
+    
+    loadFils(files, callback){
+        for(let i = 0; i< files.length; i++){
+            if(files[i].name != undefined){  
+                this.fileUpload(files[i].file, (data) =>{
+                    console.log(`Загружен ${data}`);
+                });             
             } 
         }
-        
-        alert(`Итог: ${str}`); 
-        // console.log();
-
+        callback();
     }
 
-    fileUpload(file){
+    fileUpload(file, callback){
         console.log("upload file");
         console.log(file);
 
@@ -171,10 +186,11 @@ export default class CreateBodyAddFile extends React.Component {
 
         this.props.ss(this.props.socketIo).emit("uploading files with SOA rules", stream, { name: file.name, size: file.size });
         let blobStream = this.props.ss.createBlobReadStream(file);
-        //let size = 0;
+        let size = 0;
         blobStream.pipe(stream);
+
         blobStream.on("data", function(chunk) {
-            console.log(chunk);
+            //console.log(chunk);
 
             /*            size += chunk.length;
             let percent = (Math.floor(size / file.size * 100) + "%");
@@ -185,7 +201,13 @@ export default class CreateBodyAddFile extends React.Component {
 
             if (file.size === size) $("#modalProgressBar").modal("hide");
             */
-        });
+            size += chunk.length;
+            if (file.size === size) { 
+                callback(file.name);
+            } 
+        }) ;
+       
+        //location.reload();
     }
 
     outPutList(){
@@ -214,6 +236,7 @@ export default class CreateBodyAddFile extends React.Component {
                 </tbody>
             </table>
         </React.Fragment>;
+       
         return outPutTabl;
     }    
 
@@ -251,12 +274,13 @@ export default class CreateBodyAddFile extends React.Component {
                 {this.outPutList()}
                 <br/>  
                 <button className="btn btn-outline-success float-right" onClick={this.renderListFile.bind(this)} type="button">Добавить</button>
+
             </React.Fragment>
         );
     }
 }
 
-CreateBodyAddFile.propTypes ={
+CreateBodyAddFile.propTypes = {
     ss: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,

@@ -36,7 +36,9 @@ function  wordOut(strBody, keywordStart, keywordEnd, posNull =0 ){
     }
     return resultStr;
 }
+
 async function readFileRule(fileName){
+    
     return new Promise((resolve,reject) => {
         fs.readFile(fileName, "utf8", (err, data) => {
             if(err) reject(err);
@@ -46,80 +48,92 @@ async function readFileRule(fileName){
 }
 
 function parser(data){
-    let possition = 0;
+    //let  possStart = -1;
     let arrList = [];
     let element ;
-    let n = Number(data.length);
-    console.log(`${n}`); 
-    let i =0, a,b,c;
-    let strBody = "", strBody1 = "";
-    //for(let i = 0; i<5; i++){
-
-    while (data.indexOf("alert", possition)!=-1){
-        strBody = wordOut(data, "alert ", ")", possition);
-        strBody = "alert "+ strBody + ")";
-
-        if(strBody != strBody1){
-            a = wordOut(strBody, "classtype:",";"); 
-            b = wordOut(strBody, "sid:",";"); 
-            c = wordOut(strBody, "msg:",";"); 
-            //if(b!= arrList[i-1].sid){        }
-            if((a!=null)&(b!=null)&(c!=null)) {
-           
-                element = {
-                    sid: b,
-                    classType: a,
-                    msg: c,
-                    body: strBody,
-                //possition: possition,
-                };
-                arrList.push(element);
-                console.log(`sid = ${b}, classType: ${a}, msg: ${c}, possition = ${possition}`);
-                //console.log (`resultStr = ${strBody}`); 
-                i++;
+    //let n = Number(data.length);
+    // console.log(`${n}`); 
+    let a_classType,b_sid,c_msg;
+    let strBody = "";
+   
+    let listRules = data.split("\n");
+    
+    for(let i=0; i<listRules.length; i++){
+        strBody = listRules[i];
+       
+        a_classType = wordOut(strBody, "classtype:",";"); 
+        b_sid = wordOut(strBody, "sid:",";"); 
+        c_msg = wordOut(strBody, "msg:",";"); 
+        
+        if(( a_classType !=null)&(b_sid!=null)&(c_msg!=null)) {
+               
+            let check = c_msg.indexOf("\"");
+            if(check != -1)
+            {
+                c_msg = c_msg.slice(c_msg.indexOf("\"")+1, c_msg.indexOf("\"", 3));
             }
-        }
-        if(possition == 72067) console.log(`body = ${strBody}`);
-        if(possition == 72182) console.log(`body = ${strBody}`);
-        strBody1 = strBody;
-        possition = data.indexOf(")", possition);
-        possition = data.indexOf("alert", possition);
+            element = {
+                sid: b_sid,
+                classType: a_classType,
+                msg: c_msg,
+                body: strBody,
+                   
+            };
             
-        if(i>=15000) {break;}
+            arrList.push(element);
+            // console.log(`sid ${b_sid} classType ${a_classType}`);
+        }
+       
+        
+        //if(i>=15000) {break;}
+        //if(i>=50) {break;}
+        
     }
-
-
-
+    arrList.sort(function(x, y) { return x.sid - y.sid; });
+    // arrList.sort((prev, next) => prev.sid - next.sid);
     return Promise.resolve(arrList);
 }
 
+/*
+async function writeData(listRules){
+    await ((listRules) => {
+        return new Promise((resolve,reject) => {
+            (require("../../middleware/mongodbQueryProcessor")).queryInsertMany(require("../../controllers/models").modelSOARules,  listRules, (err, doc) => {
+                //if(err) reject(err);
+                if(err) reject(err);
+                else resolve(doc); 
+            });
+        });
+    })(listRules);
+}queryDataSave
+*/
 async function processing(fileName){
+    // eslint-disable-next-line no-useless-catch
     try{
         let data = await readFileRule(fileName);
         let listRules = await parser(data);
-        await ((listRules) => {
+        await ((listRules ) => {
             return new Promise((resolve,reject) => {
-                (require("../../middleware/mongodbQueryProcessor")).queryInsertMany(require("../../controllers/models").modelSOARules, listRules, (err, doc) => {
-                //if(err) reject(err);
-                    if(err) reject(err);
+                (require("../../middleware/mongodbQueryProcessor")).queryDataSave(require("../../controllers/models").modelSOARules,  listRules , (err, doc) => {
+                    if(err) {
+                        reject(err);
+                    }
                     else resolve(doc); 
                 });
             });
         })(listRules);
-        //callBack(null);
+
     } catch(err){
-        // callBack(err);
         throw err;
     }
-
 }
 
 function receivedFilesRulesSOA(stream, data){
     console.log("func 'receivedFilesRulesSOA', START...");
     console.log(data);
 
-    console.log(__dirname);
-    console.log(__dirname.substr(0, (__dirname.length - 28)));
+    // console.log(__dirname);
+    // console.log(__dirname.substr(0, (__dirname.length - 28)));
 
     let filename = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + path.basename(data.name);
     let tempFile = fs.createWriteStream(filename, { flags: "w", defaultEncoding: "utf8", autoClose: true });
@@ -129,15 +143,15 @@ function receivedFilesRulesSOA(stream, data){
     tempFile.on("close", () => {
         console.log("UPLOADING FILE IS COMPLETE");
 
-        let fileName = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + "snort.rules";
+        let fileName = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + data.name;//"snort.rules"
         console.log(`Имя файла = ${fileName}`);
+        
         processing(fileName).then(() => {
             console.log("ОK");
         }).catch((err) => {
-            console.log(err);
+            //console.log(err);
+            console.log(` ${err}`);
         });
-
-
     });
-
+    
 }

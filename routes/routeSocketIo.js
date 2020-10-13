@@ -184,6 +184,10 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
     require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
+    /* --- УПРАВЛЕНИЕ ПРАВИЛАМИ СОА --- sid_soa:find sid */
+    require("./routeHandlersSocketIo/handlerActionRulesSOA").addHandlers(socketIo);
+
     /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ ПОЛУЧАЕМЫХ С User Interface --- */
     require("./routeHandlersSocketIo/handlerActionUploadFiles").addHandlers(ss, socketIo);
 };
+

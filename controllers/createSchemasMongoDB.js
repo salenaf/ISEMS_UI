@@ -38,7 +38,16 @@ module.exports = function(cb) {
                 if (err) callback(err);
                 else callback(null);
             });
-        }/*,
+        },
+        
+        //создание модели для поиска вродь !!!!!!!!!!!
+        (callback) => {
+            createModelRulesIDS(require("./models").modelSOARules, (err) => {
+                if (err) callback(err);
+                else callback(null);
+            });
+        }        
+        /*
         //создание модели для хранения информации о пользователе по ID passport
         (callback) => {
             createModelAdditionalPassportInformation(require("./models").modelAdditionalPassportInformation, (err) => {
@@ -475,7 +484,7 @@ function createModelSource(modelSource, next) {
         else next(null);
     });
 }
-
+*/
 //создание модели хранения правил СОА
 function createModelRulesIDS(modelSOARules, next) {
 
@@ -486,8 +495,8 @@ function createModelRulesIDS(modelSOARules, next) {
             next(err);
         } else {
             if(list.length === 0){
-                new modelSOARules({
-                    sid: 1000,
+                /*  new modelSOARules({
+                    sid: 0000,
                     classType: "trojan-activity",
                     msg: "Test Rules",
                     body: "ndiiig ifgfilghfigif h fdh "
@@ -498,14 +507,14 @@ function createModelRulesIDS(modelSOARules, next) {
                     classType: "trojan-activity",
                     msg: "Test Rules 2",
                     body: "ndiiig ifgfilghfigif h fdh "
-                }).save();
+                }).save();*/
             }
 
             next(null);
         }
     }).limit(1);
 }
-*/
+
 
 //создание модели хранения дополнительной информации
 function createModelAdditionalInformation(modelAdditionalInformation, next) {
