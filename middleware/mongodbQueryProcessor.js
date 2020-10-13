@@ -118,10 +118,10 @@ class QueryProcessor {
     queryDataSave(mongooseModel, documents, callback) {
         
         console.log("-------------");
-        console.log(mongooseModel.insertMany());
+        // console.log(mongooseModel.insertMany());
         console.log("-------------");
         //mongooseModel.adminCommand( { setParameter: 1, transactionLifetimeLimitSeconds: 600 } );
-        mongooseModel.save(
+        mongooseModel.insertMany(
             documents,
             
             (err, doc) => {
