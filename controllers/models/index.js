@@ -2,7 +2,7 @@
 
 module.exports.modelUser = require("./modelUser");
 module.exports.modelGroup = require("./modelGroup");
-module.exports.modelRulesIDS = require("./modelRulesIDS");
+module.exports.modelSOARules = require("./modelSOARules");
 module.exports.modelOrganizationName = require("./modelOrganizationName.js");
 module.exports.modelSourcesParameter = require("./modelSourcesParameter");
 module.exports.modelDivisionBranchName = require("./modelDivisionBranchName");

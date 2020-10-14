@@ -4,13 +4,16 @@
 * Версия 0.1, дата релиза 17.08.2017
 * */
 
-'use strict';
+"use strict";
 
-const async = require('async');
+const async = require("async");
 
-const models = require('../../controllers/models');
+const models = require("../../controllers/models");
+const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 
-module.exports = function (func) {
+
+/// НЕ ТО!!!!!!!!!!!!!!
+module.exports = function (callback) {
     async.parallel({
         //получаем доп. информацию о загруженных правилах
         additionalInformation: function (callback) {
@@ -20,20 +23,21 @@ module.exports = function (func) {
             });
         },
         //получаем список классов правил СОА
-        listCountClassType: function (callback) {
-            models.modelRulesIDS.aggregate([
+        listCountClassType: function (callbackParallel) {
+            models.modelSOARules.aggregate([//modelRulesIDS
                 { $group: {
-                    _id: '$classType',
+                    _id: "$classType",
                     count: { $sum: 1 }
                 }},
                 { $sort: { count: -1 }}
             ], (err, document) => {
-                if(err) callback(err);
-                else callback(null, document);
+                if(err) callbackParallel(err);
+                else callbackParallel(null, document);
             });
         }
     }, function (err, objResult) {
-        if(err) func(err);
-        else func(null, objResult);
+      
+        if(err) callback(err);
+        else callback(null, objResult);
     });
 };

@@ -1,133 +1,44 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns="http://www.w3.org/1999/html">
+<html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <!-- подключаем дополнительные библиотеки, скрипты, таблицы стилей CSS и расширения -->
     <% include ../../head.ejs %>
-
-    <script src="/dist/settingIdsRulesPage.js"></script>
-
+    <script>
+       var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
+    </script>
+    <% include ../../header.ejs %>
 </head>
-<body>
-<!-- контент страницы -->
-<section id="container" >
-    <!-- ***************************************************************************************************************
-     МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ ГРУППЫ
-    ******************************************************************************************************************** -->
-    <% include ../../modal_windows/removal_request_delete.ejs %>
 
-    <!-- ***************************************************************************************************************
-     МОДАЛЬНОЕ ОКНО ПРОГРЕСС БАР
-    ******************************************************************************************************************** -->
-    <div class="modal fade" id="modalProgressBar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-show="data">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <!-- заголовок -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Загрузка файла</h4>
-                </div><br>
-                <!-- основной контент -->
-                <div class="modal-body text-center">
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+<body>
+    <header>
+        <div class="row">
+            <div class="col-md-12" id="menu-top"></div>
+        </div>
+    </header>
+    <section id="container">
+        <div class="content-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <h6 class="text-uppercase text-center">
+                            Правила СОА
+                        </h6>
                     </div>
                 </div>
+                <div class="col-md-12 text-center" id="page-rules-soa"></div>
             </div>
         </div>
-    </div>
-
-    <!-- ***************************************************************************************************************
-     ОСНОВНОЕ МЕНЮ
-    ********************************************************************************************************************-->
-    <% include ../../header.ejs %>
-
-    <!-- ***************************************************************************************************************
-         ГЛАВНЫЙ КОНТЕНТ
-    ******************************************************************************************************************** -->
-
-    <!--начало основного контента-->
-    <section id="main-content">
-        <section class="wrapper">
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <h4 class="text-uppercase" style="margin-left: 10px; margin-right: 10px; padding-top: 10px;">ПРАВИЛА СОА</h4>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-12" style="padding-bottom: 10px;">
-                    <div class="col-sm-1 col-md-1 col-lg-1"></div>
-                    <%
-                    var disabledCreate = (userGroupPermissions.create.status === false) ? 'disabled="disabled"' : '';
-                    var disabledDelete = (userGroupPermissions.delete.status === false) ? 'disabled="disabled"' : '';
-
-                    var x = (new Date()).getTimezoneOffset() * 60000;
-                    var dateTime = (new Date((+mainInformation.additionalInformation[0].ids_rules.create_date) - x)).toISOString().slice(0,-1).replace(/T/, ' ').replace(/\..+/, '');
-                    var [ dateTmp, timeTmp ] = dateTime.split(' ');
-                    var [ year, mouth, day ] = dateTmp.split('-');
-                    var dateCreate = timeTmp + ' ' + day + '.' + mouth + '.' + year;
-
-                    var isExistRulesDB = (mainInformation.additionalInformation[0].ids_rules.count_rules > 0);
-                    if(isExistRulesDB){
-                    %>
-                    <div class="col-sm-11 col-md-11 col-lg-11">
-                        Обновление было выполненно <%= dateCreate %>, пользователь - <%= mainInformation.additionalInformation[0].ids_rules.create_username %>
-                    </div>
-                   <% } else { %>
-                    <div class="col-sm-11 col-md-11 col-lg-11">Отсутствует база решающих правил, последнее действие выполнялось <%= dateCreate %>, пользователем - <%= mainInformation.additionalInformation[0].ids_rules.create_username %></div>
-                   <% } %>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="col-sm-2 col-md-2 col-lg-2" style="padding-top: 5px;">
-                        Всего решающих правил: <strong><%= mainInformation.additionalInformation[0].ids_rules.count_rules %></strong>
-                    </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 text-right">
-                        <!-- импорт информации -->
-                        <button type="button" class="btn btn-default btn-sm btn-file" <%= disabledCreate %>>
-                            <span class="glyphicon glyphicon-import"></span>&nbsp;импорт файла
-                            <input id="fileUpload" type="file"  title="обрабатываемый файл должен представлять собой 'tar.gz' архив содержащий правила в формате IDS Snort">
-                        </button>
-                        <% if(isExistRulesDB){ %>
-                        <!-- удалить выбранное -->
-                        <button type="button" class="btn btn-default btn-sm" id="deleteSelected" <%= disabledDelete %>>
-                            <span class="glyphicon glyphicon-trash"></span>&nbsp;удалить выбранное
-                        </button>
-                        <!-- очистить базу данных -->
-                        <button type="button" class="btn btn-default btn-sm" id="dropDB" <%= disabledDelete %>>
-                            <span class="glyphicon glyphicon-warning-sign"></span>&nbsp;очистить базу данных
-                        </button>
-                        <% } %>
-                    </div>
-                    <div class="col-sm-6 col-md-6 col-lg-6 text-left">
-                        <% if(isExistRulesDB){ %>
-                        <form class="form-inline">
-                            <input type="text" class="form-control input-sm" style="width: 400px; display: none;" id="fieldSearchRule" placeholder="поиск правила по идентификатору сигнатуры">&nbsp;
-                            <button type="button" class="btn btn-default btn-sm" id="searchRule">
-                                <span class="glyphicon glyphicon-search"></span>&nbsp;найти
-                            </button>
-                        </form>
-                        <% } %>
+        <section class="footer-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        Система управления событиями информационной безопасности ISEMS-UI, версия 1.1.0 2020
                     </div>
                 </div>
-                <% if(isExistRulesDB){ %>
-                <div class="col-sm-3 col-md-3 col-lg-3 text-left">
-                <p style="margin-left: 15px;">Всего классов решающих правил <strong><%= mainInformation.listCountClassType.length %></strong>, из них:</p>
-                <%
-                mainInformation.listCountClassType.forEach(function (item) {
-                %>
-                    <div class="checkbox" style="margin-left: 30px;">
-                        <label><input name="rulesClass" type="checkbox" value="<%= item._id %>"><%= item._id %>:&nbsp;&nbsp;<strong><%= item.count %></strong></label>
-                    </div>
-                <%
-                });
-                %>
-                </div>
-                <div class="col-sm-9 col-md-9 col-lg-9 text-left" id="tableInformation"></div>
-                <% } %>
             </div>
         </section>
     </section>
-
-    <!-- ***************************************************************************************************************
-     ПОДВАЛ САЙТА
-    ********************************************************************************************************************-->
-    <% include ../../footer.ejs %>
-</section>
 </body>
+
+<!-- формирование основного раздела страницы -->
+<script src="/dist/settingRulesSAOPage.js"></script>
 </html>

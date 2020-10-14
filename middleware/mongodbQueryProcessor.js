@@ -51,7 +51,13 @@ class QueryProcessor {
             });
         }
     }
-
+    /*
+        models.modelSOARules.find(
+            {sid: 26900}, (err, document) => {
+                if(err) callbackParallel(err);
+                else callbackParallel(null, document);
+            });
+    */
     /**
      * Создание новой модели документа на основе его схемы
      * 
@@ -75,13 +81,37 @@ class QueryProcessor {
      * @param {*} callback 
      */
     queryInsertMany(mongooseModel, documents, callback) {
+        //mongooseModel.adminCommand( { setParameter: 1, transactionLifetimeLimitSeconds: 600 } );
         mongooseModel.insertMany(
             documents, 
             { ordered: false }, 
+
             (err, doc) => {
                 if (err) callback(err);
                 else callback(null, doc);
             });
+    }
+    
+    /**
+     * Вставка и обновление элементов
+     * 
+     * @param {*} mongooseModel 
+     * @param {*} documents (array|object) 
+     * @param {*} callback 
+     */
+    queryDataSave(mongooseModel, documents, callback) {
+        
+        console.log("-------------");
+        // console.log(mongooseModel.insertMany());
+        console.log("-------------");
+        //mongooseModel.adminCommand( { setParameter: 1, transactionLifetimeLimitSeconds: 600 } );
+        mongooseModel.insertMany(
+            documents,
+            
+            (err, doc) => {
+                if (err) callback(err);
+                else callback(null, doc);
+            });  
     }
 
     /**

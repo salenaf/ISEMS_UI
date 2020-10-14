@@ -57,6 +57,13 @@ async.parallel([
             }).then(() => {
                 return new Promise((resolve, reject) => {
                     //проверяем наличие и при необходимости создаем схемы MongoDB
+<<<<<<< HEAD
+=======
+                    debug("create MongoDB schemes");
+                    debug("create MongoDB schemes");
+
+
+>>>>>>> 514794058843b47276a29ae8cf998f9170dc9433
                     createSchemasMongoDB(err => {
                         if (err) reject(err);
                         else resolve(null);

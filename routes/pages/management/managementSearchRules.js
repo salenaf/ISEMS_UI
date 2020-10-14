@@ -5,7 +5,7 @@
  * */
 
 "use strict";
-
+//////// Не то!!!!
 const async = require("async");
 
 const writeLogFile = require("../../../libs/writeLogFile");
@@ -20,6 +20,8 @@ module.exports = function(req, res, objHeader) {
         }
     }, function(err) {
         if (err) {
+            console.log("Somewhere here:|");
+            
             writeLogFile("error", err.toString());
             res.render("menu/settings/setting_search_rules", {});
         } else {

@@ -40,7 +40,7 @@ module.exports = {
         settingUsersPage: "./settings/user/settingUsersPage.jsx",
         settingGroupsPage: "./settings/group/settingGroupsPage.jsx",
         settingOrganizationAndSourcesPage: "./settings/organizationsAndSources/organizationAndSources.jsx",
-        settingIdsRulesPage: "./settingIdsRulesPage.js",
+        settingRulesSAOPage: "./settings/RulesSOA/rulesSOA.jsx",
         networkInteractionMainHeader: "./moduleNetworkInteraction/networkInteractionMainHeader.jsx",
         networkInteractionMainPageDinamic: "./moduleNetworkInteraction/networkInteractionMainPageDinamic.jsx",
         networkInteractionPageDownloadFile: "./moduleNetworkInteraction/networkInteractionPageDownloadFile.jsx",
