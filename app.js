@@ -36,7 +36,7 @@ async.parallel([
         console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing a connection to the MongoDB database");
 
         connectMongoDB()
-            .then(description => {
+            .then((description) => {
                 return new Promise((resolve, reject) => {
                     process.nextTick(() => {
                         globalObject.setData("descriptionDB", "MongoDB", {
@@ -77,7 +77,7 @@ async.parallel([
                 }
 
                 callback(null);
-            }).catch(err => {
+            }).catch((err) => {
                 callback(err);
             });
     },
@@ -88,6 +88,7 @@ async.parallel([
     (callback) => {
         console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to the network interface module");
         
+        //настраиваем дескриптор соединения с модулем
         globalObject.setData(
             "descriptionAPI", 
             "networkInteraction", {
@@ -98,6 +99,13 @@ async.parallel([
                 }),
                 "connectionEstablished": false,
             });
+     
+        //настраиваем хранилище задач выполняемые модулем
+        globalObject.setData("tasks", {});
+        //устанавливаем временное хранилище для информации о задачах фильтрации
+        // и выгрузки фалов полученных из модуля сет. взаимодействия. 
+        // Доступ к хранилищу по sessionId пользователя
+        globalObject.setData("tmpModuleNetworkInteraction", {});
 
         callback(null);
     },
@@ -121,21 +129,31 @@ async.parallel([
         process.exit(1);
     }
 
-    //запуск сервера
+    //запуск HTTPS сервера
     server.listen({
         port: config.get("httpServer:port"),
         host: config.get("httpServer:host")
     }, () => {
-        figlet.text("ISEMS-UI", (err, title) => {
-            if (err) return console.log(err);
+        //формируем список источников в globalObject
+        require("./libs/management_settings/createSourceListForGlobalObject")()
+            .then(() => {
+                return new Promise((resolve,reject) => {
+                    figlet.text("ISEMS-UI", (err, title) => {
+                        if (err) reject(err);
 
-            console.log(title);
-            console.log("\x1b[32m%s\x1b[0m", "Debug:", `start ISEMS-UI app, server listening on port ${config.get("httpServer:port")}, host ${config.get("httpServer:host")}`);
+                        console.log(title);
+                        console.log("\x1b[32m%s\x1b[0m", "Debug:", `start ISEMS-UI app, server listening on port ${config.get("httpServer:port")}, host ${config.get("httpServer:host")}`);
 
-            writeLogFile("info", `start ISEMS-UI app, server listening on port ${config.get("httpServer:port")}, host ${config.get("httpServer:host")}`);
-        });
+                        writeLogFile("info", `start ISEMS-UI app, server listening on port ${config.get("httpServer:port")}, host ${config.get("httpServer:host")}`);
 
-        //настраиваем сервер
-        require("./middleware")(app, express, io);
+                        resolve();
+                    });
+                });
+            }).then(() => {             
+                //настраиваем сервер
+                require("./middleware")(app, express, io);
+            }).catch((err) => {
+                console.log(err);
+            });
     });
 });

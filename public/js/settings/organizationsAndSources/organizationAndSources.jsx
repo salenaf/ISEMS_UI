@@ -113,6 +113,7 @@ class CreatePageOrganizationAndSources extends React.Component {
 
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
+        this.handlerSourceReconnect = this.handlerSourceReconnect.bind(this);
 
         this.listenerSocketIoConnect.call(this);
 
@@ -148,6 +149,21 @@ class CreatePageOrganizationAndSources extends React.Component {
             "directoriesNetworkTraffic",
             "description"
         ];
+
+        this.props.socketIo.on("module-ni:change status source", (data) => {
+            let objCopy = Object.assign({}, this.state);
+                
+            for(let i = 0; i < objCopy.tableSourceList.length; i++){                  
+                if(data.options.sourceID === objCopy.tableSourceList[i].sourceID){
+                    objCopy.tableSourceList[i].connectionStatus = data.options.connectStatus;
+                    objCopy.tableSourceList[i].connectTime = data.options.connectTime;
+                    
+                    break;
+                }
+            }
+
+            this.setState(objCopy);
+        });
 
         this.props.socketIo.on("entity: set info only source", (data) => {
             let stateCopy = Object.assign({}, this.state);
@@ -205,6 +221,17 @@ class CreatePageOrganizationAndSources extends React.Component {
         });
 
         this.modalWindowSourceInfoSettings.sourceID = sourceID;
+        this.modalWindowSourceInfoSettings.connectionStatus = false;
+        this.modalWindowSourceInfoSettings.connectTime = 0;
+
+        for(let i = 0; i < this.state.tableSourceList.length; i++){
+            if(this.state.tableSourceList[i].sourceID === sourceID){
+                this.modalWindowSourceInfoSettings.connectionStatus = this.state.tableSourceList[i].connectionStatus;
+                this.modalWindowSourceInfoSettings.connectTime = this.state.tableSourceList[i].connectTime;
+
+                break;
+            }
+        }
 
         this.setState({"modalWindowSourceInfo": true});
     }
@@ -274,7 +301,8 @@ class CreatePageOrganizationAndSources extends React.Component {
                 "fieldActivity": field,
                 "versionApp": item.information_about_app.version,
                 "releaseApp": item.information_about_app.date,
-                "connectionStatus": false,
+                "connectionStatus": item.connect_status,
+                "connectTime": item.connect_time,
             };
         });
 
@@ -550,14 +578,24 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.setState(objUpdate);
     }
 
+    handlerSourceReconnect(data){
+        console.log("func 'handlerSourceReconnect'");
+        console.log(data);
+        console.log("send to server");
+
+        this.props.socketIo.emit("reconnect source", { source_id: data.sourceID });
+    }
+
     render(){
         return (
             <React.Fragment>
                 <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
                     <Tab eventKey="sources" title="источники">
                         <br/>
-                        <div className="row">
-                            <div className="col-md-9 text-left">Всего источников: {Object.keys(this.state.checkboxMarkedSourceDel).length}</div>
+                        <div className="row mb-2">
+                            <div className="col-md-9 text-left text-muted">
+                                всего источников: <span className="text-info">{Object.keys(this.state.checkboxMarkedSourceDel).length}</span>
+                            </div>
                             <div className="col-md-3 text-right">
                                 <Button 
                                     variant="outline-danger" 
@@ -571,7 +609,8 @@ class CreatePageOrganizationAndSources extends React.Component {
                             tableSourceList={this.state.tableSourceList}
                             changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
                             handlerShowInfoWindow={this.showModalWindowSourceInfo}
-                            handlerShowChangeInfo={this.showModalWindowChangeSource} />
+                            handlerShowChangeInfo={this.showModalWindowChangeSource} 
+                            handlerSourceReconnect={this.handlerSourceReconnect} />
                     </Tab>
                     <Tab eventKey="organization" title="организации / подразделения">
                         <CreateBodyManagementEntity

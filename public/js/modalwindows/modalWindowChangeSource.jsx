@@ -18,10 +18,12 @@ class ListFolder extends React.Component {
     listFolders(){
         return this.props.directoriesNetworkTraffic.map((item) => {
             let num = 0;
-            return <li key={`new_folder_${item}_${num++}`}>
-                {item}&nbsp;
-                <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
-            </li>;
+            return (
+                <li key={`new_folder_${item}_${num++}`}>
+                    {item}&nbsp;
+                    <a onClick={this.deleteNewFolder.bind(this, item)} className="close" href="#"><img src="./images/icons8-delete-16.png"></img></a>
+                </li>
+            );
         });
     }
 
@@ -289,6 +291,8 @@ export default class ModalWindowChangeSource extends React.Component {
                             defaultValue={this.props.storageInput.networkChannel.value}>
                             <option value="ip">ip/vlan</option>
                             <option value="pppoe">pppoe</option>
+                            <option value="vlan + pppoe">vlan + pppoe</option>
+                            <option value="pppoe + vlan">pppoe + vlan</option>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col} lg={9}>

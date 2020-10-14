@@ -3,6 +3,7 @@
 const crypto = require("crypto");
 
 const commons = require("./commons");
+const globalObject = require("../../configure/globalObject");
 
 module.exports.checkUserSettingsManagementUsers = function(userSettings) {
     const checkObj = {
@@ -48,4 +49,53 @@ module.exports.checkInputValidation = (elem) => {
 
 module.exports.getRandomHex = () => {
     return crypto.randomBytes(20).toString("hex");
+};
+
+module.exports.getCountConnectionSources = (go) => {
+    let obj = {
+        numConnect: 0,
+        numDisconnect: 0,
+        numProcessDownload: 0,
+        numProcessFiltration: 0,
+        numTasksNotDownloadFiles: 0,
+    };
+    let sources = go.getData("sources");
+    for(let source in sources){
+        if(sources[source].connectStatus){
+            obj.numConnect++;
+        } else {
+            obj.numDisconnect++;
+        }
+    }
+
+    return obj;
+};
+
+module.exports.modifyListFoundTasks = (oldList) => {
+    let tmpSource = {
+        sid: 0,
+        name: "",
+    };
+
+    return oldList.map((item) => {
+        if(tmpSource.sid === item.sid){
+            item.sn = tmpSource.name;
+
+            return item;
+        }
+
+        if(!globalObject.hasData("sources", item.sid)){
+            item.sn = "нет данных";
+        } else {
+            let sourceInfo = globalObject.getData("sources", item.sid);
+            tmpSource = {
+                sid: item.sid,
+                name: sourceInfo.shortName,
+            };
+        
+            item.sn = sourceInfo.shortName;   
+        }
+
+        return item;
+    });
 };

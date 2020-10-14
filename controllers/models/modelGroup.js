@@ -58,7 +58,6 @@ let groupSchema = new connection.Schema({
                 element_settings: {
                     create: { id: String, status: Boolean, description: String },
                     stop: { id: String, status: Boolean, description: String },
-                    import: { id: String, status: Boolean, description: String },
                     delete: { id: String, status: Boolean, description: String }
                 }
             },
@@ -66,7 +65,6 @@ let groupSchema = new connection.Schema({
                 id: String,
                 name: String,
                 element_settings: {
-                    cancel: { id: String, status: Boolean, description: String },
                     stop: { id: String, status: Boolean, description: String },
                     resume: { id: String, status: Boolean, description: String }
                 }

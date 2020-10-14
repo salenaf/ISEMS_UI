@@ -43,6 +43,24 @@ module.exports = function(req, res, objHeader) {
             return;
         }
 
+        let newShortListSources = result.mainInformation.shortListSource.map((item) => {
+            let newObj = Object.assign({}, item.toObject());
+
+            newObj.connect_status = false;
+            newObj.connect_time = 0;
+
+            let sourceInfo = globalObject.getData("sources", newObj.source_id);
+
+            if(sourceInfo !== null){
+                newObj.connect_status = sourceInfo.connectStatus;
+                newObj.connect_time = sourceInfo.connectTime;
+            }
+
+            return newObj;
+        });
+
+        result.mainInformation.shortListSource = newShortListSources;
+
         let userPermissions = result.permissions.group_settings;
         let readStatus = userPermissions.menu_items.element_settings.setting_organizations_and_sources.status;
 

@@ -1,7 +1,5 @@
 /*
  * Подключение страниц приложения
- *
- * Верися 0.1, дата релиза 17.01.2019
  * */
 
 //главная страница
@@ -14,7 +12,11 @@ exports.analysisSIP = require("./analysisSip");
 exports.securityEventManagement = require("./securityEventManagement");
 
 //сетевые взаимодействия
-exports.networkInteraction = require("./networkInteraction");
+exports.networkInteraction = require("./networkInteraction/index");
+exports.networkInteractionPageSearchTasks = require("./networkInteraction/pageSearchTasks");
+exports.networkInteractionPageFileDownload = require("./networkInteraction/pageFileDownload");
+exports.networkInteractionPageNotificationLog = require("./networkInteraction/pageNotificationLog");
+exports.networkInteractionPageStatisticsAndAnalytics = require("./networkInteraction/pageStatisticsAndAnalytics");
 
 /**  
  * управление настройками приложения

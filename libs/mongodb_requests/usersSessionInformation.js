@@ -95,7 +95,17 @@ module.exports.create = function(passportID, sessionID, callback) {
 
             debug(objData);
             debug("записываем информацию о пользователе в session_user_information");
-    
+
+            debug("создаем хранилище для информации о задачах фильтрации и выгрузки");
+            //создаем хранилище для информации о задачах фильтрации и выгрузки
+            globalObject.setData("tmpModuleNetworkInteraction", sessionID, {
+                tasksDownloadFiles: {},
+                unresolvedTask: {},
+                resultFoundTasks: {},
+            });
+
+            debug(globalObject.getData("tmpModuleNetworkInteraction", sessionID));
+
             //записываем информацию о пользователе в session_user_information
             return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryCreate(models.modelSessionUserInformation, {
@@ -175,9 +185,15 @@ module.exports.setSessionID = function(passportId, sessionId, callback) {
     }).then((userSession) => {
         debug("Добавляем данные в глобальный объект 'globalObject'");
 
+        //добавляем настройки параметров пользователя 
         let isTrue = globalObject.setData("users", sessionId, userSession);
         debug(`Write data is success: '${isTrue}'`);
 
+        //создаем временное хранилище данных принятых пользователем от модуля сет. взаимодействия
+        /*globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
+            tasksDownloadFiles: {},
+            resultFoundTasks: {},
+        });*/
 
         debug("Проверяем записанные данные");
         debug(globalObject.getData("users", userSession.sessionId));
@@ -231,7 +247,11 @@ module.exports.delete = function(sessionId, callback) {
                 else resolve(null);
             });
     }).then(() => {
+        //удаляем хранилище с информацией о конкретном пользователе
         globalObject.deleteData("users", sessionId);
+
+        //удаляем хранилище с временной информацией полученной от модуля сет. взаимодействия
+        globalObject.deleteData("tmpModuleNetworkInteraction", sessionId);
 
         callback(null);
     }).catch((err) => {

@@ -2,6 +2,7 @@
 
 const passport = require("passport");
 
+const pages = require("./pages");
 const headerPage = require("./pages/elements/headerPage");
 const writeLogFile = require("../libs/writeLogFile");
 const usersSessionInformation = require("../libs/mongodb_requests/usersSessionInformation");
@@ -13,7 +14,6 @@ const changeAdministratorPassword = require("../libs/changeAdministratorPassword
  * @param {*} app 
  */
 module.exports = function(app) {
-    const pages = require("./pages");
     const listCustomPages = {
         "/analysis_sip": {
             access: "menuSettings.analysis_sip.status",
@@ -26,6 +26,22 @@ module.exports = function(app) {
         "/network_interaction": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteraction,
+        },
+        "/network_interaction_page_file_download": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageFileDownload,
+        },
+        "/network_interaction_page_search_tasks": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageSearchTasks,
+        },
+        "/network_interaction_page_statistics_and_analytics": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageStatisticsAndAnalytics,
+        },
+        "/network_interaction_page_notification_log": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageNotificationLog,
         },
         "/setting_users": {
             access: "menuSettings.element_settings.submenu.setting_users.status",

@@ -43,8 +43,8 @@ class ModalWindowConfirmMessage extends React.Component {
                     {this.showAlertMessage()}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={this.handlerClose}>отмена</Button>
-                    <Button variant="outline-primary" onClick={this.handlerConfirm}>подтвердить</Button>
+                    <Button size="sm" variant="outline-secondary" onClick={this.handlerClose}>отмена</Button>
+                    <Button size="sm" variant="outline-primary" onClick={this.handlerConfirm}>подтвердить</Button>
                 </Modal.Footer>
             </Modal>
         );

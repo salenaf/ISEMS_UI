@@ -9,6 +9,7 @@ const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
 const informationForPageManagementOrganizationAndSource = require("../../libs/management_settings/informationForPageManagementOrganizationAndSource");
 
 /**
@@ -18,6 +19,7 @@ const informationForPageManagementOrganizationAndSource = require("../../libs/ma
  */
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
+        "reconnect source": reconnectSource,
         "add new entitys": addNewEntitys,
         "entity information": getEntityInformation,
         "change source info": changeSourceInfo,
@@ -32,6 +34,18 @@ module.exports.addHandlers = function(socketIo) {
         socketIo.on(e, handlers[e].bind(null, socketIo));
     }
 };
+
+//обработчик для переподключения источника
+function reconnectSource(socketIo, data){
+    sendCommandsModuleNetworkInteraction.sourceManagementsReconnect([ data.source_id ])
+        .catch((err) => {
+            showNotify({
+                socketIo: socketIo,
+                type: "warning",
+                message: err.message.toString()
+            });
+        });
+}
 
 //обработчик для добавления новых сущностей
 function addNewEntitys(socketIo, data){
@@ -66,13 +80,33 @@ function addNewEntitys(socketIo, data){
             return entityList;
         }).then((entityList) => {
             //добавляем новые сущности в БД
-            return (require("../../libs/processing/routeSocketIo/insertNewEntity"))(entityList);
-        }).then(() => {
-            showNotify({
-                socketIo: socketIo,
-                type: "success",
-                message: "Новые сущности были успешно добавлены."
-            });      
+            return (require("../../libs/processing/routeSocketIo/insertNewEntity"))(entityList)
+                .then(() => {
+                    showNotify({
+                        socketIo: socketIo,
+                        type: "success",
+                        message: "Новые сущности были успешно добавлены в базу данных."
+                    }); 
+                }).then(() => {
+                //подготавливаем список источников
+                    let sourceList = entityList.filter((item) => (item.source_settings && item.network_settings));
+
+                    if(sourceList.length > 0){
+                    //добавляем новые источники в globalObject
+                        sourceList.forEach((item) => {
+                            globalObject.setData("sources", item.source_id, {
+                                shortName: item.short_name,
+                                description: item.description,
+                                connectStatus: false,
+                                connectTime: 0,
+                                id: item.id,
+                            });
+                        }); 
+
+                        //отправляем новые источники, если они есть, модулю сетевого взаимодействия
+                        return sendCommandsModuleNetworkInteraction.sourceManagementsAdd(sourceList);
+                    }
+                });
         }).finally(() => {
             //получаем новый краткий список с информацией по сущностям
             return new Promise((resolve, reject) => {
@@ -82,7 +116,7 @@ function addNewEntitys(socketIo, data){
                 });
             }).then((shortSourceList) => {             
                 socketIo.emit("entity: new short source list", {
-                    arguments: shortSourceList,
+                    arguments: changeShortSourceList(shortSourceList),
                 }); 
             });
         }).catch((err) => {
@@ -90,7 +124,7 @@ function addNewEntitys(socketIo, data){
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: err.message
+                    message: err.message.toString()
                 });
             } else if (err.name === "management validation") {               
                 err.message.forEach((msg) => {
@@ -100,11 +134,24 @@ function addNewEntitys(socketIo, data){
                         message: msg
                     });
                 });
+            } else if (err.name === "management network interaction") {
+                //при отсутствии доступа к модулю сетевого взаимодействия
+                showNotify({
+                    socketIo: socketIo,
+                    type: "warning",
+                    message: err.message.toString()
+                });            
             } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                if((err.message.toString()).includes("duplicate key")){
+                    msg = "Совпадение ключевых полей, запись в базу данных невозможен.";
+                }
+
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                    message: msg
                 });    
             }
 
@@ -493,9 +540,12 @@ function changeSourceInfo(socketIo, data){
             obj.source_settings.maximum_number_simultaneous_filtering_processes = 5;    
         }
     
-        let tclp = obj.source_settings.type_channel_layer_protocol;
-        if((typeof tclp === "undefined") || (tclp != "pppoe")){
+        let tclp = new Set(["ip", "pppoe", "vlan + pppoe", "pppoe + vlan"]);
+        if(typeof obj.source_settings.type_channel_layer_protocol === "undefined"){
             obj.source_settings.type_channel_layer_protocol = "ip";    
+        }
+        if(!tclp.has(obj.source_settings.type_channel_layer_protocol)){
+            obj.source_settings.type_channel_layer_protocol = "ip";
         }
     
         let ldwfnt = obj.source_settings.list_directories_with_file_network_traffic;
@@ -558,28 +608,36 @@ function changeSourceInfo(socketIo, data){
                     },
                 }, (err) => {
                     if (err) reject(err);
-                    else resolve();
+                    else resolve(validData);
                 });
             });
-        }).then(() => {
+        }).then((validData) => {
+            globalObject.modifyData("sources", validData.source_id, [
+                [ "shortName", validData.source_id ],
+                [ "description", validData.description ],
+            ]);
+
+            //отправляем новые источники, если они есть, модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.sourceManagementsUpdate([ validData ]);
+        }).finally(() => {
             //получаем новый краткий список с информацией по сущностям
             return new Promise((resolve, reject) => {
                 informationForPageManagementOrganizationAndSource((err, result) => {
                     if (err) reject(err);
                     else resolve(result);
                 });
+            }).then((shortSourceList) => {
+                
+                socketIo.emit("entity: new short source list", {
+                    arguments: changeShortSourceList(shortSourceList),
+                }); 
+            
+                showNotify({
+                    socketIo: socketIo,
+                    type: "success",
+                    message: `Информация по источнику ${data.source_id} была успешно изменена.`
+                });
             });
-        }).then((shortSourceList) => {           
-            socketIo.emit("entity: new short source list", {
-                arguments: shortSourceList,
-            });            
-
-            showNotify({
-                socketIo: socketIo,
-                type: "success",
-                message: `Информация по источнику ${data.source_id} была успешно изменена.`
-            });       
-
         }).catch((err) => {
             if (err.name === "organization and source management") {
                 return showNotify({
@@ -647,7 +705,7 @@ function deleteSourceInfo(socketIo, data){
         }).then((shortSourceList) => {           
             //отправляем новый список в интерфейс
             socketIo.emit("entity: new short source list", {
-                arguments: shortSourceList,
+                arguments: changeShortSourceList(shortSourceList),
             });            
 
             showNotify({
@@ -655,6 +713,14 @@ function deleteSourceInfo(socketIo, data){
                 type: "success",
                 message: `Источники с номерами ${data.arguments.listSource.map((item) => item.source).join(",")} были успешно удалены. `
             });      
+        }).then(() => {
+            //удаляем источники из globalObject
+            data.arguments.listSource.forEach((item) => {
+                globalObject.deleteData("sources", item.source);
+            }); 
+
+            //удаляем источники из базы данных модуля сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.sourceManagementsDel(data.arguments.listSource);
         }).catch((err) => {
             if (err.name === "organization and source management") {
                 return showNotify({
@@ -1052,8 +1118,8 @@ function deleteOrganizationInfo(socketIo, data){
 }
 
 /**
- * Функция проверяет права пользователя на добавление новых сущьностей
- * возвращает список сущьностей которые текущий пользователь может добавлять  
+ * Функция проверяет права пользователя на добавление новых сущностей
+ * возвращает список сущностей которые текущий пользователь может добавлять  
  * 
  * @param {*} listEntity 
  * @param {*} userPermission 
@@ -1098,4 +1164,27 @@ function checkListEntitiesBasedUserPrivileges(listEntity, userPermission){
     });
 
     return { entityList: newEntityList, errMsg: null};
+}
+
+function changeShortSourceList(list){
+    let newListObj = Object.assign({}, list);
+    let newShortListSources = list.shortListSource.map((item) => {
+        let newObj = Object.assign({}, item.toObject());
+
+        newObj.connect_status = false;
+        newObj.connect_time = 0;
+
+        let sourceInfo = globalObject.getData("sources", newObj.source_id);
+
+        if(sourceInfo !== null){
+            newObj.connect_status = sourceInfo.connectStatus;
+            newObj.connect_time = sourceInfo.connectTime;
+        }
+
+        return newObj;
+    });
+
+    newListObj.shortListSource = newShortListSources;
+
+    return newListObj;
 }

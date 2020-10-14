@@ -48,7 +48,11 @@ class HeadTable extends React.Component {
                     <th>Дата создания</th>
                     <th>Дата изменения</th>
                     <th className={"text-right"}>
-                        <Button variant="outline-primary" onClick={this.props.headerButtonAdd.bind(this, true, "")} disabled={isDisabled}>
+                        <Button 
+                            size="sm"
+                            variant="outline-primary" 
+                            onClick={this.props.headerButtonAdd.bind(this, true, "")} 
+                            disabled={isDisabled}>
                             добавить
                         </Button>
                     </th>
@@ -158,11 +162,21 @@ class BodyTable extends React.Component {
                 userGroup: user.group,
             };
             let elem = <tr key={`tr_${key}`}>
-                <td key={`td_login_${key}`}>{user.login}</td>
-                <td key={`td_user_name_${key}`}>{user.userName}</td>
-                <td key={`td_group_${key}`}>{user.group}</td>
-                <td key={`td_date_register_${key}`}>{dateFormatter.format(user.dateRegister)}</td>
-                <td key={`td_date_change_${key}`}>{dateTimeFormatter.format(user.dateChange)}</td>
+                <td key={`td_login_${key}`} className="text-left">
+                    <small>{user.login}</small>
+                </td>
+                <td key={`td_user_name_${key}`} className="text-left">
+                    <small>{user.userName}</small>
+                </td>
+                <td key={`td_group_${key}`} className="text-left">
+                    <small>{user.group}</small>
+                </td>
+                <td key={`td_date_register_${key}`} className="text-right">
+                    <small>{dateFormatter.format(user.dateRegister)}</small>
+                </td>
+                <td key={`td_date_change_${key}`} className="text-right">
+                    <small>{dateTimeFormatter.format(user.dateChange)}</small>
+                </td>
                 <td className={"text-right"} key={`td_buttons_${key}`}>
                     <ButtonEdit 
                         userSettings={userSettings} 

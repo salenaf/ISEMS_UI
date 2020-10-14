@@ -15,21 +15,24 @@ module.exports = {
     //точки входа
     entry: {
         vendors: [
+            "utf8",
             "react",
             "reactDom",
             "reactBootstrap",
             "bootstrap",
             "bootstrapNotify",
             "bootstrapToggle",
-            "bootstrapTokenfield",
-            "bootstrapDatetimepicker",
             "datatablesNetBs",
+            "reactDatePicker",
+            "reactCustomizeTokenInput",
             "select2",
             "md5js",
             "moment",
             "jquery",
             "socket.io-client",
-            "socket.io-stream"
+            "socket.io-stream",
+            "react-circle",
+            "quoted-printable",
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -39,6 +42,11 @@ module.exports = {
         settingOrganizationAndSourcesPage: "./settings/organizationsAndSources/organizationAndSources.jsx",
         settingRulesSAOPage: "./settings/RulesSOA/rulesSOA.jsx",
         networkInteractionMainHeader: "./moduleNetworkInteraction/networkInteractionMainHeader.jsx",
+        networkInteractionMainPageDinamic: "./moduleNetworkInteraction/networkInteractionMainPageDinamic.jsx",
+        networkInteractionPageDownloadFile: "./moduleNetworkInteraction/networkInteractionPageDownloadFile.jsx",
+        networkInteractionPageSearchTasks: "./moduleNetworkInteraction/networkInteractionPageSearchTasks.jsx",
+        networkInteractionPageNotificationLog: "./moduleNetworkInteraction/networkInteractionPageNotificationLog.jsx",
+        networkInteractionPageStatisticsAndAnalytics: "./moduleNetworkInteraction/networkInteractionPageStatisticsAndAnalytics.jsx",
         managingAnalusisMainHeader: "./moduleAnalysis/pageManagingAnalysis.jsx", 
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",
         common: "./common.js",
@@ -82,6 +90,7 @@ module.exports = {
             /*amcharts: 'amcharts/dist/amcharts/amcharts.js',
             amchartsSerial: 'amcharts/dist/amcharts/serial.js',
             amchartsExport: 'amcharts/dist/amcharts/plugins/export/export.min.js',*/
+            "utf8": "utf8/utf8.js",
             "react": "react",
             "reactDom": "react-dom",
             "reactBootstrap": "react-bootstrap/dist/react-bootstrap.min.js",
@@ -89,14 +98,16 @@ module.exports = {
             "bootstrapNotify": "bootstrap-notify/bootstrap-notify.min.js",
             "bootstrapToggle": "bootstrap-toggle/js/bootstrap-toggle.min.js",
             "datatablesNetBs": "datatables.net-bs/js/dataTables.bootstrap.min.js",
-            "bootstrapTokenfield": "bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js",
-            "bootstrapDatetimepicker": "bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
+            "reactDatePicker": "react-datepicker/dist/react-datepicker.min.js",
+            "reactCustomizeTokenInput": "react-customize-token-input/lib/index.js",
             "md5js": "crypto-js/md5.js",
             "moment": "moment/moment.js",
             "select2": "select2/dist/js/select2.full.min.js",
             "jquery": "jquery/dist/jquery.min.js",
             "socket.io-client": "socket.io-client/dist/socket.io.js",
-            "socket.io-stream": "socket.io-stream/socket.io-stream.js"
+            "socket.io-stream": "socket.io-stream/socket.io-stream.js",
+            "react-circle": "react-circle/dist/index.js",
+            "quoted-printable": "quoted-printable/quoted-printable.js",
         }
     },
 
@@ -145,7 +156,7 @@ module.exports = {
 
         new webpack.ContextReplacementPlugin(/moment[\\/\\]locale$/, /ru|en-gb/),
 
-        new webpack.optimize.OccurrenceOrderPlugin(true)
+        new webpack.optimize.OccurrenceOrderPlugin(true),
         /*new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
@@ -156,18 +167,19 @@ module.exports = {
 
     module: {
         rules: [{
-            test: /\.js|jsx?$/, // определяем тип файлов
+            test: /\.(js|jsx)$/, // определяем тип файлов
             exclude: /node_modules/, // исключаем из обработки папку node_modules
             loader: "babel-loader", // определяем загрузчик
             options: {
                 presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
             }
         },
-        {
+        /*{
+             test: /\.(js|jsx)$/,
             test: /\.js$/,
             exclude: /node_modules/,
             use: ["babel-loader"] //, 'eslint-loader']
-        },
+        },*/
         {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
@@ -197,11 +209,11 @@ module.exports = {
                 },
             }, ],
         },
-        {
+        /*{
             test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
             loader: "imports-loader?this=>window&exports=>false&define=>false"
         },
-        /*            {
+                    {
                                         test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
                                         include: /\/node_modules\//,
                                         loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
