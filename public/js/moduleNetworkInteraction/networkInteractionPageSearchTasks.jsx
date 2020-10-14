@@ -158,6 +158,10 @@ class CreatePageSearchTasks extends React.Component {
         */
 
         console.log(this.state.listCheckboxMarkedTasksDel);
+
+        this.props.socketIo.emit("network interaction: delete all information about a task", {
+            listTaskID: this.state.listCheckboxMarkedTasksDel
+        });
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
@@ -410,6 +414,13 @@ class CreatePageSearchTasks extends React.Component {
     }
 
     render(){
+        let taskStringName = "выбранную задачу";
+        if((this.state.listCheckboxMarkedTasksDel.size > 1) && (this.state.listCheckboxMarkedTasksDel.size < 5)){
+            taskStringName = "выбранные задачи";
+        } else if(this.state.listCheckboxMarkedTasksDel.size > 4){
+            taskStringName = "выбранных задач";
+        }
+
         return (
             <React.Fragment>
                 <Row>
@@ -436,7 +447,7 @@ class CreatePageSearchTasks extends React.Component {
                 <ModalWindowConfirmMessage 
                     show={this.state.showModalWindowDeleteTask}
                     onHide={this.closeModalWindowTasksDelete}
-                    msgBody={`Вы действительно хотите удалить ${(this.state.listCheckboxMarkedTasksDel.size > 1) ? "выбранные задачи": "выбранную задачу"}`}
+                    msgBody={`Вы действительно хотите удалить ${this.state.listCheckboxMarkedTasksDel.size} ${taskStringName}`}
                     msgTitle={"Удаление"}
                     nameDel={""}
                     handlerConfirm={this.handlerTaskDelete} />

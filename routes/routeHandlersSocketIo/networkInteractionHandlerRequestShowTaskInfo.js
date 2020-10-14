@@ -24,6 +24,7 @@ module.exports.addHandlers = function(socketIo) {
         "network interaction: get list of unresolved tasks": showListUnresolvedTasks,
         "network interaction: start search task": searchInformationAboutTasks,
         "network interaction: get next chunk list all tasks": getNextChunk,
+        "network interaction: delete all information about a task": sendReguestDeleteInformationAboutTask,
     };
 
     for (let e in handlers) {
@@ -359,4 +360,14 @@ function getNextChunk(socketIo, data) {
 
             writeLogFile("error", err.toString() + funcName);
         });
+
+    /**
+     * Обработчик запроса на удаление информации по выбранным задачам
+     * 
+     * @param {*} socketIo 
+     * @param {*} data 
+     */
+    function sendReguestDeleteInformationAboutTask(socketIo, data) {
+
+    }
 }
