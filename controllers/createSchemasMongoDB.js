@@ -38,7 +38,16 @@ module.exports = function(cb) {
                 if (err) callback(err);
                 else callback(null);
             });
-        }/*,
+        },
+        
+        //создание модели для поиска вродь !!!!!!!!!!!
+        (callback) => {
+            createModelRulesIDS(require("./models").modelSOARules, (err) => {
+                if (err) callback(err);
+                else callback(null);
+            });
+        }        
+        /*
         //создание модели для хранения информации о пользователе по ID passport
         (callback) => {
             createModelAdditionalPassportInformation(require("./models").modelAdditionalPassportInformation, (err) => {
@@ -465,18 +474,37 @@ function createModelSource(modelSource, next) {
         else next(null);
     });
 }
-
+*/
 //создание модели хранения правил СОА
-function createModelRulesIDS(modelIdsRules, next) {
+function createModelRulesIDS(modelSOARules, next) {
 
     debug("find IDS rules model");
+    
+    modelSOARules.find({}, { _id: 1 }, (err, list) => {
+        if (err) {
+            next(err);
+        } else {
+            if(list.length === 0){
+                /*  new modelSOARules({
+                    sid: 0000,
+                    classType: "trojan-activity",
+                    msg: "Test Rules",
+                    body: "ndiiig ifgfilghfigif h fdh "
+                }).save();
 
-    modelIdsRules.find({}, { _id: 1 }, err => {
-        if (err) next(err);
-        else next(null);
+                new modelSOARules({
+                    sid: 1001,
+                    classType: "trojan-activity",
+                    msg: "Test Rules 2",
+                    body: "ndiiig ifgfilghfigif h fdh "
+                }).save();*/
+            }
+
+            next(null);
+        }
     }).limit(1);
 }
-*/
+
 
 //создание модели хранения дополнительной информации
 function createModelAdditionalInformation(modelAdditionalInformation, next) {

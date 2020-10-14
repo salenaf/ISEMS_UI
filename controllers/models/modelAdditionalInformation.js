@@ -14,6 +14,7 @@
 const globalObject = require("../../configure/globalObject");
 const connection = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
+
 let additionalInformation = new connection.Schema({
     ids_rules: {
         create_date: Number,
