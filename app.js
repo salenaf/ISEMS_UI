@@ -57,13 +57,6 @@ async.parallel([
             }).then(() => {
                 return new Promise((resolve, reject) => {
                     //проверяем наличие и при необходимости создаем схемы MongoDB
-<<<<<<< HEAD
-=======
-                    debug("create MongoDB schemes");
-                    debug("create MongoDB schemes");
-
-
->>>>>>> 514794058843b47276a29ae8cf998f9170dc9433
                     createSchemasMongoDB(err => {
                         if (err) reject(err);
                         else resolve(null);
@@ -116,6 +109,7 @@ async.parallel([
 ], (err) => {
     if (err) {
         console.log("\x1b[31m%s\x1b[0m", "ERROR: the server cannot start, there is an error in the configuration, details in the log file");
+        console.log(err);
         writeLogFile("error", err.toString());
 
         process.exit(1);

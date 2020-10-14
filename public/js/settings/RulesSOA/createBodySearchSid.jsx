@@ -29,9 +29,10 @@ export default class CreateBodySearchSid extends React.Component {
             contentEditable: "false",// this.findSid.call(this, this.props.listShortEntity),
             //"checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
         };
-        
+        this.onBlurHandler = "";
+        //this.bodyForUpdate = ""; 
         // this.inPut = React.createRef();
-        this.resultS = "";
+        //this.resultS = "";
         this.contentEditable = "false";
 
         this.typeList =[
@@ -59,8 +60,8 @@ export default class CreateBodySearchSid extends React.Component {
         this.onChangeSearch = this.onChangeSearch.bind(this);
         
         this.readWrite      = this.readWrite.bind(this);
-        this.saveInfo     = this.saveInfo.bind(this);
-
+        this.saveInfo       = this.saveInfo.bind(this);
+        this.geveNewValueSID= this.geveNewValueSID.bind(this);
         this.handlerEvents  = this.handlerEvents.call(this);
 
         //  this.findSid        = this.findSid.bind(this, this.valueInPut );
@@ -74,18 +75,24 @@ export default class CreateBodySearchSid extends React.Component {
     handlerEvents(){
         console.log("func 'handlerEvents'");
 
-        this.props.socketIo.on("new list sid", (data) => {
+        this.props.socketIo.on("result find SID", (data) => {
             console.log(data);
             this.setState({buffInSid: data});
             
         });
+
+        this.props.socketIo.on("result update value SID", (data) => {
+            console.log(data);
+            // this.setState({buffInSid: data});
+            
+        });
     }
 
-    listenerSocketIoConn(){
+    /*  listenerSocketIoConn(){
         this.props.socketIo.on("rule soa", (data) => {
             this.setState({ listRule: this.createListSid.call(this, data.arguments)});
         });
-    }
+    }*/
 
     onChangeSearch(e) {
         let regexp =   /[^0-9]/g;
@@ -128,12 +135,12 @@ export default class CreateBodySearchSid extends React.Component {
         });
         return listTmp;
     }
-
-     
+    
     findSid(listShortEntity, valueInPut=26900){
         //listShortEntity.inPutSid = valueInPut;
         console.log(valueInPut);
         listShortEntity.findSid.inPutFindSid = valueInPut;
+
         let a = listShortEntity.findSid.map((item) => {
             return { 
                 sid: item.sid, 
@@ -146,12 +153,6 @@ export default class CreateBodySearchSid extends React.Component {
         console.log("Рeзультат");
         console.log(a);
 
-        //models.modelSOARules.find({sid: valueInPut}, {body:1, msg:1, classType:1, _id: 0});
-        /*  sid: item.sid, 
-            classType: item.classType,
-            body: item.body,
-            msg: item.msg,
-        */ 
         return a;
     }
 
@@ -162,60 +163,11 @@ export default class CreateBodySearchSid extends React.Component {
 
         console.log(`SID: ${valueInPut}`);
 
-        this.props.socketIo.emit("sid_soa:find sid", { sid: valueInPut });
-        /*
-        //const {listSid} = this.state;
-        let listSid = this.state.listRule;
-
-        
-        console.log(this.state.filter_search);
-        /*
-        this.props.socketIo.emit("rules soa", {
-            "actionType": "search",
-            "options": {
-                "sid": this.state.filter_search
-            },
-        });
-*/
-        /*      let updateObj = this.state;
-        updateObj.buffInSid=null;
-        let masang = "";
-
-        let foundObject  = listSid.find(item => item.sid == valueInPut);
-
-        //let foundObject2 = this.findSid(this.valueInPut);
-        
-        //console.log(foundObject2);
-        if(foundObject == undefined) {
-            masang ="Sid не найден";
-        }
-        else{
-            updateObj.buffInSid = foundObject;
-        }
-
-        /* if(valueInPut > 0){
-            if(listSid[valueInPut]==undefined){
-                masang ="Sid не найден";
-                // console.log(listSid[valueInPut]);
-            }   
-            else{            
-                
-            } 
-        } else {
-            if(valueInPut == 0){
-                masang = "Введите значение Sid";
-                // alert(masang); 
-            }
-        }*/
-        /*
-        this.resultS = masang;
-        this.setState(updateObj);
-        event.preventDefault();*/
+        this.props.socketIo.emit("sid_bd: find-sid", { sid: valueInPut });
+      
     }
 
-    handleSubmittest() {
-        console.log("function handleSubmittest");
-    }
+
                                             
     /// Тута вставка  
     /*inputField(){
@@ -257,7 +209,6 @@ export default class CreateBodySearchSid extends React.Component {
             }  
             
             updateObj.contentEditable="false";
-            
             updateObj.color= "secondary";
             updateObj.saveIcons= "./images/icons-save-0.png";
         }
@@ -266,17 +217,37 @@ export default class CreateBodySearchSid extends React.Component {
         //this.state.contentEditable="true";
     }
 
-    saveInfo(){
-            
-        let updateObj = this.state;
-        if(updateObj.contentEditable == "true"){
-            alert("Изменения сохранены :3");
-        }
-        this.setState(updateObj);
-       
-        //this.state.contentEditable="true";
+    geveNewValueSID(e) {
+        let value = e.target.textContent;
+        console.log("------------------------");
+        this.bodyForUpdate = value;
+        console.log(value);
     }
 
+    saveInfo(){
+
+        let updateObj = this.state;
+        if(updateObj.contentEditable == "true"){
+            
+        
+            this.setState(updateObj);
+
+            // this.bodyForUpdate = "alert tcp -> $EXTERNAL_NET any (msg:\"SQL sa login failed\"; flow:to_client,established; content:\"Login failed for user 'sa'\"; fast_pattern:only; metadata:policy balanced-ips drop, policy connectivity-ips drop, policy max-detect-ips drop, policy security-ips drop, ruleset community; reference:bugtraq,4797; reference:cve,2000-1209; reference:nessus,10673; classtype: 1unsuccl-user1; sid:688; rev:17;)";
+        
+            this.props.socketIo.emit("update value SID", {
+                checkSID: this.state.buffInSid.sid,
+                updateBody: this.bodyForUpdate,
+            });
+            this.handleSubmit();
+            alert("Изменения сохранены :3");
+     
+            updateObj.contentEditable = "false";
+            updateObj.color= "secondary";
+            updateObj.saveIcons= "./images/icons-save-0.png";
+            this.setState(updateObj);
+        }
+    }
+   
 
     resultSearch(){
         // const {  buffInSid } = this.state;
@@ -288,14 +259,12 @@ export default class CreateBodySearchSid extends React.Component {
         }
 
         let visPole = "visible";
-
-        this.resultS = "";
         let color = this.state.color;
-        let edit  = this.state.visible;
-        let saveIcon = this.state.saveIcons;
-        edit  ="unvisible";
         
+        let saveIcon = this.state.saveIcons;
 
+        
+        //  <p className="card-text">
         let outPutTabl = <React.Fragment>
             <div className={visPole}> 
                 <div className="text-left">     
@@ -317,44 +286,22 @@ export default class CreateBodySearchSid extends React.Component {
                                 </a> 
                             </div>
                         </h5>
-                        <div className="card-body" contentEditable={this.state.contentEditable}>
-                            <p className="card-text">{inSidBD.body}</p>
+                        <div className="card-body" 
+                            contentEditable={this.state.contentEditable}
+                            onInput={this.geveNewValueSID}
+                        >
+                            {inSidBD.body}
                         </div>
+                        
                     </div>
                 </div>
             </div>
             
         </React.Fragment>;
-
+        console.log(inSidBD.body);
         return outPutTabl;
     }
     
-    
-    /*            
-      <input className="form-control mr-sm-2" type="search" placeholder="Введите sid" ref={this.inPut}  aria-label="Search"/>  
-    <table>
-                        <body>
-                            <table>
-                                <tr >
-                                    <td>Типа "один": {n-1}</td>
-                                    <td>типа "два": {n-2}</td>
-                                    <td>типа "три" {n-3}</td>
-                                </tr>
-                                <tr>
-                                    <td>Типа "один": {n-1}</td>
-                                    <td>типа "два": {n-2}</td>
-                                    <td>типа "три" {n-3}</td>
-                                </tr>
-                            </table>
-                        </body>
-                    </table>
-      
-       {typeList.map(el => ( ))}
-                <div className="p-2">Flex элемент 1</div>
-                <div className="p-2">Flex элемент 2</div>
-                <div className="p-2">Flex элемент 3</div>
-      
-                    */
     typeCount(){
         let resultType = "";
         /* {typeList.map(el => (   ))}*/
@@ -383,10 +330,11 @@ export default class CreateBodySearchSid extends React.Component {
         /* */
         console.log(k);
 
+        let i = 0;
         resultType =    <React.Fragment>
             <div className="container text-left">
                 {typeInPut.map(el => ( 
-                    <div> {el} </div>
+                    <div key={`key_${i++}`}> {el} </div>
                 ))}
             </div>
         </React.Fragment>;
@@ -404,21 +352,6 @@ export default class CreateBodySearchSid extends React.Component {
             let object  = typeList[j];
             k+= object.count;
         }
-        //  console.log( `Элемент: ${typeList[0]}`);
-        //  console.log(typeList);
-        //   console.log( "0:");
-        //   console.log(typeList[0]);
-        /* this.typeList.sort(function (a, b) {
-            if (a.nameType > b.nameType) {
-                return 1;
-            }
-            if (a.nameType < b.nameType) {
-                return -1;
-            } // a должно быть равным b
-            return 0;
-        });*/
-
-        // console.log(this.state.listRule);
 
         return (
             <React.Fragment>
@@ -455,7 +388,7 @@ export default class CreateBodySearchSid extends React.Component {
 //onClick={this.handleSubmit.bind(this)} this.resultS
 CreateBodySearchSid.propTypes ={
     socketIo: PropTypes.object.isRequired,
-    hundlerEevents: PropTypes.func.hundlerEevents,
+    hundlerEvents: PropTypes.func.isRequired,
     listShortEntity: PropTypes.object.isRequired,
     // listSourcesInformation: PropTypes.object.isRequired,
 };

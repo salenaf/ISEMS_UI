@@ -12,12 +12,13 @@ const checkUserAuthentication = require("../../libs/check/checkUserAuthenticatio
 
 /**
  * Модуль обработчик действий над правилами СОА
- *
+ * Поиск в бд указанный SID 
+ * 
  * @param {*} socketIo 
  */
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
-        "sid_soa:find sid": findRuleToSID,
+        "sid_bd: find-sid": findRuleToSID,
     };
 
     for (let e in handlers) {
@@ -60,7 +61,7 @@ function findRuleToSID(socketIo, data){
                         });
 
                         //если нет
-                        socketIo.emit("new list sid", list);
+                        socketIo.emit("result find SID", list);
 
                         resolve();
                         //console.log(list);
@@ -130,7 +131,7 @@ function findRuleToSID(socketIo, data){
             });
 
             //если нет
-            socketIo.emit("new list sid", list);
+            socketIo.emit("result find SID", list);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({

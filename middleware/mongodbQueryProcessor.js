@@ -115,19 +115,25 @@ class QueryProcessor {
      * @param {*} documents (array|object) 
      * @param {*} callback 
      */
-    queryDataSave(mongooseModel, documents, callback) {
+    queryDataSave(mongooseModel, mongooseDoc, callback) {
         
         console.log("-------------");
         // console.log(mongooseModel.insertMany());
         console.log("-------------");
-        //mongooseModel.adminCommand( { setParameter: 1, transactionLifetimeLimitSeconds: 600 } );
-        mongooseModel.insertMany(
-            documents,
-            
+        
+        let element = new mongooseModel({
+            sid: mongooseDoc[0].sid,
+            classType: mongooseDoc[0].classType,
+            msg: mongooseDoc[0].msg,
+            body: mongooseDoc[0].body,
+        });
+
+        element.save(
+            //mongooseModel.connect();
             (err, doc) => {
                 if (err) callback(err);
                 else callback(null, doc);
-            });  
+            }); 
     }
 
     /**

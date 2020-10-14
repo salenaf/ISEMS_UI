@@ -162,7 +162,7 @@ export default class CreateBodyAddFile extends React.Component {
         let verification = confirm(`Загрузить выбранные файлы? (${str})`); 
         if(verification)
         {
-            this.loadFils(listFile, console.log("Успех!")); 
+            this.loadFils(listFile, () => { console.log("Успех!");}); 
         }
         // console.log();
     }

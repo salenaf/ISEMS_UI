@@ -3,6 +3,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const writeLogFile = require("../../libs/writeLogFile");
+
 /**
  * Модуль обработчик файлов поступающих из User Interface
  * 
@@ -14,7 +16,7 @@ module.exports.addHandlers = function(ss, socketIo) {
     };
 
     for (let e in handlers) {
-        ss(socketIo).on(e, handlers[e].bind(null));
+        ss(socketIo).on(e, handlers[e].bind(null, socketIo));
     }
 };
 
@@ -55,8 +57,9 @@ function parser(data){
     // console.log(`${n}`); 
     let a_classType,b_sid,c_msg;
     let strBody = "";
-   
     let listRules = data.split("\n");
+    
+    //let mongooseModel = require("../../controllers/models").modelSOARules;
     
     for(let i=0; i<listRules.length; i++){
         strBody = listRules[i];
@@ -77,7 +80,6 @@ function parser(data){
                 classType: a_classType,
                 msg: c_msg,
                 body: strBody,
-                   
             };
             
             arrList.push(element);
@@ -89,6 +91,7 @@ function parser(data){
         //if(i>=50) {break;}
         
     }
+    //console.log(arrList);
     arrList.sort(function(x, y) { return x.sid - y.sid; });
     // arrList.sort((prev, next) => prev.sid - next.sid);
     return Promise.resolve(arrList);
@@ -112,9 +115,13 @@ async function processing(fileName){
     try{
         let data = await readFileRule(fileName);
         let listRules = await parser(data);
+        let mongooseModel = require("../../controllers/models").modelSOARules;
+        let requireMong = (require("../../middleware/mongodbQueryProcessor"));
+       
         await ((listRules ) => {
             return new Promise((resolve,reject) => {
-                (require("../../middleware/mongodbQueryProcessor")).queryDataSave(require("../../controllers/models").modelSOARules,  listRules , (err, doc) => {
+                // requireMong.queryUpdate(mongooseModel,  listRules , (err, doc) => {
+                requireMong.queryDataSave(mongooseModel,  listRules , (err, doc) => {
                     if(err) {
                         reject(err);
                     }
@@ -127,8 +134,35 @@ async function processing(fileName){
         throw err;
     }
 }
+/*
+async function processing(fileName){
+ 
+    // eslint-disable-next-line no-useless-catch
+    try{
+        let data = await readFileRule(fileName);
+        let listRules = await parser(data);
+        await ((listRules ) => {
+            return new Promise((resolve, reject) => {
+                (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelSOARules, {
+                    query: { sid: listRules.sid },
+                    update: {
+                        sid: listRules.sid,
+                        type: listRules.type,
+                        body: listRules.body,
+                    },
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        })(listRules);
+    } catch(err){
+        throw err;
+    }
+}
+*/
 
-function receivedFilesRulesSOA(stream, data){
+function receivedFilesRulesSOA(socketIo, stream, data){
     console.log("func 'receivedFilesRulesSOA', START...");
     console.log(data);
 
@@ -148,9 +182,15 @@ function receivedFilesRulesSOA(stream, data){
         
         processing(fileName).then(() => {
             console.log("ОK");
+
+            socketIo.emit("file upload result", { info: "insert OK" });
         }).catch((err) => {
             //console.log(err);
-            console.log(` ${err}`);
+            console.log(`--------> ${err}`);
+            
+            writeLogFile("error", `function 'receivedFilesRulesSOA': ${err.toString()}`);
+
+            socketIo.emit("file upload result", { info: `insert ${err.toString()}` });
         });
     });
     
