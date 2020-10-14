@@ -47,7 +47,7 @@ module.exports = function(app) {
             access: "menuSettings.element_settings.submenu.setting_users.status",
             handler: pages.managementUsers,
         },
-        "/setting_groups": { 
+        "/setting_groups": {
             access: "menuSettings.element_settings.submenu.setting_groups.status",
             handler: pages.managementGroups,
         },
@@ -82,7 +82,7 @@ module.exports = function(app) {
 
     app.route("/auth")
         .get((req, res) => {
-            if (req.isAuthenticated()){
+            if (req.isAuthenticated()) {
                 headerPage(req)
                     .catch((err) => {
                         writeLogFile("error", err.toString());
@@ -106,9 +106,9 @@ module.exports = function(app) {
                 .then((objHeader) => {
 
                     /**
-                    * потом для главной странице обработчик в
-                    * routes/pages/mainPage.js
-                    */
+                     * потом для главной странице обработчик в
+                     * routes/pages/mainPage.js
+                     */
 
                     res.render("index", { header: objHeader });
                 }).catch((err) => {
@@ -124,14 +124,14 @@ module.exports = function(app) {
         });
     });
 
-    for(let pathPage in listCustomPages){
+    for (let pathPage in listCustomPages) {
         app.get(pathPage, isAuthenticated, (req, res) => {
             headerPage(req)
                 .then((objHeader) => {
                     try {
                         let listElem = listCustomPages[pathPage].access.split(".");
                         let isAccess = objHeader;
-                        for(let i = 0; i < listElem.length; i++){
+                        for (let i = 0; i < listElem.length; i++) {
                             isAccess = isAccess[listElem[i]];
                         }
 
@@ -142,7 +142,7 @@ module.exports = function(app) {
                         res.render("403", {});
                     }
                 }).catch((err) => {
-                    writeLogFile("error", err.toString()+funcName);
+                    writeLogFile("error", err.toString() + funcName);
                     res.render("500", {});
                 });
         });
@@ -152,23 +152,23 @@ module.exports = function(app) {
     app.get("/logout", (req, res) => {
         new Promise((resolve, reject) => {
             usersSessionInformation.delete(req.sessionID, (err) => {
-                if(err) reject(err);
-                else resolve(null); 
+                if (err) reject(err);
+                else resolve(null);
             });
         }).then(() => {
             return new Promise((resolve, reject) => {
                 require("../libs/mongodb_requests/passportAdditionInformation").delete(req.session.passport.user, (err) => {
-                    if(err) reject(err);
-                    else resolve(null);                     
-                });    
+                    if (err) reject(err);
+                    else resolve(null);
+                });
             });
         }).then(() => {
             req.logOut();
             req.session.destroy();
-            
+
             res.redirect("/auth");
         }).catch((err) => {
-            writeLogFile("error", err.toString()+funcName);
+            writeLogFile("error", err.toString() + funcName);
         });
     });
 

@@ -5,9 +5,9 @@ import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
 import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
-import CreateBodySearchTask from "./createBodySearchTask.jsx";
+//import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
-import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
+import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
 
 
 export default class CreatePageStatisticsAndAnalytics extends React.Component {

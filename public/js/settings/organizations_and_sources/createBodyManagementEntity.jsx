@@ -2,7 +2,7 @@ import React from "react";
 import { Accordion, Button, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
+import { ModalWindowConfirmMessage } from "../../modal_windows/modalWindowConfirmMessage.jsx";
 import { helpers } from "../../common_helpers/helpers.js";
 
 class ShowEntityInformation extends React.Component {

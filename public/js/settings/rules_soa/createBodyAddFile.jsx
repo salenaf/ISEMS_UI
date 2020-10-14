@@ -5,7 +5,7 @@ import { data } from "jquery";
 
 //import fs from "fs.realpath";
 
-/*//import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
+/*//import ModalWindowAddEntity from "../../modal_windows/modalWindowAddEntity.jsx";
 class AddZone extends React.Component {
     constructor(props){
         super(props);

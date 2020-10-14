@@ -7,14 +7,14 @@ const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
-const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
+const sendCommandsModuleNetworkInteraction = require("../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction");
 
 /**
  * Модуль обработчик действий связанных с фильтрацией файлов
  *
  * @param {*} socketIo 
  */
-module.exports.addHandlers = function(socketIo) {   
+module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "network interaction: start new filtration task": startNewTask,
         "network interaction: stop filtration task": stopTask,
@@ -25,7 +25,7 @@ module.exports.addHandlers = function(socketIo) {
     }
 };
 
-function startNewTask(socketIo, data){
+function startNewTask(socketIo, data) {
     let funcName = " (func 'startNewTask')";
 
     debug(data);
@@ -39,7 +39,7 @@ function startNewTask(socketIo, data){
 
             let filtrTaskParametr = authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_filter.element_settings;
             //может ли пользователь создавать задачи на фильтрацию
-            if(!filtrTaskParametr.create.status){
+            if (!filtrTaskParametr.create.status) {
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
             }
 
@@ -48,8 +48,8 @@ function startNewTask(socketIo, data){
             debug("user info");
             debug(userInfo);
 
-            let obj = (require("../../libs/processing/routeSocketIo/validationFileFilteringParameters"))(data.arguments);
-            if(!obj.isValid){
+            let obj = (require("../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
+            if (!obj.isValid) {
                 throw new MyError("management validation", obj.errorMsg);
             }
 
@@ -60,7 +60,7 @@ function startNewTask(socketIo, data){
 
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.userInfo.login, parameters.userInfo.name);
-        }).then(() => {          
+        }).then(() => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -73,23 +73,23 @@ function startNewTask(socketIo, data){
                     type: "danger",
                     message: err.message.toString()
                 });
-            } else if (err.name === "management validation") {               
+            } else if (err.name === "management validation") {
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
                     message: `Задача по фильтрации отклонена. ${err.message}`,
                 });
             } else if (err.name === "management network interaction") {
-            //при отсутствии доступа к модулю сетевого взаимодействия
+                //при отсутствии доступа к модулю сетевого взаимодействия
                 showNotify({
                     socketIo: socketIo,
                     type: "warning",
                     message: err.message.toString()
-                });            
+                });
             } else {
                 let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
 
-                if((err.message.toString()).includes("duplicate key")){
+                if ((err.message.toString()).includes("duplicate key")) {
                     msg = "Совпадение ключевых полей, запись в базу данных невозможен.";
                 }
 
@@ -97,29 +97,29 @@ function startNewTask(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
 
-function stopTask(socketIo, data){
+function stopTask(socketIo, data) {
     let funcName = " (func 'stopTask')";
 
     debug("func 'stopTask', START...");
     debug(data);
- 
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
-        //авторизован ли пользователь
+            //авторизован ли пользователь
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
 
             let filtrTaskParametr = authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_filter.element_settings;
             //может ли пользователь останавливать задачи на фильтрацию
-            if(!filtrTaskParametr.stop.status){
+            if (!filtrTaskParametr.stop.status) {
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
             }
 
@@ -128,17 +128,17 @@ function stopTask(socketIo, data){
             debug("user info");
             debug(userInfo);
 
-            if(!helpersFunc.checkInputValidation({ 
-                name: "hexSumMD5", 
-                value: data.arguments.taskID,
-            })){
+            if (!helpersFunc.checkInputValidation({
+                    name: "hexSumMD5",
+                    value: data.arguments.taskID,
+                })) {
                 throw new MyError("management validation", "Принят некорректный идентификатор задачи.");
             }
 
-            if(!helpersFunc.checkInputValidation({ 
-                name: "hostID", 
-                value: data.arguments.sourceID,
-            })){
+            if (!helpersFunc.checkInputValidation({
+                    name: "hostID",
+                    value: data.arguments.sourceID,
+                })) {
                 throw new MyError("management validation", "Принят некорректный идентификатор источника.");
             }
 
@@ -149,7 +149,7 @@ function stopTask(socketIo, data){
 
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementTaskFilteringStop(data.arguments.taskID, data.arguments.sourceID);
-        }).then(() => {          
+        }).then(() => {
             showNotify({
                 socketIo: socketIo,
                 type: "success",
@@ -162,7 +162,7 @@ function stopTask(socketIo, data){
                     type: "danger",
                     message: err.message.toString()
                 });
-            } else if (err.name === "management validation") {               
+            } else if (err.name === "management validation") {
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
@@ -174,11 +174,11 @@ function stopTask(socketIo, data){
                     socketIo: socketIo,
                     type: "warning",
                     message: err.message.toString()
-                });            
+                });
             } else {
                 let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
 
-                if((err.message.toString()).includes("duplicate key")){
+                if ((err.message.toString()).includes("duplicate key")) {
                     msg = "Совпадение ключевых полей, запись в базу данных невозможен.";
                 }
 
@@ -186,9 +186,9 @@ function stopTask(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: msg
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }

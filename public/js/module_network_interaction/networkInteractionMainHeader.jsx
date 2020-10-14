@@ -4,9 +4,9 @@ import { Alert, Button, Col, Row, Spinner, Nav } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
-import ModalWindowLanCalc from "../modalwindows/modalWindowLanCalc.jsx";
-import ModalWindowEncodeDecoder from "../modalwindows/modalWindowEncodeDecoder.jsx";
-import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
+import ModalWindowLanCalc from "../modal_windows/modalWindowLanCalc.jsx";
+import ModalWindowEncodeDecoder from "../modal_windows/modalWindowEncodeDecoder.jsx";
+import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
 
 class CreatePageManagingNetworkInteractions extends React.Component {
     constructor(props){

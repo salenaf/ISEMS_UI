@@ -6,9 +6,9 @@ import PropTypes from "prop-types";
 import CreateTableSources from "./createTableSources.jsx";
 import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
 import CreateBodyManagementEntity from "./createBodyManagementEntity.jsx";
-import ModalWindowSourceInfo from "../../modalwindows/modalWindowSourceInfo.jsx";
-import ModalWindowChangeSource from "../../modalwindows/modalWindowChangeSource.jsx";
-import { ModalWindowConfirmMessage } from "../../modalwindows/modalWindowConfirmMessage.jsx";
+import ModalWindowSourceInfo from "../../modal_windows/modalWindowSourceInfo.jsx";
+import ModalWindowChangeSource from "../../modal_windows/modalWindowChangeSource.jsx";
+import { ModalWindowConfirmMessage } from "../../modal_windows/modalWindowConfirmMessage.jsx";
 
 import { helpers } from "../../../common_helpers/helpers.js";
 

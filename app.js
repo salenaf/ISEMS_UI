@@ -47,9 +47,9 @@ async.parallel([
 
                         let connectDB = globalObject.getData("descriptionDB", "MongoDB", "connection");
 
-                        if (connectDB === null){
+                        if (connectDB === null) {
                             reject(new Error("the database connection is not established"));
-                        } else { 
+                        } else {
                             resolve(null);
                         }
                     });
@@ -57,13 +57,6 @@ async.parallel([
             }).then(() => {
                 return new Promise((resolve, reject) => {
                     //проверяем наличие и при необходимости создаем схемы MongoDB
-<<<<<<< HEAD
-=======
-                    debug("create MongoDB schemes");
-                    debug("create MongoDB schemes");
-
-
->>>>>>> 514794058843b47276a29ae8cf998f9170dc9433
                     createSchemasMongoDB(err => {
                         if (err) reject(err);
                         else resolve(null);
@@ -82,15 +75,15 @@ async.parallel([
             });
     },
     /**
-    *       соединение с модулем ISEMS-NIH
-    * модуль сетевого взаимодействия с источниками
-    */
+     *       соединение с модулем ISEMS-NIH
+     * модуль сетевого взаимодействия с источниками
+     */
     (callback) => {
         console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to the network interface module");
-        
+
         //настраиваем дескриптор соединения с модулем
         globalObject.setData(
-            "descriptionAPI", 
+            "descriptionAPI",
             "networkInteraction", {
                 "connection": networkInteractionHandlerAPI({
                     ip: config.get("modules:networkInteraction:host"),
@@ -99,7 +92,7 @@ async.parallel([
                 }),
                 "connectionEstablished": false,
             });
-     
+
         //настраиваем хранилище задач выполняемые модулем
         globalObject.setData("tasks", {});
         //устанавливаем временное хранилище для информации о задачах фильтрации
@@ -137,7 +130,7 @@ async.parallel([
         //формируем список источников в globalObject
         require("./libs/management_settings/createSourceListForGlobalObject")()
             .then(() => {
-                return new Promise((resolve,reject) => {
+                return new Promise((resolve, reject) => {
                     figlet.text("ISEMS-UI", (err, title) => {
                         if (err) reject(err);
 
@@ -149,7 +142,7 @@ async.parallel([
                         resolve();
                     });
                 });
-            }).then(() => {             
+            }).then(() => {
                 //настраиваем сервер
                 require("./middleware")(app, express, io);
             }).catch((err) => {

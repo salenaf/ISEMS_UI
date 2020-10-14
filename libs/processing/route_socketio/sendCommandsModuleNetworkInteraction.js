@@ -612,3 +612,42 @@ module.exports.managementRequestSearchInformationAboutTasks = function(socketIo,
         }
     });
 };
+
+/**
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * запрос на удаление информации о задачах
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+module.exports.managementRequestDeleteInformationAboutTask = function(listTaskID) {
+    return new Promise((resolve, reject) => {
+        if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+            reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+        if (conn !== null) {
+            debug("func managementRequestDeleteInformationAboutTask");
+            debug(listTaskID);
+
+            debug({
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "delete all information about a task",
+                taskID: helpersFunc.getRandomHex(),
+                options: { ltid: listTaskID },
+            });
+
+            conn.sendMessage({
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "delete all information about a task",
+                taskID: helpersFunc.getRandomHex(),
+                options: { ltid: listTaskID },
+            });
+
+            resolve();
+        }
+    });
+};

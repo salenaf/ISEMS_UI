@@ -22,7 +22,7 @@ module.exports = {
         ],
         header: "./pages/header.jsx",
         headerMenu: "./pages/headerMenu.jsx",
-        organizationAndSources: "./pages/settings/organizationsAndSources/organizationAndSources.jsx",
+        organizationAndSources: "./pages/settings/organizations_and_sources/organizationAndSources.jsx",
         common: "./common.js",
         styles: "./styles.js",
     },
@@ -34,10 +34,10 @@ module.exports = {
 
         //шаблоны файлов, применяется при сборке основных файлов
         filename: "[name].js",
-        
+
         //применяется при сборке файлов через require.ensure
         chunkFilename: "[id].js",
-        
+
         //экспорт каждой точки входа должен попадать в переменную с соответствующем именем
         library: "[name]"
     },
@@ -74,65 +74,65 @@ module.exports = {
 
     module: {
         rules: [{
-            test: /\.js|jsx?$/, // определяем тип файлов
-            exclude: /node_modules/, // исключаем из обработки папку node_modules
-            loader: "babel-loader", // определяем загрузчик
-            options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
+                test: /\.js|jsx?$/, // определяем тип файлов
+                exclude: /node_modules/, // исключаем из обработки папку node_modules
+                loader: "babel-loader", // определяем загрузчик
+                options: {
+                    presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: ["babel-loader"] //, 'eslint-loader']
+            },
+            {
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: ["css-loader"]
+                })
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                include: /\/node_modules\//,
+                use: [{
+                    loader: "file-loader",
+                    options: {
+                        name: "[path][name].[ext]",
+                        publicPath: "dist/",
+                    },
+                }, ],
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                exclude: /\/node_modules\//,
+                use: [{
+                    loader: "file-loader",
+                    options: {
+                        name: "[path][name].[ext]",
+                        publicPath: "dist/",
+                    },
+                }, ],
+            },
+            {
+                test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
+                loader: "imports-loader?this=>window&exports=>false&define=>false"
+            },
+            /*            {
+                                                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                    include: /\/node_modules\//,
+                                                    loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
+                                                },
+                                                {
+                                                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                    exclude: /\/node_modules\//,
+                                                    loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
+                                                },*/
+            {
+                test: /\.ejs$/,
+                loader: "ejs-loader"
             }
-        },
-        {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: ["babel-loader"] //, 'eslint-loader']
-        },
-        {
-            test: /\.css$/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: ["css-loader"]
-            })
-        },
-        {
-            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-            include: /\/node_modules\//,
-            use: [{
-                loader: "file-loader",
-                options: {
-                    name: "[path][name].[ext]",
-                    publicPath: "dist/",
-                },
-            }, ],
-        },
-        {
-            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-            exclude: /\/node_modules\//,
-            use: [{
-                loader: "file-loader",
-                options: {
-                    name: "[path][name].[ext]",
-                    publicPath: "dist/",
-                },
-            }, ],
-        },
-        {
-            test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
-            loader: "imports-loader?this=>window&exports=>false&define=>false"
-        },
-        /*            {
-                                        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                        include: /\/node_modules\//,
-                                        loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
-                                    },
-                                    {
-                                        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                        exclude: /\/node_modules\//,
-                                        loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
-                                    },*/
-        {
-            test: /\.ejs$/,
-            loader: "ejs-loader"
-        }
         ]
     }
 };

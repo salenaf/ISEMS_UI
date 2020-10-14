@@ -7,9 +7,9 @@ import GetStatusDownload from "../commons/getStatusDownload.jsx";
 import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
-import { ModalWindowConfirmMessage } from "../modalwindows/modalWindowConfirmMessage.jsx";
-import ModalWindowAddFilteringTask from "../modalwindows/modalWindowAddFilteringTask.jsx";
-import ModalWindowShowInformationTask from "../modalwindows/modalWindowShowInformationTask.jsx";
+import { ModalWindowConfirmMessage } from "../modal_windows/modalWindowConfirmMessage.jsx";
+import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
+import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
 
 class CreatePageSearchTasks extends React.Component {
     constructor(props){
@@ -147,21 +147,16 @@ class CreatePageSearchTasks extends React.Component {
     }
 
     handlerTaskDelete(){
-        console.log("func 'handlerTaskDelete', START...");
-
-        /**
-        * 
-        * Данная функция пока не реализована ни в ISEMS-UI,
-        * ни в ISEMS-NIH_master. Требуется дополнительная
-        * реализация.
-        * 
-        */
-
-        console.log(this.state.listCheckboxMarkedTasksDel);
+        let listTaskID = [];
+        for(let id of this.state.listCheckboxMarkedTasksDel){
+            listTaskID.push(id);
+        }
 
         this.props.socketIo.emit("network interaction: delete all information about a task", {
-            listTaskID: this.state.listCheckboxMarkedTasksDel
+            listTaskID: listTaskID
         });
+
+        this.setState({ showModalWindowDeleteTask: false });
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){

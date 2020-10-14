@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 //const models = require("../../../../controllers/models");
 
 //
-import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
+//import ModalWindowAddEntity from "../../modal_windows/modalWindowAddEntity.jsx";
 import { data } from "jquery";
 //const informationForPageSOARules = require("../../../libs/management_settings/informationForPageSOARules"); 
 

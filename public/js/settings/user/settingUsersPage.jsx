@@ -12,7 +12,7 @@ import ReactDOM from "react-dom";
 import { Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import { ModalWindowAddEdit } from "../../modalwindows/modalWindowAddEditUser.jsx";
+import { ModalWindowAddEdit } from "../../modal_windows/modalWindowAddEditUser.jsx";
 import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 
 class HeadTable extends React.Component {

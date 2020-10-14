@@ -8,7 +8,7 @@ const getSessionId = require("../../libs/helpers/getSessionId.js");
 const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
-const sendCommandsModuleNetworkInteraction = require("../../libs/processing/routeSocketIo/sendCommandsModuleNetworkInteraction");
+const sendCommandsModuleNetworkInteraction = require("../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction");
 
 /**
  * Модуль обработчик запросов выполняемых с целью получить
@@ -51,11 +51,14 @@ function getListAllTasks(socketIo) {
 
             return;
         }).then(() => {
-            console.log("func 'getListAllTasks', send network interaction");
+            debug("func 'getListAllTasks', send network interaction");
 
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementRequestGetListAllTasks(socketIo);
         }).catch((err) => {
+
+            debug(err);
+
             if (err.name === "management auth") {
                 showNotify({
                     socketIo: socketIo,
@@ -225,10 +228,10 @@ function showListUnresolvedTasks(socketIo) {
  * @param {*} data 
  */
 function searchInformationAboutTasks(socketIo, data) {
-    console.log("func 'searchInformationAboutTasks', START...");
-    console.log(data);
-    console.log(data.arguments.ifo.dt);
-    console.log(data.arguments.ifo.nf);
+    debug("func 'searchInformationAboutTasks', START...");
+    debug(data);
+    debug(data.arguments.ifo.dt);
+    debug(data.arguments.ifo.nf);
 
     let funcName = " (func 'searchInformationAboutTasks')";
 
@@ -360,14 +363,54 @@ function getNextChunk(socketIo, data) {
 
             writeLogFile("error", err.toString() + funcName);
         });
+}
 
-    /**
-     * Обработчик запроса на удаление информации по выбранным задачам
-     * 
-     * @param {*} socketIo 
-     * @param {*} data 
-     */
-    function sendReguestDeleteInformationAboutTask(socketIo, data) {
+/**
+ * Обработчик запроса на удаление информации по выбранным задачам
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+function sendReguestDeleteInformationAboutTask(socketIo, data) {
+    debug("func 'sendReguestDeleteInformationAboutTask'");
+    debug(data);
 
-    }
+    let funcName = " (func 'sendReguestDeleteInformationAboutTask')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            let groupSettings = authData.document.groupSettings.management_network_interaction.element_settings.management_uploaded_files.element_settings;
+            //может ли пользователь создавать задачи на фильтрацию
+            if (!groupSettings.delete.status) {
+                throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
+            }
+
+            return;
+        }).then(() => {
+            //отправляем задачу модулю сетевого взаимодействия
+            return sendCommandsModuleNetworkInteraction.managementRequestDeleteInformationAboutTask(data.listTaskID);
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: msg
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Badge, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import ModalWindowAddEntity from "../../modalwindows/modalWindowAddEntity.jsx";
+import ModalWindowAddEntity from "../../modal_windows/modalWindowAddEntity.jsx";
 
 class ButtonSaveNewEntity extends React.Component {
     constructor(props){
