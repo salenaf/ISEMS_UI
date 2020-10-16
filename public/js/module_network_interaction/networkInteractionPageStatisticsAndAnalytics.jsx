@@ -32,10 +32,31 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
 
         this.handlerEvents.call(this);
 
+        this.sortElement = this.sortElement.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+    }
+
+    /**
+     * asc (по умолчанию) устанавливает порядок сортирования во возрастанию, от меньших значений к большим.
+     * desc устанавливает порядок сортирования по убыванию, от больших значений к меньшим.
+     */
+    sortElement({ element = null, direction = "asc", list = null }){
+        if(list === null){
+            return [];
+        }
+
+        if(element === null){
+            return list;
+        }
+
+        if(direction === "asc"){
+            return list.sort((a,b) => a[element] - b[element]);
+        } else {
+            return list.sort((a,b) => b[element] - a[element]);
+        }
     }
 
     handlerEvents(){
@@ -44,16 +65,19 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
             if(data.type === "get list unresolved task"){
 
                 console.log("--- event: get list unresolved task ---");
-                console.log(data.options);
     
                 if(data.options.tntf === 0){
                     return;
                 }
-
+                
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
-                    slft: data.options.slft, 
+                    slft: this.sortElement({
+                        element: "stte",
+                        direction: "desc",
+                        list: data.options.slft, 
+                    }), 
                     tntf: data.options.tntf,
                 };
                 this.setState({ listTasksFound: tmpCopy });
@@ -135,6 +159,9 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
                         <small>{`${++num}.`}</small>
                     </td>
+                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_date_create`}>
+                        <small><i>{formatterDate.format(item.stte*1000)}</i></small>
+                    </td>
                     <td className="align-middle clicabe_cursor text-info" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sourceID`}>
                         <small>{item.sid}</small>
                     </td>
@@ -142,8 +169,8 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <small>{item.sn}</small>
                     </td>
                     <td className="align-middle my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_time`}>
-                        <div><small>{formatterDate.format(item.pf.dt.s*1000)}</small></div>
-                        <div><small>{formatterDate.format(item.pf.dt.e*1000)}</small></div>
+                        <div><small><i>{formatterDate.format(item.pf.dt.s*1000)}</i></small></div>
+                        <div><small><i>{formatterDate.format(item.pf.dt.e*1000)}</i></small></div>
                     </td>
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_ip`}>
                         <small><ListNetworkParameters type={"ip"} item={item.pf.f.ip} listInput={[]} /></small>
@@ -154,21 +181,12 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     <td className="my_line_spacing clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_port`}>
                         <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} listInput={[]} /></small>
                     </td>
-                    <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sf`}>
-                        <small><GetStatusFiltering status={item.fts} /></small>
-                    </td>
-                    <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sd`}>
-                        <small><GetStatusDownload status={item.fdts} /></small>
-                    </td>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_search_file`}>
                         <small>{`${formaterInt.format(item.nffarf)} (${formaterInt.format(item.nfd)})`}</small>
                     </td>
-                    <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_size_search_files`}>
-                        <small>{`${formaterInt.format(item.tsffarf)} байт.`}</small>
-                    </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "processed")}>
-                        <a href="#">
-                            <img className="clickable_icon" src="../images/icons8-checkmark-24.png" alt="отметить как обработанную"></img>
+                        <a href={`/network_interaction_page_statistics_and_analytics_detal_task?taskid=${item.tid}`}>
+                            <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
                         </a>
                     </td>
                 </tr>);
@@ -192,16 +210,14 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>ID</th>
-                                <th>название</th>
-                                <th className="my_line_spacing">интервал времени</th>
+                                <th>время создания</th>
+                                <th>sid</th>
+                                <th>источник</th>
+                                <th>интервал времени</th>
                                 <th>ip</th>
                                 <th>network</th>
                                 <th>port</th>
-                                <th>фильтрация</th>
-                                <th>выгрузка</th>
-                                <th className="my_line_spacing">файлы найденны (выгружены)</th>
-                                <th className="my_line_spacing">общим размером</th>
+                                <th>файлы найденны (выгружены)</th>
                                 <th></th>
                             </tr>
                         </thead>

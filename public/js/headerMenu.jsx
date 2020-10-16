@@ -88,17 +88,30 @@ class CreateHeaderMenu extends React.Component {
         let menuSettings = this.listItems.menuSettings;
         
         for(let key in menuSettings){
-            let submenuIsExist = (typeof menuSettings[key].submenu === "undefined");
+            let submenuIsNotExist = (typeof menuSettings[key].submenu === "undefined");
 
             if ((typeof menuSettings[key].status !== "undefined") && (!menuSettings[key].status)) {
                 linkElemIsDisabled = "true";
                 classElemIsDisable = " disabled";
             }
 
-            if (submenuIsExist) {
+            if (submenuIsNotExist) {
+                /**
+                *       !!!!!!!!!!!
+                * временно выключаю доступ к некоторым элементам меню
+                *       !!!!!!!!!!!
+                */
+                if(key === "analysis_sip" || key === "security_event_management"){
+                    linkElemIsDisabled = "true";
+                    classElemIsDisable = " disabled";
+                }
+
                 list.push(<Nav.Link className={classElemIsDisable} href={key} key={`${key}_key`} aria-disabled={linkElemIsDisabled}>
                     {this.firstIconIsBig(menuSettings[key].name)}
                 </Nav.Link>);
+
+                linkElemIsDisabled = "";
+                classElemIsDisable = "";
 
                 continue;
             }

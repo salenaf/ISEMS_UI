@@ -78,6 +78,13 @@ class CreatePageSearchTasks extends React.Component {
                 };
                 this.setState({ listTasksFound: tmpCopy });
             }
+            if(data.type === "deleteAllInformationAboutTask"){
+                let tmpCopy = Object.assign(this.state.listCheckboxMarkedTasksDel);
+                tmpCopy.clear();
+                this.setState({ listCheckboxMarkedTasksDel: tmpCopy });
+
+                this.props.socketIo.emit("network interaction: get list all tasks", { arguments: {} });
+            }
         });
     }
 
@@ -299,7 +306,7 @@ class CreatePageSearchTasks extends React.Component {
                             size="sm" 
                             variant="outline-light" >
                             <a href="#" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
-                                <img className="clickable_icon" src="../images/icons8-repeat-24.png" alt="выполнить повторную фильтрацию"></img>
+                                <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
                             </a>
                         </Button>
                     </td>

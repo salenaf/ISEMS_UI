@@ -482,16 +482,25 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     "options": msg.options,
                 });
             }
+
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/
             debug("=======================================");
         }).on("command information search control", (msg) => {
             debug("====== command information search control =====");
-            //debug(JSON.stringify(msg));
-            /*        msg.options.slft.forEach((item) => {
-            debug(item);
-        });*/
+
+            if (msg.instruction === "delete all information about a task") {
+                if (msg.options.ss) {
+                    debug("!!! received message success delete information about task !!!");
+
+                    socketIo.emit("module NI API", {
+                        "type": "deleteAllInformationAboutTask",
+                        "options": {},
+                    });
+                }
+            }
+
             debug("=======================================");
         }).on("user notification", (notify) => {
             debug("---- RECEIVED user notification ----");

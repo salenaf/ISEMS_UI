@@ -17,6 +17,7 @@ exports.networkInteractionPageSearchTasks = require("./networkInteraction/pageSe
 exports.networkInteractionPageFileDownload = require("./networkInteraction/pageFileDownload");
 exports.networkInteractionPageNotificationLog = require("./networkInteraction/pageNotificationLog");
 exports.networkInteractionPageStatisticsAndAnalytics = require("./networkInteraction/pageStatisticsAndAnalytics");
+exports.networkInteractionpageStatisticsAndAnalyticsDetalTask = require("./networkInteraction/pageStatisticsAndAnalyticsDetalTask");
 
 /**  
  * управление настройками приложения

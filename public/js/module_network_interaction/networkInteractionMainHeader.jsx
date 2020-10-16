@@ -54,6 +54,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     requestEmitter(){
+        if(!this.state.connectionModuleNI){
+            return;
+        }
+
         //для виджетов и некоторых страниц
         this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
         this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });   

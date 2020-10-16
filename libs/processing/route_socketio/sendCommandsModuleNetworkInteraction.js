@@ -628,17 +628,6 @@ module.exports.managementRequestDeleteInformationAboutTask = function(listTaskID
 
         let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         if (conn !== null) {
-            debug("func managementRequestDeleteInformationAboutTask");
-            debug(listTaskID);
-
-            debug({
-                msgType: "command",
-                msgSection: "information search control",
-                msgInstruction: "delete all information about a task",
-                taskID: helpersFunc.getRandomHex(),
-                options: { ltid: listTaskID },
-            });
-
             conn.sendMessage({
                 msgType: "command",
                 msgSection: "information search control",
