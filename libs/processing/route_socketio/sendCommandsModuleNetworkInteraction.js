@@ -640,3 +640,40 @@ module.exports.managementRequestDeleteInformationAboutTask = function(listTaskID
         }
     });
 };
+
+/**
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * запрос всей аналитической информации о задаче по ее ID.
+ *  
+ * @param {*} taskID - ID задачи по которой нужно найти информацию
+ */
+module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(taskID) {
+    console.log("func 'managementRequestShowAnalyticsInformationAboutTaskID'");
+    console.log(`ID задачи по которой нужно найти АНАЛИТИЧЕСКУЮ информацию '${taskID}'`);
+
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+                let tmp = {
+                    msgType: "command",
+                    msgSection: "information search control",
+                    msgInstruction: "get analytics information about task ID",
+                    taskID: helpersFunc.getRandomHex(),
+                    options: { rtid: taskID }
+                };
+
+                console.log("---------- forming Request ----------");
+                console.log(JSON.stringify(tmp));
+
+                conn.sendMessage(tmp);
+            }
+
+            resolve();
+        });
+    });
+};

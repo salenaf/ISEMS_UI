@@ -49,6 +49,7 @@ class CreatePageSearchTasks extends React.Component {
 
         this.getUserPermission = this.getUserPermission.bind(this);
         this.handlerTaskDelete = this.handlerTaskDelete.bind(this);
+        this.buttonForwardArrow = this.buttonForwardArrow.bind(this);
         this.handlerButtonSearch = this.handlerButtonSearch.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.closeModalWindowTasksDelete = this.closeModalWindowTasksDelete.bind(this);
@@ -222,6 +223,21 @@ class CreatePageSearchTasks extends React.Component {
         this.setState({ listInputForSearch: listInput });
     }
 
+    buttonForwardArrow(item){
+        if(item.fdts === "complete" || item.fdts === "stop"){
+            return (
+                <OverlayTrigger
+                    key={"tooltip_back_arrow_img"}
+                    placement="bottom"
+                    overlay={<Tooltip>{`анализ файлов, задача ID ${item.tid}`}</Tooltip>}>
+                    <a href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}>
+                        <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
+                    </a>
+                </OverlayTrigger>
+            );
+        }
+    }
+
     closeModalWindowTasksDelete(){
         this.setState({ showModalWindowDeleteTask: false });
     }
@@ -302,13 +318,21 @@ class CreatePageSearchTasks extends React.Component {
                         <small><GetStatusDownload status={item.fdts} /></small>
                     </td>
                     <td className="align-middle">
-                        <Button 
-                            size="sm" 
-                            variant="outline-light" >
-                            <a href="#" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
-                                <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
-                            </a>
-                        </Button>
+                        <OverlayTrigger
+                            key={`tooltip_${item.tid}_checkbox`}
+                            placement="right"
+                            overlay={<Tooltip>редактировать параметры и повторить задачу</Tooltip>}>
+                            <Button 
+                                size="sm" 
+                                variant="outline-light" >
+                                <a href="#" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
+                                    <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
+                                </a>
+                            </Button>
+                        </OverlayTrigger>
+                    </td>
+                    <td className="align-middle">
+                        {this.buttonForwardArrow(item)}
                     </td>
                     <td className="align-middle">
                         <OverlayTrigger

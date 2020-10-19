@@ -25,6 +25,7 @@ module.exports.addHandlers = function(socketIo) {
         "network interaction: start search task": searchInformationAboutTasks,
         "network interaction: get next chunk list all tasks": getNextChunk,
         "network interaction: delete all information about a task": sendReguestDeleteInformationAboutTask,
+        "network interaction: get analytics information about task id": getAnalyticsInformationAboutTaskID,
     };
 
     for (let e in handlers) {
@@ -385,7 +386,7 @@ function sendReguestDeleteInformationAboutTask(socketIo, data) {
             }
 
             let groupSettings = authData.document.groupSettings.management_network_interaction.element_settings.management_uploaded_files.element_settings;
-            //может ли пользователь создавать задачи на фильтрацию
+            //может ли пользователь удалять задачи
             if (!groupSettings.delete.status) {
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
             }
@@ -394,6 +395,47 @@ function sendReguestDeleteInformationAboutTask(socketIo, data) {
         }).then(() => {
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementRequestDeleteInformationAboutTask(data.listTaskID);
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: msg
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+}
+
+function getAnalyticsInformationAboutTaskID(socketIo, data) {
+    debug("func 'getAnalyticsInformationAboutTaskID'");
+    debug(data);
+
+    let funcName = " (func 'getAnalyticsInformationAboutTaskID')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            //отправляем задачу модулю сетевого взаимодействия
+
+            debug(`SEND task ID '${data.arguments.taskID}' ---> module_NIH`);
+
+            return sendCommandsModuleNetworkInteraction.managementRequestShowAnalyticsInformationAboutTaskID(data.arguments.taskID);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({

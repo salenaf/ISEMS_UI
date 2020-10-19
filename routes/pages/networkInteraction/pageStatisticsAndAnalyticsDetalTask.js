@@ -3,6 +3,7 @@
 const url = require("url");
 const async = require("async");
 
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
 const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
@@ -62,17 +63,28 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
-        console.log("func 'networkInteraction' PAGE STATISTICS AND ANALYTICS DETAL TASK");
-        console.log(url.parse(req.originalUrl).query);
-        /**
-         * Здесь нужно получить ID задачи из URL и отправить на страницу,
-         * что бы потом со страницы сделать запрос через backend ISEMS-UI к ISEMS-NIH_master
-         * 
-         * (кстати можно еще какие нибудь параметры получить через URL,
-         * что бы вывести первичную информацию, например ID и названия источника и т.д.)
-         */
+        let urlQueryParameters = {};
+        try {
+            let validationRules = {
+                taskID: "hexSumMD5",
+                sourceID: "hostID",
+                sourceName: "shortNameHost",
+                taskBeginTime: "intervalTransmission",
+            };
 
-        //console.log(result.widgetsInformation);
+            (decodeURI(url.parse(req.originalUrl).query)).split("&").forEach((item) => {
+                let tmpArray = item.split("=");
+                if (tmpArray.length > 1) {
+                    console.log(`Name: ${tmpArray[0]} - ${helpersFunc.checkInputValidation({ name: validationRules[tmpArray[0]], value: tmpArray[1] })} (${tmpArray[1]})`);
+
+                    if (helpersFunc.checkInputValidation({ name: validationRules[tmpArray[0]], value: tmpArray[1] })) {
+                        urlQueryParameters[tmpArray[0]] = tmpArray[1];
+                    }
+                }
+            });
+        } catch (err) {
+            writeLogFile("error", err.toString());
+        }
 
         res.render("menu/network_interaction/page_statistics_and_analytics_detal_task", {
             header: objHeader,
@@ -84,6 +96,7 @@ module.exports = function(req, res, objHeader) {
                 mainInformation: result.mainInformation,
                 widgetsInformation: result.widgetsInformation,
                 listSources: globalObject.getData("sources"),
+                urlQueryParameters: urlQueryParameters,
             },
         });
     });
