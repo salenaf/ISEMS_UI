@@ -483,6 +483,18 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 });
             }
 
+            if (msg.instruction === "processing get common analytics information about task ID") {
+                debug("RECEIVED processing get common analytics information about task ID");
+                debug("-----------------");
+                debug(msg.options);
+                debug("-----------------");
+
+                socketIo.emit("module NI API", {
+                    "type": "commonAnalyticsInformationAboutTaskID",
+                    "options": msg.options,
+                });
+            }
+
             /*        msg.options.slft.forEach((item) => {
             debug(item);
         });*/

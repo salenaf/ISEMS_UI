@@ -20,8 +20,11 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
     }
 
     handlerEvents(){
-        this.props.socketIo.on("СОБЫТИЕ", (data) => {
-            console.log(data);
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "commonAnalyticsInformationAboutTaskID"){   
+                console.log("сработало событие с информацией о задаче и сет. трафике");
+                console.log(data.options);
+            }
         /*
         здесь получаем аналитическую информацию о задаче и загруженном
         сетевом трафике и проверяем выгружались ли файлы и права пользователя

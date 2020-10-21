@@ -662,7 +662,7 @@ module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(t
                 let tmp = {
                     msgType: "command",
                     msgSection: "information search control",
-                    msgInstruction: "get analytics information about task ID",
+                    msgInstruction: "get common analytics information about task ID",
                     taskID: helpersFunc.getRandomHex(),
                     options: { rtid: taskID }
                 };
