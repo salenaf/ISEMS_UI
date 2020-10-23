@@ -495,7 +495,11 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 });
             }
 
-            /*        msg.options.slft.forEach((item) => {
+            /*
+
+    },
+
+            msg.options.slft.forEach((item) => {
             debug(item);
         });*/
             debug("=======================================");

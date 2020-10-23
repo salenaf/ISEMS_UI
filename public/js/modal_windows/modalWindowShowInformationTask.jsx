@@ -188,7 +188,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                     <Col md={8} className="text-muted">                                
                                         <Row className="mb-n2">
                                             <Col md={6}><small>всего файлов:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nfmfp}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.nfmfp)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>общим размером:</small></Col>
@@ -196,7 +196,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.mpf}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.mpf)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно с ошибкой:</small></Col>
@@ -204,7 +204,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов найдено:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nffrf}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.nffrf)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>общим размером:</small></Col>
@@ -237,22 +237,24 @@ export default class ModalWindowShowInformationTask extends React.Component {
             percent = Math.round((this.state.downloadingStatus.nfd*100) / this.state.downloadingStatus.nft);
         }
 
-        return (<React.Fragment>
-            <Row>
-                <Col md={12} className="text-muted">
-                    <small>
+        return (
+            <React.Fragment>
+                <Row>
+                    <Col md={12} className="text-muted">
+                        <small>
                         общее количество файлов подлежащих скачиванию: <strong>{this.state.downloadingStatus.nft}</strong>, 
                         загруженных файлов: <strong>{this.state.downloadingStatus.nfd}</strong>, 
                         из них с ошибкой: <strong>{this.state.downloadingStatus.nfde}</strong>
-                    </small>
-                </Col>
-            </Row>
-            <Row>
-                <Col md={12}>
-                    <ProgressBar now={percent} label={`${percent}%`} />
-                </Col>
-            </Row>
-        </React.Fragment>);
+                        </small>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        <ProgressBar now={percent} label={`${percent}%`} />
+                    </Col>
+                </Row>
+            </React.Fragment>
+        );
     }
 
     getStatusFiltering(){
@@ -322,24 +324,26 @@ export default class ModalWindowShowInformationTask extends React.Component {
     createCircleProcessFilter() {
         let percent = (this.state.filteringStatus.mpf*100) / this.state.filteringStatus.nfmfp;
 
-        return (<Circle
-            progress={Math.round(percent)}
-            animate={true} // Boolean: Animated/Static progress
-            animationDuration="1s" // String: Length of animation
-            responsive={false} // Boolean: Make SVG adapt to parent size
-            size="125" // String: Defines the size of the circle.
-            lineWidth="35" // String: Defines the thickness of the circle's stroke.
-            progressColor="rgb(76, 154, 255)" // String: Color of "progress" portion of circle.
-            bgColor="#ecedf0" // String: Color of "empty" portion of circle.
-            textColor="#6b778c" // String: Color of percentage text color.
-            textStyle={{
-                font: "bold 4rem Helvetica, Arial, sans-serif" // CSSProperties: Custom styling for percentage.
-            }}
-            percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
-            roundedStroke={false} // Boolean: Rounded/Flat line ends
-            showPercentage={true} // Boolean: Show/hide percentage.
-            showPercentageSymbol={true} // Boolean: Show/hide only the "%" symbol.
-        />);
+        return (
+            <Circle
+                progress={Math.round(percent)}
+                animate={true} // Boolean: Animated/Static progress
+                animationDuration="1s" // String: Length of animation
+                responsive={false} // Boolean: Make SVG adapt to parent size
+                size="125" // String: Defines the size of the circle.
+                lineWidth="35" // String: Defines the thickness of the circle's stroke.
+                progressColor="rgb(76, 154, 255)" // String: Color of "progress" portion of circle.
+                bgColor="#ecedf0" // String: Color of "empty" portion of circle.
+                textColor="#6b778c" // String: Color of percentage text color.
+                textStyle={{
+                    font: "bold 4rem Helvetica, Arial, sans-serif" // CSSProperties: Custom styling for percentage.
+                }}
+                percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
+                roundedStroke={false} // Boolean: Rounded/Flat line ends
+                showPercentage={true} // Boolean: Show/hide percentage.
+                showPercentageSymbol={true} // Boolean: Show/hide only the "%" symbol.
+            />
+        );
     }
 
     createUserDownloadTask(){
@@ -361,14 +365,16 @@ export default class ModalWindowShowInformationTask extends React.Component {
             return;
         }
 
-        return (<Row className="text-center text-muted">                   
-            <Col md={12}>
-                <small>директория содержащая файлы полученные в результате фильтрации</small>
-            </Col>
-            <Col md={12} className="my_line_spacing">
-                <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
-            </Col>
-        </Row>);
+        return (
+            <Row className="text-center text-muted">                   
+                <Col md={12}>
+                    <small>директория содержащая файлы полученные в результате фильтрации</small>
+                </Col>
+                <Col md={12} className="my_line_spacing">
+                    <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
+                </Col>
+            </Row>
+        );
     }
 
     createPathDirStorageFiles(){
@@ -376,14 +382,16 @@ export default class ModalWindowShowInformationTask extends React.Component {
             return;
         }
 
-        return (<Row className="text-center text-muted">                   
-            <Col md={12}>
-                <small>директория для долговременного хранения загруженных файлов</small>
-            </Col>
-            <Col md={12} className="my_line_spacing">
-                <small><strong>{this.state.downloadingStatus.pdsdf}</strong></small>
-            </Col>
-        </Row>);
+        return (
+            <Row className="text-center text-muted">                   
+                <Col md={12}>
+                    <small>директория для долговременного хранения загруженных файлов</small>
+                </Col>
+                <Col md={12} className="my_line_spacing">
+                    <small><strong>{this.state.downloadingStatus.pdsdf}</strong></small>
+                </Col>
+            </Row>
+        );
     }
 
     createModalBody(){

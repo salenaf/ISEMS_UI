@@ -15,58 +15,57 @@ module.exports = function(callback) {
     async.parallel({
         shortListSource: (callbackParallel) => {
             mongodbQueryProcessor.querySelect(
-                models.modelSourcesParameter, { 
+                models.modelSourcesParameter, {
                     isMany: true,
-                    select: { 
-                        _id: 0, 
-                        __v: 0, 
+                    select: {
+                        _id: 0,
+                        __v: 0,
                         description: 0,
-                        date_change: 0, 
-                        source_settings : 0, 
+                        date_change: 0,
+                        source_settings: 0,
                         network_settings: 0,
                     },
                 }, (err, list) => {
-                    if(err) callbackParallel(err);
+                    if (err) callbackParallel(err);
                     else callbackParallel(null, list);
                 });
         },
         shortListDivision: (callbackParallel) => {
             mongodbQueryProcessor.querySelect(
-                models.modelDivisionBranchName, { 
+                models.modelDivisionBranchName, {
                     isMany: true,
-                    select: { 
-                        _id: 0, 
-                        __v: 0, 
+                    select: {
+                        _id: 0,
+                        __v: 0,
                         description: 0,
-                        date_change:0,
-                        date_register: 0, 
+                        date_change: 0,
+                        date_register: 0,
                         physical_address: 0,
                     },
                 }, (err, list) => {
-                    if(err) callbackParallel(err);
+                    if (err) callbackParallel(err);
                     else callbackParallel(null, list);
                 });
         },
         shortListOrganization: (callbackParallel) => {
             mongodbQueryProcessor.querySelect(
-                models.modelOrganizationName, { 
+                models.modelOrganizationName, {
                     isMany: true,
-                    select: { 
+                    select: {
                         _id: 0,
-                        __v: 0, 
-                        date_change:0,
-                        date_register: 0, 
+                        __v: 0,
+                        date_change: 0,
+                        date_register: 0,
                         legal_address: 0,
                     },
                 }, (err, list) => {
-                    if(err) callbackParallel(err);
+                    if (err) callbackParallel(err);
                     else callbackParallel(null, list);
                 });
         },
     }, (err, listEntity) => {
         if (err) callback(err);
         else callback(null, listEntity);
-        //console.log( listEntity);
     });
-    
+
 };
