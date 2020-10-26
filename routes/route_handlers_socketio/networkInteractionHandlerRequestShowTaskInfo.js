@@ -264,6 +264,8 @@ function searchInformationAboutTasks(socketIo, data) {
 function getNextChunk(socketIo, data) {
     let funcName = " (func 'getNextChunk')";
 
+    console.log(funcName);
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -280,6 +282,8 @@ function getNextChunk(socketIo, data) {
                 });
             });
         }).then((sessionId) => {
+            console.log(`sessionId: ${sessionId}, ${funcName}`);
+
             if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
                 throw new MyError("management auth", "Ошибка авторизации. Информация о сессии недоступна.");
             }
@@ -303,10 +307,14 @@ function getNextChunk(socketIo, data) {
                 }
             }
         }).then((objInfo) => {
+            console.log(`BEFORE ${funcName}`);
+
             let numFullChunks = 1;
             if (objInfo.taskFound > data.chunkSize) {
                 numFullChunks = Math.ceil(objInfo.taskFound / data.chunkSize);
             }
+
+            console.log(`SEND a list of found tasks ${funcName}`);
 
             socketIo.emit("module NI API", {
                 "type": "send a list of found tasks",

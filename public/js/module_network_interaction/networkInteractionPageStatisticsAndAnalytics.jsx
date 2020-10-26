@@ -3,9 +3,6 @@ import ReactDOM from "react-dom";
 import { Col, Row, OverlayTrigger, Tooltip, Table, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import GetStatusDownload from "../commons/getStatusDownload.jsx";
-import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
-//import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
 import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
 
@@ -26,6 +23,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 slft: [],
                 tntf: 0,            
             },
+            currentTaskID: "",
         };
 
         this.userPermission=this.props.listItems.userPermissions;
@@ -63,13 +61,10 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         this.props.socketIo.on("module NI API", (data) => {
             //для списка задач не отмеченных пользователем как завершеные
             if(data.type === "get list unresolved task"){
-
-                console.log("--- event: get list unresolved task ---");
-    
                 if(data.options.tntf === 0){
                     return;
                 }
-                
+
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -80,16 +75,28 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     }), 
                     tntf: data.options.tntf,
                 };
+                this.setState({ 
+                    listTasksFound: tmpCopy,
+                    currentTaskID: data.taskID,
+                });
+            }
+
+            if(data.type === "send a list of found tasks"){
+                
+                console.log(data.options);
+
+                let tmpCopy = Object.assign(this.state.listTasksFound);
+                tmpCopy = { 
+                    p: data.options.p,
+                    slft: data.options.slft, 
+                    tntf: data.options.tntf,
+                };
                 this.setState({ listTasksFound: tmpCopy });
             }
         });
     }
 
     handlerModalWindowShowTaskTnformation(data){
-
-        console.log("func 'handlerModalWindowShowTaskTnformation'...");
-        console.log(data);
-
         let objCopy = Object.assign({}, this.state);
         objCopy.shortTaskInformation.sourceID = data.sourceID;
         objCopy.shortTaskInformation.sourceName = data.sourceName;
@@ -117,17 +124,37 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 arguments: { taskID: objData.taskID } 
             });
         }
-        
-        if(type === "processed"){
-            //отметить как обработанную
-
-        }
-
-
     }
 
-    headerNextItemPagination(){
+    headerNextItemPagination(num){
+        console.log("func 'headerNextItemPagination'");
+        console.log(num);
+        console.log(`taskID: ${this.state.shortTaskInformation.taskID}`);
+        console.log(this.state.listTasksFound);
 
+        if(this.state.listTasksFound.p.ccn === num){
+            return;
+        }
+
+        /**
+         * !!!!!!!!!!!!!
+ * Сделать пагинатор на странице со списокм задач
+ * по которым нужно выполнить анализ
+ * Почему то прилетает информация преднозначенная для страницы поиска
+ * 34 задачи в место 1 при переходе на цифру 2 пагинатора
+ * 
+ * 
+ * ПОХОЖЕ мне нужен другой обработчик на свойство unresolvedTask
+ * глобального объекта globalObject, а то с событием
+ * "network interaction: get next chunk list all tasks" обращение
+ * идет к свойству resultFoundTasks globalObject
+ */
+
+        this.props.socketIo.emit("network interaction: get next chunk list all tasks", {
+            taskID: this.state.currentTaskID,
+            chunkSize: this.state.listTasksFound.p.cs,
+            nextChunk: num,
+        });
     }
 
     createTableListDownloadFile(){

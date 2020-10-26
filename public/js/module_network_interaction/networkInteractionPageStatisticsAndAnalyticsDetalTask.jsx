@@ -53,23 +53,11 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
 
         this.handlerEvents.call(this);
         this.getInformationAboutTask.call(this);
-
-        //this.funcTest.call(this);
     }
-
-    /*funcTest(){
-        setTimeout(() => {
-            console.log("START funcTest ----");
-
-            this.setState({ hideButtonMarkTask: true });
-        }, 5000);
-    }*/
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
             if(data.type === "commonAnalyticsInformationAboutTaskID"){   
-                console.log("сработало событие с информацией о задаче и сет. трафике");
-                console.log(data.options);
 
                 let tmpCopy = Object.assign(this.state.commonAnalyticsInformationAboutTask);
                 tmpCopy = {
@@ -114,14 +102,7 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
             }
 
             if(data.type === "successMarkTaskAsCompleted"){
-                console.log("--- RECEIVED message 'successMarkTaskAsCompleted' ******");
-
-                console.log(`taskID local: ${this.props.listItems.urlQueryParameters.taskID} === taskID reseived ${data.options.taskID}`);
-                console.log(data);
-
-                if(this.props.listItems.urlQueryParameters.taskID === data.options.taskID){
-                    console.log("99999999999999");
-                    
+                if(this.props.listItems.urlQueryParameters.taskID === data.options.taskID){                   
                     this.setState({ hideButtonMarkTask: true });
                 }
             }
@@ -207,12 +188,7 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
     }
 
     createButtonCloseTask(){
-        console.log("func 'createButtonCloseTask', START...");
-        console.log(this.state.commonAnalyticsInformationAboutTask.generalInformationAboutTask);
-
         if(this.state.hideButtonMarkTask){
-            console.log("BUTTON IS HIDE");
-
             return;
         }
 
@@ -225,8 +201,6 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
         if(dts && fts && userPermission && !caiat.generalInformationAboutTask.taskProcessed){           
             isDisabled = "";
         }
-
-        //this.state.hideButtonMarkTask
 
         return (
             <Button
@@ -391,30 +365,6 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
             </React.Fragment>
         );
     }
-
-    /**
-            <React.Fragment>
-                <Row className="text-muted mb-n2">
-                    <Col md={2} className="text-left"><small>cтатус задачи: <span className="text-danger">закрыта</span></small></Col>
-                    <Col md={2} className="text-left"><small>дата: {this.formatterDate().format(1640554324000)}</small></Col>
-                    <Col md={8} className="text-right"><small>пользователь: Барашков Владимир Петрофивич</small></Col>
-                </Row>
-                <Row className="text-muted">
-                    <Col md={2} className="text-left"><small>примечание:</small></Col>
-                    <Col md={10} className="text-left mt-2   my_line_spacing"><small><i>
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                        очень много непонятного и глупого текста
-                    </i></small></Col>
-                </Row>
-            </React.Fragment>     
- */
 
     createMainBody(){
         if(this.state.commonAnalyticsInformationAboutTask.sourceID === 0){

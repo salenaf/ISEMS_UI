@@ -28,11 +28,9 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     listFileDownloadOptions: data.options, 
                 });
             }
-        });
 
-        this.props.socketIo.on("module NI API", (msg) => {
-            if((msg.type === "filtrationProcessing") || (msg.type === "downloadProcessing")){          
-                if(msg.options.status !== "complete"){
+            if((data.type === "filtrationProcessing") || (data.type === "downloadProcessing")){          
+                if(data.options.status !== "complete"){
                     return;
                 }
 
@@ -210,7 +208,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             <React.Fragment>
                 <Row className="text-right">
                     <Col className="text-muted mt-3">
-                    задач, по которым не выполнялась выгрузка файлов: <span className="text-info">{this.state.listFileDownloadOptions.tntf}</span>
+                    задач, по которым не выполнялась выгрузка файлов: <i>{this.state.listFileDownloadOptions.tntf}</i>
                     </Col>
                 </Row>
                 {createPagination}
