@@ -36,9 +36,6 @@ class ModalWindowConfirmCloseTask extends React.Component {
     }
 
     handlerInput(e){
-        console.log("func 'handlerInput'");
-        console.log(e.target.value);
-
         this.setState({ description: e.target.value });
     }
 

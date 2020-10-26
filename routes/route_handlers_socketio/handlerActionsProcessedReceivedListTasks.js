@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("haprlt");
-
 const showNotify = require("../../libs/showNotify");
 const writeLogFile = require("../../libs/writeLogFile");
 const globalObject = require("../../configure/globalObject");
@@ -17,8 +15,6 @@ const MAX_CHUNK_SIZE = 10;
  * @param {*} sessionId - ID сессии
  */
 module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
-    debug("func 'receivedListAllTasks', START...");
-
     let funcName = " (func 'receivedListAllTasks')";
 
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks")) {
@@ -89,8 +85,6 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
  * автоматически отправляется в UI
  */
 module.exports.receivedListTasksDownloadFiles = function(socketIo, data, sessionId) {
-    debug("func 'receivedListTasksDownloadFiles', START...");
-
     let funcName = " (func 'receivedListTasksDownloadFiles')";
 
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
@@ -160,8 +154,6 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
  * автоматически отправляется в UI
  */
 module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) {
-    debug("func 'receivedListUnresolvedTask', START...");
-
     let funcName = " (func 'receivedListUnresolvedTask')";
 
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {

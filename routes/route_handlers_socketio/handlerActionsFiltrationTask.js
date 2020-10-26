@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("handlerActionsFiltrationTask");
-
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
@@ -28,8 +26,6 @@ module.exports.addHandlers = function(socketIo) {
 function startNewTask(socketIo, data) {
     let funcName = " (func 'startNewTask')";
 
-    debug(data);
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -45,9 +41,6 @@ function startNewTask(socketIo, data) {
 
             return { login: authData.document.userLogin, name: authData.document.userName };
         }).then((userInfo) => {
-            debug("user info");
-            debug(userInfo);
-
             let obj = (require("../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
             if (!obj.isValid) {
                 throw new MyError("management validation", obj.errorMsg);
@@ -55,9 +48,6 @@ function startNewTask(socketIo, data) {
 
             return { userInfo: userInfo, filterParam: obj.filteringParameters };
         }).then((parameters) => {
-
-            debug(parameters);
-
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.userInfo.login, parameters.userInfo.name);
         }).then(() => {
@@ -107,9 +97,6 @@ function startNewTask(socketIo, data) {
 function stopTask(socketIo, data) {
     let funcName = " (func 'stopTask')";
 
-    debug("func 'stopTask', START...");
-    debug(data);
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -123,30 +110,18 @@ function stopTask(socketIo, data) {
                 throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
             }
 
-            return { login: authData.document.userLogin, name: authData.document.userName };
-        }).then((userInfo) => {
-            debug("user info");
-            debug(userInfo);
-
-            if (!helpersFunc.checkInputValidation({
-                    name: "hexSumMD5",
-                    value: data.arguments.taskID,
-                })) {
+            return;
+        }).then(() => {
+            if (!helpersFunc.checkInputValidation({ name: "hexSumMD5", value: data.arguments.taskID })) {
                 throw new MyError("management validation", "Принят некорректный идентификатор задачи.");
             }
 
-            if (!helpersFunc.checkInputValidation({
-                    name: "hostID",
-                    value: data.arguments.sourceID,
-                })) {
+            if (!helpersFunc.checkInputValidation({ name: "hostID", value: data.arguments.sourceID })) {
                 throw new MyError("management validation", "Принят некорректный идентификатор источника.");
             }
 
             return;
         }).then(() => {
-
-            debug(`sending request filtration stop task with ID: ${data.arguments.taskID}, source ID: ${data.arguments.sourceID}`);
-
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementTaskFilteringStop(data.arguments.taskID, data.arguments.sourceID);
         }).then(() => {

@@ -4,6 +4,7 @@ const debug = require("debug")("nihrsti");
 
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
+const helpersFunc = require("../../libs/helpers/helpersFunc");
 const getSessionId = require("../../libs/helpers/getSessionId.js");
 const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
@@ -26,6 +27,7 @@ module.exports.addHandlers = function(socketIo) {
         "network interaction: get next chunk list all tasks": getNextChunk,
         "network interaction: delete all information about a task": sendReguestDeleteInformationAboutTask,
         "network interaction: get analytics information about task id": getAnalyticsInformationAboutTaskID,
+        "network interaction: mark an task as completed": markTaskCompleted,
     };
 
     for (let e in handlers) {
@@ -41,8 +43,6 @@ module.exports.addHandlers = function(socketIo) {
 function getListAllTasks(socketIo) {
     let funcName = " (func 'getListAllTasks')";
 
-    debug("func 'getListAllTasks'");
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -52,14 +52,9 @@ function getListAllTasks(socketIo) {
 
             return;
         }).then(() => {
-            debug("func 'getListAllTasks', send network interaction");
-
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementRequestGetListAllTasks(socketIo);
         }).catch((err) => {
-
-            debug(err);
-
             if (err.name === "management auth") {
                 showNotify({
                     socketIo: socketIo,
@@ -74,9 +69,6 @@ function getListAllTasks(socketIo) {
                     message: err.message.toString()
                 });
             } else {
-
-                debug(err);
-
                 let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
 
                 showNotify({
@@ -229,11 +221,6 @@ function showListUnresolvedTasks(socketIo) {
  * @param {*} data 
  */
 function searchInformationAboutTasks(socketIo, data) {
-    debug("func 'searchInformationAboutTasks', START...");
-    debug(data);
-    debug(data.arguments.ifo.dt);
-    debug(data.arguments.ifo.nf);
-
     let funcName = " (func 'searchInformationAboutTasks')";
 
     checkUserAuthentication(socketIo)
@@ -275,9 +262,6 @@ function searchInformationAboutTasks(socketIo, data) {
  * @param {*} data 
  */
 function getNextChunk(socketIo, data) {
-    debug("func 'getNextChunk', START...");
-    debug(data);
-
     let funcName = " (func 'getNextChunk')";
 
     checkUserAuthentication(socketIo)
@@ -296,18 +280,11 @@ function getNextChunk(socketIo, data) {
                 });
             });
         }).then((sessionId) => {
-            debug(`user session ID: ${sessionId}`);
-
             if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
                 throw new MyError("management auth", "Ошибка авторизации. Информация о сессии недоступна.");
             }
 
-            //            debug(globalObject.getData("tmpModuleNetworkInteraction", sessionId));
-
             let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
-
-            //debug(globalObject.getData("tmpModuleNetworkInteraction", sessionId));
-            //debug(tasksDownloadFiles);
 
             if (data.nextChunk === 1) {
                 if (resultFoundTasks.numFound <= data.chunkSize) {
@@ -326,9 +303,6 @@ function getNextChunk(socketIo, data) {
                 }
             }
         }).then((objInfo) => {
-            debug(`count new tasks: ${objInfo.list.length}`);
-            //debug(objInfo.list);
-
             let numFullChunks = 1;
             if (objInfo.taskFound > data.chunkSize) {
                 numFullChunks = Math.ceil(objInfo.taskFound / data.chunkSize);
@@ -373,9 +347,6 @@ function getNextChunk(socketIo, data) {
  * @param {*} data 
  */
 function sendReguestDeleteInformationAboutTask(socketIo, data) {
-    debug("func 'sendReguestDeleteInformationAboutTask'");
-    debug(data);
-
     let funcName = " (func 'sendReguestDeleteInformationAboutTask')";
 
     checkUserAuthentication(socketIo)
@@ -416,10 +387,14 @@ function sendReguestDeleteInformationAboutTask(socketIo, data) {
         });
 }
 
+/**
+ * Обработчик запроса на получение аналитической информации о задаче
+ * и связанных с ней файлов по уникальному иднтификатору задачи
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
 function getAnalyticsInformationAboutTaskID(socketIo, data) {
-    debug("func 'getAnalyticsInformationAboutTaskID'");
-    debug(data);
-
     let funcName = " (func 'getAnalyticsInformationAboutTaskID')";
 
     checkUserAuthentication(socketIo)
@@ -431,13 +406,82 @@ function getAnalyticsInformationAboutTaskID(socketIo, data) {
 
             return;
         }).then(() => {
+            return sendCommandsModuleNetworkInteraction.managementRequestShowAnalyticsInformationAboutTaskID(data.arguments.taskID);
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: msg
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+}
+
+/**
+ * Обработчик запроса для установки задачи как 'завершенная'
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+function markTaskCompleted(socketIo, data) {
+    debug("func 'markTaskCompleted'");
+    debug(data);
+
+    let funcName = " (func 'markTaskCompleted')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            let groupSettings = authData.document.groupSettings.management_network_interaction.element_settings.management_uploaded_files.element_settings;
+            //может ли пользователь удалять задачи
+            if (!groupSettings.status_change.status) {
+                throw new MyError("management auth", "Невозможно отметить задачу как завершенную. Недостаточно прав на выполнение данного действия.");
+            }
+
+            debug(authData);
+
+            return authData.document.userName;
+        }).then((userName) => {
+            debug("parametr validate");
+
+            let description = data.arguments.description;
+
+            if (!helpersFunc.checkInputValidation({ name: "hexSumMD5", value: data.arguments.taskID })) {
+                throw new MyError("management validation", "Принят некорректный идентификатор задачи.");
+            }
+
+            if (!helpersFunc.checkInputValidation({ name: "inputDescription", value: data.arguments.description })) {
+                description = "";
+            }
+
+            return {
+                taskID: data.arguments.taskID,
+                userName: userName,
+                description: description,
+            };
+        }).then((validData) => {
             //отправляем задачу модулю сетевого взаимодействия
 
             debug(`SEND task ID '${data.arguments.taskID}' ---> module_NIH`);
 
-            return sendCommandsModuleNetworkInteraction.managementRequestShowAnalyticsInformationAboutTaskID(data.arguments.taskID);
+            return sendCommandsModuleNetworkInteraction.managementRequestMarkTaskCompleted(validData);
         }).catch((err) => {
-            if (err.name === "management auth") {
+            if ((err.name === "management auth") || (err.name === "management validation")) {
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",

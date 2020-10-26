@@ -242,11 +242,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 debug(`received event 'finish' (${new Date})`);
             });
         });
-    }, 8000);*/
+    }, 8000);
     /** ТЕСТОВЫЙ РАЗДЕЛ --- окончание */
-
-
-
 
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
@@ -296,7 +293,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
         }).on("information source control", (msg) => {
             debug("----- information source control -----");
             debug(msg);
-            //debug(msg.options.sl);
             debug("--------------------------------------");
 
             require("./handlers_msg_module_network_interaction/handlerMsgSources")(msg, socketIo);
@@ -513,6 +509,18 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     socketIo.emit("module NI API", {
                         "type": "deleteAllInformationAboutTask",
                         "options": {},
+                    });
+                }
+            }
+
+            if (msg.instruction === "mark an task as completed") {
+                if (msg.options.ss) {
+                    debug("received message SUCCESS mark task complete");
+                    debug(msg);
+
+                    socketIo.emit("module NI API", {
+                        "type": "successMarkTaskAsCompleted",
+                        "options": { "taskID": msg.options.tid },
                     });
                 }
             }

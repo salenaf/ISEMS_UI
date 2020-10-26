@@ -10,6 +10,7 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
         super(props);
 
         this.state = {
+            hideButtonMarkTask: false,
             showModalWindowConfirmCloseTask: false,
             commonAnalyticsInformationAboutTask: {
                 sourceID:0,
@@ -52,7 +53,17 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
 
         this.handlerEvents.call(this);
         this.getInformationAboutTask.call(this);
+
+        //this.funcTest.call(this);
     }
+
+    /*funcTest(){
+        setTimeout(() => {
+            console.log("START funcTest ----");
+
+            this.setState({ hideButtonMarkTask: true });
+        }, 5000);
+    }*/
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
@@ -96,45 +107,44 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
                         sizeFilesProcessed: 0,
                     },
                 };
-                this.setState({ commonAnalyticsInformationAboutTask: tmpCopy }); 
+                this.setState({ 
+                    hideButtonMarkTask: data.options.tp.giat.tp,
+                    commonAnalyticsInformationAboutTask: tmpCopy, 
+                }); 
+            }
+
+            if(data.type === "successMarkTaskAsCompleted"){
+                console.log("--- RECEIVED message 'successMarkTaskAsCompleted' ******");
+
+                console.log(`taskID local: ${this.props.listItems.urlQueryParameters.taskID} === taskID reseived ${data.options.taskID}`);
+                console.log(data);
+
+                if(this.props.listItems.urlQueryParameters.taskID === data.options.taskID){
+                    console.log("99999999999999");
+                    
+                    this.setState({ hideButtonMarkTask: true });
+                }
             }
         });
     }
 
     handlerShowModalWindowCloseTask(){
-        console.log("func 'handlerOpenModalWindowCloseTask'");
-
         this.setState({ showModalWindowConfirmCloseTask: true });
     }
 
     handlerCloseModalWindowCloseTask(){
-        console.log("func 'handlerOpenModalWindowCloseTask'");
-
         this.setState({ showModalWindowConfirmCloseTask: false });
     }
 
     handlerCloseTask(data){
-        console.log("func 'handlerCloseTask', START...");
-        console.log(data);
+        this.props.socketIo.emit("network interaction: mark an task as completed", {
+            arguments: { 
+                taskID: data.taskID,
+                description: data.description,
+            },
+        });
 
         this.setState({ showModalWindowConfirmCloseTask: false });
-
-        /**
-         * 
-         * Не доделал обработчик запроса на закрытие задачи
-         * в модуле ISEMS-NIH это уже реализовано,
-         * нет в backend ISEMS-UI
-         * 
-         * При этом если задача еще не завершена то необходимо предоставить
-         * пользователю сделать отметку с поеснением причины завершения, однако
-         * данное действие не должно быть обязательным.
-         * 
-         * Если мы просматриваем информацию о задаче, которая уже была закрыта
-         * необходимо вывести информацию О ТОМ КТО ЗАВЕРШИЛ задачу и ОПИСАНИЕ
-         * ПРИЧИНЫ ЗАВЕРЩЕНИЯ (думаю если причины завершения нет в интерфейсе нужно 
-         * писать какую нибудь стандартную фразу типа "выполнен стандартный анализ")
-         * 
-         */
     }
 
     buttonBackArrow(){
@@ -197,14 +207,26 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
     }
 
     createButtonCloseTask(){
+        console.log("func 'createButtonCloseTask', START...");
+        console.log(this.state.commonAnalyticsInformationAboutTask.generalInformationAboutTask);
+
+        if(this.state.hideButtonMarkTask){
+            console.log("BUTTON IS HIDE");
+
+            return;
+        }
+
         let isDisabled = "disabled";
         let caiat = this.state.commonAnalyticsInformationAboutTask;
         let dts = caiat.commonInformationAboutReceivedFiles.downloadTaskStatus === "complete";
         let fts = caiat.commonInformationAboutReceivedFiles.filteringTaskStatus === "complete";
-        
-        if(dts && fts && !caiat.generalInformationAboutTask.taskProcessed){           
+        let userPermission = this.props.listItems.userPermissions.management_uploaded_files.element_settings.status_change.status; 
+
+        if(dts && fts && userPermission && !caiat.generalInformationAboutTask.taskProcessed){           
             isDisabled = "";
         }
+
+        //this.state.hideButtonMarkTask
 
         return (
             <Button
@@ -337,9 +359,9 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
                 <Row>
                     <Col md={9} className="text-muted text-left">
                         <small>
-                                дата и время,
-                                начальное: <strong>{this.formatterDate().format(fo.dateTime.start * 1000)}</strong>, 
-                                конечное: <strong>{this.formatterDate().format(fo.dateTime.end * 1000)}</strong>
+                            дата и время,
+                            начальное: <strong>{this.formatterDate().format(fo.dateTime.start * 1000)}</strong>, 
+                            конечное: <strong>{this.formatterDate().format(fo.dateTime.end * 1000)}</strong>
                         </small>
                     </Col>
                     <Col md={3} className="text-muted text-right"><small>сет. протокол: <strong>{(fo.proto === "any") ? "любой" : fo.proto}</strong></small></Col>
@@ -359,7 +381,7 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
             <React.Fragment>
                 <Row className="text-muted mb-n2">
                     <Col md={2} className="text-left"><small>cтатус задачи: <span className="text-danger">закрыта</span></small></Col>
-                    <Col md={2} className="text-left"><small>дата: {this.formatterDate().format(giat.dateTimeProcessed)}</small></Col>
+                    <Col md={2} className="text-left"><small>дата: {this.formatterDate().format(giat.dateTimeProcessed*1000)}</small></Col>
                     <Col md={8} className="text-right"><small>пользователь: {giat.detailDescription.userNameClosedProcess}</small></Col>
                 </Row>
                 <Row className="text-muted">

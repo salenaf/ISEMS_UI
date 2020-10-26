@@ -270,6 +270,11 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 <Row>
                     <Col md={12} className="text-left text-muted">статистика и аналитика</Col>
                 </Row>
+                <Row>
+                    <Col md={12} className="text-right text-muted">
+                        всего задач: <i>{this.state.listTasksFound.tntf}</i>
+                    </Col>
+                </Row>
                 {createPagination}
                 {this.createTableListDownloadFile.call(this)}
                 {createPagination}

@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("scmni");
-
 const MyError = require("../../helpers/myError");
 const helpersFunc = require("../../helpers/helpersFunc");
 const getSessionId = require("../../helpers/getSessionId");
@@ -150,8 +148,6 @@ module.exports.sourceManagementsDel = function(sourceList) {
 
             let sources = [];
             let list = sourceList.map((item) => {
-                console.log(item);
-
                 let sourceID = +(item.source);
                 sources.push(sourceID);
 
@@ -165,13 +161,11 @@ module.exports.sourceManagementsDel = function(sourceList) {
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
             if (conn !== null) {
-                let hex = helpersFunc.getRandomHex();
-
                 conn.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
                     msgInstruction: "performing an action",
-                    taskID: hex,
+                    taskID: helpersFunc.getRandomHex(),
                     options: { sl: list },
                 });
             }
@@ -232,13 +226,11 @@ module.exports.sourceManagementsReconnect = function(sourceList) {
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
             if (conn !== null) {
-                let hex = helpersFunc.getRandomHex();
-
                 conn.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
                     msgInstruction: "performing an action",
-                    taskID: hex,
+                    taskID: helpersFunc.getRandomHex(),
                     options: { sl: sources },
                 });
             }
@@ -261,10 +253,6 @@ module.exports.sourceManagementsReconnect = function(sourceList) {
  * @param {*} userName - имя пользователя
  */
 module.exports.managementTaskFilteringStart = function(filteringParameters, userLogin, userName) {
-    console.log("func 'managementTaskFilteringStart'");
-    console.log(filteringParameters);
-    console.log(`user name: '${userName}', user login '${userLogin}'`);
-
     return new Promise((resolve, reject) => {
         process.nextTick(() => {
             if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
@@ -283,13 +271,11 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
 
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
             if (conn !== null) {
-                let hex = helpersFunc.getRandomHex();
-
                 let tmp = {
                     msgType: "command",
                     msgSection: "filtration control",
                     msgInstruction: "to start filtering",
-                    taskID: hex,
+                    taskID: helpersFunc.getRandomHex(),
                     options: {
                         id: filteringParameters.source,
                         un: userName,
@@ -301,9 +287,6 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                         f: filteringParameters.inputValue,
                     },
                 };
-
-                console.log("---------- forming Request ----------");
-                console.log(JSON.stringify(tmp));
 
                 conn.sendMessage(tmp);
             }
@@ -323,9 +306,6 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
  * @param {*} sourceID - ID источника
  */
 module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
-    console.log("func 'managementTaskFilteringStop', START...");
-    console.log(`stop task ID: ${taskID}`);
-
     return new Promise((resolve, reject) => {
         process.nextTick(() => {
             if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
@@ -352,9 +332,6 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
                     options: {},
                 };
 
-                console.log("---------- forming Request ----------");
-                console.log(JSON.stringify(tmp));
-
                 conn.sendMessage(tmp);
             }
 
@@ -372,9 +349,6 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
  * @param {*} taskID - ID задачи по которой нужно найти информацию
  */
 module.exports.managementRequestShowTaskAllInfo = function(taskID) {
-    console.log("func 'managementRequestShowTaskAllInfo'");
-    console.log(`ID задачи по которой нужно найти информацию '${taskID}'`);
-
     return new Promise((resolve, reject) => {
         process.nextTick(() => {
             if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
@@ -391,9 +365,6 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID) {
                     options: { rtid: taskID }
                 };
 
-                console.log("---------- forming Request ----------");
-                console.log(JSON.stringify(tmp));
-
                 conn.sendMessage(tmp);
             }
 
@@ -409,8 +380,6 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID) {
  * @param {*} socketIo 
  */
 module.exports.managementRequestGetListAllTasks = function(socketIo) {
-    debug("func 'managementRequestGetListAllTasks', START...");
-
     return new Promise((resolve, reject) => {
         //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
         // временную информацию в globalObject.tmp
@@ -443,9 +412,6 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме 
                 },
             };
-
-            debug("send message ---> to network interaction");
-            debug(tmp);
 
             conn.sendMessage(tmp);
         }
@@ -595,11 +561,6 @@ module.exports.managementRequestSearchInformationAboutTasks = function(socketIo,
                 data.ifo.dt.e = 0;
             }
 
-            debug("search task from set parameters");
-            debug(data);
-            debug(data.ifo.nf.ip);
-            debug(`Task HEX: ${hex}`);
-
             let tmp = {
                 msgType: "command",
                 msgSection: "information search control",
@@ -648,9 +609,6 @@ module.exports.managementRequestDeleteInformationAboutTask = function(listTaskID
  * @param {*} taskID - ID задачи по которой нужно найти информацию
  */
 module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(taskID) {
-    console.log("func 'managementRequestShowAnalyticsInformationAboutTaskID'");
-    console.log(`ID задачи по которой нужно найти АНАЛИТИЧЕСКУЮ информацию '${taskID}'`);
-
     return new Promise((resolve, reject) => {
         process.nextTick(() => {
             if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
@@ -665,6 +623,47 @@ module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(t
                     msgInstruction: "get common analytics information about task ID",
                     taskID: helpersFunc.getRandomHex(),
                     options: { rtid: taskID }
+                };
+
+                conn.sendMessage(tmp);
+            }
+
+            resolve();
+        });
+    });
+};
+
+/**
+ * Запрос на изменение статуса задачи на 'завершена'
+ * 
+ * @param {*} data 
+ */
+module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, userName = "", description = "" }) {
+    console.log("func 'managementRequestMarkTaskCompleted'");
+    console.log(`TaskID: ${taskID}, userName: ${userName}, description: ${description}`);
+
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+            if (taskID === null) {
+                reject(new Error("invalid task ID"));
+            }
+
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+                let tmp = {
+                    msgType: "command",
+                    msgSection: "information search control",
+                    msgInstruction: "mark an task as completed",
+                    taskID: helpersFunc.getRandomHex(),
+                    options: {
+                        rtid: taskID,
+                        un: userName,
+                        d: description,
+                    }
                 };
 
                 console.log("---------- forming Request ----------");
