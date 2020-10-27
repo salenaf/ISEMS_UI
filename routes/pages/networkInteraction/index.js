@@ -25,15 +25,15 @@ module.exports = function(req, res, objHeader) {
         mainInformation: (callback) => {
 
             callback(null, {});
-        
+
         },
         widgetsInformation: (callback) => {
             let numConnect = 0,
                 numDisconnect = 0;
 
             let listSources = globalObject.getData("sources");
-            for(let source in listSources){
-                if(listSources[source].connectStatus){
+            for (let source in listSources) {
+                if (listSources[source].connectStatus) {
                     numConnect++;
                 } else {
                     numDisconnect++;
@@ -56,14 +56,11 @@ module.exports = function(req, res, objHeader) {
 
             return;
         }
-        
+
         let userPermissions = result.permissions.group_settings;
         let readStatus = userPermissions.menu_items.network_interaction.status;
 
         if (readStatus === false) return res.render("403");
-
-        console.log("func 'networkInteraction'");
-        console.log(result.widgetsInformation);
 
         res.render("menu/network_interaction/index", {
             header: objHeader,

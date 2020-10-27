@@ -28,9 +28,9 @@ module.exports.addHandlers = function(socketIo) {
     }
 };
 
-function addGroup(socketIo, data) {   
+function addGroup(socketIo, data) {
     const errMsg = "Невозможно добавить новую группу пользователей. Получены некорректные данные.";
-    if(typeof data.arguments === "undefined"){
+    if (typeof data.arguments === "undefined") {
         showNotify({
             socketIo: socketIo,
             type: "danger",
@@ -42,7 +42,7 @@ function addGroup(socketIo, data) {
         return;
     }
 
-    if((typeof data.arguments.groupName === "undefined") || (typeof data.arguments.listPossibleActions === "undefined")){
+    if ((typeof data.arguments.groupName === "undefined") || (typeof data.arguments.listPossibleActions === "undefined")) {
         showNotify({
             socketIo: socketIo,
             type: "danger",
@@ -80,11 +80,11 @@ function addGroup(socketIo, data) {
                     query: { group_name: groupName },
                     select: { _id: 0, __v: 0, date_register: 0, group_name: 0 }
                 }, (err, results) => {
-                    if (err) reject(err);
-                    
-                    console.log(results);
-                    
-                    if(!results){
+                    if (err) {
+                        reject(err);
+                    }
+
+                    if (!results) {
                         resolve();
                     }
 
@@ -198,7 +198,7 @@ function addGroup(socketIo, data) {
 
 function updateGroup(socketIo, data) {
     const errMsg = "Невозможно изменить информацию о группе. Получены некорректные данные.";
-    if(typeof data.arguments === "undefined"){
+    if (typeof data.arguments === "undefined") {
         showNotify({
             socketIo: socketIo,
             type: "danger",
@@ -210,7 +210,7 @@ function updateGroup(socketIo, data) {
         return;
     }
 
-    if((typeof data.arguments.groupName === "undefined") || (typeof data.arguments.listPossibleActions === "undefined")){
+    if ((typeof data.arguments.groupName === "undefined") || (typeof data.arguments.listPossibleActions === "undefined")) {
         showNotify({
             socketIo: socketIo,
             type: "danger",
@@ -248,7 +248,7 @@ function updateGroup(socketIo, data) {
                     query: { group_name: groupName }
                 }, (err, results) => {
                     if (err) reject(err);
-                    if(!results){
+                    if (!results) {
                         reject(new MyError("group management danger", "Невозможно изменить информацию о группе. Группы с таким именем не существует."));
                     }
 
@@ -256,18 +256,18 @@ function updateGroup(socketIo, data) {
                 });
             });
         }).then((groupInfo) => {
-            let testCountElemStatus = function(obj){
+            let testCountElemStatus = function(obj) {
                 let result = {
                     countIsTrue: 0,
-                    countIsFalse: 0,             
+                    countIsFalse: 0,
                 };
 
                 let rangeElem = (list) => {
-                    for(let item in list){
-                        if(typeof list[item] !== "object") continue;
-            
-                        if(typeof list[item].status !== "undefined"){
-                            if(list[item].status) result.countIsTrue++;
+                    for (let item in list) {
+                        if (typeof list[item] !== "object") continue;
+
+                        if (typeof list[item].status !== "undefined") {
+                            if (list[item].status) result.countIsTrue++;
                             else result.countIsFalse++;
                         } else {
                             rangeElem(list[item]);
@@ -299,7 +299,7 @@ function updateGroup(socketIo, data) {
                         continue;
                     }
 
-                    if(listElements[item].id === id){
+                    if (listElements[item].id === id) {
                         listElements[item].status = state;
                     }
                 }
@@ -328,8 +328,8 @@ function updateGroup(socketIo, data) {
             }
 
             return listElements;
-        }).then((listElements) => {    
-            return new Promise((resolve,reject) => {
+        }).then((listElements) => {
+            return new Promise((resolve, reject) => {
                 async.parallel([
                     //записываем изменение в документ из коллекции groups
                     (callbackParallel) => {
@@ -364,7 +364,7 @@ function updateGroup(socketIo, data) {
                         });
                     }
                 ], (err) => {
-                    if(err) reject(err);    
+                    if (err) reject(err);
                     else resolve(listElements);
                 });
             });
@@ -383,14 +383,20 @@ function updateGroup(socketIo, data) {
                     "management_search_rules": listElements.management_search_rules,
                     "management_reputational_lists": listElements.management_reputational_lists,
                 };
-    
+
                 mongodbQueryProcessor.querySelect(models.modelSessionUserInformation, {
                     query: { "group_name": groupName },
                     select: { session_id: 1 },
                 }, (err, result) => {
-                    if(err) reject(err);
-    
-                    globalObject.modifyData("users", result.session_id, [[ "groupSettings", listSettings ]]);
+                    if (err) reject(err);
+
+                    if (result === null) {
+                        return;
+                    }
+
+                    globalObject.modifyData("users", result.session_id, [
+                        ["groupSettings", listSettings]
+                    ]);
 
                     resolve();
                 });
@@ -408,7 +414,7 @@ function updateGroup(socketIo, data) {
                     type: "danger",
                     message: err.message
                 });
-            } else if(err.name === "group management warning"){
+            } else if (err.name === "group management warning") {
                 return showNotify({
                     socketIo: socketIo,
                     type: "warning",
@@ -428,7 +434,7 @@ function updateGroup(socketIo, data) {
 
 function deleteGroup(socketIo, data) {
     const errMsg = "Невозможно удалить группу пользователей. Получены некорректные данные.";
-    if(typeof data.arguments === "undefined"){
+    if (typeof data.arguments === "undefined") {
         showNotify({
             socketIo: socketIo,
             type: "danger",
@@ -440,7 +446,7 @@ function deleteGroup(socketIo, data) {
         return;
     }
 
-    if(typeof data.arguments.groupName === "undefined"){
+    if (typeof data.arguments.groupName === "undefined") {
         showNotify({
             socketIo: socketIo,
             type: "danger",
@@ -458,20 +464,20 @@ function deleteGroup(socketIo, data) {
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
-            if(!authData.isAuthentication) {
+            if (!authData.isAuthentication) {
                 throw new MyError("group management", "Пользователь не авторизован.");
             }
 
             //может ли пользователь удалять группу пользователей
-            if(!authData.document.groupSettings.management_groups.element_settings.delete.status) {
+            if (!authData.document.groupSettings.management_groups.element_settings.delete.status) {
                 throw new MyError("group management", "Невозможно удалить группу пользователей. Недостаточно прав на выполнение данного действия.");
             }
 
-            if(!(/\b^[a-zA-Z0-9_-]+$\b/.test(groupName))) {
+            if (!(/\b^[a-zA-Z0-9_-]+$\b/.test(groupName))) {
                 throw new MyError("group management", "Невозможно удалить группу пользователей. Задано неверное имя группы.");
             }
 
-            if(groupName.toLowerCase() === "administrator"){
+            if (groupName.toLowerCase() === "administrator") {
                 throw new MyError("group management", "Невозможно удалить группу пользователей с именем 'administrator'.");
             }
         }).then(() => {
@@ -481,7 +487,7 @@ function deleteGroup(socketIo, data) {
                     select: { _id: 0, __v: 0, date_register: 0, group_name: 0 }
                 }, (err, results) => {
                     if (err) reject(err);
-                    if(!results){
+                    if (!results) {
                         reject(new MyError("group management", "Невозможно удалить группу пользователей. Группы с таким именем не существует."));
                     }
 
@@ -490,26 +496,27 @@ function deleteGroup(socketIo, data) {
             });
         }).then(() => {
             return new Promise((resolve, reject) => {
-                mongodbQueryProcessor.querySelect(models.modelUser, { 
-                    isMany: true, 
-                    select: { 
-                        _id: 0, 
+                mongodbQueryProcessor.querySelect(models.modelUser, {
+                    isMany: true,
+                    select: {
+                        _id: 0,
                         login: 1,
                         group: 1,
-                    }}, (err, users) => {
-                    if(err) reject(err);
+                    }
+                }, (err, users) => {
+                    if (err) reject(err);
                     else resolve(users);
                 });
             });
         }).then((userList) => {
-            for(let item of userList){
-                if(item.group === groupName.toLowerCase()){
+            for (let item of userList) {
+                if (item.group === groupName.toLowerCase()) {
                     throw new MyError("group management", `Невозможно удалить группу пользователей. Есть пользователи входящие в состав группы '${groupName}'.`);
                 }
             }
         }).then(() => {
             //удаляем основную группу
-            return new Promise((resolve,reject) => {
+            return new Promise((resolve, reject) => {
                 mongodbQueryProcessor.queryDelete(models.modelGroup, { query: { group_name: groupName } }, (err) => {
                     if (err) reject(err);
                     resolve();

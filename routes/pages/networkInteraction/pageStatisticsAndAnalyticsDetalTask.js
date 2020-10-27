@@ -75,8 +75,6 @@ module.exports = function(req, res, objHeader) {
             (decodeURI(url.parse(req.originalUrl).query)).split("&").forEach((item) => {
                 let tmpArray = item.split("=");
                 if (tmpArray.length > 1) {
-                    console.log(`Name: ${tmpArray[0]} - ${helpersFunc.checkInputValidation({ name: validationRules[tmpArray[0]], value: tmpArray[1] })} (${tmpArray[1]})`);
-
                     if (helpersFunc.checkInputValidation({ name: validationRules[tmpArray[0]], value: tmpArray[1] })) {
                         urlQueryParameters[tmpArray[0]] = tmpArray[1];
                     }

@@ -97,8 +97,6 @@ export default class CreateBodyNewEntity extends React.Component {
     handelrButtonAdd(){
         let typeEntity = "source";
 
-        //console.log(`organization id: ${this.state.chosenOrganizationID}, division id: ${this.state.chosenDivisionID}`);
-
         if(this.state.chosenOrganizationID === null){
             typeEntity = "organization";
         } else if(this.state.chosenOrganizationID !== null && this.state.chosenDivisionID === null){
@@ -109,9 +107,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     showModalWindow(typeEntity){
-
-        //console.log(`Открыто модальное окно для сущности '${typeEntity}'`);
-
         const listTypeEntity = {
             "organization": {
                 name: "организацию",
@@ -138,9 +133,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedOrganization(e){
-
-        //console.log(`Была выбрана организация с ID: ${e.target.value}`);
-
         let v = (e.target.value === "all") ? null: e.target.value;
 
         this.setState({ chosenOrganizationID: v });
@@ -148,11 +140,9 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedDivision(e){
-
-        //console.log(`Было выбрано подразделение с ID: ${e.target.value}`);
-
         let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
+        
         this.setState({ chosenDivisionID: v });
 
         for(let key in this.state.listDivisionName){   
@@ -169,8 +159,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListOrganization(){
-        //console.log("createListOrganization START...");
-
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
@@ -180,8 +168,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListDivision(){
-        //console.log("createListDivision START...");
-
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].division] = {
@@ -262,9 +248,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewOrganization(options){
-        //console.log("func 'createNewOrganization', START...");
-        //console.log(options);
-
         //обновляем список организаций
         let updateOrgName = this.state.listOrganizationName;
         updateOrgName[options.organizationName] = options.id;
@@ -285,9 +268,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewDivision(options){
-        console.log("func 'createNewDivision', START...");
-        console.log(options);
-
         let isExist = false;
         let newRecord = {
             id_organization: options.parentID, // уникальный идентификатор организации (String) a-Z0-9
@@ -311,10 +291,6 @@ export default class CreateBodyNewEntity extends React.Component {
         for(let i = 0; i < listNewEntity.length; i++){
             //ищем объект организации в listNewEntity
             if((typeof listNewEntity[i].division_or_branch_list_id !== "undefined") && (listNewEntity[i].id_organization === options.parentID)){
-
-                console.log(`new record ${JSON.stringify(newRecord)}`);
-                console.log(listNewEntity);
-
                 listNewEntity[i].division_or_branch_list_id.push(newRecord);
                 isExist = true;
 
@@ -332,9 +308,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createNewSource(options){
-        //console.log("func 'createNewSource', START...");
-        //console.log(options);
-
         let isExist = false;
         let newRecord = {
             id_division: options.parentID, // уникальный идентификатор подразделения
@@ -371,10 +344,9 @@ export default class CreateBodyNewEntity extends React.Component {
                 }
             }
         };
+
         let listNewEntity = this.state.listNewEntity;
         addNewSource(listNewEntity);
-
-
 
         //если не нашли организацию просто добавляе в массив
         if(!isExist){
@@ -471,8 +443,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     delAddedElem(elemID){
-        //console.log(`удалить элемент с ID ${elemID} и всех его дочерних потомков`);
-
         function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
             let iterator = (obj, func) => {
                 let newObj = {};

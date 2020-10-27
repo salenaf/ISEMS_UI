@@ -84,9 +84,6 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
             }
 
             if(data.type === "send a list of found unresolved tasks"){
-                
-                console.log(data.options);
-
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -129,11 +126,6 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
     }
 
     headerNextItemPagination(num){
-        console.log("func 'headerNextItemPagination'");
-        console.log(num);
-        console.log(`taskID: ${this.state.shortTaskInformation.taskID}`);
-        console.log(this.state.listTasksFound);
-
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
@@ -259,27 +251,89 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
             return;
         }
 
-        let listItem = [];
-        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){       
-            listItem.push(
-                <Pagination.Item 
-                    key={`pag_${i}`} 
-                    active={this.state.listTasksFound.p.ccn === i}
-                    onClick={this.headerNextItemPagination.bind(this, i)} >
-                    {i}
-                </Pagination.Item>
+        let addEllipsis = false;
+        let items = [];
+        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
+            if(this.state.listTasksFound.p.cn < 5){
+                items.push(
+                    <Pagination.Item 
+                        key={`pag_${i}`} 
+                        active={this.state.listTasksFound.p.ccn === i}
+                        onClick={this.headerNextItemPagination.bind(this, i)} >
+                        {i}
+                    </Pagination.Item>
+                );
+            } else {
+                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){                   
+                    items.push(
+                        <Pagination.Item 
+                            key={`pag_${i}`} 
+                            active={this.state.listTasksFound.p.ccn === i}
+                            onClick={this.headerNextItemPagination.bind(this, i)} >
+                            {i}
+                        </Pagination.Item>
+                    );
+                } else {
+                    if(this.state.listTasksFound.p.ccn === i){
+                        items.push(
+                            <Pagination.Item 
+                                key={`pag_${i}`} 
+                                active={this.state.listTasksFound.p.ccn === i}
+                                onClick={this.headerNextItemPagination.bind(this, i)} >
+                                {i}
+                            </Pagination.Item>
+                        );
+                    } else {
+                        if(addEllipsis){
+                            continue;
+                        }
+    
+                        addEllipsis = true;
+                        items.push(
+                            <Pagination.Ellipsis 
+                                disabled={true}
+                                key={"pag_ellipsis"}/>
+                        );
+                    }
+                }
+            }
+        }
+
+        if(this.state.listTasksFound.p.cn > 3){
+            let pfd = this.state.listTasksFound.p.ccn === 1;
+            let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
+            
+            return (
+                <Row>
+                    <Col md={12} className="d-flex justify-content-center">
+                        <Pagination size="sm">
+                            <Pagination.First 
+                                disabled={pfd}
+                                onClick={this.headerNextItemPagination.bind(this, 1)} />
+                            <Pagination.Prev
+                                disabled={pfd}
+                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === 1) ? 1:this.state.listTasksFound.p.ccn-1))} />
+                            {items}
+                            <Pagination.Next
+                                disabled={pld}
+                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn) ? this.state.listTasksFound.p.cn:this.state.listTasksFound.p.ccn+1))} />
+                            <Pagination.Last 
+                                disabled={pld}
+                                onClick={this.headerNextItemPagination.bind(this, this.state.listTasksFound.p.cn)} />
+                        </Pagination>
+                    </Col>
+                </Row>
             );
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{listItem}</Pagination>
+                    <Pagination size="sm">{items}</Pagination>
                 </Col>
             </Row>
         );
     }
-
 
     render(){
         return (

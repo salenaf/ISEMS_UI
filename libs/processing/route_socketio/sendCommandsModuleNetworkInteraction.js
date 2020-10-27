@@ -639,9 +639,6 @@ module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(t
  * @param {*} data 
  */
 module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, userName = "", description = "" }) {
-    console.log("func 'managementRequestMarkTaskCompleted'");
-    console.log(`TaskID: ${taskID}, userName: ${userName}, description: ${description}`);
-
     return new Promise((resolve, reject) => {
         process.nextTick(() => {
             if (taskID === null) {
@@ -665,9 +662,6 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
                         d: description,
                     }
                 };
-
-                console.log("---------- forming Request ----------");
-                console.log(JSON.stringify(tmp));
 
                 conn.sendMessage(tmp);
             }

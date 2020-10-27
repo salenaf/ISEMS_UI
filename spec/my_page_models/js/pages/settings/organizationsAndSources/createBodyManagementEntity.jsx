@@ -272,8 +272,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     createListOrganization(){
-        //console.log("createListOrganization START...");
-
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].organization] = this.props.listSourcesInformation[source].oid;
@@ -283,8 +281,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     createListDivision(){
-        //console.log("createListDivision START...");
-
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[this.props.listSourcesInformation[source].division] = {
@@ -297,8 +293,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     createListSource(){
-        //console.log("createListSource START...");
-
         let listTmp = {};
         for(let source in this.props.listSourcesInformation){
             listTmp[`${source} ${this.props.listSourcesInformation[source].shortName}`] = {
@@ -341,9 +335,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     searchInfoListSourceInformation_test({ type: searchType, value: searchID }){
-
-        console.log("FUNC 'searchInfoListSourceInformation_test'");
-
         let paramType = {
             "organization": "oid",
             "division": "did",
@@ -463,8 +454,6 @@ export default class CreateBodyManagementEntity extends React.Component {
     }
 
     handlerSave(entityType, entityID){
-        console.log("func 'handlerSave', START...");
-
         let entityInfo = this.searchEntityInObjectShowedInformation(entityType, entityID);
 
         if(entityType === "organization"){

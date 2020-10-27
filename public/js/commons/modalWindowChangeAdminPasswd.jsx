@@ -70,8 +70,6 @@ class ModalWindowChangeAdminPasswd extends React.Component {
             },
         });
 
-        console.log("send handler save");
-
         this.handlerClose();
     }
 

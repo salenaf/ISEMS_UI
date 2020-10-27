@@ -579,10 +579,6 @@ class CreatePageOrganizationAndSources extends React.Component {
     }
 
     handlerSourceReconnect(data){
-        console.log("func 'handlerSourceReconnect'");
-        console.log(data);
-        console.log("send to server");
-
         this.props.socketIo.emit("reconnect source", { source_id: data.sourceID });
     }
 

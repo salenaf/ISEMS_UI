@@ -42,11 +42,7 @@ class CreatePageSearchTasks extends React.Component {
                     nw: { any: [], src: [], dst: [] },
                 },
             },
-            listPagination: [],
         };
-
-        this.handlerEvents.call(this);
-        this.requestEmitter.call(this);
 
         this.getUserPermission = this.getUserPermission.bind(this);
         this.handlerTaskDelete = this.handlerTaskDelete.bind(this);
@@ -59,6 +55,9 @@ class CreatePageSearchTasks extends React.Component {
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+
+        this.handlerEvents.call(this);
+        this.requestEmitter.call(this);
     }
 
     requestEmitter(){
@@ -419,28 +418,6 @@ class CreatePageSearchTasks extends React.Component {
             return;
         }
 
-        /**
-p: { cs: 0, cn: 0, ccn: 1 },
-
-p: { //PaginationOptions — параметры разбиения частей
-			cs: <INT> //ChunkSize - размер сегмента (кол-во задач в сегменте)
-			cn: <INT> //ChunkNumber - общее количество сегментов
-			ccn: <INT> //ChunkCurrentNumber - номер текущего фрагмента
-		},
- */
-
-        /*let listItem = [];
-        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){       
-            listItem.push(
-                <Pagination.Item 
-                    key={`pag_${i}`} 
-                    active={this.state.listTasksFound.p.ccn === i}
-                    onClick={this.headerNextItemPagination.bind(this, i)} >
-                    {i}
-                </Pagination.Item>
-            );
-        }*/
-
         let addEllipsis = false;
         let items = [];
         for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
@@ -454,10 +431,7 @@ p: { //PaginationOptions — параметры разбиения частей
                     </Pagination.Item>
                 );
             } else {
-                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){
-                    
-                    //                    console.log(`i:${i} <= 2, i:${i} >= this.state.listTasksFound.p.cn-2:${this.state.listTasksFound.p.cn-2}`);
-                    
+                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){                   
                     items.push(
                         <Pagination.Item 
                             key={`pag_${i}`} 
@@ -467,16 +441,27 @@ p: { //PaginationOptions — параметры разбиения частей
                         </Pagination.Item>
                     );
                 } else {
-                    if(addEllipsis){
-                        continue;
+                    if(this.state.listTasksFound.p.ccn === i){
+                        items.push(
+                            <Pagination.Item 
+                                key={`pag_${i}`} 
+                                active={this.state.listTasksFound.p.ccn === i}
+                                onClick={this.headerNextItemPagination.bind(this, i)} >
+                                {i}
+                            </Pagination.Item>
+                        );
+                    } else {
+                        if(addEllipsis){
+                            continue;
+                        }
+    
+                        addEllipsis = true;
+                        items.push(
+                            <Pagination.Ellipsis 
+                                disabled={true}
+                                key={"pag_ellipsis"}/>
+                        );
                     }
-
-                    addEllipsis = true;
-                    items.push(
-                        <Pagination.Ellipsis 
-                            disabled={true}
-                            key={`pag_${i}`}/>
-                    );
                 }
             }
         }
@@ -484,6 +469,7 @@ p: { //PaginationOptions — параметры разбиения частей
         if(this.state.listTasksFound.p.cn > 3){
             let pfd = this.state.listTasksFound.p.ccn === 1;
             let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
+            
             return (
                 <Row>
                     <Col md={12} className="d-flex justify-content-center">

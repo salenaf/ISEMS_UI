@@ -451,9 +451,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     windowClose(){
-
-        console.log(`закрыть модальное окно для типа ${JSON.stringify(this.props.settings.type)}`);
-
         let pattern = {
             "organization": "organizationSettings",
             "division": "divisionSettings",
@@ -484,8 +481,6 @@ export default class ModalWindowAddEntity extends React.Component {
     }
 
     buttonAdd(){
-        console.log(`Получить и проверить входные параметры заданные пользователем для модального окна типа: '${this.props.settings.type}'`);
-
         /**
          * проверяем корректность значений и их наличие
          */
@@ -753,6 +748,8 @@ export default class ModalWindowAddEntity extends React.Component {
         * Для продакшена надо прикрутить RegExp
         
         
+                НЕУЖЕЛИ ЗАБЫЛ ДОПИСАТЬ!!!
+
         console.log("func 'divisionInput', START...");
         console.log(`element name: ${elementName}`);
         console.log(`value: ${value}`);

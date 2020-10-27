@@ -31,10 +31,6 @@ class CreatePageDownloadFile extends React.Component {
     }
 
     handlerModalWindowShowTaskTnformation(data){
-
-        console.log("func 'handlerModalWindowShowTaskTnformation'...");
-        console.log(data);
-
         let objCopy = Object.assign({}, this.state);
         objCopy.shortTaskInformation.sourceID = data.sourceID;
         objCopy.shortTaskInformation.sourceName = data.sourceName;
