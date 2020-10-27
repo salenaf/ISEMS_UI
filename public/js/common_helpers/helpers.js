@@ -52,10 +52,10 @@ let helpers = {
 
     //пересчет в Кбайты, Мбайты и Гбайты
     changeByteSize(byte) {
-        if (3 >= byte.length) return "<strong>" + byte + "</strong> байт";
-        else if (3 < byte.length && byte.length <= 6) return "<strong>" + (byte / 1000).toFixed(2) + "</strong> Кбайт";
-        else if (6 < byte.length && byte.length <= 9) return "<strong>" + (byte / 1000000).toFixed(2) + "</strong> Мбайт";
-        else return "<strong>" + (byte / 1000000000).toFixed(2) + "</strong> Гбайт";
+        if (byte < 1000) return byte + " байт";
+        else if ((byte >= 1000) && (byte <= 1000000)) return (byte / 1000).toFixed(2) + " Кбайт";
+        else if ((byte >= 1000000) && (byte <= 1000000000)) return (byte / 1000000).toFixed(2) + " Мбайт";
+        else return (byte / 1000000000).toFixed(2) + " Гбайт";
     },
 
     //конвертирование даты и вермени
@@ -118,7 +118,7 @@ let helpers = {
         };
         let pattern = objSettings[elem.name];
 
-        if(typeof pattern === "undefined"){
+        if (typeof pattern === "undefined") {
             return false;
         }
 

@@ -42,6 +42,7 @@ class CreatePageSearchTasks extends React.Component {
                     nw: { any: [], src: [], dst: [] },
                 },
             },
+            listPagination: [],
         };
 
         this.handlerEvents.call(this);
@@ -418,7 +419,17 @@ class CreatePageSearchTasks extends React.Component {
             return;
         }
 
-        let listItem = [];
+        /**
+p: { cs: 0, cn: 0, ccn: 1 },
+
+p: { //PaginationOptions — параметры разбиения частей
+			cs: <INT> //ChunkSize - размер сегмента (кол-во задач в сегменте)
+			cn: <INT> //ChunkNumber - общее количество сегментов
+			ccn: <INT> //ChunkCurrentNumber - номер текущего фрагмента
+		},
+ */
+
+        /*let listItem = [];
         for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){       
             listItem.push(
                 <Pagination.Item 
@@ -428,12 +439,78 @@ class CreatePageSearchTasks extends React.Component {
                     {i}
                 </Pagination.Item>
             );
+        }*/
+
+        let addEllipsis = false;
+        let items = [];
+        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
+            if(this.state.listTasksFound.p.cn < 5){
+                items.push(
+                    <Pagination.Item 
+                        key={`pag_${i}`} 
+                        active={this.state.listTasksFound.p.ccn === i}
+                        onClick={this.headerNextItemPagination.bind(this, i)} >
+                        {i}
+                    </Pagination.Item>
+                );
+            } else {
+                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){
+                    
+                    //                    console.log(`i:${i} <= 2, i:${i} >= this.state.listTasksFound.p.cn-2:${this.state.listTasksFound.p.cn-2}`);
+                    
+                    items.push(
+                        <Pagination.Item 
+                            key={`pag_${i}`} 
+                            active={this.state.listTasksFound.p.ccn === i}
+                            onClick={this.headerNextItemPagination.bind(this, i)} >
+                            {i}
+                        </Pagination.Item>
+                    );
+                } else {
+                    if(addEllipsis){
+                        continue;
+                    }
+
+                    addEllipsis = true;
+                    items.push(
+                        <Pagination.Ellipsis 
+                            disabled={true}
+                            key={`pag_${i}`}/>
+                    );
+                }
+            }
+        }
+
+        if(this.state.listTasksFound.p.cn > 3){
+            let pfd = this.state.listTasksFound.p.ccn === 1;
+            let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
+            return (
+                <Row>
+                    <Col md={12} className="d-flex justify-content-center">
+                        <Pagination size="sm">
+                            <Pagination.First 
+                                disabled={pfd}
+                                onClick={this.headerNextItemPagination.bind(this, 1)} />
+                            <Pagination.Prev
+                                disabled={pfd}
+                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === 1) ? 1:this.state.listTasksFound.p.ccn-1))} />
+                            {items}
+                            <Pagination.Next
+                                disabled={pld}
+                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn) ? this.state.listTasksFound.p.cn:this.state.listTasksFound.p.ccn+1))} />
+                            <Pagination.Last 
+                                disabled={pld}
+                                onClick={this.headerNextItemPagination.bind(this, this.state.listTasksFound.p.cn)} />
+                        </Pagination>
+                    </Col>
+                </Row>
+            );
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{listItem}</Pagination>
+                    <Pagination size="sm">{items}</Pagination>
                 </Col>
             </Row>
         );

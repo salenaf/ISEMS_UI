@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Col, Row, OverlayTrigger, Tooltip, Table, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import {helpers} from "../common_helpers/helpers.js";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
 import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
 
@@ -31,6 +32,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         this.handlerEvents.call(this);
 
         this.sortElement = this.sortElement.bind(this);
+        this.createPagination = this.createPagination.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
@@ -81,7 +83,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 });
             }
 
-            if(data.type === "send a list of found tasks"){
+            if(data.type === "send a list of found unresolved tasks"){
                 
                 console.log(data.options);
 
@@ -136,21 +138,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
             return;
         }
 
-        /**
-         * !!!!!!!!!!!!!
- * Сделать пагинатор на странице со списокм задач
- * по которым нужно выполнить анализ
- * Почему то прилетает информация преднозначенная для страницы поиска
- * 34 задачи в место 1 при переходе на цифру 2 пагинатора
- * 
- * 
- * ПОХОЖЕ мне нужен другой обработчик на свойство unresolvedTask
- * глобального объекта globalObject, а то с событием
- * "network interaction: get next chunk list all tasks" обращение
- * идет к свойству resultFoundTasks globalObject
- */
-
-        this.props.socketIo.emit("network interaction: get next chunk list all tasks", {
+        this.props.socketIo.emit("network interaction: get next chunk list unresolved tasks", {
             taskID: this.state.currentTaskID,
             chunkSize: this.state.listTasksFound.p.cs,
             nextChunk: num,
@@ -209,7 +197,10 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <small><ListNetworkParameters type={"pt"} item={item.pf.f.pt} listInput={[]} /></small>
                     </td>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_search_file`}>
-                        <small>{`${formaterInt.format(item.nffarf)} (${formaterInt.format(item.nfd)})`}</small>
+                        <small>{`${formaterInt.format(item.nffarf)} / ${formaterInt.format(item.nfd)}`}</small>
+                    </td>
+                    <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_file_size`}>
+                        <small>{helpers.changeByteSize(item.tsffarf)}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "processed")}>
                         <OverlayTrigger
@@ -242,14 +233,15 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>время создания</th>
+                                <th className="my_line_spacing">время создания</th>
                                 <th>sid</th>
                                 <th>источник</th>
-                                <th>интервал времени</th>
+                                <th className="my_line_spacing">интервал времени</th>
                                 <th>ip</th>
                                 <th>network</th>
                                 <th>port</th>
-                                <th>файлы найденны (выгружены)</th>
+                                <th className="my_line_spacing">файлов найдено / выгружено</th>
+                                <th className="my_line_spacing">общий размер</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -290,8 +282,6 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
 
 
     render(){
-        let createPagination = this.createPagination.call(this);
-
         return (
             <React.Fragment>
                 <Row>
@@ -302,9 +292,9 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>
                 </Row>
-                {createPagination}
+                {this.createPagination()}
                 {this.createTableListDownloadFile.call(this)}
-                {createPagination}
+                {this.createPagination()}
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}
