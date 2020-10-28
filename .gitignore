@@ -2,10 +2,7 @@
 assets/
 logs/
 test/
-spec/helpers
-spec/jasmine_examples
-spec/support
-spec/my_page_models/node_modules
+spec/
 uploads/
 node_modules/
 keys/isems_ui_cert.pem
