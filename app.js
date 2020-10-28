@@ -22,12 +22,11 @@ const networkInteractionHandlerAPI = require("./middleware/networkInteractionHan
 
 const options = {};
 
-const credentials = {
-    key: fs.readFileSync("keys/isems_ui_private_key.pem"),
-    cert: fs.readFileSync("keys/isems_ui_cert.pem")
-};
+const server = https.createServer({
+    key: fs.readFileSync(config.get("httpServer:keysPath:privateKey")),
+    cert: fs.readFileSync(config.get("httpServer:keysPath:cert")),
+}, app);
 
-const server = https.createServer(credentials, app);
 const io = require("socket.io").listen(server, options);
 
 async.parallel([

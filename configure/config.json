@@ -1,7 +1,11 @@
 {
     "httpServer": {
         "host": "127.0.0.1",
-        "port": "8888"
+        "port": "8888",
+        "keysPath": {
+            "cert": "keys/isems_ui_cert.pem",
+            "privateKey": "keys/isems_ui_private_key.pem"
+        }
     },
     "mongoDB": {
         "socket": false,
