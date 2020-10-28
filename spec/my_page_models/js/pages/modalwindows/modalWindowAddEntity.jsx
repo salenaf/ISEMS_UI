@@ -640,6 +640,8 @@ export default class ModalWindowAddEntity extends React.Component {
         const value = event.target.value;
         const elementName = event.target.id;
 
+        console.log("func handlerInput");
+
         if(typeInput === "organization"){
             this.organizationInput(elementName, value);
         }
@@ -700,6 +702,9 @@ export default class ModalWindowAddEntity extends React.Component {
         * Для продакшена надо прикрутить RegExp
         */
        
+        console.log("func organizationInput");
+        console.log(value);
+
         let objUpdate = Object.assign({}, this.state);
 
         /**
@@ -755,6 +760,9 @@ export default class ModalWindowAddEntity extends React.Component {
         console.log(`value: ${value}`);
         */
 
+        console.log("func 'divisionInput'");
+        console.log(value);
+
         let objUpdate = Object.assign({}, this.state);
 
         /**
@@ -799,6 +807,9 @@ export default class ModalWindowAddEntity extends React.Component {
          * пока пусть будет только по длинне
          * 
          */
+
+        console.log("func 'sourcesInput'");
+        console.log();
 
         const listElem = {
             "source_id": {

@@ -216,8 +216,7 @@ class CreateBodySource extends React.Component {
                                 }
 
                                 return list;
-                            })()
-                            }
+                            })()}
                         </Form.Control>
                     </Form.Group>
                 </Form.Row>

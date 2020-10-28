@@ -58,9 +58,20 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             return;
         }
 
+        console.log("class 'networkInteractionMainHeader'");
+        console.log(window.location.pathname);
+
+        if(window.location.pathname !== "/network_interaction_page_file_download"){
+            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });            
+        }
+
+        if(window.location.pathname !== "/network_interaction_page_statistics_and_analytics"){
+            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });               
+        }
+
         //для виджетов и некоторых страниц
-        this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
-        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });   
+        //this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+        //this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });   
     }
 
     handlerEvents(){

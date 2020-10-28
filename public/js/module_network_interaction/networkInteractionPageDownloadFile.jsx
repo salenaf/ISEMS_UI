@@ -28,6 +28,12 @@ class CreatePageDownloadFile extends React.Component {
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+
+        this.requestEmitter.call(this);
+    }
+
+    requestEmitter(){
+        this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
     }
 
     handlerModalWindowShowTaskTnformation(data){
