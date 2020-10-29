@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo '';
+echo -e '|_   _|/  ___||  ___||  \/  |/  ___|        | | | ||_   _|
+  | |  \ `--. | |__  | .  . |\ `--.  ______ | | | |  | |  
+  | |   `--. \|  __| | |\/| | `--. \|______|| | | |  | |  
+ _| |_ /\__/ /| |___ | |  | |/\__/ /        | |_| | _| |_ 
+ \___/ \____/ \____/ \_|  |_/\____/          \___/  \___/';
+echo '';
+echo -e "	 \033[0;31m 1. \033[0m \033[0;32mЗапуск\033[0m                      ";
+echo -e "	 \033[0;31m 2. \033[0m \033[1;31mОстанов\033[0m                     ";
+echo -e "	 \033[0;31m 3. \033[0m Список запущенных процессов ";
+echo -e "	 \033[0;31m 4. \033[0m Мониторинг запущенных процессов ";
+echo '';
+
+read NUM;
+
+case $NUM in
+  1) 
+    node_modules/.bin/pm2 start app.js -e /var/log/isems-ui_errors.log --name isemsui_app;
+  ;;
+
+  2)
+    node_modules/.bin/pm2 delete isemsui_app;
+  ;;
+
+  3)
+    node_modules/.bin/pm2 list
+  ;;
+  4)
+    node_modules/.bin/pm2 monit
+  ;;
+esac

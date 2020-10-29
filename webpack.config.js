@@ -176,19 +176,18 @@ module.exports = {
                 }
             },
             /*{
-                                     test: /\.(js|jsx)$/,
-                                    test: /\.js$/,
-                                    exclude: /node_modules/,
-                                    use: ["babel-loader"] //, 'eslint-loader']
-                                },*/
+                                                 test: /\.(js|jsx)$/,
+                                                test: /\.js$/,
+                                                exclude: /node_modules/,
+                                                use: ["babel-loader"] //, 'eslint-loader']
+                                            },*/
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
                     fallback: "style-loader",
                     use: ["css-loader"]
                 })
-            },
-            {
+            }, {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
                 include: /\/node_modules\//,
                 use: [{
@@ -198,8 +197,7 @@ module.exports = {
                         publicPath: "dist/",
                     },
                 }, ],
-            },
-            {
+            }, {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
                 exclude: /\/node_modules\//,
                 use: [{
@@ -211,19 +209,19 @@ module.exports = {
                 }, ],
             },
             /*{
-                                    test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
-                                    loader: "imports-loader?this=>window&exports=>false&define=>false"
-                                },
-                                            {
-                                                                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                include: /\/node_modules\//,
-                                                                loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
-                                                            },
-                                                            {
-                                                                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                exclude: /\/node_modules\//,
-                                                                loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
-                                                            },*/
+                                                test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
+                                                loader: "imports-loader?this=>window&exports=>false&define=>false"
+                                            },
+                                                        {
+                                                                            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                                            include: /\/node_modules\//,
+                                                                            loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
+                                                                        },
+                                                                        {
+                                                                            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                                            exclude: /\/node_modules\//,
+                                                                            loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
+                                                                        },*/
             {
                 test: /\.ejs$/,
                 loader: "ejs-loader"
