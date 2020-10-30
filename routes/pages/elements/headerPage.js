@@ -15,9 +15,6 @@ module.exports = function(req) {
     return new Promise((resolve, reject) => {
         async.parallel({
             getPasswordInfo: (callback) => {
-
-                console.log(`search info password from passwordID ${req.session.passport.user}`);
-
                 require("../../../middleware/mongodbQueryProcessor").querySelect(models.modelAdditionalPassportInformation, {
                     query: { passport_id: req.session.passport.user }
                 }, (err, result) => {
@@ -31,6 +28,24 @@ module.exports = function(req) {
                     if (err) callback(err);
                     else callback(null, result);
                 });
+            },
+            restoreTmpModuleNetworkInteraction: (callback) => {
+                //восстанавливаем свойство tmpModuleNetworkInteraction в globalObject
+
+                console.log("----==== headerPage ====----");
+                console.log(req.sessionID);
+                console.log("----==== headerPage ====----");
+
+                if(!globalObject.hasData("tmpModuleNetworkInteraction", req.sessionID)){
+                    console.log("session ID from globalObject is not found");
+                    globalObject.setData("tmpModuleNetworkInteraction", req.sessionID, {
+                        tasksDownloadFiles: {},
+                        unresolvedTask: {},
+                        resultFoundTasks: {},
+                    });
+                }
+
+                callback(null);
             },
         }, (err, result) => {
             if(err) reject(err);

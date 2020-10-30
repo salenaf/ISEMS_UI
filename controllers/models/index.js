@@ -8,4 +8,5 @@ module.exports.modelSourcesParameter = require("./modelSourcesParameter");
 module.exports.modelDivisionBranchName = require("./modelDivisionBranchName");
 module.exports.modelAdditionalInformation = require("./modelAdditionalInformation");
 module.exports.modelSessionUserInformation = require("./modelSessionUserInformation");
+module.exports.modelNotificationLogISEMSNIH = require("./modelNotificationLogISEMS-NIH");
 module.exports.modelAdditionalPassportInformation = require("./modelAdditionalPassportInformation");

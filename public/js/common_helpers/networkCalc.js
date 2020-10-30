@@ -13,10 +13,10 @@
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
+"use strict";
 
 function IPv4_Address(addressDotQuad, netmaskBits) {
-    let split = addressDotQuad.split('.', 4);
+    let split = addressDotQuad.split(".", 4);
     let byte1 = Math.max(0, Math.min(255, parseInt(split[0]))); /* sanity check: valid values: = 0-255 */
     let byte2 = Math.max(0, Math.min(255, parseInt(split[1])));
     let byte3 = Math.max(0, Math.min(255, parseInt(split[2])));
@@ -27,7 +27,7 @@ function IPv4_Address(addressDotQuad, netmaskBits) {
     if (isNaN(byte3)) byte3 = 0;
     if (isNaN(byte4)) byte4 = 0;
 
-    addressDotQuad = (byte1 + '.' + byte2 + '.' + byte3 + '.' + byte4);
+    addressDotQuad = (byte1 + "." + byte2 + "." + byte3 + "." + byte4);
 
     this.addressDotQuad = addressDotQuad.toString();
     this.netmaskBits = Math.max(0, Math.min(32, parseInt(netmaskBits))); /* sanity check: valid values: = 0-32 */
@@ -52,7 +52,7 @@ function IPv4_Address(addressDotQuad, netmaskBits) {
 /* In some versions of JavaScript subnet calculators they use bitwise operations to shift the values left. Unfortunately JavaScript converts to a 32-bit signed integer when you mess with bits, which leaves you with the sign + 31 bits. For the first byte this means converting back to an integer results in a negative value for values 128 and higher since the leftmost bit, the sign, becomes 1. Using the 64-bit float allows us to display the integer value to the user. */
 /* dotted-quad IP to integer */
 function IPv4_dotquadA_to_intA(strbits) {
-    let split = strbits.split('.', 4);
+    let split = strbits.split(".", 4);
     let myInt = (
         parseFloat(split[0] * 16777216) /* 2^24 */ +
         parseFloat(split[1] * 65536) /* 2^16 */ +
@@ -68,7 +68,7 @@ function IPv4_intA_to_dotquadA(strnum) {
     let byte2 = (strnum >>> 16) & 255;
     let byte3 = (strnum >>> 8) & 255;
     let byte4 = strnum & 255;
-    return (byte1 + '.' + byte2 + '.' + byte3 + '.' + byte4);
+    return (byte1 + "." + byte2 + "." + byte3 + "." + byte4);
 }
 
 /* integer IP to binary string representation */
@@ -78,7 +78,7 @@ function IPv4_intA_to_binstrA(strnum) {
 
     if (numZeros > 0) {
         for (let i = 1; i <= numZeros; i++) {
-            numStr = '0' + numStr;
+            numStr = "0" + numStr;
         }
     }
 
@@ -92,12 +92,12 @@ function IPv4_binstrA_to_intA(binstr) {
 
 /* convert # of bits to a string representation of the binary value */
 function IPv4_bitsNM_to_binstrNM(bitsNM) {
-    let bitString = '';
+    let bitString = "";
     let numberOfOnes = bitsNM;
 
-    while (numberOfOnes--) bitString += '1'; /* fill in ones */
+    while (numberOfOnes--) bitString += "1"; /* fill in ones */
     let numberOfZeros = 32 - bitsNM;
-    while (numberOfZeros--) bitString += '0'; /* pad remaining with zeros */
+    while (numberOfZeros--) bitString += "0"; /* pad remaining with zeros */
 
     return bitString;
 }
@@ -105,7 +105,7 @@ function IPv4_bitsNM_to_binstrNM(bitsNM) {
 /* The IPv4_Calc_* functions operate on string representations of the binary value because I don't trust JavaScript's sign + 31-bit bitwise functions. */
 /* logical AND between address & netmask */
 function IPv4_Calc_netaddrBinStr(addressBinStr, netmaskBinStr) {
-    let netaddressBinStr = '';
+    let netaddressBinStr = "";
     let aBit = 0;
     let nmBit = 0;
     for (let pos = 0; pos < 32; pos++) {
@@ -114,7 +114,7 @@ function IPv4_Calc_netaddrBinStr(addressBinStr, netmaskBinStr) {
         if (aBit == nmBit) {
             netaddressBinStr += aBit.toString();
         } else {
-            netaddressBinStr += '0';
+            netaddressBinStr += "0";
         }
     }
     return netaddressBinStr;
@@ -122,7 +122,7 @@ function IPv4_Calc_netaddrBinStr(addressBinStr, netmaskBinStr) {
 
 /* logical OR between address & NOT netmask */
 function IPv4_Calc_netbcastBinStr(addressBinStr, netmaskBinStr) {
-    let netbcastBinStr = '';
+    let netbcastBinStr = "";
     let aBit = 0;
     let nmBit = 0;
     for (let pos = 0; pos < 32; pos++) {
@@ -132,8 +132,8 @@ function IPv4_Calc_netbcastBinStr(addressBinStr, netmaskBinStr) {
         if (nmBit) nmBit = 0; /* flip netmask bits */
         else nmBit = 1;
 
-        if (aBit || nmBit) netbcastBinStr += '1';
-        else netbcastBinStr += '0';
+        if (aBit || nmBit) netbcastBinStr += "1";
+        else netbcastBinStr += "0";
     }
     return netbcastBinStr;
 }
@@ -145,7 +145,7 @@ function IPv4_BitShiftLeft(mask, bits) {
 
 /* used for display purposes */
 function IPv4_BinaryDotQuad(binaryString) {
-    return (binaryString.substr(0, 8) + '.' + binaryString.substr(8, 8) + '.' + binaryString.substr(16, 8) + '.' + binaryString.substr(24, 8));
+    return (binaryString.substr(0, 8) + "." + binaryString.substr(8, 8) + "." + binaryString.substr(16, 8) + "." + binaryString.substr(24, 8));
 }
 
 export { IPv4_Address };

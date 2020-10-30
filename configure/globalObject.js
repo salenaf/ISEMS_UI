@@ -1,32 +1,104 @@
-/*
- * Глобальный объект для промежуточного хрнения данных
- * содержит:
- *
- * descriptionDB - дискрипторы соединения с СУБД
- * descriptionAPI - дискрипторы соединения с API
- *
- * users - информацию по пользователям
- * sources - информацию об источниках (в том числе отслеживание 'свежесть' полученных от источников данных)
- * 
- * Весрия 0.1, дата релиза 10.01.2019
- * */
-
 "use strict";
 
 const EventEmitter = require("events");
 
 class SocketioEventResponse extends EventEmitter {}
 
+/**
+ * Глобальный объект для промежуточного хрнения данных
+ * 
+ *   {
+ *       временные данные
+ *       здесь хранится информация о задачах фильтрации и выгрузки
+ *       файлов полученная из модуля сетевого взаимодействия
+ *       доступ по sessionId пользователя (это все для пагинатора)
+ *       tmpModuleNetworkInteraction: {
+ *          <sessionId>: {
+ *              //результат поиска задач
+ *              resultFoundTasks: {
+ *                  taskID: STRING,                 
+ *                  status: STRING,
+ *                  numFound: INT, //сколько всего найдено
+ *                  paginationOptions: { параметры разбиения частей
+ *			            chunkSize: INT размер сегмента (кол-во задач в сегменте)
+ *			            chunkNumber: INT общее количество сегментов
+ *			            chunkCurrentNumber: INT номер текущего фрагмента
+ *                  }
+ *                  listTasksDownloadFiles: []  
+ *              }, 
+ *              //информация о списках задач по скачиванию файлов
+ *              tasksDownloadFiles: {
+ *                  taskID: STRING,                 
+ *                  status: STRING,
+ *                  numFound: INT, //сколько всего найдено
+ *                  paginationOptions: { параметры разбиения частей
+ *			            chunkSize: INT размер сегмента (кол-во задач в сегменте)
+ *			            chunkNumber: INT общее количество сегментов
+ *			            chunkCurrentNumber: INT номер текущего фрагмента
+ *                  }
+ *                  listTasksDownloadFiles: []
+ *              },
+ *              //информация о списках задач не отмеченных пользователем как завершенные
+ *              unresolvedTask: {
+ *                  taskID: STRING,                 
+ *                  status: STRING,
+ *                  numFound: INT, //сколько всего найдено
+ *                  paginationOptions: { параметры разбиения частей
+ *			            chunkSize: INT размер сегмента (кол-во задач в сегменте)
+ *			            chunkNumber: INT общее количество сегментов
+ *			            chunkCurrentNumber: INT номер текущего фрагмента
+ *                  }
+ *                  listUnresolvedTask: [] 
+ *              },
+ *          }
+ *       },
+ *       выполняемые задачи для генерирования событий основываясь на 
+ *       полученном от модуля ID
+ *       tasks: {
+ *          <task ID>: {
+ *              eventName: название события в UI,
+ *              userSessionID: ID сессии пользователя,
+ *              generationTime: время генерации задачи,
+ *          },
+ *       },
+ *       параметры пользователя все из БД
+ *       users: {
+ *          userLogin: логин,
+ *          userName: имя,
+ *          userGroup: группа,
+ *          groupSettings: групповые настройки пользователя,
+ *          userSettings: общие настройки пользователя,
+ *       },
+ *       параметры истчников
+ *       sources: {
+ *          shortName: название источника,
+ *          description: описание,
+ *          connectStatus: статус соединения,
+ *          connectTime: время соединения,
+ *          id: id источника,
+ *       },
+ * 
+ *       дескрипторы соединения с API
+ *       descriptionAPI: {
+ *           networkInteraction: {
+ *               connection: object,
+ *               connectionEstablished: bool }}
+ *   } 
+ */
 class GlobalObject {
     constructor() {
         this.obj = {
+            "tasks": {},
             "users": {},
             "sources": {},
             "commonSettings": {},
             "descriptionDB": {},
             "descriptionAPI": {},
-            "socketioEventResponse": new SocketioEventResponse()
+            "socketioEventResponse": new SocketioEventResponse(),
+            "tmpModuleNetworkInteraction": {},
         };
+
+        this.timerSearchOldInformation.call(this);
     }
 
     _checkKeys(type) {
@@ -59,18 +131,12 @@ class GlobalObject {
      */
     setData(type, group, key = null, value = null) {
         if (this._checkKeys(type)) {
-            console.log("Error 1");
-
             return false;
         }
         if (typeof group === "undefined") {
-            console.log("Error 2");
-
             return false;
         }
         if (key === null) {
-            console.log("Error 3");
-
             return false;
         }
 
@@ -88,6 +154,7 @@ class GlobalObject {
     /**
      * получить данные по выбранным типу, группе и ключу
      * причем группа и ключ являются не обязательными полями
+     * 
      * @param {*} type 
      * @param {*} group 
      * @param {*} key 
@@ -99,6 +166,25 @@ class GlobalObject {
         if (key === null) return this.obj[type][group];
 
         return (typeof this.obj[type][group][key] === "undefined") ? null : this.obj[type][group][key];
+    }
+
+    /**
+     * проверить наличие значений
+     * 
+     * @param {*} type 
+     * @param {*} group 
+     * @param {*} key 
+     */
+    hasData(type, group = null, key = null) {
+        if (this._checkKeys(type)) {
+            return false;
+        } else if (group === null) {
+            return true;
+        } else if (group !== null && key === null) {
+            return (typeof this.obj[type][group] !== "undefined");
+        } else {
+            return (typeof this.obj[type][group][key] !== "undefined");
+        }
     }
 
     /**
@@ -117,7 +203,7 @@ class GlobalObject {
         if (this._checkKeys(type)) return false;
         if (typeof group === "undefined") return false;
 
-        arrayData.forEach(element => {
+        arrayData.forEach((element) => {
             if (Array.isArray(element) && (element.length === 2)) {
                 if ((typeof this.obj[type][group] === "undefined") || (typeof this.obj[type][group][element[0]] === "undefined")) return;
 
@@ -129,12 +215,30 @@ class GlobalObject {
     }
 
     //удалить данные по выбранному типу и группе
-    deleteData(type, group) {
+    deleteData(type, group, key = null) {
         if (this._checkKeys(type)) return false;
+        if (key === null) {
+            delete this.obj[type][group];
 
-        delete this.obj[type][group];
+            return true;
+        }
+        if (!Array.isArray(this.obj[type][group])) {
+            delete this.obj[type][group][key];
+        }
 
         return true;
+    }
+
+    timerSearchOldInformation() {
+        //поиск устаревших 'tasks'
+        setInterval(() => {
+            for (let id in this.obj.tasks) {
+                let tasksIsExist = this.obj.tasks[id].generationTime !== undefined;
+                if (tasksIsExist && (this.obj.tasks[id].generationTime < (+new Date() + 30000))) {
+                    this.deleteData("tasks", id);
+                }
+            }
+        }, 180000);
     }
 }
 

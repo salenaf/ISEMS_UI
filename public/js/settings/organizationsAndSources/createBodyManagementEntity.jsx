@@ -100,13 +100,14 @@ class ShowEntityInformation extends React.Component {
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
                             <Row>
-                                <Col><Form.Control 
-                                    type="text" 
-                                    onChange={this.props.handlerInputChange} 
-                                    value={this.props.resivedInfo.organizationName} 
-                                    isValid={this.props.resivedInfo.organizationNameIsValid}
-                                    isInvalid={this.props.resivedInfo.organizationNameIsInvalid}
-                                    id="organization_name" />
+                                <Col>
+                                    <Form.Control 
+                                        type="text" 
+                                        onChange={this.props.handlerInputChange} 
+                                        value={this.props.resivedInfo.organizationName} 
+                                        isValid={this.props.resivedInfo.organizationNameIsValid}
+                                        isInvalid={this.props.resivedInfo.organizationNameIsInvalid}
+                                        id="organization_name" />
                                 </Col>
                                 <Col>
                                     <Form.Control 
@@ -212,7 +213,7 @@ class CreateListEntity extends React.Component {
 
     listSource(){
         let listTmp = {};
-        this.props.listShortEntity.shortListSource.forEach((item) => {
+        this.props.listShortEntity.shortListSource.forEach((item) => {           
             let organizationId = "";
             for(let d of this.props.listShortEntity.shortListDivision){
                 if(d.id === item.id_division){
@@ -223,14 +224,15 @@ class CreateListEntity extends React.Component {
             }
 
             listTmp[item.short_name] = {
+                id: item.source_id,
                 sid: item.id,
                 did: item.id_division,
                 oid: organizationId,
             };
         });
 
-        let arrayTmp = Object.keys(listTmp).sort((a, b) => a < b).map((name) => {
-            return <option key={`key_sour_${listTmp[name].sid}`} value={`source:${listTmp[name].sid}`}>{name}</option>;
+        let arrayTmp = Object.keys(listTmp).sort((a, b) => a < b).map((name) => {          
+            return <option key={`key_sour_${listTmp[name].sid}`} value={`source:${listTmp[name].sid}`}>{`${listTmp[name].id} (${name})`}</option>;
         });
 
         return arrayTmp;
@@ -555,7 +557,9 @@ export default class CreateBodyManagementEntity extends React.Component {
             <React.Fragment>
                 <br/>
                 <Row>
-                    <Col className="text-left">Всего, организаций: {numOrganization}, подразделений: {numDivision}, источников: {numSource}.</Col>
+                    <Col className="text-left text-muted">
+                        всего, организаций: <span className="text-info">{numOrganization}</span>, подразделений: <span className="text-info">{numDivision}</span>, источников: <span className="text-info">{numSource}</span>
+                    </Col>
                 </Row>
                 <Row>
                     <Col className="text-left">

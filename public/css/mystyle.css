@@ -39,3 +39,16 @@
 .clickable_icon:not(:disabled):not(.disabled):focus {
     opacity: .75;
 }
+
+.clicabe_cursor {
+    cursor: pointer;
+}
+
+.my_line_spacing {
+    line-height: 100%;
+}
+
+.react-token-input {
+    height: 60px;
+    width: 390px;
+}

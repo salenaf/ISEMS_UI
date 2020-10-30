@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("hmgnsl");
-
 const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 
@@ -11,25 +9,12 @@ const writeLogFile = require("../../libs/writeLogFile");
  * 
  * @param {*} - msg
  */
-module.exports = async (msg) => {
-    debug("func 'handlerMsgModuleNetworkInteraction', START...");
-    debug(msg);
-
+module.exports = async () => {
     try {
-        let connModuleNetInteraction = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         let sourceList = await getSourceList();
-
-        debug("--- getSourceList ---");
-        //debug(sourceList);
-
         let optionsJSON = await converSourceListToJSONOptions(sourceList); 
 
-        debug("--- createJSONResponse ---");
-        //debug(optionsJSON);
-
-        debug("--- send list to module ISEMS-NIH ---");
-
-        connModuleNetInteraction.sendMessage({
+        globalObject.getData("descriptionAPI", "networkInteraction", "connection").sendMessage({
             msgType: "information",
             msgSection: "source control",
             msgInstruction: "send new source list",
@@ -38,15 +23,8 @@ module.exports = async (msg) => {
         });
 
     } catch(err){
-        debug(`ERROR: ${err.toString()}`);
-
         writeLogFile("error", `${err.toString()} (func 'handlerMsgGetNewSourceList')`);
     }
-
-
-/*    new Promise((resolve, reject) => {
-
-    });*/
 };
 
 //получаем из БД список источников

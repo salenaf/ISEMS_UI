@@ -227,11 +227,6 @@ function createModelGroups(modelGroup, next) {
                                 status: true,
                                 description: "останов фильтрации"
                             },
-                            import: {
-                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter_import"),
-                                status: true,
-                                description: "импорт файлов"
-                            },
                             delete: {
                                 id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_filter_delete"),
                                 status: true,
@@ -243,11 +238,6 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import"),
                         name: "импорт файлов",
                         element_settings: {
-                            cancel: {
-                                id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import_cancel"),
-                                status: true,
-                                description: "отмена"
-                            },
                             stop: {
                                 id: createUniqID.getMD5("administrator_management_network_interaction_management_tasks_import_stop"),
                                 status: true,

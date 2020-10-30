@@ -9,6 +9,7 @@
         "port": "27017",
         "user": "user_ISEMS-UI",
         "password": "jkdds7dfm0",
+        "nameDB": "isems-ui",
         "UnixSocketPath": "../../../../tmp/mongodb.sock"
     },
     "modules": {
