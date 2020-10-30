@@ -137,6 +137,65 @@ class QueryProcessor {
     }
 
     /**
+     * Обновление группы элементов
+     * 
+     * @param {*} mongooseModel 
+     * @param {*} documents (array|object) 
+     * @param {*} callback 
+     */
+
+    queryUpdateBD(mongooseModel, mongooseDoc, callback) {
+        mongooseDoc.forEach((item) => {
+            mongooseModel.findByIdandUpdate(item._id, 
+                {$set: {
+                    classType: item.classType,
+                    msg: item.msg,
+                    body: item.body,
+                }}, 
+                {new:true},
+                (err, doc) => {
+                    if (err) callback(err);
+                    else callback(null, doc);
+                });
+            console.log("~~~~~~~~~~~~~~~~~~~~~~~");
+            /*.then((updatedItem) => {
+                if(!updatedItem) {
+                    console.log("Cannot update!");
+                }
+                else {
+                    console.log(updatedItem);
+                        
+                }
+            });*/
+        });
+        
+    }
+
+    /**
+     * Вставка и обновление элементов
+     * 
+     * @param {*} mongooseModel 
+     * @param {*} documents (array|object) 
+     * @param {*} callback 
+     */
+    querySaveUpdate(mongooseModel, mongooseDoc, callback) {
+        
+        console.log("------+++-------");
+        // console.log(mongooseModel.insertMany());
+        mongooseModel.updateMany(
+            {}, 
+            { $set:{ mongooseDoc }}, 
+
+            (err, doc) => {
+                if (err) callback(err);
+                else callback(null, doc);
+            });
+    }
+
+
+
+
+    /**
      * Обновление элементов коллекции
      * 
      * @param {*} mongooseModel имя модели (таблица)

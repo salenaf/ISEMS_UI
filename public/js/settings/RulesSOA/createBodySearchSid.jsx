@@ -20,7 +20,7 @@ export default class CreateBodySearchSid extends React.Component {
         this.state = {
             listRule:  {}, //this.createListSid.call(this, this.props.listShortEntity),
             buffInSid:  null,
-            color: "secondary",
+            color: "dark",
             saveIcons: "./images/icons-save-0.png",
             visible: "unvisible",
             filter_search: "",
@@ -30,7 +30,7 @@ export default class CreateBodySearchSid extends React.Component {
             //"checkboxMarkedSourceDel": this.createStateCheckboxMarkedSourceDel.call(this),
         };
         this.onBlurHandler = "";
-        //this.bodyForUpdate = ""; 
+        this.bodyForUpdate = ""; 
         // this.inPut = React.createRef();
         //this.resultS = "";
         this.contentEditable = "false";
@@ -54,16 +54,16 @@ export default class CreateBodySearchSid extends React.Component {
 
         console.log(this.props.socketIo);
         
-        this.resultSearch   = this.resultSearch.bind(this);
-        this.handleSubmit   = this.handleSubmit.bind(this); 
-        this.typeCount      = this.typeCount.bind(this);
-        this.onChangeSearch = this.onChangeSearch.bind(this);
+        this.resultSearch    = this.resultSearch.bind(this);
+        this.handleSubmit    = this.handleSubmit.bind(this); 
+        this.typeCount       = this.typeCount.bind(this);
+        this.onChangeSearch  = this.onChangeSearch.bind(this);
         
-        this.readWrite      = this.readWrite.bind(this);
-        this.saveInfo       = this.saveInfo.bind(this);
-        this.geveNewValueSID= this.geveNewValueSID.bind(this);
-        this.handlerEvents  = this.handlerEvents.call(this);
-
+        this.readWrite       = this.readWrite.bind(this);
+        this.saveInfo        = this.saveInfo.bind(this);
+        this.geveNewValueSID = this.geveNewValueSID.bind(this);
+        this.handlerEvents   = this.handlerEvents.call(this);
+        this.modalWindowSave = this.modalWindowSave.bind(this);
         //  this.findSid        = this.findSid.bind(this, this.valueInPut );
        
 
@@ -209,7 +209,7 @@ export default class CreateBodySearchSid extends React.Component {
             }  
             
             updateObj.contentEditable="false";
-            updateObj.color= "secondary";
+            updateObj.color= "dark";
             updateObj.saveIcons= "./images/icons-save-0.png";
         }
         this.setState(updateObj);
@@ -219,36 +219,61 @@ export default class CreateBodySearchSid extends React.Component {
 
     geveNewValueSID(e) {
         let value = e.target.textContent;
-        console.log("------------------------");
+        //console.log("------------------------");
+
         this.bodyForUpdate = value;
-        console.log(value);
+        // console.log(value);
     }
 
     saveInfo(){
 
         let updateObj = this.state;
+        //modalWindowSave();
         if(updateObj.contentEditable == "true"){
             
         
             this.setState(updateObj);
 
             // this.bodyForUpdate = "alert tcp -> $EXTERNAL_NET any (msg:\"SQL sa login failed\"; flow:to_client,established; content:\"Login failed for user 'sa'\"; fast_pattern:only; metadata:policy balanced-ips drop, policy connectivity-ips drop, policy max-detect-ips drop, policy security-ips drop, ruleset community; reference:bugtraq,4797; reference:cve,2000-1209; reference:nessus,10673; classtype: 1unsuccl-user1; sid:688; rev:17;)";
-        
-            this.props.socketIo.emit("update value SID", {
-                checkSID: this.state.buffInSid.sid,
-                updateBody: this.bodyForUpdate,
-            });
-            this.handleSubmit();
-            alert("Изменения сохранены :3");
-     
+            if(this.bodyForUpdate != ""){
+                this.props.socketIo.emit("update value SID", {
+                    checkSID: this.state.buffInSid.sid,
+                    updateBody: this.bodyForUpdate,
+                });
+                this.handleSubmit();
+                alert("Изменения сохранены :3");
+            }
             updateObj.contentEditable = "false";
-            updateObj.color= "secondary";
+            updateObj.color= "dark";
             updateObj.saveIcons= "./images/icons-save-0.png";
             this.setState(updateObj);
         }
     }
-   
+    //
+    modalWindowSave(){
 
+        return <React.Fragment>
+            <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="false">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLongTitle">Сохранение данных</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                                                Хотите сохранить изменения?
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Не сохратять</button>
+                            <button type="button" className="btn btn-primary"   data-dismiss="modal">Сохранить изменения</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </React.Fragment>;
+    }/**/
     resultSearch(){
         // const {  buffInSid } = this.state;
         
@@ -262,14 +287,15 @@ export default class CreateBodySearchSid extends React.Component {
         let color = this.state.color;
         
         let saveIcon = this.state.saveIcons;
-
-        
+        // this.state.bodyForUpdate;
+        // card-header border-${color}
+        let edit = this.state.contentEditable;
         //  <p className="card-text">
         let outPutTabl = <React.Fragment>
             <div className={visPole}> 
                 <div className="text-left">     
                     <div className={` card mb-3 border-${color}`}>
-                        <h5 className= {`alert alert-secondary card-header border-${color}`}>
+                        <h5 className= {`alert alert-${color}`}>
                             <div className="media">
                                 <div className="media-body">
                                     <p className="mt-0 mb-1">
@@ -277,26 +303,26 @@ export default class CreateBodySearchSid extends React.Component {
                                     </p>
                                     Тип:  {inSidBD.classType} 
                                 </div>
-                                <a onClick={this.readWrite.bind(this)}>
+                                <a className="button disabled" onClick={this.readWrite.bind(this)} data-toggle="tooltip" data-placement="top" title="Редактировкать">
                                     <img className="clickable_icon" src="./images/icons8-edit-1.png" alt="редактировать"/>
                                 </a> 
                                 <pre><p> </p></pre>
-                                <a onClick={this.saveInfo.bind(this)}>
+                                <a className="button" onClick={this.saveInfo.bind(this)} data-toggle="tooltip" data-placement="top" title="Сохранить изменения">
                                     <img className="clickable_icon" src={saveIcon} alt="сохранить"/>
-                                </a> 
+                                </a>     
                             </div>
+                            { this.modalWindowSave()}
                         </h5>
                         <div className="card-body" 
-                            contentEditable={this.state.contentEditable}
-                            onInput={this.geveNewValueSID}
-                        >
-                            {inSidBD.body}
+                            contentEditable={edit}
+                            onInput={this.geveNewValueSID}>
+                            <p className="card-text"> {inSidBD.body}</p> 
                         </div>
                         
                     </div>
                 </div>
             </div>
-            
+
         </React.Fragment>;
         console.log(inSidBD.body);
         return outPutTabl;

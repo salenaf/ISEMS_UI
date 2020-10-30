@@ -6,7 +6,7 @@ const path = require("path");
 const writeLogFile = require("../../libs/writeLogFile");
 
 /**
- * Модуль обработчик файлов поступающих из User Interface
+ * Модуль для обновления SID в базе данных
  * 
  * @param {*} socketIo 
  */
@@ -40,7 +40,7 @@ function parser(body){
 
     let a_classType,b_sid,c_msg;
    
-    let mongooseModel = require("../../controllers/models").modelSOARules;
+    //let mongooseModel = require("../../controllers/models").modelSOARules;
 
     a_classType = wordOut(body, "classtype:",";"); 
     b_sid       = wordOut(body, "sid:",";"); 

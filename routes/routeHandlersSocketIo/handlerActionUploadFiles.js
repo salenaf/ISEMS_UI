@@ -121,7 +121,7 @@ async function processing(fileName){
         await ((listRules ) => {
             return new Promise((resolve,reject) => {
                 // requireMong.queryUpdate(mongooseModel,  listRules , (err, doc) => {
-                requireMong.queryDataSave(mongooseModel,  listRules , (err, doc) => {
+                requireMong.queryUpdateBD(mongooseModel,  listRules , (err, doc) => {
                     if(err) {
                         reject(err);
                     }
