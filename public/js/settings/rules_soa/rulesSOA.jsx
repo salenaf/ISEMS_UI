@@ -62,6 +62,7 @@ class CreatePageRulesSOASourse extends React.Component {
                     </div>
                 </nav>
            
+           
                 <div className="tab-content" id="nav-tabContent">
                     <br/> 
                     <div className="tab-pane fade show active" id="searchSid" role="tabpanel" aria-labelledby="nav-home-tab">
@@ -104,7 +105,7 @@ CreatePageRulesSOASourse.propTypes ={
     ss: PropTypes.func.isRequired,
     socketIo:PropTypes.object.isRequired,
     listShortEntity: PropTypes.object.isRequired,
-   
+    userPermissions: PropTypes.object.isRequired,
     listSourcesInformation: PropTypes.object.isRequired,
 };
 
@@ -141,7 +142,8 @@ ReactDOM.render(<CreatePageRulesSOASourse
     ss={ss}
     socketIo={socket}
     listSourcesInformation={listSourcesInformation} 
-    listShortEntity={receivedFromServerMain}/>, document.getElementById("page-rules-soa"));
+    listShortEntity={receivedFromServerMain}
+    userPermissions = {userPermissions}/>, document.getElementById("page-rules-soa"));
 
 /* receivedFromServerMain
 

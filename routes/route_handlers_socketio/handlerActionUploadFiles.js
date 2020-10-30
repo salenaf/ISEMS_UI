@@ -107,7 +107,7 @@ async function writeData(listRules){
                 else resolve(doc); 
             });
         });
-    })(listRules);
+    })(listRules);queryUpdateBD
 }queryDataSave
 */
 async function processing(fileName){
@@ -121,7 +121,7 @@ async function processing(fileName){
         await ((listRules ) => {
             return new Promise((resolve,reject) => {
                 // requireMong.queryUpdate(mongooseModel,  listRules , (err, doc) => {
-                requireMong.queryUpdateBD(mongooseModel,  listRules , (err, doc) => {
+                requireMong.queryInsertMany(mongooseModel,  listRules , (err, doc) => {
                     if(err) {
                         reject(err);
                     }
@@ -169,7 +169,7 @@ function receivedFilesRulesSOA(socketIo, stream, data){
     // console.log(__dirname);
     // console.log(__dirname.substr(0, (__dirname.length - 28)));
 
-    let filename = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + path.basename(data.name);
+    let filename = (__dirname.substr(0, (__dirname.length - 30)) + "uploads/") + path.basename(data.name);
     let tempFile = fs.createWriteStream(filename, { flags: "w", defaultEncoding: "utf8", autoClose: true });
 
     stream.pipe(tempFile);
@@ -177,7 +177,7 @@ function receivedFilesRulesSOA(socketIo, stream, data){
     tempFile.on("close", () => {
         console.log("UPLOADING FILE IS COMPLETE");
 
-        let fileName = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + data.name;//"snort.rules"
+        let fileName = (__dirname.substr(0, (__dirname.length - 30)) + "uploads/") + data.name;//"snort.rules"
         console.log(`Имя файла = ${fileName}`);
         
         processing(fileName).then(() => {
