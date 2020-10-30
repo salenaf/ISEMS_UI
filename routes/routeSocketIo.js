@@ -242,11 +242,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 debug(`received event 'finish' (${new Date})`);
             });
         });
-    }, 8000);*/
+    }, 8000);
     /** ТЕСТОВЫЙ РАЗДЕЛ --- окончание */
-
-
-
 
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
@@ -296,10 +293,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
         }).on("information source control", (msg) => {
             debug("----- information source control -----");
             debug(msg);
-            //debug(msg.options.sl);
             debug("--------------------------------------");
 
-            require("../routes/handlersMsgModuleNetworkInteraction/handlerMsgSources")(msg, socketIo);
+            require("./handlers_msg_module_network_interaction/handlerMsgSources")(msg, socketIo);
 
         }).on("command source control", (msg) => {
             debug("----- command source control ------");
@@ -307,7 +303,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("------------------------------------------");
 
             //обрабатываем запрос ISEMS-NIH на получение актуального списка источников
-            require("./handlersMsgModuleNetworkInteraction/handlerMsgGetNewSourceList")();
+            require("./handlers_msg_module_network_interaction/handlerMsgGetNewSourceList")();
 
         }).on("information filtration control", (msg) => {
             debug("----- information filtration control -----");
@@ -439,19 +435,19 @@ module.exports.modulesEventGenerator = function(socketIo) {
                         debug("received information from event 'list all tasks'");
                         debug(msg.options);
 
-                        require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
+                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
                     }
 
                     //только для вкладки "загрузка файлов" и для виджетов 
                     if (taskInfo.eventName === "list tasks which need to download files") {
-                        require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);
+                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);
                     }
 
                     //только для виджета "выгруженные файлы не рассмотрены" и
                     // для вкладки поиск, значение "по умолчанию", выводить список
                     // не закрытых пользователем задач
                     if (taskInfo.eventName === "list unresolved tasks") {
-                        require("./routeHandlersSocketIo/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo.userSessionID);
+                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo.userSessionID);
                     }
 
                     /*
@@ -482,16 +478,53 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     "options": msg.options,
                 });
             }
-            /*        msg.options.slft.forEach((item) => {
+
+            if (msg.instruction === "processing get common analytics information about task ID") {
+                debug("RECEIVED processing get common analytics information about task ID");
+                debug("-----------------");
+                debug(msg.options);
+                debug("-----------------");
+
+                socketIo.emit("module NI API", {
+                    "type": "commonAnalyticsInformationAboutTaskID",
+                    "options": msg.options,
+                });
+            }
+
+            /*
+
+    },
+
+            msg.options.slft.forEach((item) => {
             debug(item);
         });*/
             debug("=======================================");
         }).on("command information search control", (msg) => {
             debug("====== command information search control =====");
-            //debug(JSON.stringify(msg));
-            /*        msg.options.slft.forEach((item) => {
-            debug(item);
-        });*/
+
+            if (msg.instruction === "delete all information about a task") {
+                if (msg.options.ss) {
+                    debug("!!! received message success delete information about task !!!");
+
+                    socketIo.emit("module NI API", {
+                        "type": "deleteAllInformationAboutTask",
+                        "options": {},
+                    });
+                }
+            }
+
+            if (msg.instruction === "mark an task as completed") {
+                if (msg.options.ss) {
+                    debug("received message SUCCESS mark task complete");
+                    debug(msg);
+
+                    socketIo.emit("module NI API", {
+                        "type": "successMarkTaskAsCompleted",
+                        "options": { "taskID": msg.options.tid },
+                    });
+                }
+            }
+
             debug("=======================================");
         }).on("user notification", (notify) => {
             debug("---- RECEIVED user notification ----");
@@ -504,7 +537,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             });
 
             //записываем сообщение в БД
-            require("./handlersMsgModuleNetworkInteraction/handlerMsgNotification")(notify);
+            require("./handlers_msg_module_network_interaction/handlerMsgNotification")(notify);
         }).on("error", (err) => {
             debug("ERROR MESSAGE");
             debug(err);
@@ -547,34 +580,34 @@ exports.eventEmitter = function(socketIo, object) {
  **/
 module.exports.eventHandlingUserInterface = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ПАРОЛЯМИ ПО УМОЛЧАНИЮ --- */
-    require("./routeHandlersSocketIo/handlerChangePassword")(socketIo);
+    require("./route_handlers_socketio/handlerChangePassword")(socketIo);
 
     /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
-    require("./routeHandlersSocketIo/handlerActionsUsers").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionsUsers").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ГРУППАМИ --- */
-    require("./routeHandlersSocketIo/handlerActionsGroups").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionsGroups").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
-    require("./routeHandlersSocketIo/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ПРАВИЛАМИ СОА --- Поиски указанного SID в БД sid_bd: find-sid */
     require("./routeHandlersSocketIo/handlerActionRulesSOA").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ ПОЛУЧАЕМЫХ С User Interface --- */
-    require("./routeHandlersSocketIo/handlerActionUploadFiles").addHandlers(ss, socketIo);
+    require("./route_handlers_socketio/handlerActionUploadFiles").addHandlers(ss, socketIo);
 
     require("./routeHandlersSocketIo/handlerActionUpDateSid.js").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ ФАЙЛОВ --- */
-    require("./routeHandlersSocketIo/handlerActionsFiltrationTask").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionsFiltrationTask").addHandlers(socketIo);
 
     /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ О ЗАДАЧАХ ВЫПОЛНЯЕМЫХ МОДУЛЕМ СЕТЕВОГО ВЗАИМОДЕЙСТВИЯ --- */
-    require("./routeHandlersSocketIo/networkInteractionHandlerRequestShowTaskInfo").addHandlers(socketIo);
+    require("./route_handlers_socketio/networkInteractionHandlerRequestShowTaskInfo").addHandlers(socketIo);
 
     /* --- ОБРАБОТЧИК ДЕЙСТВИЙ ПРИ СКАЧИВАНИИ ФАЙЛОВ, В ТОМ ЧИСЛЕ ЗАПРОС СПИСКА ЗАДАЧ (пагинатор) --- */
-    require("./routeHandlersSocketIo/handlerActionsDownloadingTasks").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionsDownloadingTasks").addHandlers(socketIo);
 
     /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ ИЗ ЖУРНАЛА ИНФОРМАЦИОННЫХ СООБЩЕНИЙ --- */
-    require("./routeHandlersSocketIo/networkInteractionHandlerNotificationLog").addHandlers(socketIo);
+    require("./route_handlers_socketio/networkInteractionHandlerNotificationLog").addHandlers(socketIo);
 };

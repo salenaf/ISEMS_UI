@@ -7,7 +7,7 @@
 "use strict";
 
 module.exports = function(app, express, io) {
-//    const ss = require("socket.io-stream");
+    //    const ss = require("socket.io-stream");
     const ejs = require("ejs-locals");
     const path = require("path");
 
@@ -108,34 +108,34 @@ module.exports = function(app, express, io) {
     routes(app);
 
     /* 
-    * Module network interaction 
-    * */
+     * Module network interaction 
+     * */
     let connectionWithModuleNetworkInteraction = () => {
         const TIME_INTERVAL = 7000;
-        if(globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")){
-            return;    
+        if (globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+            return;
         }
 
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
             .on("connect", () => {
-                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);                
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
             })
             .on("connectFailed", (err) => {
-                writeLogFile("error", err.toString()+funcName);
+                writeLogFile("error", err.toString() + funcName);
             })
             .on("close", (msg) => {
-                writeLogFile("info", msg.toString()+funcName);
+                writeLogFile("info", msg.toString() + funcName);
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
-                
-                setTimeout((()=>{   
+
+                setTimeout((() => {
                     connection.createAPIConnection();
                 }), TIME_INTERVAL);
             })
             .on("error", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
-                
-                setTimeout((()=>{   
+
+                setTimeout((() => {
                     connection.createAPIConnection();
                 }), TIME_INTERVAL);
             });

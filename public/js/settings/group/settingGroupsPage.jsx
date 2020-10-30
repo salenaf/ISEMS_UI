@@ -12,7 +12,7 @@ import { Alert, Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers";
-import ModalWindowAddNewGroup from "../../modalwindows/modalWindowAddNewGroup.jsx";
+import ModalWindowAddNewGroup from "../../modal_windows/modalWindowAddNewGroup.jsx";
 import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 
 //перечисление типов действий доступных для администратора

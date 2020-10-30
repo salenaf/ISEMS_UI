@@ -32,12 +32,7 @@ module.exports = function(req) {
             restoreTmpModuleNetworkInteraction: (callback) => {
                 //восстанавливаем свойство tmpModuleNetworkInteraction в globalObject
 
-                console.log("----==== headerPage ====----");
-                console.log(req.sessionID);
-                console.log("----==== headerPage ====----");
-
-                if(!globalObject.hasData("tmpModuleNetworkInteraction", req.sessionID)){
-                    console.log("session ID from globalObject is not found");
+                if (!globalObject.hasData("tmpModuleNetworkInteraction", req.sessionID)) {
                     globalObject.setData("tmpModuleNetworkInteraction", req.sessionID, {
                         tasksDownloadFiles: {},
                         unresolvedTask: {},
@@ -48,8 +43,8 @@ module.exports = function(req) {
                 callback(null);
             },
         }, (err, result) => {
-            if(err) reject(err);
-    
+            if (err) reject(err);
+
             let objMenuSettings = {};
             let createList = function(listMenu, items) {
                 for (let key in items) {
@@ -57,12 +52,12 @@ module.exports = function(req) {
                         if (items[key].status) {
                             listMenu[key] = { name: items[key].description, status: items[key].status };
                         }
-    
+
                         continue;
                     }
-    
+
                     listMenu[key] = { name: items[key].name, submenu: {} };
-    
+
                     createList(listMenu[key].submenu, items[key]);
                 }
             };
@@ -70,7 +65,7 @@ module.exports = function(req) {
             try {
                 let menuItems = result.getSessionInfo.group_settings.menu_items;
                 createList(objMenuSettings, menuItems);
-        
+
                 resolve({
                     login: result.getSessionInfo.login,
                     userName: result.getSessionInfo.user_name,
@@ -80,7 +75,7 @@ module.exports = function(req) {
                     },
                     menuSettings: objMenuSettings
                 });
-            } catch(err){
+            } catch (err) {
                 resolve({
                     login: "",
                     userName: "",
@@ -89,7 +84,7 @@ module.exports = function(req) {
                         moduleNI: globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")
                     },
                     menuSettings: {}
-                });                
+                });
             }
         });
     });

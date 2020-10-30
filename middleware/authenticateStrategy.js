@@ -13,8 +13,7 @@ const mongodbQueryProcessor = require("../middleware/mongodbQueryProcessor");
  * @param{*} - cb
  */
 exports.authenticate = function(userName, password, cb) {
-    mongodbQueryProcessor.querySelect(models.modelUser, 
-        { query: { login: userName } }, 
+    mongodbQueryProcessor.querySelect(models.modelUser, { query: { login: userName } },
         (err, user) => {
             if (err) return cb(null, false, { message: "incorrect username or password" });
 
@@ -27,11 +26,9 @@ exports.authenticate = function(userName, password, cb) {
             //проверяем использует ли администратор дефолтный пароль
             let isDefaultPassword = ((userName === "administrator") && (hashPwd === "2ab65043ba1e301ab163c6d336dd1469ea087016c52743c4d51ff2d6c0b1c8c1")) ? true : false;
 
-            console.log("записываем информацию о пользователе по его passport ID");
-
             //записываем информацию о пользователе по его passport ID 
             require("../libs/mongodb_requests/passportAdditionInformation").create(userName, user._id, isDefaultPassword, (err, obj) => {
-                if(err) writeLogFile("error", err.toString());
+                if (err) writeLogFile("error", err.toString());
                 else writeLogFile("info", `authentication user name '${userName}'`);
 
                 cb(null, obj);
