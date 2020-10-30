@@ -14,9 +14,10 @@ module.exports = function() {
     let username = config.get("mongoDB:user"),
         password = config.get("mongoDB:password"),
         host = config.get("mongoDB:host"),
-        port = config.get("mongoDB:port");
+        port = config.get("mongoDB:port"),
+        nameDB = config.get("mongoDB:nameDB");
 
-    return mongoose.connect(`mongodb://${host}:${port}/isems-ui`, {
+    return mongoose.connect(`mongodb://${host}:${port}/${nameDB}`, {
         useNewUrlParser: true,
         useFindAndModify: false,
         useCreateIndex: true,

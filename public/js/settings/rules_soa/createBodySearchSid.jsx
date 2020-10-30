@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Badge, Card, Col, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
 
-
+import {ModalWindowChoiseSave} from "../../modal_windows/modalWindowChoiceSave.jsx";
 import PropTypes from "prop-types";
 
 //const async = require("async");

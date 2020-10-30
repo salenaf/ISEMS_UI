@@ -592,12 +592,12 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
     require("./route_handlers_socketio/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ПРАВИЛАМИ СОА --- Поиски указанного SID в БД sid_bd: find-sid */
-    require("./routeHandlersSocketIo/handlerActionRulesSOA").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionRulesSOA").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ ПОЛУЧАЕМЫХ С User Interface --- */
     require("./route_handlers_socketio/handlerActionUploadFiles").addHandlers(ss, socketIo);
 
-    require("./routeHandlersSocketIo/handlerActionUpDateSid.js").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlerActionUpDateSid.js").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ ФАЙЛОВ --- */
     require("./route_handlers_socketio/handlerActionsFiltrationTask").addHandlers(socketIo);

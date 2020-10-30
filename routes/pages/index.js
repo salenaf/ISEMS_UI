@@ -34,6 +34,6 @@ exports.managementGeoIp = require("./management/managementGeoIp");
 exports.managementUsers = require("./management/managementUsers");
 exports.managementGroups = require("./management/managementGroups");
 exports.managementIdsRules = require("./management/managementIdsRules");
-exports.managementSearchRules = require("./management/managementSearchRules");
+//exports.managementSearchRules = require("./management/managementSearchRules");
 exports.managementReputationalLists = require("./management/managementReputationalLists");
 exports.managementOrganizationsAndSources = require("./management/managementOrganizationsAndSources");
