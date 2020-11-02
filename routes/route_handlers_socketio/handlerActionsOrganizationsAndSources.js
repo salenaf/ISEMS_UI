@@ -544,6 +544,7 @@ function changeSourceInfo(socketIo, data) {
         if (typeof obj.source_settings.type_channel_layer_protocol === "undefined") {
             obj.source_settings.type_channel_layer_protocol = "ip";
         }
+
         if (!tclp.has(obj.source_settings.type_channel_layer_protocol)) {
             obj.source_settings.type_channel_layer_protocol = "ip";
         }
@@ -552,6 +553,7 @@ function changeSourceInfo(socketIo, data) {
         if (typeof ldwfnt === "undefined") {
             return callback(new Error("не заданы директории в которых выполняется фильтрация сет. трафика"));
         }
+
         let newListFolder = ldwfnt.filter((folder) => helpersFunc.checkInputValidation({
             name: "folderStorage",
             value: folder,
@@ -613,7 +615,7 @@ function changeSourceInfo(socketIo, data) {
             });
         }).then((validData) => {
             globalObject.modifyData("sources", validData.source_id, [
-                ["shortName", validData.source_id],
+                ["shortName", validData.short_name],
                 ["description", validData.description],
             ]);
 

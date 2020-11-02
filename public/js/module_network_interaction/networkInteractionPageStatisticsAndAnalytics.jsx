@@ -232,12 +232,12 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                             <tr>
                                 <th></th>
                                 <th className="my_line_spacing">время создания</th>
-                                <th>sid</th>
-                                <th>источник</th>
+                                <th className="my_line_spacing">sid</th>
+                                <th className="my_line_spacing">источник</th>
                                 <th className="my_line_spacing">интервал времени</th>
-                                <th>ip</th>
-                                <th>network</th>
-                                <th>port</th>
+                                <th className="my_line_spacing">ip</th>
+                                <th className="my_line_spacing">network</th>
+                                <th className="my_line_spacing">port</th>
                                 <th className="my_line_spacing">файлов найдено / выгружено</th>
                                 <th className="my_line_spacing">общий размер</th>
                                 <th></th>

@@ -242,6 +242,9 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     render(){
+
+        console.log(this.props.listItems.listSources);
+
         return (
             <React.Fragment>
                 <CreatingWidgets 

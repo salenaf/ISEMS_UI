@@ -391,15 +391,15 @@ class CreatePageSearchTasks extends React.Component {
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>ID</th>
-                                    <th>название</th>
-                                    <th>задача добавлена</th>
-                                    <th>интервал времени</th>
-                                    <th>ip</th>
-                                    <th>network</th>
-                                    <th>port</th>
-                                    <th>фильтрация</th>
-                                    <th>выгрузка</th>
+                                    <th className="my_line_spacing">ID</th>
+                                    <th className="my_line_spacing">название</th>
+                                    <th className="my_line_spacing">задача добавлена</th>
+                                    <th className="my_line_spacing">интервал времени</th>
+                                    <th className="my_line_spacing">ip</th>
+                                    <th className="my_line_spacing">network</th>
+                                    <th className="my_line_spacing">port</th>
+                                    <th className="my_line_spacing">фильтрация</th>
+                                    <th className="my_line_spacing">выгрузка</th>
                                     <th></th>
                                 </tr>
                             </thead>

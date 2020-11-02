@@ -112,9 +112,32 @@ module.exports = function(app, express, io) {
      * */
     let connectionWithModuleNetworkInteraction = () => {
         const TIME_INTERVAL = 7000;
+
+        console.log("func 'connectionWithModuleNetworkInteraction'");
+        console.log(`connectionEstablished status: ${globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
+
         if (globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             return;
         }
+
+        /**
+         * Может быть стоит сделать кнопку для принудительного обновления состояния
+         * подключения источников. Потому что если соединение с ISEMS-NIH установлено
+         * РАНЬШЕ чем осуществилось подключение источника, то до того как данные
+         * будут записаны в память NIH иногда успевает прийти информация со списком
+         * источников в котором источник может быть не подключен
+         * 
+         * Недочеты по следующим пунктам:
+         * 1. Сессия пользователя в handlerActionsProcessedReceivedListTask.receivedListUnresolvedTask
+         * и handlerActionsProcessedReceivedListTask.receivedListTasksDownloadFiles
+         * ненаходится в globalObject (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask"))
+         * 
+         * 2. Непонятки с подключением ISEMS-UI через API к ISEMS-NIH (иногда устанавливаются
+         *  несколько соединений)
+         * 
+         * 3. ISEMS-NIH на flashlight имеет в базе список из 6 источников,
+         * а в ISEMS-UI подключенном к данному ISEMS-NIH только 2. Как так?
+         */
 
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
@@ -126,6 +149,10 @@ module.exports = function(app, express, io) {
             })
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
+
+                console.log("func 'connectionWithModuleNetworkInteraction'");
+                console.log("EVENT: close");
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
                 setTimeout((() => {
@@ -134,6 +161,9 @@ module.exports = function(app, express, io) {
             })
             .on("error", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+
+                console.log("func 'connectionWithModuleNetworkInteraction'");
+                console.log("EVENT: error");
 
                 setTimeout((() => {
                     connection.createAPIConnection();

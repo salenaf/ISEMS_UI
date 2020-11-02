@@ -156,6 +156,7 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
 module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) {
     let funcName = " (func 'receivedListUnresolvedTask')";
 
+
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {
         showNotify({
             socketIo: socketIo,
@@ -163,7 +164,7 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) 
             message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
         });
 
-        return writeLogFile("error", "the 'listUnresolvedTask' property was not found in 'globalObject'" + funcName);
+        return writeLogFile("error", `the 'listUnresolvedTask' property for sessionId '${sessionId}' was not found in 'globalObject' ${funcName}`);
     }
 
     let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");

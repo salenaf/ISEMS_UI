@@ -180,13 +180,13 @@ export default class CreateBodyDownloadFiles extends React.Component {
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>ID</th>
-                                <th>название</th>
+                                <th className="my_line_spacing">ID</th>
+                                <th className="my_line_spacing">название</th>
                                 <th className="my_line_spacing">интервал времени</th>
                                 <th className="my_line_spacing">сет. протокол</th>
-                                <th>ip</th>
-                                <th>network</th>
-                                <th>port</th>
+                                <th className="my_line_spacing">ip</th>
+                                <th className="my_line_spacing">network</th>
+                                <th className="my_line_spacing">port</th>
                                 <th className="my_line_spacing">файлы найденны (выгружены)</th>
                                 <th className="my_line_spacing">общим размером</th>
                                 <th></th>

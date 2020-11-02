@@ -19,6 +19,13 @@ module.exports = function(msg, socketIo) {
     //    let isAddSource = task.instructionTask === "add source list";
     //    let isSourceControl = task.sectionTask === "source trol";
 
+    //ТОЛЬКО ДЛЯ ТЕСТА!!!
+    msg.options.sl.forEach((item) => {
+        if (item.id === 1000) {
+            debug(item);
+        }
+    });
+
     const task = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);
     if (task === null) {
         debug(`instruction: ${msg.instruction}`);
@@ -36,6 +43,10 @@ module.exports = function(msg, socketIo) {
 
                 // получаем состояние соединения с источником
             case "change status source":
+
+                debug("Instraction: 'change status source'");
+
+
                 msg.options.sl.forEach((item) => {
                     globalObject.modifyData("sources", item.id, [
                         ["connectStatus", (item.s === "connect")],
@@ -44,7 +55,9 @@ module.exports = function(msg, socketIo) {
 
                     const sourceInfo = globalObject.getData("sources", item.id);
                     if (sourceInfo !== null) {
-                        debug("send message --->");
+
+                        debug("send message STATUS SOURCE --->");
+                        debug(`sourceID: '${item.id}', shortName: '${sourceInfo.shortName}', connectionStatus: '${sourceInfo.connectStatus}'`);
 
                         socketIo.emit("module-ni:change status source", {
                             options: {
@@ -83,6 +96,16 @@ module.exports = function(msg, socketIo) {
 
                     // для источников которых нет в globalObject
                     if (!modifyIsSuccess) {
+
+                        console.log("func 'handlerMsgSources'");
+                        console.log({
+                            shortName: item.sn,
+                            description: item.d,
+                            connectStatus: item.cs,
+                            connectTime: item.dlc,
+                            id: ""
+                        });
+
                         globalObject.setData("sources", item.id, {
                             shortName: item.sn,
                             description: item.d,

@@ -115,10 +115,30 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
         this.handlerSourceReconnect = this.handlerSourceReconnect.bind(this);
 
+        this.handlerEvents.call(this);
         this.listenerSocketIoConnect.call(this);
 
         //устанавливаем тему для всех элементов select2
         $.fn.select2.defaults.set("theme", "bootstrap");
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "connectModuleNI"){
+                if(!data.options.connectionStatus){
+                    let objCopy = Object.assign({}, this.state);
+                
+                    for(let i = 0; i < objCopy.tableSourceList.length; i++){
+                        objCopy.tableSourceList[i].connectionStatus = false;
+                    }
+        
+                    this.setState(objCopy);
+                }
+
+                console.log("handlerEvents, change connectionModuleNI");
+                console.log(this.state.tableSourceList);
+            }
+        });
     }
 
     createStateCheckboxMarkedSourceDel(shortListSource){
@@ -151,6 +171,11 @@ class CreatePageOrganizationAndSources extends React.Component {
         ];
 
         this.props.socketIo.on("module-ni:change status source", (data) => {
+            
+            console.log("func 'listenerSocketIoConnect'");
+            console.log("event: 'module-ni:change status source'");
+            console.log(data);
+
             let objCopy = Object.assign({}, this.state);
                 
             for(let i = 0; i < objCopy.tableSourceList.length; i++){                  
