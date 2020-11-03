@@ -546,13 +546,10 @@ export default class CreateBodySearchTask extends React.Component {
 
     getListSource(){
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID, num) => {
-            let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
-
             return (
                 <option 
                     key={`key_source_${num}_${this.props.listSources[sourceID].id}`} 
-                    value={sourceID} 
-                    disabled={isDisabled} >
+                    value={sourceID} >
                     {`${sourceID} ${this.props.listSources[sourceID].shortName}`}
                 </option>
             );
