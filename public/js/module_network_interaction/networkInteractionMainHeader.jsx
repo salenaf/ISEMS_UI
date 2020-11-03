@@ -58,9 +58,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             return;
         }
 
-        console.log("class 'networkInteractionMainHeader'");
-        console.log(window.location.pathname);
-
         if(window.location.pathname !== "/network_interaction_page_file_download"){
             this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });            
         }
@@ -119,7 +116,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             this.setState({ widgets: tmpCopy });
         });
 
-        //изменяем статус подключения источника для списка выбопа источника
+        //изменяем статус подключения источника для списка выбора источника
         this.props.socketIo.on("module-ni:change status source", (data) => {
             let objCopy = Object.assign({}, this.state);
 
@@ -137,6 +134,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     handlerShowModalWindowFiltration(){
+        this.props.socketIo.emit("give me new short source list", {});
+
         this.setState({ showModalWindowFiltration: true });
     }
 
@@ -242,9 +241,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     render(){
-
-        console.log(this.props.listItems.listSources);
-
         return (
             <React.Fragment>
                 <CreatingWidgets 

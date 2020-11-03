@@ -29,7 +29,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("--- CONNECTION ---");
             debug(msg);
 
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
+            //globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
 
             socketIo.emit("module NI API", {
                 "type": "connectModuleNI",
@@ -45,6 +45,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
             соединений источников
             */
             setTimeout(() => {
+
+                debug("SENS ---> request 'get an updated list of sources'");
+
                 connModuleNetInteraction.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
@@ -52,7 +55,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     taskID: helpersFunc.getRandomHex(),
                     options: {}
                 });
-            }, 1000);
+            }, 3000);
         }).on("message", (msg) => {
             debug("--- MESSAGE ---");
             debug(msg);
@@ -60,14 +63,19 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("--- CONNECTION CLOSE ---");
             debug(msg);
 
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "previousConnectionStatus")) {
+                return;
+            }
 
+            //что бы данное сообщение отправилось в UI только раз, после разрува соединения
             socketIo.emit("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": false
                 },
             });
+
+            globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
         }).on("information source control", (msg) => {
             debug("----- information source control -----");
             debug(msg);
@@ -320,8 +328,12 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("ERROR MESSAGE");
             debug(err);
 
-            globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "previousConnectionStatus")) {
+                return;
+            }
+
+            //что бы данное сообщение отправилось в UI только раз, после разрува соединения
             socketIo.emit("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
@@ -329,6 +341,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 },
             });
 
+            globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
             writeLogFile("error", `${err.toString()} (module 'network interaction')`);
         });
 };

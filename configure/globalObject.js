@@ -82,7 +82,8 @@ class SocketioEventResponse extends EventEmitter {}
  *       descriptionAPI: {
  *           networkInteraction: {
  *               connection: object,
- *               connectionEstablished: bool }}
+ *               connectionEstablished: bool,
+ *               previousConnectionStatus: bool }}
  *   } 
  */
 class GlobalObject {
@@ -203,15 +204,31 @@ class GlobalObject {
         if (this._checkKeys(type)) return false;
         if (typeof group === "undefined") return false;
 
+        let isSuccess = true;
         arrayData.forEach((element) => {
             if (Array.isArray(element) && (element.length === 2)) {
-                if ((typeof this.obj[type][group] === "undefined") || (typeof this.obj[type][group][element[0]] === "undefined")) return;
+
+                console.log("objectGlobal.modifyData");
+                console.log(`(typeof this.obj[type][group] === "undefined") = ${(typeof this.obj[type][group] === "undefined")}`);
+                console.log(this.obj[type][group]);
+
+                if (typeof this.obj[type][group] === "undefined") {
+                    isSuccess = false;
+
+                    return;
+                }
+
+                if ((typeof this.obj[type][group][element[0]] === "undefined")) {
+                    isSuccess = false;
+
+                    return;
+                }
 
                 this.obj[type][group][element[0]] = element[1];
             }
         });
 
-        return true;
+        return isSuccess;
     }
 
     //удалить данные по выбранному типу и группе

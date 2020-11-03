@@ -175,13 +175,13 @@ module.exports.sourceManagementsDel = function(sourceList) {
     });
 };
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * управление удаленными источниками.
- * 
- * Выполняет удаление источников из базы данных модуля. 
- * 
- * @param {*} sourceList - список источников
+/** 
+ * Обработчик для мо дуля сетевого взаимодействия осуществляющий
+ * управление уд аленными источниками.
+ *  
+ * Выполняет уда ление источников из базы данных модуля. 
+ *  
+ * @param {*} source List - список источников
  */
 module.exports.sourceManagementsReconnect = function(sourceList) {
     return new Promise((resolve, reject) => {
@@ -240,17 +240,17 @@ module.exports.sourceManagementsReconnect = function(sourceList) {
     });
 };
 
-/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
+/** ---  УПРАВЛЕНИЕ    ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * управление задачами по фильтрации сетевого трафика.
+/**  
+ * Обработчик для модуля сетевог  о взаимодействия осуществляющий
+ * управление задачами по фильтр  ации сетевого трафика.
+ *   
+ * Осуществляет запуск задачи по  фильтрации сет. трафика. 
  *  
- * Осуществляет запуск задачи по фильтрации сет. трафика. 
- * 
- * @param {*} filteringParameters - параметры фильтрации
- * @param {*} userLogin - логин пользователя
- * @param {*} userName - имя пользователя
+ * @param {*} filteringParam eters - параметры фильтрации
+ * @param {*} userLo gin - логин пользователя
+ * @param {*} us erName - имя пользователя
  */
 module.exports.managementTaskFilteringStart = function(filteringParameters, userLogin, userName) {
     return new Promise((resolve, reject) => {
@@ -259,7 +259,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
             }
 
-            //проверяем существование источника и статус его соединения
+            //проверяем существо   вание источника и статус его соединения
             let sourceInfo = globalObject.getData("sources", filteringParameters.source);
             if (sourceInfo === null) {
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не найден.`));
@@ -296,13 +296,13 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
     });
 };
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * управление задачами по фильтрации сетевого трафика.
- *  
+/** 
+ * Обработчи к для модуля сетевого взаимодействия осуществляющий
+ * управление за дачами по фильтрации сетевого трафика.
+ *   
  * Осуществляет останов задачи по фильтрации сет. трафика. 
  * 
- * @param {*} taskID - ID останавливаемой задачи
+ * @param {*    } taskID - ID останавливаемой задачи
  * @param {*} sourceID - ID источника
  */
 module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
@@ -312,7 +312,7 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
             }
 
-            //проверяем существование источника и статус его соединения
+            //проверяем      существование источника и статус его соединения
             let sourceInfo = globalObject.getData("sources", sourceID);
             if (sourceInfo === null) {
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${sourceID} не найден.`));
@@ -340,13 +340,13 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
     });
 };
 
-/** ---  УПРАВЛЕНИЕ ЗАПРОСАМИ ДЛЯ ПОЛУЧЕНИЯ ИНФОРМАЦИИ О ЗАДАЧАХ --- **/
+/** ---  УПРАВЛЕНИЕ ЗАПР    ОСАМИ ДЛЯ ПОЛУЧЕНИЯ ИНФОРМАЦИИ О ЗАДАЧАХ --- **/
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * запрос всей информации о задаче по ее ID.
- *  
- * @param {*} taskID - ID задачи по которой нужно найти информацию
+/**    
+ * Обработчик для модуля сетевог   о взаимодействия осуществляющий
+ * запрос всей информации о    задаче по ее ID.
+ *    
+ * @param {*} taskID - ID задачи   по которой нужно найти информацию
  */
 module.exports.managementRequestShowTaskAllInfo = function(taskID) {
     return new Promise((resolve, reject) => {
@@ -373,11 +373,11 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID) {
     });
 };
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
- * запрос всего списка задач 
+/**   
+ * Обработчик для мо   дуля сетевого взаимодействия осуществляющий
+ * запрос всего    списка задач 
  * 
- * @param {*} socketIo 
+ * @param {*} so   cketIo 
  */
 module.exports.managementRequestGetListAllTasks = function(socketIo) {
     return new Promise((resolve, reject) => {
@@ -664,6 +664,32 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
                 };
 
                 conn.sendMessage(tmp);
+            }
+
+            resolve();
+        });
+    });
+};
+
+/**
+ * Запрос на получение нового списка источников
+ */
+module.exports.giveNewShortSourceList = function() {
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+                conn.sendMessage({
+                    msgType: "command",
+                    msgSection: "source control",
+                    msgInstruction: "get an updated list of sources",
+                    taskID: helpersFunc.getRandomHex(),
+                    options: {}
+                });
             }
 
             resolve();

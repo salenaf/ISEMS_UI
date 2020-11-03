@@ -11,10 +11,10 @@ class CreateSourceList extends React.Component {
     }
 
     getListSource(){
-        return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
+        return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID, num) => {
             return (
                 <option 
-                    key={`key_sour_${this.props.listSources[sourceID].id}`} 
+                    key={`key_source_${num}_${this.props.listSources[sourceID].id}`} 
                     value={sourceID} >
                     {`${sourceID} ${this.props.listSources[sourceID].shortName}`}
                 </option>

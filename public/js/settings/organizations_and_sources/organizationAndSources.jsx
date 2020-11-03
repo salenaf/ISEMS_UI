@@ -102,7 +102,10 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.handlerInput = this.handlerInput.bind(this);
         this.handlerNewFolder = this.handlerNewFolder.bind(this);
         this.generatingNewToken = this.generatingNewToken.bind(this);
+        this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
         this.handelerFolderDelete = this.handelerFolderDelete.bind(this);
+        this.modifyTableSourceList = this.modifyTableSourceList.bind(this);
+        this.handlerSourceReconnect = this.handlerSourceReconnect.bind(this);
         this.handlerSaveInformation = this.handlerSaveInformation.bind(this);
         this.showModalWindowSourceDel = this.showModalWindowSourceDel.bind(this);
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
@@ -110,16 +113,18 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowChangeSource = this.showModalWindowChangeSource.bind(this);
         this.closeModalWindowChangeSource = this.closeModalWindowChangeSource.bind(this);
-
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
-        this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
-        this.handlerSourceReconnect = this.handlerSourceReconnect.bind(this);
 
+        this.requestEmitter.call(this);        
         this.handlerEvents.call(this);
         this.listenerSocketIoConnect.call(this);
 
         //устанавливаем тему для всех элементов select2
         $.fn.select2.defaults.set("theme", "bootstrap");
+    }
+
+    requestEmitter(){
+        this.props.socketIo.emit("give me new short source list", {});
     }
 
     handlerEvents(){
@@ -134,9 +139,6 @@ class CreatePageOrganizationAndSources extends React.Component {
         
                     this.setState(objCopy);
                 }
-
-                console.log("handlerEvents, change connectionModuleNI");
-                console.log(this.state.tableSourceList);
             }
         });
     }
@@ -171,11 +173,6 @@ class CreatePageOrganizationAndSources extends React.Component {
         ];
 
         this.props.socketIo.on("module-ni:change status source", (data) => {
-            
-            console.log("func 'listenerSocketIoConnect'");
-            console.log("event: 'module-ni:change status source'");
-            console.log(data);
-
             let objCopy = Object.assign({}, this.state);
                 
             for(let i = 0; i < objCopy.tableSourceList.length; i++){                  
@@ -188,6 +185,10 @@ class CreatePageOrganizationAndSources extends React.Component {
             }
 
             this.setState(objCopy);
+        });
+
+        this.props.socketIo.on("module-ni: short source list", (data) => {
+            this.modifyTableSourceList(data);
         });
 
         this.props.socketIo.on("entity: set info only source", (data) => {
@@ -338,6 +339,39 @@ class CreatePageOrganizationAndSources extends React.Component {
         });
 
         return newList;
+    }
+
+    modifyTableSourceList(listShortEntity){
+        let newList = [];
+        for(let sourceID in listShortEntity.arguments){
+            let sourceIsExist = this.state.tableSourceList.find((item) => +item.sourceID === +sourceID);
+
+            if(typeof sourceIsExist === "undefined"){
+                newList.push({
+                    "sourceID": +sourceID,
+                    "sid": "",
+                    "shortName": listShortEntity.arguments[sourceID].shortName,
+                    "dateRegister": 0,
+                    "fieldActivity": "",
+                    "versionApp": "",
+                    "releaseApp": "",
+                    "connectionStatus": listShortEntity.arguments[sourceID].connectStatus,
+                    "connectTime": listShortEntity.arguments[sourceID].connectTime,
+                });
+            }
+        }
+
+        let stateCopy = Object.assign({}, this.state);
+        let listTmp = stateCopy.tableSourceList.concat(newList);
+
+        listTmp.sort((a, b) => {
+            if (a.sourceID > b.sourceID) return 1;
+            if (a.sourceID == b.sourceID) return 0;
+            if (a.sourceID < b.sourceID) return -1;
+        });
+
+        stateCopy.tableSourceList = listTmp;
+        this.setState(stateCopy);
     }
 
     handlerSourceDelete(){

@@ -121,11 +121,6 @@ module.exports = function(app, express, io) {
         }
 
         /**
-         * Может быть стоит сделать кнопку для принудительного обновления состояния
-         * подключения источников. Потому что если соединение с ISEMS-NIH установлено
-         * РАНЬШЕ чем осуществилось подключение источника, то до того как данные
-         * будут записаны в память NIH иногда успевает прийти информация со списком
-         * источников в котором источник может быть не подключен
          * 
          * Недочеты по следующим пунктам:
          * 1. Сессия пользователя в handlerActionsProcessedReceivedListTask.receivedListUnresolvedTask
@@ -135,14 +130,13 @@ module.exports = function(app, express, io) {
          * 2. Непонятки с подключением ISEMS-UI через API к ISEMS-NIH (иногда устанавливаются
          *  несколько соединений)
          * 
-         * 3. ISEMS-NIH на flashlight имеет в базе список из 6 источников,
-         * а в ISEMS-UI подключенном к данному ISEMS-NIH только 2. Как так?
          */
 
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
             .on("connect", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
+                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", true);
             })
             .on("connectFailed", (err) => {
                 writeLogFile("error", err.toString() + funcName);
