@@ -61,6 +61,18 @@ class CreateHeaderMenu extends React.Component {
                 classElemIsDisable = " disabled";
             }
         
+            /**
+ *      !!!!!!!!!
+ * Временно выключаем доступ к некоторым пунктам
+ * подменю
+ *      !!!!!!!!!
+ */
+
+            if(item === "setting_geoip" || item === "setting_search_rules" || item === "setting_reputational_lists"){
+                linkElemIsDisabled = "true";
+                classElemIsDisable = " disabled";
+            }
+
             list.push((<NavDropdown.Item 
                 className={classElemIsDisable} 
                 href={item} 

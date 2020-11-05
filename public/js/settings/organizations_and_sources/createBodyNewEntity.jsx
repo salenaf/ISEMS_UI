@@ -171,6 +171,9 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListElementOrganization(){
+
+        console.log(this.state.listOrganizationName);
+
         return (
             <Form.Group>
                 <Form.Label>Организация</Form.Label>
@@ -444,7 +447,7 @@ export default class CreateBodyNewEntity extends React.Component {
         });
     }
 
-    delAddedElem(elemID){
+    /* delAddedElem(elemID){
         function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
             let iterator = (obj, func) => {
                 let newObj = {};
@@ -508,6 +511,87 @@ export default class CreateBodyNewEntity extends React.Component {
         this.setState({ listNewEntity: modifiedObject.listEntity });
         this.setState({ listOrganizationName: modifiedObject.listOrganization });
         this.setState({ listDivisionName: modifiedObject.listDivision });
+
+        //убираем кнопку 'сохранить'
+        if(modifiedObject.listEntity.length === 0){
+            this.setState({ addedNewEntity: false });
+        }
+    }*/
+
+    delAddedElem(elemID){
+        function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
+            let iterator = (obj, func) => {
+                let newList = [];
+                for(let key in obj){
+                    if(func(obj[key])){
+
+                        console.log(obj[key]);
+
+                        /**
+                         * исправить баг с удалением
+                         * 
+                         */
+
+                        newList.push(obj[key]);
+                    }
+                }
+
+                return newList;
+            };
+
+            let listNameID = ["id_organization", "id_division", "id_source"];
+            let searchIDAndDel = (listEntity, id) => {      
+                for(let i = 0; i < listEntity.length; i++){
+                    for(let name in listEntity[i]){
+                        if(listNameID.includes(name)){   
+                            if(listEntity[i][name] && listEntity[i][name] === id){   
+                                listEntity.splice(i, 1);
+
+                                if(name === "id_organization"){
+                                    listOrg = iterator(listOrg, (value) => value.id !== id);
+                                    listDiv = iterator(listDiv, (value) => value.oid !== id);
+                                } 
+                                if(name === "id_division"){
+                                    listDiv = iterator(listDiv, (value) => value.did !== id);
+                                }
+    
+                                return;
+                            }   
+                        }
+        
+                        if(Array.isArray(listEntity[i][name]) && listEntity[i][name].length > 0){
+                            searchIDAndDel(listEntity[i][name], id);
+                        }
+                    }
+                }
+            };
+            searchIDAndDel(listEntity, id);
+
+            return {
+                listEntity: listEntity,
+                listOrganization: listOrg, 
+                listDivision: listDiv,
+            };
+        }
+
+        const COUNT_ORGANIZATION_NAME = Object.keys(this.state.listOrganizationName).length;
+        const COUNT_DIVISION_NAME = Object.keys(this.state.listDivisionName).length;
+
+        let modifiedObject = findAndDeleteItemByID(this.state.listNewEntity, this.state.listOrganizationName, this.state.listDivisionName, elemID);
+
+        //изменяем тип открываемого модального окна если были изменения в объектах-списках 
+        if(COUNT_ORGANIZATION_NAME > Object.keys(modifiedObject.listOrganization).length){
+            this.setState({ chosenOrganizationID: null });
+        }
+        if(COUNT_DIVISION_NAME > Object.keys(modifiedObject.listDivision).length){
+            this.setState({ chosenDivisionID: null });
+        }
+
+        this.setState({ 
+            listNewEntity: modifiedObject.listEntity,
+            listOrganizationName: modifiedObject.listOrganization,
+            listDivisionName: modifiedObject.listDivision
+        });
 
         //убираем кнопку 'сохранить'
         if(modifiedObject.listEntity.length === 0){

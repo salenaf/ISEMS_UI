@@ -34,16 +34,16 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowShowTaskInformation: false,
         };
 
-        this.userPermission=this.props.listItems.userPermissions;
+        this.userPermission = this.props.listItems.userPermissions;
 
         this.handlerShowModalWindowLanCalc = this.handlerShowModalWindowLanCalc.bind(this);
         this.handlerCloseModalWindowLanCalc = this.handlerCloseModalWindowLanCalc.bind(this);
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
-        this.handlerShowModalWindowFiltration=this.handlerShowModalWindowFiltration.bind(this);
-        this.handlerCloseModalWindowFiltration=this.handlerCloseModalWindowFiltration.bind(this);
+        this.handlerShowModalWindowFiltration = this.handlerShowModalWindowFiltration.bind(this);
+        this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowEncodeDecoder = this.handlerShowModalWindowEncodeDecoder.bind(this);
         this.handlerCloseModalWindowEncodeDecoder = this.handlerCloseModalWindowEncodeDecoder.bind(this);
-        this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+        this.handlerCloseModalWindowShowTaskInformation = this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
@@ -65,10 +65,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         if(window.location.pathname !== "/network_interaction_page_statistics_and_analytics"){
             this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });               
         }
-
-        //для виджетов и некоторых страниц
-        //this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
-        //this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });   
     }
 
     handlerEvents(){

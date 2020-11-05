@@ -484,6 +484,9 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
             else resolve(sessionId);
         });
     }).then((sessionId) => {
+
+        console.log(`session ID: ${sessionId}, func 'managementRequestGetListUnresolvedTasks'`);
+
         if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
         }
@@ -499,7 +502,7 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
                 generationTime: +new Date(),
             });
 
-            let tmp = {
+            conn.sendMessage({
                 msgType: "command",
                 msgSection: "information search control",
                 msgInstruction: "search common information",
@@ -515,9 +518,7 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
                         fif: true,
                     }
                 },
-            };
-
-            conn.sendMessage(tmp);
+            });
         }
     });
 };

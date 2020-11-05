@@ -113,24 +113,12 @@ module.exports = function(app, express, io) {
     let connectionWithModuleNetworkInteraction = () => {
         const TIME_INTERVAL = 7000;
 
-        console.log("func 'connectionWithModuleNetworkInteraction'");
-        console.log(`connectionEstablished status: ${globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
+        //        console.log("func 'connectionWithModuleNetworkInteraction'");
+        //        console.log(`connectionEstablished status: ${globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
 
         if (globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             return;
         }
-
-        /**
-         * 
-         * Недочеты по следующим пунктам:
-         * 1. Сессия пользователя в handlerActionsProcessedReceivedListTask.receivedListUnresolvedTask
-         * и handlerActionsProcessedReceivedListTask.receivedListTasksDownloadFiles
-         * ненаходится в globalObject (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask"))
-         * 
-         * 2. Непонятки с подключением ISEMS-UI через API к ISEMS-NIH (иногда устанавливаются
-         *  несколько соединений)
-         * 
-         */
 
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
@@ -144,8 +132,8 @@ module.exports = function(app, express, io) {
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
 
-                console.log("func 'connectionWithModuleNetworkInteraction'");
-                console.log("EVENT: close");
+                //                console.log("func 'connectionWithModuleNetworkInteraction'");
+                //                console.log("EVENT: close");
 
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
@@ -156,8 +144,8 @@ module.exports = function(app, express, io) {
             .on("error", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
-                console.log("func 'connectionWithModuleNetworkInteraction'");
-                console.log("EVENT: error");
+                //                console.log("func 'connectionWithModuleNetworkInteraction'");
+                //                console.log("EVENT: error");
 
                 setTimeout((() => {
                     connection.createAPIConnection();

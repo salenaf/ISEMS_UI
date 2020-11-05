@@ -156,6 +156,11 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
 module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) {
     let funcName = " (func 'receivedListUnresolvedTask')";
 
+    /*
+    console.log(`func 'receivedListUnresolvedTask', user session ID: '${sessionId}'`);
+    console.log("func 'receivedListUnresolvedTask', getDate('tmpModuleNetworkInteraction')");
+    console.log(globalObject.getData("tmpModuleNetworkInteraction"));
+*/
 
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {
         showNotify({

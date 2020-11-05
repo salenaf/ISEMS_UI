@@ -205,7 +205,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
             }
 
             //получили краткую информацию о всех задачах подходящих под 
-            //заданные условия поиска
+            // заданные условия поиска
             if (msg.instruction === "processing information search task") {
                 //ищем тип задачи в globalObject.tasks
                 if (globalObject.hasData("tasks", msg.taskID)) {

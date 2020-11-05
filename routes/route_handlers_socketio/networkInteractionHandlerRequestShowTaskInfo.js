@@ -189,6 +189,16 @@ function showListUnresolvedTasks(socketIo) {
 
             return;
         }).then(() => {
+            /*            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if (err) reject(err);
+                    else resolve(sessionId);
+                });
+            });
+        }).then((sessionId) => {
+
+            debug(`sessionId: ${sessionId}, ${funcName}`);*/
+
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementRequestGetListUnresolvedTasks(socketIo);
         }).catch((err) => {

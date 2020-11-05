@@ -207,11 +207,6 @@ class GlobalObject {
         let isSuccess = true;
         arrayData.forEach((element) => {
             if (Array.isArray(element) && (element.length === 2)) {
-
-                console.log("objectGlobal.modifyData");
-                console.log(`(typeof this.obj[type][group] === "undefined") = ${(typeof this.obj[type][group] === "undefined")}`);
-                console.log(this.obj[type][group]);
-
                 if (typeof this.obj[type][group] === "undefined") {
                     isSuccess = false;
 
