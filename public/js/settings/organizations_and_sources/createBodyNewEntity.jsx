@@ -58,20 +58,20 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     componentDidMount() {
-        this.elOrg = $("#select_list_organization");
-        this.elDiv = $("#select_list_division");
-       
+        this.elOrg = $("#select_list_organization");      
         this.elOrg.select2({
             placeholder: "добавить организацию",
-            maximumInputLength: 10,
+            maximumInputLength: 30,
         });
+        this.elOrg.on("change", this.selectedOrganization.bind(this));
+    }
 
+    componentDidUpdate(){
+        this.elDiv = $("#select_list_division");
         this.elDiv.select2({
             placeholder: "добавить подразделение",
-            maximumInputLength: 10,
+            maximumInputLength: 30,
         });
-    
-        this.elOrg.on("change", this.selectedOrganization.bind(this));
         this.elDiv.on("change", this.selectedDivision.bind(this));
     }
 
@@ -171,9 +171,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     createListElementOrganization(){
-
-        console.log(this.state.listOrganizationName);
-
         return (
             <Form.Group>
                 <Form.Label>Организация</Form.Label>
@@ -188,6 +185,10 @@ export default class CreateBodyNewEntity extends React.Component {
     }
     
     createListElementDivision(){
+        if(this.state.chosenOrganizationID === null){
+            return;
+        }
+        
         let listOptions = this.state.listDivisionName.map((item) => {
             let isEqual = this.state.chosenOrganizationID === item.oid;
 
@@ -447,91 +448,12 @@ export default class CreateBodyNewEntity extends React.Component {
         });
     }
 
-    /* delAddedElem(elemID){
-        function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
-            let iterator = (obj, func) => {
-                let newObj = {};
-                for(let key in obj){
-                    if(func(obj[key])){
-                        newObj[key] = obj[key];
-                    }
-                }
-
-                return newObj;
-            };
-
-            let listNameID = ["id_organization", "id_division", "id_source"];
-            let searchIDAndDel = (listEntity, id) => {      
-                for(let i = 0; i < listEntity.length; i++){
-                    for(let name in listEntity[i]){
-                        if(listNameID.includes(name)){   
-                            if(listEntity[i][name] && listEntity[i][name] === id){   
-                                listEntity.splice(i, 1);
-
-                                if(name === "id_organization"){
-                                    listOrg = iterator(listOrg, (value) => value !== id);
-                                    listDiv = iterator(listDiv, (value) => value.oid !== id);
-                                } 
-                                if(name === "id_division"){
-                                    listDiv = iterator(listDiv, (value) => value.did !== id);
-                                }
-    
-                                return;
-                            }   
-                        }
-        
-                        if(Array.isArray(listEntity[i][name]) && listEntity[i][name].length > 0){
-                            searchIDAndDel(listEntity[i][name], id);
-                        }
-                    }
-                }
-            };
-            searchIDAndDel(listEntity, id);
-
-            return {
-                listEntity: listEntity,
-                listOrganization: listOrg, 
-                listDivision: listDiv,
-            };
-        }
-
-        const COUNT_ORGANIZATION_NAME = Object.keys(this.state.listOrganizationName).length;
-        const COUNT_DIVISION_NAME = Object.keys(this.state.listDivisionName).length;
-
-        let modifiedObject = findAndDeleteItemByID(this.state.listNewEntity, this.state.listOrganizationName, this.state.listDivisionName, elemID);
-
-        //изменяем тип открываемого модального окна если были изменения в объектах-списках 
-        if(COUNT_ORGANIZATION_NAME > Object.keys(modifiedObject.listOrganization).length){
-            this.setState({ chosenOrganizationID: null });
-        }
-        if(COUNT_DIVISION_NAME > Object.keys(modifiedObject.listDivision).length){
-            this.setState({ chosenDivisionID: null });
-        }
-
-        this.setState({ listNewEntity: modifiedObject.listEntity });
-        this.setState({ listOrganizationName: modifiedObject.listOrganization });
-        this.setState({ listDivisionName: modifiedObject.listDivision });
-
-        //убираем кнопку 'сохранить'
-        if(modifiedObject.listEntity.length === 0){
-            this.setState({ addedNewEntity: false });
-        }
-    }*/
-
     delAddedElem(elemID){
         function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
             let iterator = (obj, func) => {
                 let newList = [];
                 for(let key in obj){
                     if(func(obj[key])){
-
-                        console.log(obj[key]);
-
-                        /**
-                         * исправить баг с удалением
-                         * 
-                         */
-
                         newList.push(obj[key]);
                     }
                 }
@@ -540,7 +462,7 @@ export default class CreateBodyNewEntity extends React.Component {
             };
 
             let listNameID = ["id_organization", "id_division", "id_source"];
-            let searchIDAndDel = (listEntity, id) => {      
+            let searchIDAndDel = (listEntity, id) => {
                 for(let i = 0; i < listEntity.length; i++){
                     for(let name in listEntity[i]){
                         if(listNameID.includes(name)){   
@@ -605,11 +527,13 @@ export default class CreateBodyNewEntity extends React.Component {
             arguments: this.state.listNewEntity,
         });
 
-        //очищаем список добавляемых объектов
-        this.setState({ listNewEntity: [] });
-
         //убираем кнопку 'сохранить'
-        this.setState({ addedNewEntity: false });
+        this.setState({ 
+            listNewEntity: [],
+            addedNewEntity: false,
+            chosenDivisionID: null,
+            chosenOrganizationID: null,
+        });
     }
 
     listenerSocketIoConn(){
@@ -628,6 +552,8 @@ export default class CreateBodyNewEntity extends React.Component {
                         <Form>
                             <Row>
                                 <Col>{this.createListElementOrganization()}</Col>
+                            </Row>
+                            <Row>
                                 <Col>{this.createListElementDivision()}</Col>
                             </Row>
                         </Form>

@@ -80,22 +80,25 @@ export default class CreateTableSources extends React.Component {
                     <td key={`td_${elem.sourceID}_${elem.sid}_status`} className="text-center">
                         <canvas className={status}></canvas>
                     </td>                
-                    <td key={`td_${elem.sourceID}_${elem.sid}_source_id`} className="text-right">
-                        <a href="#" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>{elem.sourceID}</a>
+                    <td 
+                        key={`td_${elem.sourceID}_${elem.sid}_source_id`} 
+                        className="text-right text-info clicabe_cursor"
+                        onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})} >
+                        {elem.sourceID}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_short_name`} className="text-left">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_short_name`} className="text-left clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {elem.shortName}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_field_activity`} className="text-left">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_field_activity`} className="text-left clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {elem.fieldActivity}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_date_register`} className="text-left">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_date_register`} className="text-left clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {formatter.format(elem.dateRegister)}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_ver_app`} className="text-right">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_ver_app`} className="text-right clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {elem.versionApp}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_rel_app`} className="text-center">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_rel_app`} className="text-center clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {elem.releaseApp}
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}>

@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("handlerMsgSources");
-
 const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
 const globalObject = require("../../configure/globalObject");
@@ -14,17 +12,6 @@ const writeLogFile = require("../../libs/writeLogFile");
  * @param {*} msg - сообщение от модуля сетевого взаимодействия
  */
 module.exports = function(msg, socketIo) {
-
-    //ТОЛЬКО ДЛЯ ТЕСТА!!!
-    if (Array.isArray(msg.options.sl)) {
-        msg.options.sl.forEach((item) => {
-            debug(`source ID: ${item.id}, connection status: ${item.cs}`);
-            /*            if (item.id === 1000) {
-                debug(item);
-            }*/
-        });
-    }
-
     let objHandlerMsgInstraction = {
         "send version app": sendVersionApp,
         "change status source": changeStatusSource,
@@ -33,8 +20,6 @@ module.exports = function(msg, socketIo) {
 
     const task = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);
     if (task === null) {
-        debug(`instruction: ${msg.instruction}`);
-
         if (objHandlerMsgInstraction[msg.instruction]) {
             objHandlerMsgInstraction[msg.instruction](msg, socketIo);
         }
@@ -44,8 +29,6 @@ module.exports = function(msg, socketIo) {
 
     if ((task.sectionTask === "source control") && (msg.options.ti.s === "end")) {
         msg.options.sl.forEach((item) => {
-            debug(item);
-
             showNotify({
                 socketIo: socketIo,
                 type: (item.is) ? "success" : "warning",
@@ -66,8 +49,6 @@ function sendVersionApp(msg, socketIo) {
 }
 
 function changeStatusSource(msg, socketIo) {
-    debug("Instraction: 'change status source'");
-
     if (!Array.isArray(msg.options.sl)) {
         return;
     }
@@ -80,10 +61,6 @@ function changeStatusSource(msg, socketIo) {
 
         const sourceInfo = globalObject.getData("sources", item.id);
         if (sourceInfo !== null) {
-
-            debug("send message STATUS SOURCE --->");
-            debug(`sourceID: '${item.id}', shortName: '${sourceInfo.shortName}', connectionStatus: '${sourceInfo.connectStatus}'`);
-
             socketIo.emit("module-ni:change status source", {
                 options: {
                     sourceID: item.id,
@@ -116,13 +93,14 @@ function sendCurrentSourceList(msg, socketIo) {
         return;
     }
 
+    let listSourceId = [];
     msg.options.sl.forEach((item) => {
+        listSourceId.push(+item.id);
+
         const modifyIsSuccess = globalObject.modifyData("sources", item.id, [
             ["connectStatus", item.cs],
             ["connectTime", item.dlc]
         ]);
-
-        //debug(`source ID '${item.id}', modifyIsSuccess = ${modifyIsSuccess}`);
 
         // для источников которых нет в globalObject
         if (!modifyIsSuccess) {
@@ -135,6 +113,17 @@ function sendCurrentSourceList(msg, socketIo) {
             });
         }
     });
+
+    let sources = globalObject.getData("sources");
+    for (let key in sources) {
+        if (listSourceId.includes(+key)) {
+            continue;
+        }
+
+        if (sources[key].id.length === 0) {
+            globalObject.deleteData("sources", key);
+        }
+    }
 
     socketIo.emit("module-ni: short source list", {
         arguments: globalObject.getData("sources")

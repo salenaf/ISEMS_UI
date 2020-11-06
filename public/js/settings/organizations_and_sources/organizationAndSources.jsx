@@ -649,7 +649,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                         <br/>
                         <div className="row mb-2">
                             <div className="col-md-9 text-left text-muted">
-                                всего источников: <span className="text-info">{Object.keys(this.state.checkboxMarkedSourceDel).length}</span>
+                                всего источников: <span className="text-info">{this.state.tableSourceList.length}</span>
                             </div>
                             <div className="col-md-3 text-right">
                                 <Button 
