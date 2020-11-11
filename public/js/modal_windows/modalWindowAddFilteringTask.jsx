@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import DatePicker from "react-datepicker";
 
 import { helpers } from "../common_helpers/helpers.js";
+import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
 
 class CreateProtocolList extends React.Component {
     constructor(props){
@@ -386,6 +387,9 @@ class CreateMainFields extends React.Component {
                             placeholderText={formatterDate.format(this.props.ed)} />
                     </Col>
                 </Row>
+                <Row>
+                    <Col><CreateDateTimePicker/></Col>
+                </Row>
                 <Row className="mt-3">
                     <Col className="text-center" sm="4">
                         <Form inline>
@@ -589,6 +593,7 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                 size="lg"
                 show={this.props.show} 
                 onHide={this.windowClose}
+                backdrop={"static"}
                 aria-labelledby="example-modal-sizes-title-lg" >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">

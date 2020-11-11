@@ -889,6 +889,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 size="lg"
                 show={this.props.show} 
                 onHide={this.windowClose}
+                backdrop={"static"}
                 aria-labelledby="example-modal-sizes-title-lg">
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">

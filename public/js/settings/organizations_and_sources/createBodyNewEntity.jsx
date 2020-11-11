@@ -66,15 +66,6 @@ export default class CreateBodyNewEntity extends React.Component {
         this.elOrg.on("change", this.selectedOrganization.bind(this));
     }
 
-    componentDidUpdate(){
-        this.elDiv = $("#select_list_division");
-        this.elDiv.select2({
-            placeholder: "добавить подразделение",
-            maximumInputLength: 30,
-        });
-        this.elDiv.on("change", this.selectedDivision.bind(this));
-    }
-
     handelrButtonAdd(){
         let typeEntity = "source";
 
@@ -114,10 +105,12 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedOrganization(e){
-        let v = (e.target.value === "all") ? null: e.target.value;
+        let v = (e.target.value === "any") ? null: e.target.value;
 
-        this.setState({ chosenOrganizationID: v });
-        this.setState({ chosenDivisionID: null });
+        this.setState({ 
+            chosenOrganizationID: v,
+            chosenDivisionID: null 
+        });
     }
 
     selectedDivision(e){
@@ -142,7 +135,6 @@ export default class CreateBodyNewEntity extends React.Component {
         let listOrg = listShortEntity.shortListOrganization.map((item) => {
             return { name: item.name, id: item.id };
         });
- 
         listOrg.sort((a, b) => {
             if(a.name > b.name) return 1;
             if(a.name === b.name) return 0;
@@ -174,16 +166,16 @@ export default class CreateBodyNewEntity extends React.Component {
         return (
             <Form.Group>
                 <Form.Label>Организация</Form.Label>
-                <Form.Control as="select" size="sm" id="select_list_organization">
-                    <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
-                    {this.state.listOrganizationName.map((item) => {
-                        return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
-                    })}
+                <Form.Control as="select" size="sm"  id="select_list_organization">
+                    {[<option value="add_org" defaultValue key={"select_organization_option_none"}>добавить организацию</option>].concat(
+                        this.state.listOrganizationName.map((item) => {
+                            return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
+                        }))}
                 </Form.Control>
             </Form.Group>
         );
     }
-    
+
     createListElementDivision(){
         if(this.state.chosenOrganizationID === null){
             return;
@@ -200,7 +192,7 @@ export default class CreateBodyNewEntity extends React.Component {
         return (
             <Form.Group>
                 <Form.Label>Подразделение или филиал организации</Form.Label>
-                <Form.Control as="select" size="sm" id="select_list_division">
+                <Form.Control as="select" id="select_list_division" custom>
                     <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
                     {listOptions}
                 </Form.Control>
@@ -527,6 +519,8 @@ export default class CreateBodyNewEntity extends React.Component {
             arguments: this.state.listNewEntity,
         });
 
+        console.log(`func 'sendInfoNewEntity', BEFORE chosenOrganizationID: '${this.state.chosenOrganizationID}'`);
+
         //убираем кнопку 'сохранить'
         this.setState({ 
             listNewEntity: [],
@@ -534,12 +528,16 @@ export default class CreateBodyNewEntity extends React.Component {
             chosenDivisionID: null,
             chosenOrganizationID: null,
         });
+
+        console.log(`func 'sendInfoNewEntity', AFTER chosenOrganizationID: '${this.state.chosenOrganizationID}'`);
     }
 
     listenerSocketIoConn(){
         this.props.socketIo.on("entity: new short source list", (data) => {
-            this.setState({ listOrganizationName: this.createListOrganization.call(this, data.arguments) });
-            this.setState({ listDivisionName: this.createListDivision.call(this, data.arguments) });
+            this.setState({ 
+                listOrganizationName: this.createListOrganization.call(this, data.arguments),
+                listDivisionName: this.createListDivision.call(this, data.arguments) 
+            });
         });
     }
 

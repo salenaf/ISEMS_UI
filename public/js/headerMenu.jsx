@@ -4,6 +4,7 @@ import { Button, Container, Navbar, Nav, NavDropdown, Tooltip, OverlayTrigger } 
 import PropTypes from "prop-types";
 
 import { ModalWindowChangeAdminPasswd } from "./commons/modalWindowChangeAdminPasswd.jsx";
+import { DrawingAlertMessage } from "./drawingAlertsMessage.jsx";
 
 class CreateHeaderMenu extends React.Component {
     constructor(props){
@@ -12,7 +13,9 @@ class CreateHeaderMenu extends React.Component {
         this.listItems = this.props.listItems;
 
         this.state = {
-            "connectionModuleNI": this.connModuleNI.call(this),
+            connectionModuleNI: this.connModuleNI.call(this),
+            showNotifyMsg: true,
+            notifyMsg: {},
         };
 
         this.createMenu = this.createMenu.bind(this);
@@ -35,6 +38,16 @@ class CreateHeaderMenu extends React.Component {
                     this.setState({ "connectionModuleNI": false });
                 }
             }
+        });
+        this.props.socketIo.on("notify information", data => {
+            let msg = JSON.parse(data.notify);
+
+            console.log("event: notify information");
+
+            this.setState({ 
+                notifyMsg: msg,
+                showNotifyMsg: true 
+            });
         });
     }
 
@@ -157,6 +170,10 @@ class CreateHeaderMenu extends React.Component {
                 <ModalWindowChangeAdminPasswd 
                     login={this.listItems.login} 
                     passIsDefault={this.listItems.isPasswordDefaultAdministrator}
+                    socketIo={this.props.socketIo}/>
+
+                <DrawingAlertMessage
+                    notiyMsg={this.state.notifyMsg}
                     socketIo={this.props.socketIo}/>
             </Container>);
     }
