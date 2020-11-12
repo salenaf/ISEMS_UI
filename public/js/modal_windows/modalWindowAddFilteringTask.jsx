@@ -4,7 +4,7 @@ import React from "react";
 import {  Badge, Button, Col, Row, InputGroup, Form, FormControl, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import DatePicker from "react-datepicker";
+//import DatePicker from "react-datepicker";
 
 import { helpers } from "../common_helpers/helpers.js";
 import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
@@ -111,11 +111,14 @@ class CreateMainFields extends React.Component {
             inputFieldIsInvalid: false,
             showDirectionAndButton: false,           
             inputRadioType: "any",
+            currentDateTimeStart: new Date(),
+            currentDateTimeEnd: new Date(),
         };
 
         this.handlerInput = this.handlerInput.bind(this);
         this.checkRadioInput = this.checkRadioInput.bind(this);
         this.addPortNetworkIP = this.addPortNetworkIP.bind(this);
+        this.handlerChangeDateTime = this.handlerChangeDateTime.bind(this);
     }
     
     addPortNetworkIP(){
@@ -210,6 +213,22 @@ class CreateMainFields extends React.Component {
         });
     }
 
+    handlerChangeDateTime(typeValue, data){
+        console.log("func 'handlerChangeDateTime'");
+        console.log(data);
+        console.log(typeValue);
+
+        if(typeValue === "start"){
+            console.log("Received message START");
+            this.setState({ currentDateTimeStart: data });
+        }
+
+        if(typeValue === "end"){
+            console.log("Received message END");
+            this.setState({ currentDateTimeEnd: data });
+        }
+    }
+    
     listInputValue(){
         let isEmpty = true;
 
@@ -334,61 +353,33 @@ class CreateMainFields extends React.Component {
             }
         }
 
-        let formatterDate = new Intl.DateTimeFormat("ru-Ru", {
+        /*        let formatterDate = new Intl.DateTimeFormat("ru-Ru", {
             timeZone: "Europe/Moscow",
             day: "numeric",
             month: "numeric",
             year: "numeric",
             hour: "numeric",
             minute: "numeric",
-        });
+        });*/
 
         return (
             <React.Fragment>
                 <Row className="mt-2">
                     <Col sm="3" className="text-right">
-                        <small className="mr-1">сетевой протокол</small>
+                        <small className="mr-1 text-muted">сетевой протокол</small>
                         <CreateProtocolList 
                             isDisabled={disabled}
                             networkProtocol={this.props.networkProtocol} 
                             handlerChosen={this.props.handlerChosenProtocol} />
                     </Col>
                     <Col sm="1"></Col>
-                    <Col sm="4">
-                        <small className="mr-1">начальное время</small>
-                        <DatePicker 
-                            className="form-control form-control-sm green-border"
-                            selected={startDate}
-                            onChange={this.props.handlerChangeStartDate}
-                            maxDate={new Date()}
-                            disabled={disabled}
-                            showTimeInput
-                            selectsStart
-                            isClearable
-                            timeFormat="p"
-                            timeInputLabel="Time:"
-                            dateFormat="dd.MM.yyyy hh:mm aa"
-                            placeholderText={formatterDate.format(this.props.sd)} />
+                    <Col sm="8" className="mt-2">
+                        <CreateDateTimePicker 
+                            currentDateTimeStart={startDate}
+                            currentDateTimeEnd={endDate}
+                            handlerChangeDateTimeStart={this.props.handlerChangeStartDate}
+                            handlerChangeDateTimeEnd={this.props.handlerChangeEndDate} />
                     </Col>
-                    <Col sm="4">
-                        <small className="mr-1">конечное время</small>
-                        <DatePicker 
-                            className="form-control form-control-sm red-border"
-                            selected={endDate}
-                            onChange={this.props.handlerChangeEndDate}
-                            maxDate={new Date()}
-                            disabled={disabled}
-                            showTimeInput
-                            selectsEnd
-                            isClearable
-                            timeFormat="p"
-                            timeInputLabel="Time:"
-                            dateFormat="dd.MM.yyyy hh:mm aa"
-                            placeholderText={formatterDate.format(this.props.ed)} />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col><CreateDateTimePicker/></Col>
                 </Row>
                 <Row className="mt-3">
                     <Col className="text-center" sm="4">
@@ -421,6 +412,41 @@ class CreateMainFields extends React.Component {
         );
     }
 }
+
+/**
+                    <Col sm="4">
+                        <small className="mr-1">начальное время</small>
+                        <DatePicker 
+                            className="form-control form-control-sm green-border"
+                            selected={startDate}
+                            onChange={this.props.handlerChangeStartDate}
+                            maxDate={new Date()}
+                            disabled={disabled}
+                            showTimeInput
+                            selectsStart
+                            isClearable
+                            timeFormat="p"
+                            timeInputLabel="Time:"
+                            dateFormat="dd.MM.yyyy hh:mm aa"
+                            placeholderText={formatterDate.format(this.props.sd)} />
+                    </Col>
+                    <Col sm="4">
+                        <small className="mr-1">конечное время</small>
+                        <DatePicker 
+                            className="form-control form-control-sm red-border"
+                            selected={endDate}
+                            onChange={this.props.handlerChangeEndDate}
+                            maxDate={new Date()}
+                            disabled={disabled}
+                            showTimeInput
+                            selectsEnd
+                            isClearable
+                            timeFormat="p"
+                            timeInputLabel="Time:"
+                            dateFormat="dd.MM.yyyy hh:mm aa"
+                            placeholderText={formatterDate.format(this.props.ed)} />
+                    </Col>
+ */
 
 CreateMainFields.propTypes = {
     typeModal: PropTypes.string.isRequired,

@@ -10,6 +10,7 @@ require("bootstrapNotify");
 require("bootstrapToggle");
 require("mdbreact");
 require("material-ui-pickers");
+require("dateIoFnsUtils");
 require("datatablesNetBs");
 require("reactDatePicker");
 require("reactCustomizeTokenInput");

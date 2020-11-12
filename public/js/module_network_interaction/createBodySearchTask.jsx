@@ -2,10 +2,48 @@ import React from "react";
 import { Button, Card, Col, Form, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import DatePicker from "react-datepicker";
+//import DatePicker from "react-datepicker";
 import TokenInput from "react-customize-token-input";
 
 import { helpers } from "../common_helpers/helpers.js";
+import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
+
+/**
+                            <Row>
+                                <Col md={6}>
+                                    <small className="mr-1">начальное время</small>
+                                    <Form.Row>
+                                        <DatePicker 
+                                            className="form-control form-control-sm green-border"
+                                            selected={this.state.searchParameters.ifo.dt.s}
+                                            onChange={this.handlerChangeStartDate}
+                                            maxDate={new Date()}
+                                            showTimeInput
+                                            selectsStart
+                                            isClearable
+                                            timeFormat="p"
+                                            timeInputLabel="Time:"
+                                            dateFormat="dd.MM.yyyy hh:mm aa" />
+                                    </Form.Row>
+                                </Col>
+                                <Col md={6}>
+                                    <small className="mr-1">конечное время</small>
+                                    <Form.Row>
+                                        <DatePicker 
+                                            className="form-control form-control-sm red-border"
+                                            selected={this.state.searchParameters.ifo.dt.e}
+                                            onChange={this.handlerChangeEndDate}
+                                            maxDate={new Date()}
+                                            showTimeInput
+                                            selectsEnd
+                                            isClearable
+                                            timeFormat="p"
+                                            timeInputLabel="Time:"
+                                            dateFormat="dd.MM.yyyy hh:mm aa" />
+                                    </Form.Row>
+                                </Col>
+                            </Row>
+ */
 
 class CreateProtocolList extends React.Component {
     constructor(props){
@@ -267,14 +305,19 @@ export default class CreateBodySearchTask extends React.Component {
             return;
         }
 
-        let sp = this.state.searchParameters;
-        sp.ifo.dt.s = +(this.state.searchParameters.ifo.dt.s);
-        sp.ifo.dt.e = +(this.state.searchParameters.ifo.dt.e);
+        console.log("func 'handlerButtonSearch'");
+        console.log(this.state.searchParameters.ifo.dt.s);
 
-        this.props.handlerButtonSearch(sp.ifo.nf);
+        let copyObj = Object.assign({}, this.state);
+        copyObj.searchParameters.ifo.dt.s = +(copyObj.searchParameters.ifo.dt.s);
+        copyObj.searchParameters.ifo.dt.e = +(copyObj.searchParameters.ifo.dt.e);
+
+        console.log(this.state.searchParameters.ifo.dt.s);
+
+        this.props.handlerButtonSearch(copyObj.searchParameters.ifo.nf);
         this.props.socketIo.emit("network interaction: start search task", {
             actionType: "search tasks",
-            arguments: sp,
+            arguments: copyObj.searchParameters,
         });
     }
 
@@ -731,41 +774,12 @@ export default class CreateBodySearchTask extends React.Component {
                         </Form.Group>    
                     </Form.Row>                    
                     <Form.Row className="mt-n3">
-                        <Col md={5}>
-                            <Row>
-                                <Col md={6}>
-                                    <small className="mr-1">начальное время</small>
-                                    <Form.Row>
-                                        <DatePicker 
-                                            className="form-control form-control-sm green-border"
-                                            selected={this.state.searchParameters.ifo.dt.s}
-                                            onChange={this.handlerChangeStartDate}
-                                            maxDate={new Date()}
-                                            showTimeInput
-                                            selectsStart
-                                            isClearable
-                                            timeFormat="p"
-                                            timeInputLabel="Time:"
-                                            dateFormat="dd.MM.yyyy hh:mm aa" />
-                                    </Form.Row>
-                                </Col>
-                                <Col md={6}>
-                                    <small className="mr-1">конечное время</small>
-                                    <Form.Row>
-                                        <DatePicker 
-                                            className="form-control form-control-sm red-border"
-                                            selected={this.state.searchParameters.ifo.dt.e}
-                                            onChange={this.handlerChangeEndDate}
-                                            maxDate={new Date()}
-                                            showTimeInput
-                                            selectsEnd
-                                            isClearable
-                                            timeFormat="p"
-                                            timeInputLabel="Time:"
-                                            dateFormat="dd.MM.yyyy hh:mm aa" />
-                                    </Form.Row>
-                                </Col>
-                            </Row>
+                        <Col md={5} className="mt-2">
+                            <CreateDateTimePicker 
+                                currentDateTimeStart={this.state.searchParameters.ifo.dt.s}
+                                currentDateTimeEnd={this.state.searchParameters.ifo.dt.e}
+                                handlerChangeDateTimeStart={this.handlerChangeStartDate}
+                                handlerChangeDateTimeEnd={this.handlerChangeEndDate} />
                         </Col>
                         <Col md={2} className="text-right">
                             <small className="mr-1">сет. протокол</small>
