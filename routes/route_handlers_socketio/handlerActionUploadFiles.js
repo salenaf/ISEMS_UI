@@ -21,11 +21,6 @@ module.exports.addHandlers = function(ss, socketIo) {
 };
 
 function  wordOut(strBody, keywordStart, keywordEnd, posNull =0 ){
-    // let strBody ="alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (  msg:\"Downloader.MediaDrug.HTTP.C&C\"; flow:established,to_server;  content:\"GET\"; http_method; content:\"advert_key=\"; http_uri; fast_pattern;   content:\"app=\"; http_uri;  content:\"oslang=\"; http_uri; classtype:trojan-activity; sid:35586741; rev:0;)";
-    /*
-    let keyword1= "classtype";
-    let keywordEnd1 = ";";              */
-
     let posStart = 0, posEnd = 0;
     let resultStr = null ;
     posStart = strBody.indexOf(keywordStart , posNull);
@@ -34,7 +29,7 @@ function  wordOut(strBody, keywordStart, keywordEnd, posNull =0 ){
         if(posEnd!=-1){
             resultStr = strBody.slice(posStart + keywordStart.length , posEnd) ;
         }
-    // console.log (`pos1 = ${posStart}; pos2 = ${posEnd}; resultStr = ${resultStr}`);
+
     }
     return resultStr;
 }
@@ -165,6 +160,7 @@ async function processing(fileName){
 function receivedFilesRulesSOA(socketIo, stream, data){
     console.log("func 'receivedFilesRulesSOA', START...");
     console.log(data);
+
 
     // console.log(__dirname);
     // console.log(__dirname.substr(0, (__dirname.length - 28)));

@@ -68,25 +68,25 @@ class CreatePageRulesSOASourse extends React.Component {
                     <div className="tab-pane fade show active" id="searchSid" role="tabpanel" aria-labelledby="nav-home-tab">
                         <CreateBodySearchSid 
                             socketIo={this.props.socketIo} 
-                            hundlerEvents={this.hundlerEvents}
-                            listShortEntity={this.props.listShortEntity}/>{/**/}
+                            listShortEntity={this.props.listShortEntity}                            
+                            //hundlerEvents={this.props.hundlerEvents}
+                            />
                     </div>
                     <div className="tab-pane fade" id="addSid" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <CreateBodyAddFile   
                             ss={this.props.ss} 
                             socketIo={this.props.socketIo} 
-                            listSourcesInformation={this.props.listSourcesInformation}/>
+                            userPermissions= {this.props.userPermissions}/>
                     </div>  
                     <div className="tab-pane fade" id="primer" role="tabpanel" aria-labelledby="nav-body-tab">
                         <CreateBody 
                             ss={this.props.ss} 
-                            socketIo={this.props.socketIo} 
-                            listSourcesInformation={this.props.listSourcesInformation}/>
+                            socketIo={this.props.socketIo}/>
                     </div> 
                 </div>
             </React.Fragment>
         );
-    } // 
+    }
     // {/*listSourcesInformation={this.props.listSourcesInformation}*/}
     /* shortListRuleSOA(){ 
         let listTmp = {};
@@ -106,9 +106,8 @@ CreatePageRulesSOASourse.propTypes ={
     socketIo:PropTypes.object.isRequired,
     listShortEntity: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
-    listSourcesInformation: PropTypes.object.isRequired,
 };
-
+    //listSourcesInformation: PropTypes.object.isRequired,
 
 
 let listSourcesInformation ={
@@ -136,40 +135,11 @@ let listSourcesInformation ={
     },
   
 };
-
+   // listSourcesInformation={listSourcesInformation} 
 
 ReactDOM.render(<CreatePageRulesSOASourse 
     ss={ss}
     socketIo={socket}
-    listSourcesInformation={listSourcesInformation} 
     listShortEntity={receivedFromServerMain}
-    userPermissions = {userPermissions}/>, document.getElementById("page-rules-soa"));
+    userPermissions = {receivedFromServerAccess}/>, document.getElementById("page-rules-soa"));
 
-/* receivedFromServerMain
-
- <React.Fragment>
-                <div className="col-md-9 text-left"> Добавить файл </div>       
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="inputGroupFile04"/>
-                  <label class="custom-file-label" for="inputGroupFile04">Выбрать файл</label>
-                </div>
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button">Добавить файл</button>
-              </div>
-              </React.Fragment>
-
-              <div className="input-group">
-                <div className="custom-file">
-                  <input type="file" className="custom-file-input" name="file" id="inputGroupFile" />
-                    <label className="custom-file-label" name="file" for="inputGroupFile"> {text} </label>
-                </div>
-                  <div className="input-group-append">
-                    <button className="btn btn-outline-primary" type="button">Добавить</button>
-                  </div>
-              </div> 
-              <div>
-                <input id="file-input" type="file" name="file" multiple/>
-                <label for="file-input"></label>
-                <span>Выберите файл или перетащите его сюда</span>
-              </div>
-            */

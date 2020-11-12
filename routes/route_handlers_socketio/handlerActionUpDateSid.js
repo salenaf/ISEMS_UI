@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
-
+const showNotify = require("../../libs/showNotify");
 const writeLogFile = require("../../libs/writeLogFile");
 
 /**
@@ -126,13 +126,17 @@ function updateSID(socketIo, data){
        
     processing(data).then(() => {
         console.log("ОK");
-
+        showNotify({
+            socketIo: socketIo,
+            type: "success",
+            message: "Изменения успешно сохранено"
+        });
         socketIo.emit("result update value SID", { info: "insert OK" });
     }).catch((err) => {
         //console.log(err);
         console.log(`--------> ${err}`);
             
-        writeLogFile("error", `function 'receivedFilesRulesSOA': ${err.toString()}`);
+        writeLogFile("error", `function 'updateSID': ${err.toString()}`);
 
         socketIo.emit("SID upload result", { info: `insert ${err.toString()}` });
     });

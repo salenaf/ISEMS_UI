@@ -1,218 +1,211 @@
 import React from "react";
-import { Button, Badge, Card, Col, Form, Row } from "react-bootstrap";
-import PropTypes from "prop-types";
+import { ProgressBar } from "react-bootstrap";
+import PropTypes, { object } from "prop-types";
 import { data } from "jquery";
+import { relativeTimeRounding } from "moment";
+import { timeout } from "async";
 
-//import fs from "fs.realpath";
-
-/*//import ModalWindowAddEntity from "../../modal_windows/modalWindowAddEntity.jsx";
-class AddZone extends React.Component {
-    constructor(props){
-        super(props);
-
-        this.handleFileSelect = this. handleFileSelect.bind(this);
-        this.handleDragOver= this. handleDragOver.bind(this);
-        //this.createZone = this.createZone.bind(this);
-    }
-    handleFileSelect(evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
-    
-        var files = evt.dataTransfer.files; // FileList object.
-    
-        // files is a FileList of File objects. List some properties.
-        var output = [];
-        for (var i = 0, f; f = files[i]; i++) {
-          output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                      f.size, ' bytes, last modified: ',
-                      f.lastModifiedDate.toLocaleDateString(), '</li>');
-        }
-        document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-      }
-    
-      handleDragOver (evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-      }
-
-      componentDidUpdate (){
-        this.dropZone = document.getElementById('drop_zone');
-        dropZone.addEventListener('dragover', this.handleDragOver, false);
-        dropZone.addEventListener('drop', this.handleFileSelect, false);
-
-      }
-
-    render(){
-        return  <div>
-                    <div className="AddZone" id="drop_zone">Перетащите файл</div>
-                    <output id="list"> Тута</output>
-                </div>;
-      
-    }
-}
-
-ButtonSaveNewEntity.propTypes = {
-    showButton: PropTypes.bool,
-    handler: PropTypes.func.isRequired,
-};       
-
+/* 
+ * Body Add File
+ * 
 */
-/*         <div className="row">
-                    <div className="col-md-12 text-right">
-                        <ButtonSaveNewEntity handler={this.sendInfoNewEntity} showButton={this.state.addedNewEntity} />
-                    </div>
-                </div>
-*/      
 
 export default class CreateBodyAddFile extends React.Component {
     constructor(props){
         super(props);
 
         this.fileInput = React.createRef();
-        this.fileList = [];
+        this.listFileName = [];
         this.NumFileList = 0;
-        this.state = {listFiles: []};
+        this.state = {
+            outputList_state: [],
+            loadProcess: -1,
+            //outPutList: this.outPutList.call(this),
+        };
 
-        this.handleDeleteElement = id => {
+        this.handleDeleteElement = name => {
             this.setState(prevState => ({
-                listFiles: prevState.listFiles.filter(el => el.id != id),
+                outputList_state: prevState.outputList_state.filter(el => el.name != name),
             }));
-                              
-            this.fileList[id]="";
-            console.log(`1. ${id}; `);      
-            //console.log(`2. ${elem.name}; `);
-            //this.fileList
+            //delete this.listFileName[this.listFileName.indexOf(name)];
+            this.listFileName = this.listFileName.filter(el => el != name);
+            //console.log(`1. ${name}; `);      
         };
         
         this.renderListFile = this.renderListFile.bind(this);
         this.addList        = this.addList.bind(this);
         this.outPutList     = this.outPutList.bind(this);
         this.fileUpload     = this.fileUpload.bind(this);
+        this.funProgressBar = this.funProgressBar.bind(this);
     }
-    /*  let updateObj = this.state;
-        updateObj.listFiles.push(testStr1);
-        this.setState(updateObj);
-        alert(JSON.stringify(this.state));*/
-    
-    addList(event) {
-        // highlight-range{4}
-        event.preventDefault();
+        // componentDidMount(){
+        //     console.log("-------");
+        //     console.log(document.getElementById("files").files);
+        //     console.log("-------");
+        // }
         
-        let updateObj = this.state; 
+        //let updateObj = this.state; 
+        // let updateObj = Object.assign({}, this.state);
+        // this.setState(updateObj);
 
-        let str="";
-        // if()
-        let i=this.NumFileList;
-        
-        /*if(this.fileList[0]!=undefined){ 
-            i= this.fileList[this.fileList.length-1].id + 1 ;}*/
+        // let updateObj = Object.assign([], this.state.outputList_state);
+        // this.setState({ Array: updateObj });
+       // let updateObj = this.state.outputList_state;
+    addList(event) {
+        event.preventDefault();
+        let updateObj = Object.assign([], this.state.outputList_state);
+
+        //let i=this.NumFileList; ///////// <-------------------- ????????????
     
         let j=0;
         let fileName = null;
         let checkIp = null;
         let regul    =  new RegExp(/.+\.rules$/);
-
+//let arr = [];
         while(this.fileInput.current.files[j]!=undefined){
             fileName = this.fileInput.current.files[j].name;
             checkIp = fileName.match(regul);
             
             if(checkIp!=null){
-                let fileOne = { id: i,
+                let fileOne = { 
+                   // id: i,                                              ///////// <-------------------- ????????????
                     name: `${this.fileInput.current.files[j].name}`,
                     type: `${this.fileInput.current.files[j].type}`,
                     size: `${this.fileInput.current.files[j].size}`,
                     file: this.fileInput.current.files[j],
                     lastModifiedDate: `${this.fileInput.current.files[j].lastModifiedDate.toLocaleDateString()}`,
                 };
-                this.fileList[i]= fileOne;
-            
-                str += fileOne.name + ", ";
-                updateObj.listFiles.push(fileOne);
-            
-                i++;
+               
+                if(!this.listFileName.includes(fileOne.name)){
+                 //   console.log(`i = ${i}, obj = ${fileOne}`);  
+                    updateObj.push(fileOne); 
+                    
+                    this.listFileName.push(fileOne.name);                         
+                    //arr.push(fileOne);                                // str += fileOne.name + ", ";
+                  //  i++;                                                 ///////// <-------------------- ????????????       
+                }
             } 
             j++;
         }
         //let output = [];
-        this.NumFileList = i--;
+       // this.NumFileList = i--; ///////// <-------------------- ????????????
         
-        this.setState(updateObj);
-        //alert(`что ввелось: ${str}`);
-    }
-    /* <strong> {`${this.fileInput.current.files[j].name}:`}</strong>
-    {` ${this.fileInput.current.files[j].type}, ${this.fileInput.current.files[j].size} байт`} 
-    className="table table-sm"*/
-    
-    // ---------------------------- Загрузка файлов из списка (в папочку uploads)---------------------------
+        //this.setState(updateObj);
 
-    
+        this.setState({ outputList_state: updateObj });
+
+    }
+   
+   // ---------------------------- Загрузка файлов из списка (в папочку uploads)---------------------------
     renderListFile(){
-        let updateObj = this.state;
-        // updateObj.listFiles.push(testStr1);
-        this.setState(updateObj);
-        let listFile = [];
+        //let updateObj = this.state;
+        // updateObj.outputList_state.push(testStr1);
+        //this.setState(updateObj);
+        let files = [];
         let str = "";
-        for(let i = 0; i< this.fileList.length; i++){
-            if(this.fileList[i].name != undefined){  
-                str += this.fileList[i].name + "; " ;
-                listFile.push(this.fileList[i]);
-            }
+
+        console.log(`Список имён  ${this.listFileName.length}`);
+        console.log(this.listFileName);
+
+        let updateObj = Object.assign([], this.state.outputList_state);
+        console.log(`В статусе ${updateObj.length}`);
+        console.log(this.state.outputList_state);
+
+        for(let i = 0; i< this.listFileName.length; i++){
+                str += this.listFileName[i] + "; " ;
+                files.push(updateObj[i].file);
         }
+        let count = 0;
+        let doli = files.length;
         let verification = confirm(`Загрузить выбранные файлы? (${str})`); 
-        if(verification)
-        {
-            this.loadFils(listFile, () => { console.log("Успех!");}); 
+        if(verification){
+              for(let i = 0; i< files.length; i++){
+                if(files[i].name != undefined){  
+                    this.fileUpload(files[i], (data) =>{
+                        count++;
+                        if(count != doli){
+                            this.setState({ loadProcess: count/doli*100 });
+                          }else{
+                            this.setState({ loadProcess: 100 });
+                            setTimeout(
+                                () => {
+                                    this.setState({ loadProcess: -1 });
+                                },
+                                1 * 1000
+                            );
+                            setTimeout(
+                                () => {
+                                    window.location.reload();
+                                },
+                                2 * 1000
+                            );
+
+                          }
+                        console.log(`Загружен ${data}`);
+                        this.handleDeleteElement(data);
+                    });             
+                }
+            }
+        
+        
         }
+        return progressBar;
         // console.log();
     }
-    
-    loadFils(files, callback){
-        for(let i = 0; i< files.length; i++){
-            if(files[i].name != undefined){  
-                this.fileUpload(files[i].file, (data) =>{
-                    console.log(`Загружен ${data}`);
-                });             
-            } 
-        }
-        callback();
+
+    funProgressBar(){
+        let progressBar = <div></div>;
+        if(this.state.loadProcess!=-1)
+            progressBar = <ProgressBar animated now={this.state.loadProcess} />;
+        return progressBar;
     }
 
     fileUpload(file, callback){
-        console.log("upload file");
-        console.log(file);
-
+        // console.log("upload file");
+        // console.log(file);
+        
         let stream = this.props.ss.createStream();
-
-        this.props.ss(this.props.socketIo).emit("uploading files with SOA rules", stream, { name: file.name, size: file.size });
+        this.props.ss(this.props.socketIo).emit("uploading files with SOA rules", stream, { name: file.name, size: file.size }); //list: listFile}); 
         let blobStream = this.props.ss.createBlobReadStream(file);
         let size = 0;
         blobStream.pipe(stream);
 
         blobStream.on("data", function(chunk) {
             //console.log(chunk);
-
+            size += chunk.length;
+            if (file.size === size) { 
+                callback(file.name);
+            } 
             /*            size += chunk.length;
             let percent = (Math.floor(size / file.size * 100) + "%");
             let divProgressBar = document.querySelector("#modalProgressBar .progress-bar");
             divProgressBar.setAttribute("aria-valuenow", percent);
             divProgressBar.style.width = percent;
             divProgressBar.innerHTML = percent;
-
             if (file.size === size) $("#modalProgressBar").modal("hide");
             */
-            size += chunk.length;
-            if (file.size === size) { 
-                callback(file.name);
-            } 
         }) ;
-       
         //location.reload();
     }
 
     outPutList(){
-        const { listFiles } = this.state;
-        if(this.fileInput.current==undefined) return;
+        const { outputList_state } = this.state;
+
+        // console.log("this.fileInput.current---->") ;
+        // console.log(this.fileInput.current);
+        // console.log(this.fileInput);
+        // console.log("this.state.outputList_state----->");
+        // console.log(this.state.outputList_state);
+
+       // if(this.fileInput.current==undefined) return;
+        if(this.state.outputList_state.length === 0) return;
+
+        let list = outputList_state;
+        //console.log(list);
+        //if(list == []) return;
+        // plan B list.indexOf(el)
+        //console.log(`length = ${list.length}`)
+let i = 0;
         let outPutTabl =    <React.Fragment>
             <table className="table table-sm">
                 <thead>
@@ -221,13 +214,13 @@ export default class CreateBodyAddFile extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {listFiles.map(el => (
-                        <tr key={el.id} >
+                    {list.map(el => (
+                        <tr key={el.name} >
                             <td> {el.name} </td> 
                             {/*<td> .rules </td>*/}
                             <td> {el.size}  байт </td>
                             <td>  
-                                <button type="button" className="close" onClick={() => { this.handleDeleteElement(el.id); }} aria-label="Close"> 
+                                <button type="button" className="close" onClick={() => { this.handleDeleteElement(el.name); }} aria-label="Close"> 
                                     <span aria-hidden="true">&times;</span>
                                 </button> 
                             </td>  
@@ -241,7 +234,7 @@ export default class CreateBodyAddFile extends React.Component {
     }    
 
     /*  <ul>
-        {listFiles.map(el => (
+        {outputList_state.map(el => (
             <li key={el.id} >
                 {el.title}
                                         
@@ -250,7 +243,7 @@ export default class CreateBodyAddFile extends React.Component {
                 </button> 
             </li>))
             }   
-            {this.renderListFile()this.state.listFiles}
+            {this.renderListFile()this.state.outputList_state}
     </ul>*/
     /*
         <div className="input-group mb-3">
@@ -260,7 +253,7 @@ export default class CreateBodyAddFile extends React.Component {
     
     */
     render(){ 
-        const { listFiles} = this.state;
+       // const { outputList_state} = this.state;
         return (
             <React.Fragment>
                 <label> Выберите файл </label>
@@ -272,6 +265,7 @@ export default class CreateBodyAddFile extends React.Component {
                 </form> 
                 <br/>
                 {this.outPutList()}
+                {this.funProgressBar()}
                 <br/>  
                 <button className="btn btn-outline-success float-right" onClick={this.renderListFile.bind(this)} type="button">Добавить</button>
 
@@ -283,5 +277,6 @@ export default class CreateBodyAddFile extends React.Component {
 CreateBodyAddFile.propTypes = {
     ss: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
-    listSourcesInformation: PropTypes.object.isRequired,
+    userPermissions: PropTypes.object.isRequired,
+    //listSourcesInformation: PropTypes.object.isRequired,
 };
