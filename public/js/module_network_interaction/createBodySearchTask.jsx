@@ -1,49 +1,10 @@
 import React from "react";
-import { Button, Card, Col, Form, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
-import PropTypes from "prop-types";
-
-//import DatePicker from "react-datepicker";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import TokenInput from "react-customize-token-input";
+import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers.js";
 import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
-
-/**
-                            <Row>
-                                <Col md={6}>
-                                    <small className="mr-1">начальное время</small>
-                                    <Form.Row>
-                                        <DatePicker 
-                                            className="form-control form-control-sm green-border"
-                                            selected={this.state.searchParameters.ifo.dt.s}
-                                            onChange={this.handlerChangeStartDate}
-                                            maxDate={new Date()}
-                                            showTimeInput
-                                            selectsStart
-                                            isClearable
-                                            timeFormat="p"
-                                            timeInputLabel="Time:"
-                                            dateFormat="dd.MM.yyyy hh:mm aa" />
-                                    </Form.Row>
-                                </Col>
-                                <Col md={6}>
-                                    <small className="mr-1">конечное время</small>
-                                    <Form.Row>
-                                        <DatePicker 
-                                            className="form-control form-control-sm red-border"
-                                            selected={this.state.searchParameters.ifo.dt.e}
-                                            onChange={this.handlerChangeEndDate}
-                                            maxDate={new Date()}
-                                            showTimeInput
-                                            selectsEnd
-                                            isClearable
-                                            timeFormat="p"
-                                            timeInputLabel="Time:"
-                                            dateFormat="dd.MM.yyyy hh:mm aa" />
-                                    </Form.Row>
-                                </Col>
-                            </Row>
- */
 
 class CreateProtocolList extends React.Component {
     constructor(props){
@@ -164,6 +125,10 @@ export default class CreateBodySearchTask extends React.Component {
         this.handlerCountAndSizeFiles = this.handlerCountAndSizeFiles.bind(this);
         this.handlerChosenProtocolList = this.handlerChosenProtocolList.bind(this);
         this.handlerFieldInputValidator = this.handlerFieldInputValidator.bind(this);
+    }
+
+    componentDidMount(){
+        $("#elem_helper").tooltip();
     }
 
     handlerChosenSource(e){
@@ -305,19 +270,14 @@ export default class CreateBodySearchTask extends React.Component {
             return;
         }
 
-        console.log("func 'handlerButtonSearch'");
-        console.log(this.state.searchParameters.ifo.dt.s);
+        let copyObj = _.cloneDeep(this.state.searchParameters);
+        copyObj.ifo.dt.s = +(copyObj.ifo.dt.s);
+        copyObj.ifo.dt.e = +(copyObj.ifo.dt.e);
 
-        let copyObj = Object.assign({}, this.state);
-        copyObj.searchParameters.ifo.dt.s = +(copyObj.searchParameters.ifo.dt.s);
-        copyObj.searchParameters.ifo.dt.e = +(copyObj.searchParameters.ifo.dt.e);
-
-        console.log(this.state.searchParameters.ifo.dt.s);
-
-        this.props.handlerButtonSearch(copyObj.searchParameters.ifo.nf);
+        this.props.handlerButtonSearch(copyObj.ifo.nf);
         this.props.socketIo.emit("network interaction: start search task", {
             actionType: "search tasks",
-            arguments: copyObj.searchParameters,
+            arguments: copyObj,
         });
     }
 
@@ -792,14 +752,13 @@ export default class CreateBodySearchTask extends React.Component {
                                     validator={this.handlerFieldInputValidator}
                                     onTokensUpdate={this.handlerFieldInput}
                                     placeholder="ip адрес, порт или подсеть" />
-                                <OverlayTrigger
-                                    key="tooltip_question"
-                                    placement="right"
-                                    overlay={<Tooltip>Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.</Tooltip>}>
-                                    <a href="#">
-                                        <img className="clickable_icon ml-1" src="../images/icons8-help-28.png" alt=""></img>
-                                    </a>
-                                </OverlayTrigger>
+                                <a href="#" 
+                                    id="elem_helper"
+                                    data-toggle="tooltip" 
+                                    data-placement="top" 
+                                    title="Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.">
+                                    <img className="clickable_icon ml-1" src="../images/icons8-help-28.png" alt=""></img>
+                                </a>
                             </Form.Row>
                         </Col>
                     </Form.Row>

@@ -18,6 +18,7 @@ module.exports = {
             "utf8",
             "react",
             "reactDom",
+            "lodash",
             "reactBootstrap",
             "mdbreact",
             "material-ui-pickers",
@@ -26,7 +27,6 @@ module.exports = {
             "bootstrapNotify",
             "bootstrapToggle",
             "datatablesNetBs",
-            "reactDatePicker",
             "reactCustomizeTokenInput",
             "select2",
             "md5js",
@@ -91,18 +91,15 @@ module.exports = {
         modules: ["node_modules", bootstrapPath],
         extensions: [".js", "jsx", ".css"],
         alias: {
-            /*amcharts: 'amcharts/dist/amcharts/amcharts.js',
-            amchartsSerial: 'amcharts/dist/amcharts/serial.js',
-            amchartsExport: 'amcharts/dist/amcharts/plugins/export/export.min.js',*/
             "utf8": "utf8/utf8.js",
             "react": "react",
             "reactDom": "react-dom",
+            "lodash": "lodash",
             "reactBootstrap": "react-bootstrap/dist/react-bootstrap.min.js",
             "bootstrap": "bootstrap/dist/js/bootstrap.min.js",
             "bootstrapNotify": "bootstrap-notify/bootstrap-notify.min.js",
             "bootstrapToggle": "bootstrap-toggle/js/bootstrap-toggle.min.js",
             "datatablesNetBs": "datatables.net-bs/js/dataTables.bootstrap.min.js",
-            "reactDatePicker": "react-datepicker/dist/react-datepicker.min.js",
             "reactCustomizeTokenInput": "react-customize-token-input/lib/index.js",
             "mdbreact": "mdbreact/dist/mdbreact.js",
             "material-ui-pickers": "@material-ui/pickers",
@@ -182,11 +179,11 @@ module.exports = {
                 }
             },
             /*{
-                                                                                         test: /\.(js|jsx)$/,
-                                                                                        test: /\.js$/,
-                                                                                        exclude: /node_modules/,
-                                                                                        use: ["babel-loader"] //, 'eslint-loader']
-                                                                                    },*/
+                                                                                                 test: /\.(js|jsx)$/,
+                                                                                                test: /\.js$/,
+                                                                                                exclude: /node_modules/,
+                                                                                                use: ["babel-loader"] //, 'eslint-loader']
+                                                                                            },*/
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
@@ -215,19 +212,19 @@ module.exports = {
                 }, ],
             },
             /*{
-                                                                                        test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
-                                                                                        loader: "imports-loader?this=>window&exports=>false&define=>false"
-                                                                                    },
-                                                                                                {
-                                                                                                                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                                                                    include: /\/node_modules\//,
-                                                                                                                    loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
-                                                                                                                },
-                                                                                                                {
-                                                                                                                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                                                                    exclude: /\/node_modules\//,
-                                                                                                                    loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
-                                                                                                                },*/
+                                                                                                test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
+                                                                                                loader: "imports-loader?this=>window&exports=>false&define=>false"
+                                                                                            },
+                                                                                                        {
+                                                                                                                            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                                                                                            include: /\/node_modules\//,
+                                                                                                                            loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                                                                                            exclude: /\/node_modules\//,
+                                                                                                                            loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
+                                                                                                                        },*/
             {
                 test: /\.ejs$/,
                 loader: "ejs-loader"

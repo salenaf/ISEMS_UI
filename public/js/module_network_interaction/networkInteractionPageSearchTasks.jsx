@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Row, Table, Form, Pagination, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Button, Col, Row, Table, Form, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
@@ -58,6 +58,11 @@ class CreatePageSearchTasks extends React.Component {
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
+    }
+
+    componentDidUpdate(){
+        $("[value='elem_helper_repeat_task']").tooltip();
+        $("[value='file_analysis']").tooltip();
     }
 
     requestEmitter(){
@@ -226,14 +231,14 @@ class CreatePageSearchTasks extends React.Component {
     buttonForwardArrow(item){
         if(item.fdts === "complete" || item.fdts === "stop"){
             return (
-                <OverlayTrigger
-                    key={"tooltip_back_arrow_img"}
-                    placement="bottom"
-                    overlay={<Tooltip>{`анализ файлов, задача ID ${item.tid}`}</Tooltip>}>
-                    <a href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}>
-                        <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
-                    </a>
-                </OverlayTrigger>
+                <a 
+                    href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}
+                    value="file_analysis"
+                    data-toggle="tooltip" 
+                    data-placement="top" 
+                    title={`анализ файлов, задача ID ${item.tid}`} >
+                    <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
+                </a>
             );
         }
     }
@@ -318,37 +323,32 @@ class CreatePageSearchTasks extends React.Component {
                         <small><GetStatusDownload status={item.fdts} /></small>
                     </td>
                     <td className="align-middle">
-                        <OverlayTrigger
-                            key={`tooltip_${item.tid}_checkbox`}
-                            placement="right"
-                            overlay={<Tooltip>редактировать параметры и повторить задачу</Tooltip>}>
-                            <Button 
-                                size="sm" 
-                                variant="outline-light" >
-                                <a href="#" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
-                                    <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
-                                </a>
-                            </Button>
-                        </OverlayTrigger>
+                        <Button 
+                            size="sm" 
+                            variant="outline-light" >
+                            <a href="#" 
+                                onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}
+                                value="elem_helper_repeat_task"
+                                data-toggle="tooltip" 
+                                data-placement="top" 
+                                title="редактировать параметры и повторить задачу" >
+                                <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
+                            </a>
+                        </Button>
                     </td>
                     <td className="align-middle">
                         {this.buttonForwardArrow(item)}
                     </td>
                     <td className="align-middle">
-                        <OverlayTrigger
-                            key={`tooltip_${item.tid}_checkbox`}
-                            placement="right"
-                            overlay={<Tooltip>отметить для удаления</Tooltip>}>
-                            <Form>
-                                <Form.Check 
-                                    className="mt-1"
-                                    custom 
-                                    onChange={this.changeCheckboxMarked.bind(this, item.tid)}
-                                    type="checkbox" 
-                                    id={`checkbox-${item.tid}`}
-                                    label="" />
-                            </Form>
-                        </OverlayTrigger>
+                        <Form>
+                            <Form.Check 
+                                className="mt-1"
+                                custom 
+                                onChange={this.changeCheckboxMarked.bind(this, item.tid)}
+                                type="checkbox" 
+                                id={`checkbox-${item.tid}`}
+                                label="" />
+                        </Form>
                     </td>
                 </tr>);
             });

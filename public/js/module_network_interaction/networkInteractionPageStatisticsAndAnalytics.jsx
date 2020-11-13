@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, Row, OverlayTrigger, Tooltip, Table, Pagination } from "react-bootstrap";
+import { Col, Row, Table, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import {helpers} from "../common_helpers/helpers.js";
@@ -39,6 +39,10 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
         this.requestEmitter.call(this);
+    }
+
+    componentDidUpdate(){
+        $("[value='file_analysis']").tooltip();
     }
 
     requestEmitter(){
@@ -201,14 +205,14 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <small>{helpers.changeByteSize(item.tsffarf)}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "processed")}>
-                        <OverlayTrigger
-                            key={"tooltip_forward_arrow_img"}
-                            placement="bottom"
-                            overlay={<Tooltip>{`анализ файлов, задача ID ${item.tid}`}</Tooltip>}>
-                            <a href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}>
-                                <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
-                            </a>
-                        </OverlayTrigger>
+                        <a 
+                            href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}
+                            value="file_analysis"
+                            data-toggle="tooltip" 
+                            data-placement="top" 
+                            title={`анализ файлов, задача ID ${item.tid}`} >
+                            <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
+                        </a>
                     </td>
                 </tr>);
             });

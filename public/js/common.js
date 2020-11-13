@@ -12,9 +12,9 @@ require("mdbreact");
 require("material-ui-pickers");
 require("dateIoFnsUtils");
 require("datatablesNetBs");
-require("reactDatePicker");
 require("reactCustomizeTokenInput");
 
+require("lodash");
 require("moment");
 require("select2");
 
