@@ -75,6 +75,11 @@ export default class CreateBodyNewEntity extends React.Component {
             typeEntity = "division";
         }
 
+        console.log("func 'handelrButtonAdd'");
+        console.log(`organization ID: ${this.state.chosenOrganizationID}`);
+        console.log(`division ID: ${this.state.chosenDivisionID}`);
+        console.log(typeEntity);
+
         this.showModalWindow.call(this, typeEntity);
     }
 
@@ -91,6 +96,10 @@ export default class CreateBodyNewEntity extends React.Component {
             },
         };
 
+
+        console.log("func 'showModalWindow'");
+        console.log(typeEntity);
+
         this.resultBody = this.resultBody.bind(this);
         this.sendInfoNewEntity = this.sendInfoNewEntity.bind(this);
 
@@ -105,7 +114,10 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedOrganization(e){
-        let v = (e.target.value === "any") ? null: e.target.value;
+
+        console.log("func selectedOrganization");
+        
+        let v = (e.target.value === "all") ? null: e.target.value;
 
         this.setState({ 
             chosenOrganizationID: v,
@@ -114,6 +126,10 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedDivision(e){
+
+        console.log("func 'selectedDivision'");
+        console.log(e);
+
         let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
         this.setState({ chosenDivisionID: v });
@@ -126,6 +142,9 @@ export default class CreateBodyNewEntity extends React.Component {
             }
         }                
         
+        console.log(`state chosen org. id: ${this.state.chosenOrganizationID}`);
+        console.log(oid);
+
         if(this.state.chosenOrganizationID === null){
             this.setState({ chosenOrganizationID: oid });
         }
@@ -167,7 +186,7 @@ export default class CreateBodyNewEntity extends React.Component {
             <Form.Group>
                 <Form.Label>Организация</Form.Label>
                 <Form.Control as="select" size="sm"  id="select_list_organization">
-                    {[<option value="add_org" defaultValue key={"select_organization_option_none"}>добавить организацию</option>].concat(
+                    {[<option value="all" defaultValue key={"select_organization_option_none"}>добавить организацию</option>].concat(
                         this.state.listOrganizationName.map((item) => {
                             return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
                         }))}
@@ -192,7 +211,7 @@ export default class CreateBodyNewEntity extends React.Component {
         return (
             <Form.Group>
                 <Form.Label>Подразделение или филиал организации</Form.Label>
-                <Form.Control as="select" id="select_list_division" custom>
+                <Form.Control as="select" onChange={this.selectedDivision.bind(this)} id="select_list_division" custom>
                     <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
                     {listOptions}
                 </Form.Control>
