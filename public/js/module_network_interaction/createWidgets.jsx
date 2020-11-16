@@ -56,12 +56,12 @@ export default class CreatingWidgets extends React.Component {
     render(){
         return (
             <div className="row d-flex justify-content-center">
-                <Card className="ml-3" border="success" style={{ width: "10rem" }}>
+                <Card className="ml-3 clicabe_cursor" border="success" style={{ width: "10rem" }} onClick={this.props.handlerShowModalWindowInfoConnectStatusSources}>
                     <small>источников</small>
                     <span className="my-n2 text-success">{this.props.widgets.numConnect}</span>
                     <small className="text-muted">подключено</small>
                 </Card>
-                <Card className="ml-3" border="danger" style={{ width: "10rem" }}>
+                <Card className="ml-3 clicabe_cursor" border="danger" style={{ width: "10rem" }} onClick={this.props.handlerShowModalWindowInfoConnectStatusSources}>
                     <small>источников</small>
                     <span className="my-n2 text-danger">{this.props.widgets.numDisconnect}</span>
                     <small className="text-muted">не доступно</small>
@@ -93,4 +93,5 @@ export default class CreatingWidgets extends React.Component {
 CreatingWidgets.propTypes = {
     widgets: PropTypes.object.isRequired,
     socketIo: PropTypes.object.isRequired,
+    handlerShowModalWindowInfoConnectStatusSources: PropTypes.func.isRequired,
 };

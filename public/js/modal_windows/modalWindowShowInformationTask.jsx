@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 
 import Circle from "react-circle";
 
+import {helpers} from "../common_helpers/helpers.js";
+
 /**
  * Типовое модальное окно для вывода всей информации о выполняемой задаче
  * Сначала выводится вся информация о задаче полученная по запросу из БД,
@@ -191,8 +193,8 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                             <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.nfmfp)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
-                                            <Col md={6}><small>общим размером:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт</small></Col>
+                                            <Col md={5}><small>общим размером:</small></Col>
+                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{helpers.changeByteSize(this.state.filteringStatus.sfmfp)}</strong>)</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно:</small></Col>
@@ -207,8 +209,8 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                             <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.nffrf)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
-                                            <Col md={6}><small>общим размером:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт</small></Col>
+                                            <Col md={5}><small>общим размером:</small></Col>
+                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{helpers.changeByteSize(this.state.filteringStatus.sffrf)}</strong>)</small></Col>
                                         </Row>
                                         <Row>
                                             <Col md={6}><small>фильтруемых директорий:</small></Col>

@@ -7,6 +7,7 @@ import CreatingWidgets from "./createWidgets.jsx";
 import ModalWindowLanCalc from "../modal_windows/modalWindowLanCalc.jsx";
 import ModalWindowEncodeDecoder from "../modal_windows/modalWindowEncodeDecoder.jsx";
 import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
+import ModalWindowShowInformationConnectionStatusSources from "../modal_windows/modalWindowShowInformationConnectionStatusSources.jsx";
 
 class CreatePageManagingNetworkInteractions extends React.Component {
     constructor(props){
@@ -32,6 +33,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowFiltration: false,
             showModalWindowEncodeDecoder: false,
             showModalWindowShowTaskInformation: false,
+            showModalWindowInfoConnectStatusSources: false,
         };
 
         this.userPermission = this.props.listItems.userPermissions;
@@ -44,6 +46,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.handlerShowModalWindowEncodeDecoder = this.handlerShowModalWindowEncodeDecoder.bind(this);
         this.handlerCloseModalWindowEncodeDecoder = this.handlerCloseModalWindowEncodeDecoder.bind(this);
         this.handlerCloseModalWindowShowTaskInformation = this.handlerCloseModalWindowShowTaskInformation.bind(this);
+        this.handlerShowModalWindowInfoConnectStatusSources = this.handlerShowModalWindowInfoConnectStatusSources.bind(this);
+        this.handlerCloseModalWindowInfoConnectStatusSources = this.handlerCloseModalWindowInfoConnectStatusSources.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
@@ -163,6 +167,14 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.setState({ showModalWindowEncodeDecoder: false });
     }
 
+    handlerShowModalWindowInfoConnectStatusSources(){
+        this.setState({ showModalWindowInfoConnectStatusSources: true });        
+    }
+
+    handlerCloseModalWindowInfoConnectStatusSources(){
+        this.setState({ showModalWindowInfoConnectStatusSources: false });
+    }
+
     handlerButtonSubmitWindowFilter(objTaskInfo){
         let checkExistInputValue = () => {
             let isEmpty = true;
@@ -241,7 +253,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             <React.Fragment>
                 <CreatingWidgets 
                     widgets={this.state.widgets} 
-                    socketIo={this.props.socketIo} />
+                    socketIo={this.props.socketIo} 
+                    handlerShowModalWindowInfoConnectStatusSources={this.handlerShowModalWindowInfoConnectStatusSources} />
                 {this.showModuleConnectionError.call(this)}
                 <Row className="pt-4">
                     <Col md={12} className="text-right">
@@ -327,6 +340,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 <ModalWindowEncodeDecoder
                     show={this.state.showModalWindowEncodeDecoder} 
                     onHide={this.handlerCloseModalWindowEncodeDecoder} />
+                <ModalWindowShowInformationConnectionStatusSources 
+                    sourceList={this.state.listSources}
+                    show={this.state.showModalWindowInfoConnectStatusSources} 
+                    onHide={this.handlerCloseModalWindowInfoConnectStatusSources} />
             </React.Fragment>
         );
     }

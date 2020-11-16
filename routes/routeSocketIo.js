@@ -211,7 +211,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 if (globalObject.hasData("tasks", msg.taskID)) {
                     let taskInfo = globalObject.getData("tasks", msg.taskID);
 
-                    debug(taskInfo);
+                    //debug(taskInfo);
 
                     /**
                      * может быть здесь после поиска удалять задачу из списка
@@ -243,6 +243,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     }
                     */
                 } else {
+
+                    debug("Task not found for ID");
+
                     socketIo.emit("module NI API", {
                         "type": msg.instruction,
                         "options": msg.options,

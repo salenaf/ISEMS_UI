@@ -2,6 +2,7 @@ import React from "react";
 import { Col, Row, Table, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import { helpers } from "../common_helpers/helpers";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
 
 export default class CreateBodyDownloadFiles extends React.Component {
@@ -152,7 +153,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
                         <small>{`${formaterInt.format(item.nffarf)} (${formaterInt.format(item.nfd)})`}</small>
                     </td>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_size_search_files`}>
-                        <small>{`${formaterInt.format(item.tsffarf)} байт.`}</small>
+                        <small>{helpers.changeByteSize(item.tsffarf)}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "download")}>
                         <a href="#">

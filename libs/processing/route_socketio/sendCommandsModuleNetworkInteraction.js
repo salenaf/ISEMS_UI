@@ -1,5 +1,7 @@
 "use strict";
 
+const debug = require("debug")("scmni");
+
 const MyError = require("../../helpers/myError");
 const helpersFunc = require("../../helpers/helpersFunc");
 const getSessionId = require("../../helpers/getSessionId");
@@ -388,6 +390,10 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
             else resolve(sessionId);
         });
     }).then((sessionId) => {
+
+        debug("func 'managementRequestGetListAllTasks'");
+        debug(`found user session id: ${sessionId}`);
+
         if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
         }

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Tab, Tabs } from "react-bootstrap";
+import { Button, Col, Row, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateTableSources from "./createTableSources.jsx";
@@ -112,9 +112,10 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.showModalWindowSourceInfo = this.showModalWindowSourceInfo.bind(this);
         this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowChangeSource = this.showModalWindowChangeSource.bind(this);
+        this.getCountConnectAndDisconnect = this.getCountConnectAndDisconnect.bind(this);
         this.closeModalWindowChangeSource = this.closeModalWindowChangeSource.bind(this);
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
-
+        
         this.requestEmitter.call(this);        
         this.handlerEvents.call(this);
         this.listenerSocketIoConnect.call(this);
@@ -641,24 +642,46 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.props.socketIo.emit("reconnect source", { source_id: data.sourceID });
     }
 
+    getCountConnectAndDisconnect(){
+        let result = {
+            countConnect: 0,
+            countDisconnect: 0,
+        };
+
+        this.state.tableSourceList.forEach((item) => {
+            if(item.connectionStatus){
+                result.countConnect++;
+            } else {
+                result.countDisconnect++;
+            }
+        });
+
+        return result;
+    }
+
     render(){
+        let { countConnect, countDisconnect } = this.getCountConnectAndDisconnect();
+
         return (
             <React.Fragment>
                 <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
                     <Tab eventKey="sources" title="источники">
                         <br/>
-                        <div className="row mb-2">
-                            <div className="col-md-9 text-left text-muted">
-                                всего источников: <span className="text-info">{this.state.tableSourceList.length}</span>
-                            </div>
-                            <div className="col-md-3 text-right">
+                        <Row className="mb-2">
+                            <Col md={3} className="text-left text-muted">
+                                всего источников: <i>{this.state.tableSourceList.length}</i>
+                            </Col>
+                            <Col md={7} className="text-center text-muted">
+                                подключено <span className="text-success"><i>{countConnect}</i></span> / недоступно <span className="text-danger"><i>{countDisconnect}</i></span>
+                            </Col>
+                            <Col md={2} className="text-right">
                                 <Button 
                                     variant="outline-danger" 
                                     onClick={this.showModalWindowSourceDel}
                                     disabled={this.isDisabledDelete.call(this, "sourceDel")}
                                     size="sm">удалить</Button>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                         <CreateTableSources 
                             userPermissions={this.props.userPermissions}
                             tableSourceList={this.state.tableSourceList}
