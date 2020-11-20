@@ -15,6 +15,41 @@ export default class ModalWindowShowInformationConnectionStatusSources extends R
         this.props.onHide();
     }
 
+    createGroup(){
+        let formatterDate = new Intl.DateTimeFormat("ru-Ru", {
+            timeZone: "Europe/Moscow",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+        });
+
+        let list = [];
+        let sourceList = this.props.sourceList;
+        for(let sid in sourceList){
+            let connectStatus = (sourceList[sid].connectStatus) ? "my_circle_green" : "my_circle_red";
+            let dateTime = " не определено";
+            let ct = sourceList[sid].connectTime;
+            
+            if(ct !== 0 && (ct+"").length < 12){
+                dateTime = formatterDate.format(sourceList[sid].connectTime*1000);
+            }
+
+            list.push(<Row key={`key_${sid}`} className="mt-n2 mb-n2 ml-3 mr-3 text-muted">
+                <Col md={7} className="text-left">
+                    <canvas className={connectStatus}></canvas>
+                        &emsp;{`${sid} ${sourceList[sid].shortName} `}
+                </Col>
+                <Col md={5} className="text-right">
+                    <i>{dateTime}</i>
+                </Col>
+            </Row>);
+        }
+
+        return list;
+    }
+
     render(){       
         return (
             <Modal
@@ -30,8 +65,7 @@ export default class ModalWindowShowInformationConnectionStatusSources extends R
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
-                        тут будет список источников
-                        {this.props.sourceList}
+                        <Col>{this.createGroup.call(this)}</Col>
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>

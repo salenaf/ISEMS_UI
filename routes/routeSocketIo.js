@@ -57,8 +57,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 });
             }, 3000);
         }).on("message", (msg) => {
-            debug("--- MESSAGE ---");
-            debug(msg);
+            //debug("--- MESSAGE ---");
+            //debug(msg);
         }).on("close", (msg) => {
             debug("--- CONNECTION CLOSE ---");
             debug(msg);
@@ -123,15 +123,15 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("---------------------------------------");*/
 
         }).on("information download control", (msg) => {
-            debug("----- information download control -----");
+            /*debug("----- information download control -----");
             debug(msg);
-            debug("----------------------------------------");
+            debug("----------------------------------------");*/
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
 
-            debug("****************************");
+            /*debug("****************************");
             debug(sourceInfo);
-            debug("****************************");
+            debug("****************************");*/
 
             if (sourceInfo === null) {
                 return;

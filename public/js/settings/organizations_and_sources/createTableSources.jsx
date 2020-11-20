@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateTableSources extends React.Component {
@@ -11,6 +11,11 @@ export default class CreateTableSources extends React.Component {
         this.showIconSourceReconnect = this.showIconSourceReconnect.bind(this);
     }
 
+    componentDidUpdate(){
+        $("[value='source_reconnect']").tooltip();
+        $("[value='edit_source']").tooltip();
+    }
+
     showInfo(sourceID){
         this.props.handlerShowInfoWindow(sourceID);
     }
@@ -18,7 +23,13 @@ export default class CreateTableSources extends React.Component {
     showIconChangeInfo(objInfo){
         if(this.props.userPermissions.management_sources.element_settings.edit.status){
             return (
-                <a href="#" onClick={this.props.handlerShowChangeInfo.bind(this, objInfo)}>
+                <a 
+                    href="#" 
+                    value="edit_source"
+                    data-toggle="tooltip" 
+                    data-placement="top" 
+                    title="редактировать информацию" 
+                    onClick={this.props.handlerShowChangeInfo.bind(this, objInfo)}>
                     <img className="clickable_icon" src="./images/icons8-edit-16.png" alt="редактировать"></img>
                 </a>
             );
@@ -29,7 +40,13 @@ export default class CreateTableSources extends React.Component {
 
     showIconSourceReconnect(objInfo){
         return (
-            <a href="#" onClick={this.props.handlerSourceReconnect.bind(this, objInfo)}>
+            <a 
+                href="#" 
+                value="source_reconnect"
+                data-toggle="tooltip" 
+                data-placement="top" 
+                title="переподключить источник" 
+                onClick={this.props.handlerSourceReconnect.bind(this, objInfo)}>
                 <img className="clickable_icon" src="./images/icons8-refresh-16.png" alt="переподключить"></img>
             </a>
         );
@@ -66,12 +83,7 @@ export default class CreateTableSources extends React.Component {
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}></td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
-                        <OverlayTrigger
-                            key={`tooltip_${elem.sid}_img`}
-                            placement="top"
-                            overlay={<Tooltip>переподключить источник</Tooltip>}>
-                            {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
-                        </OverlayTrigger>
+                        {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right"></td>
                 </tr>);
@@ -102,36 +114,21 @@ export default class CreateTableSources extends React.Component {
                         {elem.releaseApp}
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}>
-                        <OverlayTrigger
-                            key={`tooltip_${elem.sid}_img`}
-                            placement="top"
-                            overlay={<Tooltip>редактировать информацию</Tooltip>}>
-                            {this.showIconChangeInfo({ sid: elem.sid, sourceID: elem.sourceID })}
-                        </OverlayTrigger>
+                        {this.showIconChangeInfo({ sid: elem.sid, sourceID: elem.sourceID })}
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
-                        <OverlayTrigger
-                            key={`tooltip_${elem.sid}_img`}
-                            placement="top"
-                            overlay={<Tooltip>переподключить источник</Tooltip>}>
-                            {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
-                        </OverlayTrigger>
+                        {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right">              
-                        <OverlayTrigger
-                            key={`tooltip_${elem.sid}_checkbox`}
-                            placement="right"
-                            overlay={<Tooltip>отметить для удаления</Tooltip>}>
-                            <Form>
-                                <Form.Check 
-                                    className="mt-1"
-                                    custom 
-                                    onChange={this.props.changeCheckboxMarked.bind(this, elem.sourceID)}
-                                    type="checkbox" 
-                                    id={`checkbox-${elem.sourceID}`}
-                                    label="" />
-                            </Form>
-                        </OverlayTrigger>
+                        <Form>
+                            <Form.Check 
+                                className="mt-1"
+                                custom 
+                                onChange={this.props.changeCheckboxMarked.bind(this, elem.sourceID)}
+                                type="checkbox" 
+                                id={`checkbox-${elem.sourceID}`}
+                                label="" />
+                        </Form>
                     </td>
                 </tr>);
             }

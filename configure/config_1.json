@@ -1,0 +1,42 @@
+{
+    "httpServer": {
+        "host": "127.0.0.1",
+        "port": "8888",
+        "keysPath": {
+            "cert": "keys/isems_ui_cert.pem",
+            "privateKey": "keys/isems_ui_private_key.pem"
+        }
+    },
+    "mongoDB": {
+        "socket": false,
+        "host": "192.168.13.200",
+        "port": "27017",
+        "user": "module-isems-ui",
+        "password": "jkdds7dfm0",
+        "nameDB": "isems-ui-test",
+        "UnixSocketPath": "../../../../tmp/mongodb.sock"
+    },
+    "modules": {
+        "networkInteraction": {
+            "host": "127.0.0.1",
+            "port": "13314",
+            "token": "udu8e88388eg8d88s8f88w838f3"
+        }
+    },
+    "appSettings": {
+        "listFieldActivity": [
+            "органы безопасности",
+            "органы государственной власти",
+            "органы здравоохранения",
+            "военно-промышленный комплекс",
+            "атомная промышленность",
+            "космическая промышленность",
+            "тяжелая промышленность",
+            "средства массовой информации",
+            "наука и образование",
+            "коммерческая деятельность",
+            "связь и средства телекоммуникаций",
+            "транспорт"
+        ]
+    }
+}
