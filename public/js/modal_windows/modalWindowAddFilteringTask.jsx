@@ -143,7 +143,7 @@ class CreateMainFields extends React.Component {
     }
 
     handlerInput(e){
-        let value = e.target.value;
+        let value = e.target.value.replace(/,/g, ".");      
 
         if(value.includes(".")){
             if(value.includes("/")){
@@ -212,17 +212,11 @@ class CreateMainFields extends React.Component {
     }
 
     handlerChangeDateTime(typeValue, data){
-        console.log("func 'handlerChangeDateTime'");
-        console.log(data);
-        console.log(typeValue);
-
         if(typeValue === "start"){
-            console.log("Received message START");
             this.setState({ currentDateTimeStart: data });
         }
 
         if(typeValue === "end"){
-            console.log("Received message END");
             this.setState({ currentDateTimeEnd: data });
         }
     }
@@ -325,6 +319,12 @@ class CreateMainFields extends React.Component {
         );
     }
 
+    handleKeyPress(event) {
+        if(event.key == "Enter"){
+            this.addPortNetworkIP();
+        }
+    }
+
     render(){
         if(!this.props.showMainFields){
             return <React.Fragment></React.Fragment>;
@@ -384,6 +384,7 @@ class CreateMainFields extends React.Component {
                                 id="input_ip_network_port"
                                 aria-describedby="basic-addon2"
                                 onChange={this.handlerInput}
+                                onKeyPress={this.handleKeyPress.bind(this)}
                                 disabled={disabled}
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, Row, Table, Pagination } from "react-bootstrap";
+import { Col, Row, Table, Pagination, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import {helpers} from "../common_helpers/helpers.js";
@@ -18,6 +18,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 sourceName: "",
                 taskID: "",
             },
+            showSpinner: true,
             showModalWindowShowTaskInformation: false,
             listTasksFound: {
                 p: { cs: 0, cn: 0, ccn: 1 },
@@ -88,6 +89,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     tntf: data.options.tntf,
                 };
                 this.setState({ 
+                    showSpinner: false,
                     listTasksFound: tmpCopy,
                     currentTaskID: data.taskID,
                 });
@@ -100,7 +102,10 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     slft: data.options.slft, 
                     tntf: data.options.tntf,
                 };
-                this.setState({ listTasksFound: tmpCopy });
+                this.setState({ 
+                    showSpinner: true,
+                    listTasksFound: tmpCopy 
+                });
             }
         });
     }
@@ -139,6 +144,8 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
+
+        this.setState({ showSpinner: true });
 
         this.props.socketIo.emit("network interaction: get next chunk list unresolved tasks", {
             taskID: this.state.currentTaskID,
@@ -298,7 +305,10 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                             continue;
                         }
     
-                        addEllipsis = true;
+                        if((this.state.listTasksFound.p.ccn < i) || (this.state.listTasksFound.p.ccn - numItemPaginator) >= i){
+                            addEllipsis = true;
+                        }
+
                         items.push(
                             <Pagination.Ellipsis 
                                 disabled={true}
@@ -346,6 +356,25 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
     }
 
     render(){
+        let showSpinner = (
+            <React.Fragment>
+                {this.createPagination()}
+                {this.createTableListDownloadFile.call(this)}
+                {this.createPagination()}
+            </React.Fragment>
+        );
+        if(this.state.showSpinner){
+            showSpinner = (
+                <Row className="pt-4">
+                    <Col md={12}>
+                        <Spinner animation="border" role="status" variant="primary">
+                            <span className="sr-only text-muted">Загрузка...</span>
+                        </Spinner>
+                    </Col>
+                </Row>
+            );
+        }
+
         return (
             <React.Fragment>
                 <Row>
@@ -356,9 +385,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>
                 </Row>
-                {this.createPagination()}
-                {this.createTableListDownloadFile.call(this)}
-                {this.createPagination()}
+                {showSpinner}
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}

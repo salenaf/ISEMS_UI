@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Row, Table, Form, Pagination } from "react-bootstrap";
+import { Button, Col, Row, Table, Form, Pagination, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
@@ -24,6 +24,7 @@ class CreatePageSearchTasks extends React.Component {
             showModalWindowFiltration: false,
             showModalWindowDeleteTask: false,
             showModalWindowShowTaskInformation: false,
+            showSpinner: true,
             listCheckboxMarkedTasksDel: new Set(),
             listSources: this.props.listItems.listSources,
             listTasksFound: {
@@ -75,14 +76,17 @@ class CreatePageSearchTasks extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "send a list of found tasks"){   
+            if(data.type === "send a list of found tasks"){
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
                     slft: data.options.slft, 
                     tntf: data.options.tntf,
                 };
-                this.setState({ listTasksFound: tmpCopy });
+                this.setState({ 
+                    showSpinner: false,
+                    listTasksFound: tmpCopy 
+                });
             }
             if(data.type === "deleteAllInformationAboutTask"){
                 let tmpCopy = Object.assign(this.state.listCheckboxMarkedTasksDel);
@@ -151,6 +155,8 @@ class CreatePageSearchTasks extends React.Component {
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
+
+        this.setState({ showSpinner: true });
 
         this.props.socketIo.emit("network interaction: get next chunk list all tasks", {
             taskID: this.state.currentTaskID,
@@ -225,7 +231,10 @@ class CreatePageSearchTasks extends React.Component {
             }    
         }
 
-        this.setState({ listInputForSearch: listInput });
+        this.setState({ 
+            showSpinner: true,
+            listInputForSearch: listInput 
+        });
     }
 
     buttonForwardArrow(item){
@@ -356,6 +365,18 @@ class CreatePageSearchTasks extends React.Component {
             return tableBody;
         };
 
+        if(this.state.showSpinner){
+            return (
+                <Row className="pt-4">
+                    <Col md={12}>
+                        <Spinner animation="border" role="status" variant="primary">
+                            <span className="sr-only text-muted">Загрузка...</span>
+                        </Spinner>
+                    </Col>
+                </Row>
+            );
+        }
+
         if(this.state.listTasksFound.tntf === 0){
             return (
                 <React.Fragment>
@@ -418,6 +439,9 @@ class CreatePageSearchTasks extends React.Component {
             return;
         }
 
+        console.log("func 'createPagination'");
+
+        const numItemPaginator = 2;
         let addEllipsis = false;
         let items = [];
         for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
@@ -431,7 +455,7 @@ class CreatePageSearchTasks extends React.Component {
                     </Pagination.Item>
                 );
             } else {
-                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){                   
+                if((i <= numItemPaginator) || (i > this.state.listTasksFound.p.cn - numItemPaginator)){                   
                     items.push(
                         <Pagination.Item 
                             key={`pag_${i}`} 
@@ -451,15 +475,18 @@ class CreatePageSearchTasks extends React.Component {
                             </Pagination.Item>
                         );
                     } else {
-                        if(addEllipsis){
+                        if(addEllipsis){                            
                             continue;
                         }
-    
-                        addEllipsis = true;
+
+                        if((this.state.listTasksFound.p.ccn < i) || (this.state.listTasksFound.p.ccn - numItemPaginator) >= i){
+                            addEllipsis = true;
+                        }
+
                         items.push(
                             <Pagination.Ellipsis 
                                 disabled={true}
-                                key={"pag_ellipsis"}/>
+                                key={`pag_ellipsis_${i}`}/>
                         );
                     }
                 }
