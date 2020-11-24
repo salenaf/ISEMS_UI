@@ -35,7 +35,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     return;
                 }
 
-                this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
             }
         });
     }

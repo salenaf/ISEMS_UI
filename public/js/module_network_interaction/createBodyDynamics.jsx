@@ -38,7 +38,7 @@ export default class CreateBodyDynamics extends React.Component {
                     this.deleteItemByTimeout("filtration", msg.options.taskID);
 
                     //запрашиваем новый список задач файлы по которым не выгружались
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
                 }
             }
 
@@ -51,7 +51,7 @@ export default class CreateBodyDynamics extends React.Component {
                     this.deleteItemByTimeout("download", msg.options.taskID);
 
                     //запрашиваем новый список задач файлы по которым не выгружались
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
                 }
             }
         });

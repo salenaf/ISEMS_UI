@@ -57,6 +57,7 @@ class SocketioEventResponse extends EventEmitter {}
  *       tasks: {
  *          <task ID>: {
  *              eventName: название события в UI,
+ *              eventForWidgets: результат события предназначен для виджета (true/false),
  *              userSessionID: ID сессии пользователя,
  *              generationTime: время генерации задачи,
  *          },

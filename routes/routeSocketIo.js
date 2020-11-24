@@ -165,9 +165,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
         });*/
 
         }).on("command download control", (msg) => {
-            debug("----- command download control -----");
-            debug(msg);
-            debug("----------------------------------------");
+            //debug("----- command download control -----");
+            //debug(msg);
+            //debug("----------------------------------------");
 
             /*writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
             if (err) debug(err);
@@ -226,14 +226,14 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
                     //только для вкладки "загрузка файлов" и для виджетов 
                     if (taskInfo.eventName === "list tasks which need to download files") {
-                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo.userSessionID);
+                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo);
                     }
 
                     //только для виджета "выгруженные файлы не рассмотрены" и
                     // для вкладки поиск, значение "по умолчанию", выводить список
                     // не закрытых пользователем задач
                     if (taskInfo.eventName === "list unresolved tasks") {
-                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo.userSessionID);
+                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo);
                     }
 
                     /*

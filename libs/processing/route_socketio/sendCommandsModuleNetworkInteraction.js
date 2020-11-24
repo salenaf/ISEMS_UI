@@ -179,11 +179,11 @@ module.exports.sourceManagementsDel = function(sourceList) {
 
 /** 
  * Обработчик для мо дуля сетевого взаимодействия осуществляющий
- * управление уд аленными источниками.
+ * управление удаленными источниками.
  *  
- * Выполняет уда ление источников из базы данных модуля. 
+ * Выполняет удаление источников из базы данных модуля. 
  *  
- * @param {*} source List - список источников
+ * @param {*} sourceList - список источников
  */
 module.exports.sourceManagementsReconnect = function(sourceList) {
     return new Promise((resolve, reject) => {
@@ -242,17 +242,17 @@ module.exports.sourceManagementsReconnect = function(sourceList) {
     });
 };
 
-/** ---  УПРАВЛЕНИЕ    ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
+/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
 
 /**  
- * Обработчик для модуля сетевог  о взаимодействия осуществляющий
- * управление задачами по фильтр  ации сетевого трафика.
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * управление задачами по фильтрации сетевого трафика.
  *   
- * Осуществляет запуск задачи по  фильтрации сет. трафика. 
+ * Осуществляет запуск задачи по фильтрации сет. трафика. 
  *  
- * @param {*} filteringParam eters - параметры фильтрации
- * @param {*} userLo gin - логин пользователя
- * @param {*} us erName - имя пользователя
+ * @param {*} filteringParameters - параметры фильтрации
+ * @param {*} userLogin - логин пользователя
+ * @param {*} userName - имя пользователя
  */
 module.exports.managementTaskFilteringStart = function(filteringParameters, userLogin, userName) {
     return new Promise((resolve, reject) => {
@@ -304,7 +304,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
  *   
  * Осуществляет останов задачи по фильтрации сет. трафика. 
  * 
- * @param {*    } taskID - ID останавливаемой задачи
+ * @param {*} taskID - ID останавливаемой задачи
  * @param {*} sourceID - ID источника
  */
 module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
@@ -314,7 +314,7 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
             }
 
-            //проверяем      существование источника и статус его соединения
+            //проверяем существование источника и статус его соединения
             let sourceInfo = globalObject.getData("sources", sourceID);
             if (sourceInfo === null) {
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${sourceID} не найден.`));
@@ -342,13 +342,13 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
     });
 };
 
-/** ---  УПРАВЛЕНИЕ ЗАПР    ОСАМИ ДЛЯ ПОЛУЧЕНИЯ ИНФОРМАЦИИ О ЗАДАЧАХ --- **/
+/** ---  УПРАВЛЕНИЕ ЗАПР ОСАМИ ДЛЯ ПОЛУЧЕНИЯ ИНФОРМАЦИИ О ЗАДАЧАХ --- **/
 
 /**    
- * Обработчик для модуля сетевог   о взаимодействия осуществляющий
- * запрос всей информации о    задаче по ее ID.
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * запрос всей информации о задаче по ее ID.
  *    
- * @param {*} taskID - ID задачи   по которой нужно найти информацию
+ * @param {*} taskID - ID задачи по которой нужно найти информацию
  */
 module.exports.managementRequestShowTaskAllInfo = function(taskID) {
     return new Promise((resolve, reject) => {
@@ -376,10 +376,10 @@ module.exports.managementRequestShowTaskAllInfo = function(taskID) {
 };
 
 /**   
- * Обработчик для мо   дуля сетевого взаимодействия осуществляющий
- * запрос всего    списка задач 
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * запрос всего списка задач 
  * 
- * @param {*} so   cketIo 
+ * @param {*} socketIo 
  */
 module.exports.managementRequestGetListAllTasks = function(socketIo) {
     return new Promise((resolve, reject) => {
@@ -429,8 +429,12 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
  * запрос списка задач по которым не были выгружены все файлы.
  *  
  * @param {*} socketIo 
+ * @param {*} data
  */
-module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
+module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo, data) {
+    let forWidgets = true;
+    let hex = helpersFunc.getRandomHex();
+
     return new Promise((resolve, reject) => {
         //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
         // временную информацию в globalObject.tmp
@@ -445,11 +449,16 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
 
         let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         if (conn !== null) {
-            let hex = helpersFunc.getRandomHex();
+            if ((typeof data.arguments === "undefined") || (typeof data.arguments.forWidgets === "undefined")) {
+                forWidgets = false;
+            } else {
+                forWidgets = data.arguments.forWidgets;
+            }
 
             //записываем название события для генерации соответствующего ответа
             globalObject.setData("tasks", hex, {
                 eventName: "list tasks which need to download files",
+                eventForWidgets: forWidgets,
                 userSessionID: sessionId,
                 generationTime: +new Date(),
             });
@@ -461,6 +470,7 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
                 taskID: hex,
                 options: {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме
+                    jcn: forWidgets,
                     sft: "complete",
                     cpafid: true,
                     afid: false,
@@ -480,8 +490,12 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
  * запрос списка задач, не отмеченных пользователем как завершенные
  * 
  * @param {*} socketIo 
+ * @param {*} data
  */
-module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
+module.exports.managementRequestGetListUnresolvedTasks = function(socketIo, data) {
+    let forWidgets = true;
+    let hex = helpersFunc.getRandomHex();
+
     return new Promise((resolve, reject) => {
         //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
         // временную информацию в globalObject.tmp
@@ -499,11 +513,16 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
 
         let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         if (conn !== null) {
-            let hex = helpersFunc.getRandomHex();
+            if ((typeof data.arguments === "undefined") || (typeof data.arguments.forWidgets === "undefined")) {
+                forWidgets = false;
+            } else {
+                forWidgets = data.arguments.forWidgets;
+            }
 
             //записываем название события для генерации соответствующего ответа
             globalObject.setData("tasks", hex, {
                 eventName: "list unresolved tasks",
+                eventForWidgets: forWidgets,
                 userSessionID: sessionId,
                 generationTime: +new Date(),
             });
@@ -515,6 +534,7 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
                 taskID: hex,
                 options: {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме
+                    jcn: forWidgets,
                     sft: "complete",
                     cptp: true,
                     tp: false,

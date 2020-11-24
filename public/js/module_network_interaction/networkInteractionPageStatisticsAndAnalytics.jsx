@@ -47,7 +47,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
     }
 
     requestEmitter(){
-        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });
+        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: false } });
     }
 
     /**
@@ -78,6 +78,13 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     return;
                 }
 
+                /**
+                 * 
+                 * С пагинатором попрежнему какие то проблеммы
+                 * необходимо тестирование
+                 * 
+                 */
+
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -95,7 +102,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 });
             }
 
-            if(data.type === "send a list of found unresolved tasks"){
+            if(data.type === "send a list of found unresolved tasks"){              
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -103,7 +110,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     tntf: data.options.tntf,
                 };
                 this.setState({ 
-                    showSpinner: true,
+                    showSpinner: false,
                     listTasksFound: tmpCopy 
                 });
             }

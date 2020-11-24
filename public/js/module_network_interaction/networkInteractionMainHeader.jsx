@@ -63,11 +63,11 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         }
 
         if(window.location.pathname !== "/network_interaction_page_file_download"){
-            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });            
+            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });            
         }
 
         if(window.location.pathname !== "/network_interaction_page_statistics_and_analytics"){
-            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });               
+            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: true } });               
         }
     }
 
@@ -76,7 +76,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             if(data.type === "connectModuleNI"){
                 if(data.options.connectionStatus){
                     this.setState({ "connectionModuleNI": true });
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });
                 } else {
                     this.setState({ 
                         "connectionModuleNI": false,
@@ -93,7 +93,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             }
                 
             //для списка задач трафик по которым не выгружался
-            if(data.type === "get list tasks files not downloaded"){
+            if(data.type === "get list tasks files not downloaded for widget" || data.type === "get list tasks files not downloaded"){
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;
@@ -101,7 +101,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             }
     
             //для списка задач не отмеченных пользователем как завершеные
-            if(data.type === "get list unresolved task"){
+            if(data.type === "get list unresolved task for widget" || data.type === "get list unresolved task"){
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numUnresolvedTask = data.options.tntf;

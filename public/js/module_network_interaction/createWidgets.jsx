@@ -38,7 +38,7 @@ export default class CreatingWidgets extends React.Component {
                 
                     //если выгрузка файлов завершена успешно
                     if(msg.options.status === "complete"){
-                        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });
+                        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: true } });
                     }
                 } else {
                     objCopy.download.add(msg.options.taskID);

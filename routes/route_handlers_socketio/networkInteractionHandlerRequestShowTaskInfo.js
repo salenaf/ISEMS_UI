@@ -134,8 +134,9 @@ function showTaskAllInfo(socketIo, data) {
  * Обработчик запросов списка задач по которым не были выгружены все файлы.
  * 
  * @param {*} socketIo 
+ * @param {*} data 
  */
-function showListTasksDownloadFiles(socketIo) {
+function showListTasksDownloadFiles(socketIo, data) {
     let funcName = " (func 'showListTasksDownloadFiles')";
 
     checkUserAuthentication(socketIo)
@@ -148,7 +149,7 @@ function showListTasksDownloadFiles(socketIo) {
             return;
         }).then(() => {
             //отправляем задачу модулю сетевого взаимодействия
-            return sendCommandsModuleNetworkInteraction.managementRequestGetListTasksDownloadFiles(socketIo);
+            return sendCommandsModuleNetworkInteraction.managementRequestGetListTasksDownloadFiles(socketIo, data);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
@@ -177,7 +178,7 @@ function showListTasksDownloadFiles(socketIo) {
  * 
  * @param {*} socketIo 
  */
-function showListUnresolvedTasks(socketIo) {
+function showListUnresolvedTasks(socketIo, data) {
     let funcName = " (func 'showListUnresolvedTasks')";
 
     checkUserAuthentication(socketIo)
@@ -189,18 +190,8 @@ function showListUnresolvedTasks(socketIo) {
 
             return;
         }).then(() => {
-            /*            return new Promise((resolve, reject) => {
-                getSessionId("socketIo", socketIo, (err, sessionId) => {
-                    if (err) reject(err);
-                    else resolve(sessionId);
-                });
-            });
-        }).then((sessionId) => {
-
-            debug(`sessionId: ${sessionId}, ${funcName}`);*/
-
             //отправляем задачу модулю сетевого взаимодействия
-            return sendCommandsModuleNetworkInteraction.managementRequestGetListUnresolvedTasks(socketIo);
+            return sendCommandsModuleNetworkInteraction.managementRequestGetListUnresolvedTasks(socketIo, data);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
@@ -273,6 +264,8 @@ function searchInformationAboutTasks(socketIo, data) {
 function getNextChunkAllTasks(socketIo, data) {
     let funcName = " (func 'getNextChunk')";
 
+    debug(`func '${funcName}'`);
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -289,6 +282,10 @@ function getNextChunkAllTasks(socketIo, data) {
                 });
             });
         }).then((sessionId) => {
+
+            debug(`user session ID: '${sessionId}'`);
+            debug(`next chunk: '${data.nextChunk}'`);
+
             if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
                 throw new MyError("management auth", "Ошибка авторизации. Информация о сессии недоступна.");
             }
@@ -316,6 +313,8 @@ function getNextChunkAllTasks(socketIo, data) {
             if (objInfo.taskFound > data.chunkSize) {
                 numFullChunks = Math.ceil(objInfo.taskFound / data.chunkSize);
             }
+
+            debug(`count list task '${objInfo.list.length}'`);
 
             socketIo.emit("module NI API", {
                 "type": "send a list of found tasks",

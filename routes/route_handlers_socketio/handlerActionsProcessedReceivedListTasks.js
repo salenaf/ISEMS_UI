@@ -17,17 +17,13 @@ const MAX_CHUNK_SIZE = 10;
 module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
     let funcName = " (func 'receivedListAllTasks')";
 
-    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks")) {
-        showNotify({
-            socketIo: socketIo,
-            type: "danger",
-            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });
-
-        return writeLogFile("error", "the 'receivedListAllTasks' property was not found in 'globalObject'" + funcName);
-    }
+    console.log(`func '${funcName}', paginationOptions`);
+    console.log(data.options.p);
+    console.log(globalObject.hasData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks"));
 
     let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
+
+    console.log(`func '${funcName}', resultFoundTasks.taskID: '${resultFoundTasks.taskID}' and data.taskID: '${data.taskID}'`);
 
     if ((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)) {
         //если ID задачи не совпадают создаем новую запись
@@ -75,7 +71,7 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
  * 
  * @param {*} socketIo - дескриптор socketIo соединения
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
- * @param {*} sessionId - ID сессии
+ * @param {*} taskInfo - краткая информация о задаче
  * 
  * Так как список задач файлы по которым не выгружались может
  * быть СЕГМЕНТИРОВАН и приходить в несколько частей нужно его 
@@ -84,8 +80,9 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
  * Исключение составляет первая или единственная часть которая
  * автоматически отправляется в UI
  */
-module.exports.receivedListTasksDownloadFiles = function(socketIo, data, sessionId) {
+module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInfo) {
     let funcName = " (func 'receivedListTasksDownloadFiles')";
+    let sessionId = taskInfo.userSessionID;
 
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
         showNotify({
@@ -95,6 +92,29 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
         });
 
         return writeLogFile("error", "the 'listTasksDownloadFiles' property was not found in 'globalObject'" + funcName);
+    }
+
+    let numFullChunks = 1;
+    if (data.options.tntf > MAX_CHUNK_SIZE) {
+        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
+    }
+
+    //если только для виджета
+    if (taskInfo.eventForWidgets) {
+        socketIo.emit("module NI API", {
+            "type": "get list tasks files not downloaded for widget",
+            "taskID": data.taskID,
+            "options": {
+                p: {
+                    cs: MAX_CHUNK_SIZE, //размер части
+                    cn: numFullChunks, //всего частей
+                    ccn: 1, //номер текущей части
+                },
+                tntf: data.options.tntf,
+            }
+        });
+
+        return;
     }
 
     let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
@@ -114,11 +134,6 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
         });
     } else {
         tasksDownloadFiles.listTasksDownloadFiles.push(data.options.slft);
-    }
-
-    let numFullChunks = 1;
-    if (data.options.tntf > MAX_CHUNK_SIZE) {
-        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
     //отправляем в UI если это первый сегмент
@@ -145,6 +160,7 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
  * 
  * @param {*} socketIo - дескриптор socketIo соединения
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
+ * @param {*} taskInfo - краткая информация о задаче
  * 
  * Так как список задач, не отмеченых пользователем как завершенные, может
  * быть СЕГМЕНТИРОВАН и приходить в несколько частей нужно его 
@@ -153,14 +169,9 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
  * Исключение составляет первая или единственная часть которая
  * автоматически отправляется в UI
  */
-module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) {
+module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
     let funcName = " (func 'receivedListUnresolvedTask')";
-
-    /*
-    console.log(`func 'receivedListUnresolvedTask', user session ID: '${sessionId}'`);
-    console.log("func 'receivedListUnresolvedTask', getDate('tmpModuleNetworkInteraction')");
-    console.log(globalObject.getData("tmpModuleNetworkInteraction"));
-*/
+    let sessionId = taskInfo.userSessionID;
 
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {
         showNotify({
@@ -170,6 +181,29 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) 
         });
 
         return writeLogFile("error", `the 'listUnresolvedTask' property for sessionId '${sessionId}' was not found in 'globalObject' ${funcName}`);
+    }
+
+    let numFullChunks = 1;
+    if (data.options.tntf > MAX_CHUNK_SIZE) {
+        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
+    }
+
+    //если только для виджета
+    if (taskInfo.eventForWidgets) {
+        socketIo.emit("module NI API", {
+            "type": "get list unresolved task for widget",
+            "taskID": data.taskID,
+            "options": {
+                p: {
+                    cs: MAX_CHUNK_SIZE, //размер части
+                    cn: numFullChunks, //всего частей
+                    ccn: 1, //номер текущей части
+                },
+                tntf: data.options.tntf,
+            }
+        });
+
+        return;
     }
 
     let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
@@ -189,11 +223,6 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) 
         });
     } else {
         unresolvedTask.listUnresolvedTask.push(data.options.slft);
-    }
-
-    let numFullChunks = 1;
-    if (data.options.tntf > MAX_CHUNK_SIZE) {
-        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
     //отправляем в UI если это первый сегмент
