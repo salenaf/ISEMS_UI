@@ -26,8 +26,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
         .on("connect", (msg) => {
-            debug("--- CONNECTION ---");
-            debug(msg);
+            //debug("--- CONNECTION ---");
+            //debug(msg);
 
             //globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
 
@@ -77,24 +77,24 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
         }).on("information source control", (msg) => {
-            debug("----- information source control -----");
+            /*debug("----- information source control -----");
             debug(msg);
-            debug("--------------------------------------");
+            debug("--------------------------------------");*/
 
             require("./handlers_msg_module_network_interaction/handlerMsgSources")(msg, socketIo);
 
         }).on("command source control", (msg) => {
-            debug("----- command source control ------");
-            debug(msg);
-            debug("------------------------------------------");
+            //debug("----- command source control ------");
+            //debug(msg);
+            //debug("------------------------------------------");
 
             //обрабатываем запрос ISEMS-NIH на получение актуального списка источников
             require("./handlers_msg_module_network_interaction/handlerMsgGetNewSourceList")();
 
         }).on("information filtration control", (msg) => {
-            debug("----- information filtration control -----");
-            debug(msg);
-            debug("------------------------------------------");
+            //debug("----- information filtration control -----");
+            //debug(msg);
+            //debug("------------------------------------------");
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
             //формируем сообщение о выполнении процесса фильтрации
@@ -211,15 +211,15 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 if (globalObject.hasData("tasks", msg.taskID)) {
                     let taskInfo = globalObject.getData("tasks", msg.taskID);
 
-                    //debug(taskInfo);
+                    debug(`received message 'processing information search task', TYPE: '${taskInfo.eventName}' TO WIDGET '${taskInfo.eventForWidgets}'`);
 
                     /**
                      * может быть здесь после поиска удалять задачу из списка
                      */
 
                     if (taskInfo.eventName === "list all tasks") {
-                        debug("received information from event 'list all tasks'");
-                        debug(msg.options);
+                        //debug("received information from event 'list all tasks'");
+                        //debug(msg.options);
 
                         require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
                     }

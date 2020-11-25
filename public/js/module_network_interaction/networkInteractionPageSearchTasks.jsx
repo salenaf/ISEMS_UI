@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row, Table, Form, Pagination, Spinner } from "react-bootstrap";
+import { Snackbar } from "material-ui-core";
+import { Alert } from "material-ui-lab";
 import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
@@ -298,6 +300,21 @@ class CreatePageSearchTasks extends React.Component {
 
             this.state.listTasksFound.slft.forEach((item, index) => {
                 let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn, index: index };
+                let StatusDownload = <small><GetStatusDownload status={item.fdts} numDownloadFiles={item.nffarf} /></small>;
+                if(item.nffarf === 0){
+                    StatusDownload = (<React.Fragment>
+                        <Row>
+                            <Col>
+                                <small><GetStatusDownload status={item.fdts} numDownloadFiles={item.nffarf} /></small>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <small><i>файлы не найдены</i></small>
+                            </Col>
+                        </Row>
+                    </React.Fragment>);
+                }
 
                 tableBody.push(<tr key={`tr_${item.tid}`}>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
@@ -329,7 +346,7 @@ class CreatePageSearchTasks extends React.Component {
                         <small><GetStatusFiltering status={item.fts} /></small>
                     </td>
                     <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sd`}>
-                        <small><GetStatusDownload status={item.fdts} /></small>
+                        {StatusDownload}
                     </td>
                     <td className="align-middle">
                         <Button 
@@ -439,8 +456,6 @@ class CreatePageSearchTasks extends React.Component {
             return;
         }
 
-        console.log("func 'createPagination'");
-
         const numItemPaginator = 2;
         let addEllipsis = false;
         let items = [];
@@ -542,6 +557,7 @@ class CreatePageSearchTasks extends React.Component {
                 <Row>
                     <Col md={12} className="text-left text-muted">поиск задач</Col>
                 </Row>
+
                 <CreateBodySearchTask 
                     socketIo={this.props.socketIo} 
                     listSources={this.props.listItems.listSources}

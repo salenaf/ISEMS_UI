@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateBodyDownloadFiles from "./createBodyDownloadFiles.jsx";
@@ -17,23 +17,53 @@ class CreatePageDownloadFile extends React.Component {
                 sourceName: "",
                 taskID: "",
             },
+            showSpinner: true,
             showModalWindowListDownload: false,
             showModalWindowShowTaskInformation: false,
+            currentTaskID: "",
+            listFileDownloadOptions: {
+                p: { cs: 0, cn: 0, ccn: 1 },
+                slft: [],
+                tntf: 0,
+            },
         };
 
         this.userPermission = this.props.listItems.userPermissions;
 
+        this.handlerShowSpinner = this.handlerShowSpinner.bind(this);
         this.handlerShowModalWindowListDownload = this.handlerShowModalWindowListDownload.bind(this);
         this.handlerCloseModalWindowListDownload = this.handlerCloseModalWindowListDownload.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
+        this.headerEvents.call(this);
         this.requestEmitter.call(this);
     }
 
     requestEmitter(){
-        this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+        this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false }});
+    }
+
+    headerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "get list tasks files not downloaded"){
+                this.setState({ 
+                    currentTaskID: data.taskID,
+                    listFileDownloadOptions: data.options, 
+                });
+            }
+
+            this.handlerShowSpinner();
+
+            if((data.type === "filtrationProcessing") || (data.type === "downloadProcessing")){          
+                if(data.options.status !== "complete"){
+                    return;
+                }
+
+                this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
+            }
+        });
     }
 
     handlerModalWindowShowTaskTnformation(data){
@@ -69,20 +99,41 @@ class CreatePageDownloadFile extends React.Component {
         this.setState({ showModalWindowListDownload: false });
     }
 
+    handlerShowSpinner(){
+        this.setState({ showSpinner: false });
+    }
+
     render(){
+        let showSpinner = (
+            <Row>
+                <Col md={12}>
+                    <CreateBodyDownloadFiles
+                        socketIo={this.props.socketIo}
+                        currentTaskID={this.state.currentTaskID}
+                        listFileDownloadOptions={this.state.listFileDownloadOptions}
+                        handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} 
+                        handlerShowModalWindowListFileDownload={this.handlerShowModalWindowListDownload} />
+                </Col>
+            </Row>
+        );
+        if(this.state.showSpinner){
+            showSpinner = (
+                <Row className="pt-4">
+                    <Col md={12}>
+                        <Spinner animation="border" role="status" variant="primary">
+                            <span className="sr-only text-muted">Загрузка...</span>
+                        </Spinner>
+                    </Col>
+                </Row>
+            );
+        }
+
         return (
             <React.Fragment>
                 <Row>
                     <Col md={12} className="text-left text-muted">выгрузка файлов</Col>
                 </Row>
-                <Row>
-                    <Col md={12}>
-                        <CreateBodyDownloadFiles
-                            socketIo={this.props.socketIo} 
-                            handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} 
-                            handlerShowModalWindowListFileDownload={this.handlerShowModalWindowListDownload} />
-                    </Col>
-                </Row>
+                {showSpinner}
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}

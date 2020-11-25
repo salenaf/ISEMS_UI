@@ -8,36 +8,6 @@ import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
 export default class CreateBodyDownloadFiles extends React.Component {
     constructor(props){
         super(props);
-
-        this.state = {
-            currentTaskID: "",
-            listFileDownloadOptions: {
-                p: { cs: 0, cn: 0, ccn: 1 },
-                slft: [],
-                tntf: 0,
-            },
-        };
-        
-        this.headerEvents.call(this);
-    }
-   
-    headerEvents(){
-        this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "get list tasks files not downloaded"){
-                this.setState({ 
-                    currentTaskID: data.taskID,
-                    listFileDownloadOptions: data.options, 
-                });
-            }
-
-            if((data.type === "filtrationProcessing") || (data.type === "downloadProcessing")){          
-                if(data.options.status !== "complete"){
-                    return;
-                }
-
-                this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
-            }
-        });
     }
 
     headerClickTable(objData, type, e){
@@ -61,28 +31,28 @@ export default class CreateBodyDownloadFiles extends React.Component {
     }
 
     headerNextItemPagination(num){
-        if(this.state.listFileDownloadOptions.p.ccn === num){
+        if(this.props.listFileDownloadOptions.p.ccn === num){
             return;
         }
 
         this.props.socketIo.emit("network interaction: get next chunk list tasks files not downloaded", {
-            taskID: this.state.currentTaskID,
-            chunkSize: this.state.listFileDownloadOptions.p.cs,
+            taskID: this.props.currentTaskID,
+            chunkSize: this.props.listFileDownloadOptions.p.cs,
             nextChunk: num,
         });
     }
 
     createPagination(){
-        if(this.state.listFileDownloadOptions.p.cn <= 1){
+        if(this.props.listFileDownloadOptions.p.cn <= 1){
             return;
         }
 
         let listItem = [];
-        for(let i = 1; i < this.state.listFileDownloadOptions.p.cn+1; i++){       
+        for(let i = 1; i < this.props.listFileDownloadOptions.p.cn+1; i++){       
             listItem.push(
                 <Pagination.Item 
                     key={`pag_${i}`} 
-                    active={this.state.listFileDownloadOptions.p.ccn === i}
+                    active={this.props.listFileDownloadOptions.p.ccn === i}
                     onClick={this.headerNextItemPagination.bind(this, i)} >
                     {i}
                 </Pagination.Item>
@@ -100,13 +70,13 @@ export default class CreateBodyDownloadFiles extends React.Component {
 
     createTableListDownloadFile(){
         let createTableBody = () => {
-            if((typeof this.state.listFileDownloadOptions.slft === "undefined") || (this.state.listFileDownloadOptions.slft.length === 0)){
+            if((typeof this.props.listFileDownloadOptions.slft === "undefined") || (this.props.listFileDownloadOptions.slft.length === 0)){
                 return;
             }
 
             let num = 0;
-            if(this.state.listFileDownloadOptions.p.ccn > 1){
-                num = (this.state.listFileDownloadOptions.p.ccn - 1) * this.state.listFileDownloadOptions.p.cs;
+            if(this.props.listFileDownloadOptions.p.ccn > 1){
+                num = (this.props.listFileDownloadOptions.p.ccn - 1) * this.props.listFileDownloadOptions.p.cs;
             }
 
             let tableBody = [];
@@ -120,7 +90,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             });
             let formaterInt = new Intl.NumberFormat();
 
-            this.state.listFileDownloadOptions.slft.forEach((item) => {
+            this.props.listFileDownloadOptions.slft.forEach((item) => {
                 let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn };
 
                 tableBody.push(<tr key={`tr_${item.tid}`}>
@@ -166,7 +136,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             return tableBody;
         };
 
-        if(this.state.listFileDownloadOptions.tntf === 0){
+        if(this.props.listFileDownloadOptions.tntf === 0){
             return (
                 <React.Fragment>
                     <Row className="py-2"></Row>    
@@ -209,7 +179,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
             <React.Fragment>
                 <Row className="text-right">
                     <Col className="text-muted mt-3">
-                    задач, по которым не выполнялась выгрузка файлов: <i>{this.state.listFileDownloadOptions.tntf}</i>
+                    задач, по которым не выполнялась выгрузка файлов: <i>{this.props.listFileDownloadOptions.tntf}</i>
                     </Col>
                 </Row>
                 {createPagination}
@@ -223,6 +193,8 @@ export default class CreateBodyDownloadFiles extends React.Component {
 
 CreateBodyDownloadFiles.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    currentTaskID: PropTypes.string.isRequired,
+    listFileDownloadOptions: PropTypes.object.isRequired,
     handlerModalWindowShowTaskTnformation: PropTypes.func.isRequired,
     handlerShowModalWindowListFileDownload: PropTypes.func.isRequired,
 };

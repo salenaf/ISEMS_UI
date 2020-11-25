@@ -2,34 +2,39 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { MDBContainer, MDBNotification } from "mdbreact";
+import { Snackbar } from "material-ui-core";
+import { Alert } from "material-ui-lab";
 
 class DrawingAlertMessage extends React.Component {
     constructor(props){
         super(props);
 
+        this.state = {
+            showSnackbar: true
+        };
+
         this.titleObj = {
             "success": {
                 title: "Успешно выполненное действие.",
-                icon: "envelope",
-                iconColor: "text-success",
+                severity: "success",
             },
             "info": {
                 title: "Информация.",
-                icon: "info-circle",
-                iconColor: "text-info",
+                severity: "info",
             },
             "warning": {
                 title: "Внимание!",
-                icon: "exclamation-triangle",
-                iconColor: "text-warning",
+                severity: "warning",
             },
             "error": {
                 title: "Ошибка!!!",
-                icon: "exclamation-circle",
-                iconColor: "text-danger",
+                severity: "error",
             },
         };
+    }
+
+    handleClose(){
+        this.setState({ showSnackbar: false });
     }
 
     render(){
@@ -40,25 +45,15 @@ class DrawingAlertMessage extends React.Component {
         }
 
         return (
-            <MDBContainer
-                style={{
-                    width: "auto",
-                    position: "fixed",
-                    top: "10px",
-                    right: "10px",
-                    zIndex: 9999
-                }}
-            >
-                <MDBNotification
-                    show
-                    fade
-                    autohide={6000}
-                    icon={this.titleObj[level].icon}
-                    iconClassName={this.titleObj[level].iconColor}
-                    title={this.titleObj[level].title}
-                    message={this.props.notiyMsg.message}
-                />
-            </MDBContainer>
+            <Snackbar 
+                open={this.state.showSnackbar} 
+                onClose={this.handleClose.bind(this)} 
+                autoHideDuration={6000} 
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+                <Alert onClose={this.handleClose.bind(this)} severity={this.titleObj[level].severity}>
+                    {this.props.notiyMsg.message}
+                </Alert>
+            </Snackbar>
         );
     }
 }

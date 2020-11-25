@@ -84,6 +84,8 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
     let funcName = " (func 'receivedListTasksDownloadFiles')";
     let sessionId = taskInfo.userSessionID;
 
+    console.log("func 'receivedListTasksDownloadFiles', START...");
+
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
         showNotify({
             socketIo: socketIo,
@@ -99,8 +101,13 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
         numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
+    console.log(taskInfo);
+
     //если только для виджета
     if (taskInfo.eventForWidgets) {
+
+        console.log("func 'receivedListTasksDownloadFiles', ONLY WINGET");
+
         socketIo.emit("module NI API", {
             "type": "get list tasks files not downloaded for widget",
             "taskID": data.taskID,
@@ -138,6 +145,10 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
 
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
+
+        console.log("func 'receivedListTasksDownloadFiles', send --> ONLY one segment");
+        console.log(require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)).length);
+
         socketIo.emit("module NI API", {
             "type": "get list tasks files not downloaded",
             "taskID": data.taskID,

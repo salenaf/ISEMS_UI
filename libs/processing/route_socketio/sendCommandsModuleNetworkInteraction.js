@@ -419,6 +419,8 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
                 },
             };
 
+            debug(`Get list all tasks, TaskID: ${hex}`);
+
             conn.sendMessage(tmp);
         }
     });
@@ -480,6 +482,8 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo, d
                 },
             };
 
+            debug(`Get list downloaded files tasks, TaskID: ${hex}, forWidgets: '${forWidgets}'`);
+
             conn.sendMessage(tmp);
         }
     });
@@ -526,6 +530,8 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo, data
                 userSessionID: sessionId,
                 generationTime: +new Date(),
             });
+
+            debug(`Get list unresolved tasks, TaskID: ${hex}`);
 
             conn.sendMessage({
                 msgType: "command",
