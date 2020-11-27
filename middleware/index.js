@@ -92,9 +92,21 @@ module.exports = function(app, express, io) {
      * Socket.io
      * */
     let socketIo = io.sockets.on("connection", function(socket) {
+        globalObject.setData("descriptionSocketIo", "userConnections", socket.id, socket);
+
+        //console.log(`socketIo CONNECTION with id: '${socket.id}'`);
+
         //обработчик событий User Interface
         routeSocketIo.eventHandlingUserInterface(socket);
+
+        socket.on("disconnect", () => {
+            //console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
+
+            globalObject.deleteData("descriptionSocketIo", "userConnections", socket.id);
+        });
     });
+
+    globalObject.setData("descriptionSocketIo", "majorConnect", socketIo);
 
     /*
      * Public directory

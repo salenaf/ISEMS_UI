@@ -4,6 +4,7 @@ const EventEmitter = require("events");
 
 class SocketioEventResponse extends EventEmitter {}
 
+
 /**
  * Глобальный объект для промежуточного хрнения данных
  * 
@@ -60,23 +61,35 @@ class SocketioEventResponse extends EventEmitter {}
  *              eventForWidgets: результат события предназначен для виджета (true/false),
  *              userSessionID: ID сессии пользователя,
  *              generationTime: время генерации задачи,
+ *              socketId: id идентификатор socket.io соединения с пользователем,
  *          },
  *       },
  *       параметры пользователя все из БД
  *       users: {
- *          userLogin: логин,
- *          userName: имя,
- *          userGroup: группа,
- *          groupSettings: групповые настройки пользователя,
- *          userSettings: общие настройки пользователя,
+ *          <sessionID>: {
+ *              userLogin: логин,
+ *              userName: имя,
+ *              userGroup: группа,
+ *              groupSettings: групповые настройки пользователя,
+ *              userSettings: общие настройки пользователя,
+ *          },
  *       },
  *       параметры истчников
- *       sources: {
- *          shortName: название источника,
- *          description: описание,
- *          connectStatus: статус соединения,
- *          connectTime: время соединения,
- *          id: id источника,
+ *       sources: 
+ *          <source>: {
+ *              shortName: название источника,
+ *              description: описание,
+ *              connectStatus: статус соединения,
+ *              connectTime: время соединения,
+ *              id: id источника,
+ *          },
+ *       },
+ * 
+ *       descriptionDB: {
+ *          MongoDB: {
+ *              connection: 
+ *              connectionTimestamp: 
+ *              userName: 
  *       },
  * 
  *       дескрипторы соединения с API
@@ -85,6 +98,14 @@ class SocketioEventResponse extends EventEmitter {}
  *               connection: object,
  *               connectionEstablished: bool,
  *               previousConnectionStatus: bool }}
+ *       
+ *       descriptionSocketIo: {
+ *          majorConnect: <основное socketIo соединение (
+ *            получаемое через require("socket.io").listen(server, {}))>
+ *          userConnections: { 
+ *              <socketIo user id>: <description>
+ *          }
+ *       }
  *   } 
  */
 class GlobalObject {
@@ -96,6 +117,10 @@ class GlobalObject {
             "commonSettings": {},
             "descriptionDB": {},
             "descriptionAPI": {},
+            "descriptionSocketIo": {
+                "majorConnect": {},
+                "userConnections": {},
+            },
             "socketioEventResponse": new SocketioEventResponse(),
             "tmpModuleNetworkInteraction": {},
         };

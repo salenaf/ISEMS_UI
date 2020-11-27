@@ -1,6 +1,5 @@
 "use strict";
 
-const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
 const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
@@ -11,36 +10,20 @@ const writeLogFile = require("../../libs/writeLogFile");
  *
  * @param {*} msg - сообщение от модуля сетевого взаимодействия
  */
-module.exports = function(msg, socketIo) {
+module.exports = function(msg) {
     let objHandlerMsgInstraction = {
         "send version app": sendVersionApp,
         "change status source": changeStatusSource,
         "send current source list": sendCurrentSourceList,
     };
 
-    const task = globalObject.getData("tasks", "networkInteractionTaskList", msg.taskID);
-    if (task === null) {
-        if (objHandlerMsgInstraction[msg.instruction]) {
-            objHandlerMsgInstraction[msg.instruction](msg, socketIo);
-        }
-
-        return;
-    }
-
-    if ((task.sectionTask === "source control") && (msg.options.ti.s === "end")) {
-        msg.options.sl.forEach((item) => {
-            showNotify({
-                socketIo: socketIo,
-                type: (item.is) ? "success" : "warning",
-                message: item.mf
-            });
-        });
-
-        globalObject.deleteData("tasks", "networkInteractionTaskList", msg.taskID);
+    if (objHandlerMsgInstraction[msg.instruction]) {
+        objHandlerMsgInstraction[msg.instruction](msg);
     }
 };
 
-function sendVersionApp(msg, socketIo) {
+function sendVersionApp(msg) {
+    //добавляем в БД
     require("../../libs/mongodb_requests/module_network_interaction/addVersionApp")(msg.options, (err) => {
         if (err) {
             writeLogFile("error", err.toString());
@@ -48,7 +31,7 @@ function sendVersionApp(msg, socketIo) {
     });
 }
 
-function changeStatusSource(msg, socketIo) {
+function changeStatusSource(msg) {
     if (!Array.isArray(msg.options.sl)) {
         return;
     }
@@ -61,7 +44,8 @@ function changeStatusSource(msg, socketIo) {
 
         const sourceInfo = globalObject.getData("sources", item.id);
         if (sourceInfo !== null) {
-            socketIo.emit("module-ni:change status source", {
+            //отправить всем
+            helpersFunc.sendBroadcastSocketIo("module-ni:change status source", {
                 options: {
                     sourceID: item.id,
                     shortName: sourceInfo.shortName,
@@ -71,14 +55,12 @@ function changeStatusSource(msg, socketIo) {
                     id: sourceInfo.id
                 }
             });
-
-            // для виджетов
-            socketIo.emit("module-ni:change sources connection", helpersFunc.getCountConnectionSources(globalObject));
+            helpersFunc.sendBroadcastSocketIo("module-ni:change sources connection", helpersFunc.getCountConnectionSources(globalObject));
         }
     });
 }
 
-function sendCurrentSourceList(msg, socketIo) {
+function sendCurrentSourceList(msg) {
     /**
      *
      * Здесь получаем список актуальных источников из базы
@@ -125,7 +107,8 @@ function sendCurrentSourceList(msg, socketIo) {
         }
     }
 
-    socketIo.emit("module-ni: short source list", {
+    //отправить всем
+    helpersFunc.sendBroadcastSocketIo("module-ni: short source list", {
         arguments: globalObject.getData("sources")
     });
 }

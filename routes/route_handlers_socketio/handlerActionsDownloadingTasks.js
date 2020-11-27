@@ -200,33 +200,45 @@ function getListFilesTask(socketIo, data) {
             return;
         }).then(() => {
             return new Promise((resolve, reject) => {
-                process.nextTick(() => {
-                    if (!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
-                        return reject(new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен."));
-                    }
-
-                    let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-
-                    if (conn !== null) {
-
-                        debug("send request file list--->");
-
-                        conn.sendMessage({
-                            msgType: "command",
-                            msgSection: "information search control",
-                            msgInstruction: "get part of the list files",
-                            taskID: require("../../libs/helpers/helpersFunc").getRandomHex(),
-                            options: {
-                                rtid: data.arguments.taskID,
-                                ps: data.arguments.partSize,
-                                olp: data.arguments.offsetListParts,
-                            },
-                        });
-                    }
-
-                    resolve();
+                //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+                // временную информацию в globalObject.tmp
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if (err) reject(err);
+                    else resolve(sessionId);
                 });
             });
+        }).then((sessionId) => {
+            if (!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                throw new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен.");
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+
+                debug("send request file list--->");
+
+                let hex = require("../../libs/helpers/helpersFunc").getRandomHex();
+
+                globalObject.setData("tasks", hex, {
+                    eventName: "part of the list files",
+                    eventForWidgets: false,
+                    userSessionID: sessionId,
+                    generationTime: +new Date(),
+                    socketId: socketIo.id,
+                });
+
+                conn.sendMessage({
+                    msgType: "command",
+                    msgSection: "information search control",
+                    msgInstruction: "get part of the list files",
+                    taskID: hex,
+                    options: {
+                        rtid: data.arguments.taskID,
+                        ps: data.arguments.partSize,
+                        olp: data.arguments.offsetListParts,
+                    },
+                });
+            }
         }).catch((err) => {
             debug(err);
 

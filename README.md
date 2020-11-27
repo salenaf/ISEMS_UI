@@ -1,4 +1,4 @@
-Information Security Event Management System (ISEMS-UI) версия 1.2.6
+Information Security Event Management System (ISEMS-UI) версия 1.2.7
 
 /*** установка и настройка ***/
     Предварительная настройка СУБД MongoDB

@@ -20,13 +20,12 @@ const connectMongoDB = require("./controllers/connectMongoDB");
 const createSchemasMongoDB = require("./controllers/createSchemasMongoDB");
 const networkInteractionHandlerAPI = require("./middleware/networkInteractionHandlerAPI");
 
-const options = {};
-
 const server = https.createServer({
     key: fs.readFileSync(config.get("httpServer:keysPath:privateKey")),
     cert: fs.readFileSync(config.get("httpServer:keysPath:cert")),
 }, app);
 
+const options = {};
 const io = require("socket.io").listen(server, options);
 
 new Promise((resolve, reject) => {
@@ -103,11 +102,11 @@ new Promise((resolve, reject) => {
                 });
 
             //настраиваем хранилище задач выполняемые модулем
-            globalObject.setData("tasks", {});
+            //globalObject.setData("tasks", {});
             //устанавливаем временное хранилище для информации о задачах фильтрации
             // и выгрузки фалов полученных из модуля сет. взаимодействия. 
             // Доступ к хранилищу по sessionId пользователя
-            globalObject.setData("tmpModuleNetworkInteraction", {});
+            //globalObject.setData("tmpModuleNetworkInteraction", {});
 
             callback(null);
         },

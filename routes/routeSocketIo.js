@@ -25,13 +25,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
-        .on("connect", (msg) => {
-            //debug("--- CONNECTION ---");
-            //debug(msg);
-
-            //globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
-
-            socketIo.emit("module NI API", {
+        .on("connect", () => {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": true
@@ -56,19 +51,18 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     options: {}
                 });
             }, 3000);
-        }).on("message", (msg) => {
+        }).on("message", ( /*msg*/ ) => {
             //debug("--- MESSAGE ---");
             //debug(msg);
-        }).on("close", (msg) => {
-            debug("--- CONNECTION CLOSE ---");
-            debug(msg);
+        }).on("close", ( /*msg*/ ) => {
+            //debug("--- CONNECTION CLOSE ---");
+            //debug(msg);
 
             if (!globalObject.getData("descriptionAPI", "networkInteraction", "previousConnectionStatus")) {
                 return;
             }
 
-            //что бы данное сообщение отправилось в UI только раз, после разрува соединения
-            socketIo.emit("module NI API", {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": false
@@ -83,7 +77,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             require("./handlers_msg_module_network_interaction/handlerMsgSources")(msg, socketIo);
 
-        }).on("command source control", (msg) => {
+        }).on("command source control", ( /*msg*/ ) => {
             //debug("----- command source control ------");
             //debug(msg);
             //debug("------------------------------------------");
@@ -97,8 +91,9 @@ module.exports.modulesEventGenerator = function(socketIo) {
             //debug("------------------------------------------");
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
+
             //формируем сообщение о выполнении процесса фильтрации
-            socketIo.emit("module NI API", {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
                 "type": "filtrationProcessing",
                 "options": {
                     sourceID: msg.options.id,
@@ -117,7 +112,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     },
                 },
             });
-        }).on("command filtration control", (msg) => {
+        }).on("command filtration control", ( /*msg*/ ) => {
             /*debug("----- command filtration control -----");
             debug(msg);
             debug("---------------------------------------");*/
@@ -128,17 +123,12 @@ module.exports.modulesEventGenerator = function(socketIo) {
             debug("----------------------------------------");*/
 
             let sourceInfo = globalObject.getData("sources", msg.options.id);
-
-            /*debug("****************************");
-            debug(sourceInfo);
-            debug("****************************");*/
-
             if (sourceInfo === null) {
                 return;
             }
 
             //формируем сообщение о выполнении процесса скачивания файлов
-            socketIo.emit("module NI API", {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
                 "type": "downloadProcessing",
                 "options": {
                     sourceID: msg.options.id,
@@ -159,49 +149,32 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     },
                 }
             });
-
-            /*writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
-            if (err) debug(err);
-        });*/
-
-        }).on("command download control", (msg) => {
+        }).on("command download control", ( /*msg*/ ) => {
             //debug("----- command download control -----");
             //debug(msg);
             //debug("----------------------------------------");
-
-            /*writeFile.writeResivedMessage(JSON.stringify(msg), fileTestLog, (err) => {
-            if (err) debug(err);
-        });*/
-
         }).on("information search control", (msg) => {
-            debug("====== information search control =====");
+            //debug("====== information search control =====");
             //debug(JSON.stringify(msg));
-
-
-            /* при получении информации о задаче по ее ID проверяем 
-             надо ли востановить информацию о задаче в globalObject */
-            /*if(globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)){
-                let taskInfo = globalObject.getData("tasks", "networkInteractionTaskList", msg.options.tp.ctid);
-                createDate = taskInfo.createDate;
-                typeTask = taskInfo.typeTask;
-                userLogin = taskInfo.userLogin;
-                userName = taskInfo.userName;
-
-                console.log(`User login: ${taskInfo.userLogin}`);
-            }
-
-            console.log(`task ID '${msg.taskID}' is found: '${globalObject.hasData("tasks", "networkInteractionTaskList", msg.options.tp.ctid)}'`);
-            */
 
             //получили всю информацию о задаче по ее ID
             if (msg.instruction === "processing get all information by task ID") {
-                socketIo.emit("module NI API", {
+                let data = {
                     "type": "processingGetAllInformationByTaskID",
                     "options": {
                         status: msg.options.s,
                         taskParameter: msg.options.tp,
                     }
-                });
+                };
+
+                if (globalObject.hasData("tasks", msg.taskID)) {
+                    let taskInfo = globalObject.getData("tasks", msg.taskID);
+                    if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", data)) {
+                        helpersFunc.sendBroadcastSocketIo("module NI API", data);
+                    }
+                } else {
+                    helpersFunc.sendBroadcastSocketIo("module NI API", data);
+                }
             }
 
             //получили краткую информацию о всех задачах подходящих под 
@@ -213,15 +186,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
                     debug(`received message 'processing information search task', TYPE: '${taskInfo.eventName}' TO WIDGET '${taskInfo.eventForWidgets}'`);
 
-                    /**
-                     * может быть здесь после поиска удалять задачу из списка
-                     */
-
                     if (taskInfo.eventName === "list all tasks") {
-                        //debug("received information from event 'list all tasks'");
-                        //debug(msg.options);
-
-                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo.userSessionID);
+                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo);
                     }
 
                     //только для вкладки "загрузка файлов" и для виджетов 
@@ -235,26 +201,13 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     if (taskInfo.eventName === "list unresolved tasks") {
                         require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo);
                     }
-
-                    /*
-                    //только как результат при поиске во вкладке "поиск"
-                    if (taskInfo.eventName === "list of found tasks") {
-                        debug(msg.options);
-                    }
-                    */
                 } else {
 
                     debug("Task not found for ID");
 
-                    socketIo.emit("module NI API", {
+                    helpersFunc.sendBroadcastSocketIo("module NI API", {
                         "type": msg.instruction,
                         "options": msg.options,
-                        /*typeTask: typeTask,
-            userLogin: userLogin,
-            userName: userName,
-            createDate: createDate,
-            status: msg.options.s,
-            taskParameter: msg.options.tp,*/
                     });
                 }
             }
@@ -262,31 +215,42 @@ module.exports.modulesEventGenerator = function(socketIo) {
             if (msg.instruction === "processing list files by task ID") {
                 debug("received information about file list");
 
-                socketIo.emit("module NI API", {
+                let data = {
                     "type": "listFilesByTaskID",
                     "options": msg.options,
-                });
+                };
+
+                if (globalObject.hasData("tasks", msg.taskID)) {
+                    let taskInfo = globalObject.getData("tasks", msg.taskID);
+                    if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", data)) {
+                        helpersFunc.sendBroadcastSocketIo("module NI API", data);
+                    }
+                } else {
+                    helpersFunc.sendBroadcastSocketIo("module NI API", data);
+                }
             }
 
             if (msg.instruction === "processing get common analytics information about task ID") {
-                debug("RECEIVED processing get common analytics information about task ID");
-                debug("-----------------");
-                debug(msg.options);
-                debug("-----------------");
+                //debug("RECEIVED processing get common analytics information about task ID");
+                //debug("-----------------");
+                //debug(msg.options);
+                //debug("-----------------");
 
-                socketIo.emit("module NI API", {
+                let data = {
                     "type": "commonAnalyticsInformationAboutTaskID",
                     "options": msg.options,
-                });
+                };
+
+                if (globalObject.hasData("tasks", msg.taskID)) {
+                    let taskInfo = globalObject.getData("tasks", msg.taskID);
+                    if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", data)) {
+                        helpersFunc.sendBroadcastSocketIo("module NI API", data);
+                    }
+                } else {
+                    helpersFunc.sendBroadcastSocketIo("module NI API", data);
+                }
             }
 
-            /*
-
-    },
-
-            msg.options.slft.forEach((item) => {
-            debug(item);
-        });*/
             debug("=======================================");
         }).on("command information search control", (msg) => {
             debug("====== command information search control =====");
@@ -295,7 +259,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 if (msg.options.ss) {
                     debug("!!! received message success delete information about task !!!");
 
-                    socketIo.emit("module NI API", {
+                    helpersFunc.sendBroadcastSocketIo("module NI API", {
                         "type": "deleteAllInformationAboutTask",
                         "options": {},
                     });
@@ -307,7 +271,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     debug("received message SUCCESS mark task complete");
                     debug(msg);
 
-                    socketIo.emit("module NI API", {
+                    helpersFunc.sendBroadcastSocketIo("module NI API", {
                         "type": "successMarkTaskAsCompleted",
                         "options": { "taskID": msg.options.tid },
                     });
@@ -336,8 +300,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 return;
             }
 
-            //что бы данное сообщение отправилось в UI только раз, после разрува соединения
-            socketIo.emit("module NI API", {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
                 "type": "connectModuleNI",
                 "options": {
                     "connectionStatus": false
@@ -347,23 +310,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
             globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
             writeLogFile("error", `${err.toString()} (module 'network interaction')`);
         });
-};
-
-/**
- * Маршруты для обработки информации передаваемой через протокол socket.io
- * Генератор событий
- *
- * @param {*} socketIo 
- * @param {*} object
- */
-exports.eventEmitter = function(socketIo, object) {
-    let handling = {
-        //        "changingStatusSource": checkStatusSource.bind(null, socketIo)
-    };
-
-    console.log("--- script:routeSocketIo, Event Emitter ---");
-
-    handling[object.type]();
 };
 
 /** 

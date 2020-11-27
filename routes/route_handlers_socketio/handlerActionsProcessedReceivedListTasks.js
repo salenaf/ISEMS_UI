@@ -1,6 +1,7 @@
 "use strict";
 
 const showNotify = require("../../libs/showNotify");
+const helpersFunc = require("../../libs/helpers/helpersFunc");
 const writeLogFile = require("../../libs/writeLogFile");
 const globalObject = require("../../configure/globalObject");
 
@@ -14,16 +15,9 @@ const MAX_CHUNK_SIZE = 10;
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
  * @param {*} sessionId - ID сессии
  */
-module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
-    let funcName = " (func 'receivedListAllTasks')";
-
-    console.log(`func '${funcName}', paginationOptions`);
-    console.log(data.options.p);
-    console.log(globalObject.hasData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks"));
-
+module.exports.receivedListAllTasks = function(socketIo, data, taskInfo) {
+    let sessionId = taskInfo.userSessionID;
     let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
-
-    console.log(`func '${funcName}', resultFoundTasks.taskID: '${resultFoundTasks.taskID}' and data.taskID: '${data.taskID}'`);
 
     if ((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)) {
         //если ID задачи не совпадают создаем новую запись
@@ -49,7 +43,7 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
 
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
-        socketIo.emit("module NI API", {
+        let msg = {
             "type": "send a list of found tasks",
             "taskID": data.taskID,
             "options": {
@@ -61,7 +55,11 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });
+        };
+
+        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+        }
     }
 };
 
@@ -84,8 +82,6 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
     let funcName = " (func 'receivedListTasksDownloadFiles')";
     let sessionId = taskInfo.userSessionID;
 
-    console.log("func 'receivedListTasksDownloadFiles', START...");
-
     if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
         showNotify({
             socketIo: socketIo,
@@ -101,14 +97,9 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
         numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
-    console.log(taskInfo);
-
     //если только для виджета
     if (taskInfo.eventForWidgets) {
-
-        console.log("func 'receivedListTasksDownloadFiles', ONLY WINGET");
-
-        socketIo.emit("module NI API", {
+        helpersFunc.sendBroadcastSocketIo("module NI API", {
             "type": "get list tasks files not downloaded for widget",
             "taskID": data.taskID,
             "options": {
@@ -145,11 +136,7 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
 
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
-
-        console.log("func 'receivedListTasksDownloadFiles', send --> ONLY one segment");
-        console.log(require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)).length);
-
-        socketIo.emit("module NI API", {
+        let msg = {
             "type": "get list tasks files not downloaded",
             "taskID": data.taskID,
             "options": {
@@ -161,7 +148,11 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });
+        };
+
+        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+        }
     }
 };
 
@@ -201,7 +192,7 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
 
     //если только для виджета
     if (taskInfo.eventForWidgets) {
-        socketIo.emit("module NI API", {
+        helpersFunc.sendBroadcastSocketIo("module NI API", {
             "type": "get list unresolved task for widget",
             "taskID": data.taskID,
             "options": {
@@ -238,7 +229,7 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
 
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
-        socketIo.emit("module NI API", {
+        let msg = {
             "type": "get list unresolved task",
             "taskID": data.taskID,
             "options": {
@@ -250,6 +241,10 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });
+        };
+
+        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+        }
     }
 };

@@ -101,7 +101,7 @@ function showTaskAllInfo(socketIo, data) {
 
             return;
         }).then(() => {
-            return sendCommandsModuleNetworkInteraction.managementRequestShowTaskAllInfo(data.arguments.taskID);
+            return sendCommandsModuleNetworkInteraction.managementRequestShowTaskAllInfo(socketIo, data.arguments.taskID);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
@@ -510,7 +510,7 @@ function getAnalyticsInformationAboutTaskID(socketIo, data) {
 
             return;
         }).then(() => {
-            return sendCommandsModuleNetworkInteraction.managementRequestShowAnalyticsInformationAboutTaskID(data.arguments.taskID);
+            return sendCommandsModuleNetworkInteraction.managementRequestShowAnalyticsInformationAboutTaskID(socketIo, data.arguments.taskID);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
