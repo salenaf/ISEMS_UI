@@ -155,7 +155,9 @@ module.exports = function(app, express, io) {
                     }
                 }), TIME_INTERVAL);
             })
-            .on("error", () => {
+            .on("error", (err) => {
+                writeLogFile("error", err.toString() + funcName);
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
                 console.log("func 'connectionWithModuleNetworkInteraction'");
