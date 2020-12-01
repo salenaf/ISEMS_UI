@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Tab, Tabs } from "react-bootstrap";
+import { Button, Col, Row, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateTableSources from "./createTableSources.jsx";
@@ -102,23 +102,46 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.handlerInput = this.handlerInput.bind(this);
         this.handlerNewFolder = this.handlerNewFolder.bind(this);
         this.generatingNewToken = this.generatingNewToken.bind(this);
+        this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
         this.handelerFolderDelete = this.handelerFolderDelete.bind(this);
+        this.modifyTableSourceList = this.modifyTableSourceList.bind(this);
+        this.handlerSourceReconnect = this.handlerSourceReconnect.bind(this);
         this.handlerSaveInformation = this.handlerSaveInformation.bind(this);
         this.showModalWindowSourceDel = this.showModalWindowSourceDel.bind(this);
         this.closeModalWindowSourceDel = this.closeModalWindowSourceDel.bind(this);
         this.showModalWindowSourceInfo = this.showModalWindowSourceInfo.bind(this);
         this.closeModalWindowSourceInfo = this.closeModalWindowSourceInfo.bind(this);
         this.showModalWindowChangeSource = this.showModalWindowChangeSource.bind(this);
+        this.getCountConnectAndDisconnect = this.getCountConnectAndDisconnect.bind(this);
         this.closeModalWindowChangeSource = this.closeModalWindowChangeSource.bind(this);
-
         this.changeCheckboxMarkedSourceDel = this.changeCheckboxMarkedSourceDel.bind(this);
-        this.handlerSourceDelete = this.handlerSourceDelete.bind(this);
-        this.handlerSourceReconnect = this.handlerSourceReconnect.bind(this);
-
+        
+        this.requestEmitter.call(this);        
+        this.handlerEvents.call(this);
         this.listenerSocketIoConnect.call(this);
 
         //устанавливаем тему для всех элементов select2
         $.fn.select2.defaults.set("theme", "bootstrap");
+    }
+
+    requestEmitter(){
+        this.props.socketIo.emit("give me new short source list", {});
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("module NI API", (data) => {
+            if(data.type === "connectModuleNI"){
+                if(!data.options.connectionStatus){
+                    let objCopy = Object.assign({}, this.state);
+                
+                    for(let i = 0; i < objCopy.tableSourceList.length; i++){
+                        objCopy.tableSourceList[i].connectionStatus = false;
+                    }
+        
+                    this.setState(objCopy);
+                }
+            }
+        });
     }
 
     createStateCheckboxMarkedSourceDel(shortListSource){
@@ -163,6 +186,10 @@ class CreatePageOrganizationAndSources extends React.Component {
             }
 
             this.setState(objCopy);
+        });
+
+        this.props.socketIo.on("module-ni: short source list", (data) => {
+            this.modifyTableSourceList(data);
         });
 
         this.props.socketIo.on("entity: set info only source", (data) => {
@@ -313,6 +340,39 @@ class CreatePageOrganizationAndSources extends React.Component {
         });
 
         return newList;
+    }
+
+    modifyTableSourceList(listShortEntity){
+        let newList = [];
+        for(let sourceID in listShortEntity.arguments){
+            let sourceIsExist = this.state.tableSourceList.find((item) => +item.sourceID === +sourceID);
+
+            if(typeof sourceIsExist === "undefined"){
+                newList.push({
+                    "sourceID": +sourceID,
+                    "sid": "",
+                    "shortName": listShortEntity.arguments[sourceID].shortName,
+                    "dateRegister": 0,
+                    "fieldActivity": "",
+                    "versionApp": "",
+                    "releaseApp": "",
+                    "connectionStatus": listShortEntity.arguments[sourceID].connectStatus,
+                    "connectTime": listShortEntity.arguments[sourceID].connectTime,
+                });
+            }
+        }
+
+        let stateCopy = Object.assign({}, this.state);
+        let listTmp = stateCopy.tableSourceList.concat(newList);
+
+        listTmp.sort((a, b) => {
+            if (a.sourceID > b.sourceID) return 1;
+            if (a.sourceID == b.sourceID) return 0;
+            if (a.sourceID < b.sourceID) return -1;
+        });
+
+        stateCopy.tableSourceList = listTmp;
+        this.setState(stateCopy);
     }
 
     handlerSourceDelete(){
@@ -582,24 +642,46 @@ class CreatePageOrganizationAndSources extends React.Component {
         this.props.socketIo.emit("reconnect source", { source_id: data.sourceID });
     }
 
+    getCountConnectAndDisconnect(){
+        let result = {
+            countConnect: 0,
+            countDisconnect: 0,
+        };
+
+        this.state.tableSourceList.forEach((item) => {
+            if(item.connectionStatus){
+                result.countConnect++;
+            } else {
+                result.countDisconnect++;
+            }
+        });
+
+        return result;
+    }
+
     render(){
+        let { countConnect, countDisconnect } = this.getCountConnectAndDisconnect();
+
         return (
             <React.Fragment>
                 <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
                     <Tab eventKey="sources" title="источники">
                         <br/>
-                        <div className="row mb-2">
-                            <div className="col-md-9 text-left text-muted">
-                                всего источников: <span className="text-info">{Object.keys(this.state.checkboxMarkedSourceDel).length}</span>
-                            </div>
-                            <div className="col-md-3 text-right">
+                        <Row className="mb-2">
+                            <Col md={3} className="text-left text-muted">
+                                всего источников: <i>{this.state.tableSourceList.length}</i>
+                            </Col>
+                            <Col md={7} className="text-center text-muted">
+                                подключено <span className="text-success"><i>{countConnect}</i></span> / недоступно <span className="text-danger"><i>{countDisconnect}</i></span>
+                            </Col>
+                            <Col md={2} className="text-right">
                                 <Button 
                                     variant="outline-danger" 
                                     onClick={this.showModalWindowSourceDel}
                                     disabled={this.isDisabledDelete.call(this, "sourceDel")}
                                     size="sm">удалить</Button>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                         <CreateTableSources 
                             userPermissions={this.props.userPermissions}
                             tableSourceList={this.state.tableSourceList}

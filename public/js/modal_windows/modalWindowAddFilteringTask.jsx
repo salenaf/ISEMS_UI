@@ -4,9 +4,8 @@ import React from "react";
 import {  Badge, Button, Col, Row, InputGroup, Form, FormControl, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import DatePicker from "react-datepicker";
-
 import { helpers } from "../common_helpers/helpers.js";
+import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
 
 class CreateProtocolList extends React.Component {
     constructor(props){
@@ -50,12 +49,12 @@ class CreateSourceList extends React.Component {
     }
 
     getListSource(){
-        return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID) => {
+        return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID, num) => {
             let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
 
             return (
                 <option 
-                    key={`key_sour_${this.props.listSources[sourceID].id}`} 
+                    key={`key_source_${num}_${this.props.listSources[sourceID].id}`} 
                     value={sourceID} 
                     disabled={isDisabled} >
                     {`${sourceID} ${this.props.listSources[sourceID].shortName}`}
@@ -110,11 +109,14 @@ class CreateMainFields extends React.Component {
             inputFieldIsInvalid: false,
             showDirectionAndButton: false,           
             inputRadioType: "any",
+            currentDateTimeStart: new Date(),
+            currentDateTimeEnd: new Date(),
         };
 
         this.handlerInput = this.handlerInput.bind(this);
         this.checkRadioInput = this.checkRadioInput.bind(this);
         this.addPortNetworkIP = this.addPortNetworkIP.bind(this);
+        this.handlerChangeDateTime = this.handlerChangeDateTime.bind(this);
     }
     
     addPortNetworkIP(){
@@ -141,7 +143,7 @@ class CreateMainFields extends React.Component {
     }
 
     handlerInput(e){
-        let value = e.target.value;
+        let value = e.target.value.replace(/,/g, ".");      
 
         if(value.includes(".")){
             if(value.includes("/")){
@@ -209,6 +211,16 @@ class CreateMainFields extends React.Component {
         });
     }
 
+    handlerChangeDateTime(typeValue, data){
+        if(typeValue === "start"){
+            this.setState({ currentDateTimeStart: data });
+        }
+
+        if(typeValue === "end"){
+            this.setState({ currentDateTimeEnd: data });
+        }
+    }
+    
     listInputValue(){
         let isEmpty = true;
 
@@ -307,6 +319,12 @@ class CreateMainFields extends React.Component {
         );
     }
 
+    handleKeyPress(event) {
+        if(event.key == "Enter"){
+            this.addPortNetworkIP();
+        }
+    }
+
     render(){
         if(!this.props.showMainFields){
             return <React.Fragment></React.Fragment>;
@@ -333,57 +351,23 @@ class CreateMainFields extends React.Component {
             }
         }
 
-        let formatterDate = new Intl.DateTimeFormat("ru-Ru", {
-            timeZone: "Europe/Moscow",
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-        });
-
         return (
             <React.Fragment>
                 <Row className="mt-2">
                     <Col sm="3" className="text-right">
-                        <small className="mr-1">сетевой протокол</small>
+                        <small className="mr-1 text-muted">сетевой протокол</small>
                         <CreateProtocolList 
                             isDisabled={disabled}
                             networkProtocol={this.props.networkProtocol} 
                             handlerChosen={this.props.handlerChosenProtocol} />
                     </Col>
                     <Col sm="1"></Col>
-                    <Col sm="4">
-                        <small className="mr-1">начальное время</small>
-                        <DatePicker 
-                            className="form-control form-control-sm green-border"
-                            selected={startDate}
-                            onChange={this.props.handlerChangeStartDate}
-                            maxDate={new Date()}
-                            disabled={disabled}
-                            showTimeInput
-                            selectsStart
-                            isClearable
-                            timeFormat="p"
-                            timeInputLabel="Time:"
-                            dateFormat="dd.MM.yyyy hh:mm aa"
-                            placeholderText={formatterDate.format(this.props.sd)} />
-                    </Col>
-                    <Col sm="4">
-                        <small className="mr-1">конечное время</small>
-                        <DatePicker 
-                            className="form-control form-control-sm red-border"
-                            selected={endDate}
-                            onChange={this.props.handlerChangeEndDate}
-                            maxDate={new Date()}
-                            disabled={disabled}
-                            showTimeInput
-                            selectsEnd
-                            isClearable
-                            timeFormat="p"
-                            timeInputLabel="Time:"
-                            dateFormat="dd.MM.yyyy hh:mm aa"
-                            placeholderText={formatterDate.format(this.props.ed)} />
+                    <Col sm="8" className="mt-2">
+                        <CreateDateTimePicker 
+                            currentDateTimeStart={startDate}
+                            currentDateTimeEnd={endDate}
+                            handlerChangeDateTimeStart={this.props.handlerChangeStartDate}
+                            handlerChangeDateTimeEnd={this.props.handlerChangeEndDate} />
                     </Col>
                 </Row>
                 <Row className="mt-3">
@@ -400,6 +384,7 @@ class CreateMainFields extends React.Component {
                                 id="input_ip_network_port"
                                 aria-describedby="basic-addon2"
                                 onChange={this.handlerInput}
+                                onKeyPress={this.handleKeyPress.bind(this)}
                                 disabled={disabled}
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 
@@ -589,6 +574,7 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                 size="lg"
                 show={this.props.show} 
                 onHide={this.windowClose}
+                backdrop={"static"}
                 aria-labelledby="example-modal-sizes-title-lg" >
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">

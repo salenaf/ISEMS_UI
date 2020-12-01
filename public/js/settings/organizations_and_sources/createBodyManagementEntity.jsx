@@ -533,9 +533,9 @@ export default class CreateBodyManagementEntity extends React.Component {
     checkValue(nameInput, value){
         let elemName = {
             "organizationName": "fullNameHost",
-            "legalAddress": "stringRuNumCharacter",
-            "divisionName": "stringRuNumCharacter",
-            "physicalAddress": "stringRuNumCharacter",
+            "legalAddress": "fullNameHost",
+            "divisionName": "fullNameHost",
+            "physicalAddress": "fullNameHost",
         };
 
         if(typeof elemName[nameInput] === "undefined") {

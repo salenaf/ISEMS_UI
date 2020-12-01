@@ -20,6 +20,9 @@ export default class GetStatusDownload extends React.Component {
         } else if(ts === "stop"){
             return <span className="text-warning">остановлена пользователем</span>;
         } else if(ts === "not executed"){
+            /*if(this.props.numDownloadFiles === 0){
+                return <span className="text-light bg-secondary">файлы не найдены</span>;
+            }*/
             return <span className="text-light bg-dark">не выполнялась</span>;
         } else {
             return <span>ts</span>;
@@ -28,5 +31,6 @@ export default class GetStatusDownload extends React.Component {
 }
 
 GetStatusDownload.propTypes = {
-    status: PropTypes.string
+    status: PropTypes.string,
+    numDownloadFiles: PropTypes.number,
 };

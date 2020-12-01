@@ -4,6 +4,7 @@ const EventEmitter = require("events");
 
 class SocketioEventResponse extends EventEmitter {}
 
+
 /**
  * Глобальный объект для промежуточного хрнения данных
  * 
@@ -57,32 +58,56 @@ class SocketioEventResponse extends EventEmitter {}
  *       tasks: {
  *          <task ID>: {
  *              eventName: название события в UI,
+ *              eventForWidgets: результат события предназначен для виджета (true/false),
  *              userSessionID: ID сессии пользователя,
  *              generationTime: время генерации задачи,
+ *              socketId: id идентификатор socket.io соединения с пользователем,
  *          },
  *       },
  *       параметры пользователя все из БД
  *       users: {
- *          userLogin: логин,
- *          userName: имя,
- *          userGroup: группа,
- *          groupSettings: групповые настройки пользователя,
- *          userSettings: общие настройки пользователя,
+ *          <sessionID>: {
+ *              userLogin: логин,
+ *              userName: имя,
+ *              userGroup: группа,
+ *              groupSettings: групповые настройки пользователя,
+ *              userSettings: общие настройки пользователя,
+ *          },
  *       },
  *       параметры истчников
- *       sources: {
- *          shortName: название источника,
- *          description: описание,
- *          connectStatus: статус соединения,
- *          connectTime: время соединения,
- *          id: id источника,
+ *       sources: 
+ *          <source>: {
+ *              shortName: название источника,
+ *              description: описание,
+ *              connectStatus: статус соединения,
+ *              connectTime: время соединения,
+ *              appVersion: версия ПО  модуля ISEMS-NIH-slave,
+ *              appReleaseDate: версия даты релиза  модуля ISEMS-NIH-slave,
+ *              id: id источника,
+ *          },
+ *       },
+ * 
+ *       descriptionDB: {
+ *          MongoDB: {
+ *              connection: 
+ *              connectionTimestamp: 
+ *              userName: 
  *       },
  * 
  *       дескрипторы соединения с API
  *       descriptionAPI: {
  *           networkInteraction: {
  *               connection: object,
- *               connectionEstablished: bool }}
+ *               connectionEstablished: bool,
+ *               previousConnectionStatus: bool }}
+ *       
+ *       descriptionSocketIo: {
+ *          majorConnect: <основное socketIo соединение (
+ *            получаемое через require("socket.io").listen(server, {}))>
+ *          userConnections: { 
+ *              <socketIo user id>: <description>
+ *          }
+ *       }
  *   } 
  */
 class GlobalObject {
@@ -94,6 +119,10 @@ class GlobalObject {
             "commonSettings": {},
             "descriptionDB": {},
             "descriptionAPI": {},
+            "descriptionSocketIo": {
+                "majorConnect": {},
+                "userConnections": {},
+            },
             "socketioEventResponse": new SocketioEventResponse(),
             "tmpModuleNetworkInteraction": {},
         };
@@ -203,15 +232,26 @@ class GlobalObject {
         if (this._checkKeys(type)) return false;
         if (typeof group === "undefined") return false;
 
+        let isSuccess = true;
         arrayData.forEach((element) => {
             if (Array.isArray(element) && (element.length === 2)) {
-                if ((typeof this.obj[type][group] === "undefined") || (typeof this.obj[type][group][element[0]] === "undefined")) return;
+                if (typeof this.obj[type][group] === "undefined") {
+                    isSuccess = false;
+
+                    return;
+                }
+
+                if ((typeof this.obj[type][group][element[0]] === "undefined")) {
+                    isSuccess = false;
+
+                    return;
+                }
 
                 this.obj[type][group][element[0]] = element[1];
             }
         });
 
-        return true;
+        return isSuccess;
     }
 
     //удалить данные по выбранному типу и группе

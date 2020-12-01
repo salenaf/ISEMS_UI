@@ -2,6 +2,8 @@ import React from "react";
 import { Badge, Card, Col, ProgressBar, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import {helpers} from "../common_helpers/helpers.js";
+
 export default class CreateBodyDynamics extends React.Component {
     constructor(props){
         super(props);
@@ -36,7 +38,7 @@ export default class CreateBodyDynamics extends React.Component {
                     this.deleteItemByTimeout("filtration", msg.options.taskID);
 
                     //запрашиваем новый список задач файлы по которым не выгружались
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
                 }
             }
 
@@ -49,7 +51,7 @@ export default class CreateBodyDynamics extends React.Component {
                     this.deleteItemByTimeout("download", msg.options.taskID);
 
                     //запрашиваем новый список задач файлы по которым не выгружались
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: false } });
                 }
             }
         });
@@ -111,7 +113,7 @@ export default class CreateBodyDynamics extends React.Component {
                                 onClick={this.showModalWindow.bind(this, objInfo)} >
                                 <small className="mb-n2">{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
                                 <div className="pl-2 pr-2 mb-n2">{msg}</div>
-                                <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, всего: ${formatter.format(sizeAllFiles)} байт`}</small>
+                                <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${helpers.changeByteSize(sizeFindFiles)}) / всего: ${formatter.format(sizeAllFiles)} байт, (${helpers.changeByteSize(sizeAllFiles)})`}</small>
                             </Card>
                         </Col>
                     </Row>
@@ -134,7 +136,7 @@ export default class CreateBodyDynamics extends React.Component {
                             onClick={this.showModalWindow.bind(this, objInfo)} >
                             <small>{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
                             {progress}
-                            <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, всего: ${formatter.format(sizeAllFiles)} байт`}</small>
+                            <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${helpers.changeByteSize(sizeFindFiles)}) / всего: ${formatter.format(sizeAllFiles)} байт, (${helpers.changeByteSize(sizeAllFiles)})`}</small>
                         </Card>
                     </Col>
                 </Row>

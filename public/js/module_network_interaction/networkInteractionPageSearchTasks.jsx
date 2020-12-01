@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Row, Table, Form, Pagination, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Button, Col, Row, Table, Form, Spinner } from "react-bootstrap";
+import { Pagination as Paginationmui } from "@material-ui/lab";
 import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
@@ -24,6 +25,7 @@ class CreatePageSearchTasks extends React.Component {
             showModalWindowFiltration: false,
             showModalWindowDeleteTask: false,
             showModalWindowShowTaskInformation: false,
+            showSpinner: true,
             listCheckboxMarkedTasksDel: new Set(),
             listSources: this.props.listItems.listSources,
             listTasksFound: {
@@ -60,6 +62,11 @@ class CreatePageSearchTasks extends React.Component {
         this.requestEmitter.call(this);
     }
 
+    componentDidUpdate(){
+        $("[value='elem_helper_repeat_task']").tooltip();
+        $("[value='file_analysis']").tooltip();
+    }
+
     requestEmitter(){
         this.props.socketIo.emit("network interaction: get list all tasks", { arguments: {} });   
     }
@@ -70,14 +77,17 @@ class CreatePageSearchTasks extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "send a list of found tasks"){   
+            if(data.type === "send a list of found tasks"){               
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
                     slft: data.options.slft, 
                     tntf: data.options.tntf,
                 };
-                this.setState({ listTasksFound: tmpCopy });
+                this.setState({ 
+                    showSpinner: false,
+                    listTasksFound: tmpCopy 
+                });
             }
             if(data.type === "deleteAllInformationAboutTask"){
                 let tmpCopy = Object.assign(this.state.listCheckboxMarkedTasksDel);
@@ -142,10 +152,12 @@ class CreatePageSearchTasks extends React.Component {
         this.setState({ showModalWindowFiltration: false });
     }
 
-    headerNextItemPagination(num){
+    headerItemPagination(obj, num){
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
+
+        this.setState({ showSpinner: true });
 
         this.props.socketIo.emit("network interaction: get next chunk list all tasks", {
             taskID: this.state.currentTaskID,
@@ -220,20 +232,23 @@ class CreatePageSearchTasks extends React.Component {
             }    
         }
 
-        this.setState({ listInputForSearch: listInput });
+        this.setState({ 
+            showSpinner: true,
+            listInputForSearch: listInput 
+        });
     }
 
     buttonForwardArrow(item){
         if(item.fdts === "complete" || item.fdts === "stop"){
             return (
-                <OverlayTrigger
-                    key={"tooltip_back_arrow_img"}
-                    placement="bottom"
-                    overlay={<Tooltip>{`анализ файлов, задача ID ${item.tid}`}</Tooltip>}>
-                    <a href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}>
-                        <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
-                    </a>
-                </OverlayTrigger>
+                <a 
+                    href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}
+                    value="file_analysis"
+                    data-toggle="tooltip" 
+                    data-placement="top" 
+                    title={`анализ файлов, задача ID ${item.tid}`} >
+                    <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
+                </a>
             );
         }
     }
@@ -284,6 +299,21 @@ class CreatePageSearchTasks extends React.Component {
 
             this.state.listTasksFound.slft.forEach((item, index) => {
                 let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn, index: index };
+                let StatusDownload = <small><GetStatusDownload status={item.fdts} numDownloadFiles={item.nffarf} /></small>;
+                if(item.nffarf === 0){
+                    StatusDownload = (<React.Fragment>
+                        <Row>
+                            <Col>
+                                <small><GetStatusDownload status={item.fdts} numDownloadFiles={item.nffarf} /></small>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <small><i>файлы не найдены</i></small>
+                            </Col>
+                        </Row>
+                    </React.Fragment>);
+                }
 
                 tableBody.push(<tr key={`tr_${item.tid}`}>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
@@ -315,46 +345,53 @@ class CreatePageSearchTasks extends React.Component {
                         <small><GetStatusFiltering status={item.fts} /></small>
                     </td>
                     <td className="my_line_spacing align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_sd`}>
-                        <small><GetStatusDownload status={item.fdts} /></small>
+                        {StatusDownload}
                     </td>
                     <td className="align-middle">
-                        <OverlayTrigger
-                            key={`tooltip_${item.tid}_checkbox`}
-                            placement="right"
-                            overlay={<Tooltip>редактировать параметры и повторить задачу</Tooltip>}>
-                            <Button 
-                                size="sm" 
-                                variant="outline-light" >
-                                <a href="#" onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}>
-                                    <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
-                                </a>
-                            </Button>
-                        </OverlayTrigger>
+                        <Button 
+                            size="sm" 
+                            variant="outline-light" >
+                            <a href="#" 
+                                onClick={this.headerClickTable.bind(this, dataInfo, "re-filtering")}
+                                value="elem_helper_repeat_task"
+                                data-toggle="tooltip" 
+                                data-placement="top" 
+                                title="редактировать параметры и повторить задачу" >
+                                <img className="clickable_icon" width="24" height="24" src="../images/icons8-repeat-48.png" alt="выполнить повторную фильтрацию"></img>
+                            </a>
+                        </Button>
                     </td>
                     <td className="align-middle">
                         {this.buttonForwardArrow(item)}
                     </td>
                     <td className="align-middle">
-                        <OverlayTrigger
-                            key={`tooltip_${item.tid}_checkbox`}
-                            placement="right"
-                            overlay={<Tooltip>отметить для удаления</Tooltip>}>
-                            <Form>
-                                <Form.Check 
-                                    className="mt-1"
-                                    custom 
-                                    onChange={this.changeCheckboxMarked.bind(this, item.tid)}
-                                    type="checkbox" 
-                                    id={`checkbox-${item.tid}`}
-                                    label="" />
-                            </Form>
-                        </OverlayTrigger>
+                        <Form>
+                            <Form.Check 
+                                className="mt-1"
+                                custom 
+                                onChange={this.changeCheckboxMarked.bind(this, item.tid)}
+                                type="checkbox" 
+                                id={`checkbox-${item.tid}`}
+                                label="" />
+                        </Form>
                     </td>
                 </tr>);
             });
 
             return tableBody;
         };
+
+        if(this.state.showSpinner){
+            return (
+                <Row className="pt-4">
+                    <Col md={12}>
+                        <Spinner animation="border" role="status" variant="primary">
+                            <span className="sr-only text-muted">Загрузка...</span>
+                        </Spinner>
+                    </Col>
+                </Row>
+            );
+        }
 
         if(this.state.listTasksFound.tntf === 0){
             return (
@@ -391,15 +428,15 @@ class CreatePageSearchTasks extends React.Component {
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>ID</th>
-                                    <th>название</th>
-                                    <th>задача добавлена</th>
-                                    <th>интервал времени</th>
-                                    <th>ip</th>
-                                    <th>network</th>
-                                    <th>port</th>
-                                    <th>фильтрация</th>
-                                    <th>выгрузка</th>
+                                    <th className="my_line_spacing">ID</th>
+                                    <th className="my_line_spacing">название</th>
+                                    <th className="my_line_spacing">задача добавлена</th>
+                                    <th className="my_line_spacing">интервал времени</th>
+                                    <th className="my_line_spacing">ip</th>
+                                    <th className="my_line_spacing">network</th>
+                                    <th className="my_line_spacing">port</th>
+                                    <th className="my_line_spacing">фильтрация</th>
+                                    <th className="my_line_spacing">выгрузка</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -413,90 +450,30 @@ class CreatePageSearchTasks extends React.Component {
         );
     }
 
-    createPagination(){
+    createPaginationMUI(){
         if(this.state.listTasksFound.p.cn <= 1){
             return;
         }
 
-        let addEllipsis = false;
-        let items = [];
-        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
-            if(this.state.listTasksFound.p.cn < 5){
-                items.push(
-                    <Pagination.Item 
-                        key={`pag_${i}`} 
-                        active={this.state.listTasksFound.p.ccn === i}
-                        onClick={this.headerNextItemPagination.bind(this, i)} >
-                        {i}
-                    </Pagination.Item>
-                );
-            } else {
-                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){                   
-                    items.push(
-                        <Pagination.Item 
-                            key={`pag_${i}`} 
-                            active={this.state.listTasksFound.p.ccn === i}
-                            onClick={this.headerNextItemPagination.bind(this, i)} >
-                            {i}
-                        </Pagination.Item>
-                    );
-                } else {
-                    if(this.state.listTasksFound.p.ccn === i){
-                        items.push(
-                            <Pagination.Item 
-                                key={`pag_${i}`} 
-                                active={this.state.listTasksFound.p.ccn === i}
-                                onClick={this.headerNextItemPagination.bind(this, i)} >
-                                {i}
-                            </Pagination.Item>
-                        );
-                    } else {
-                        if(addEllipsis){
-                            continue;
-                        }
-    
-                        addEllipsis = true;
-                        items.push(
-                            <Pagination.Ellipsis 
-                                disabled={true}
-                                key={"pag_ellipsis"}/>
-                        );
-                    }
-                }
-            }
-        }
-
-        if(this.state.listTasksFound.p.cn > 3){
-            let pfd = this.state.listTasksFound.p.ccn === 1;
-            let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
-            
-            return (
-                <Row>
-                    <Col md={12} className="d-flex justify-content-center">
-                        <Pagination size="sm">
-                            <Pagination.First 
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, 1)} />
-                            <Pagination.Prev
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === 1) ? 1:this.state.listTasksFound.p.ccn-1))} />
-                            {items}
-                            <Pagination.Next
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn) ? this.state.listTasksFound.p.cn:this.state.listTasksFound.p.ccn+1))} />
-                            <Pagination.Last 
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, this.state.listTasksFound.p.cn)} />
-                        </Pagination>
-                    </Col>
-                </Row>
-            );
+        if(this.state.showSpinner){
+            return;
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{items}</Pagination>
+                    <Paginationmui 
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        count={this.state.listTasksFound.p.cn}
+                        onChange={this.headerItemPagination.bind(this)}
+                        page={this.state.listTasksFound.p.ccn}
+                        boundaryCount={2}
+                        siblingCount={0}
+                        showFirstButton
+                        showLastButton >
+                    </Paginationmui>
                 </Col>
             </Row>
         );
@@ -515,12 +492,13 @@ class CreatePageSearchTasks extends React.Component {
                 <Row>
                     <Col md={12} className="text-left text-muted">поиск задач</Col>
                 </Row>
+
                 <CreateBodySearchTask 
                     socketIo={this.props.socketIo} 
                     listSources={this.props.listItems.listSources}
                     handlerButtonSearch={this.handlerButtonSearch} />
                 {this.createTableListDownloadFile.call(this)}
-                {this.createPagination.call(this)}
+                {this.createPaginationMUI.call(this)}
 
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}

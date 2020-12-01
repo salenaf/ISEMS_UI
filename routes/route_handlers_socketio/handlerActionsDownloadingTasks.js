@@ -16,7 +16,7 @@ const checkUserAuthentication = require("../../libs/check/checkUserAuthenticatio
  *
  * @param {*} socketIo 
  */
-module.exports.addHandlers = function(socketIo) {   
+module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "network interaction: start downloading files": startDownloadingFiles,
         "network interaction: stop download files": stopDownloadFiles,
@@ -36,7 +36,7 @@ module.exports.addHandlers = function(socketIo) {
  * @param {*} socketIo 
  * @param {*} data 
  */
-function startDownloadingFiles(socketIo, data){
+function startDownloadingFiles(socketIo, data) {
     debug("func 'startDownloadingFiles', START...");
     debug(data);
 
@@ -48,37 +48,37 @@ function startDownloadingFiles(socketIo, data){
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
-    
+
             //может ли пользователь создавать задачи на скачивание файлов
-            if(!authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_import.element_settings.resume.status){
+            if (!authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_import.element_settings.resume.status) {
                 throw new MyError("management auth", "Невозможно отправить запрос на скачивание файлов. Недостаточно прав на выполнение данного действия.");
             }
 
             return authData.document.userName;
         }).then((userName) => {
             return new Promise((resolve, reject) => {
-                process.nextTick(() => {          
-                    if(!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+                process.nextTick(() => {
+                    if (!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         return reject(new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен."));
                     }
 
                     let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            
-                    if(conn !== null){ 
-                        
+
+                    if (conn !== null) {
+
                         debug("send request file list--->");
 
                         data.arguments.un = userName;
 
-                        conn.sendMessage({                            
+                        conn.sendMessage({
                             msgType: "command",
                             msgSection: "download control",
                             msgInstruction: "to start downloading",
                             taskID: require("../../libs/helpers/helpersFunc").getRandomHex(),
                             options: data.arguments.o,
                         });
-                    }    
-            
+                    }
+
                     resolve();
                 });
             });
@@ -96,10 +96,10 @@ function startDownloadingFiles(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
+            writeLogFile("error", err.toString() + funcName);
         });
 }
 
@@ -109,7 +109,7 @@ function startDownloadingFiles(socketIo, data){
  * @param {*} socketIo 
  * @param {*} data 
  */
-function stopDownloadFiles(socketIo, data){
+function stopDownloadFiles(socketIo, data) {
     debug("func 'stopDownloadFiles', STOP...");
     debug(data);
 
@@ -121,34 +121,39 @@ function stopDownloadFiles(socketIo, data){
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
-    
-            if(!authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_import.element_settings.stop.status){
+
+            if (!authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_import.element_settings.stop.status) {
                 throw new MyError("management auth", "Невозможно отправить запрос на останов задачи по скачиванию файлов. Недостаточно прав на выполнение данного действия.");
             }
 
             return;
         }).then(() => {
             return new Promise((resolve, reject) => {
-                process.nextTick(() => {          
-                    if(!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
+                process.nextTick(() => {
+                    if (!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         return reject(new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен."));
                     }
 
                     let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            
-                    if(conn !== null){ 
-                        
+
+                    if (conn !== null) {
+
                         debug("Отправляем запрос на останов скачивания файлов");
 
-                        conn.sendMessage({                            
+                        conn.sendMessage({
                             msgType: "command",
                             msgSection: "download control",
                             msgInstruction: "to cancel downloading",
                             taskID: require("../../libs/helpers/helpersFunc").getRandomHex(),
-                            options: data.arguments.o,
+                            options: {
+                                id: +(data.arguments.sourceID),
+                                tidapp: data.arguments.taskID,
+                            },
                         });
-                    }    
-            
+
+                        debug("Messsage запрос на останов скачивания файлов");
+                    }
+
                     resolve();
                 });
             });
@@ -166,10 +171,10 @@ function stopDownloadFiles(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
+            writeLogFile("error", err.toString() + funcName);
         });
 }
 
@@ -179,7 +184,7 @@ function stopDownloadFiles(socketIo, data){
  * @param {*} socketIo 
  * @param {*} data 
  */
-function getListFilesTask(socketIo, data){
+function getListFilesTask(socketIo, data) {
     debug("func 'getListFilesTask', START...");
     debug(data);
 
@@ -191,37 +196,49 @@ function getListFilesTask(socketIo, data){
             if (!authData.isAuthentication) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
-    
+
             return;
         }).then(() => {
             return new Promise((resolve, reject) => {
-                process.nextTick(() => {          
-                    if(!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")){               
-                        return reject(new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен."));
-                    }
-
-                    let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            
-                    if(conn !== null){ 
-                        
-                        debug("send request file list--->");
-
-                        conn.sendMessage({                            
-                            msgType: "command",
-                            msgSection: "information search control",
-                            msgInstruction: "get part of the list files",
-                            taskID: require("../../libs/helpers/helpersFunc").getRandomHex(),
-                            options: {
-                                rtid: data.arguments.taskID,
-                                ps: data.arguments.partSize,
-                                olp: data.arguments.offsetListParts,
-                            },
-                        });
-                    }    
-            
-                    resolve();
+                //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+                // временную информацию в globalObject.tmp
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if (err) reject(err);
+                    else resolve(sessionId);
                 });
             });
+        }).then((sessionId) => {
+            if (!globalObject.hasData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                throw new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен.");
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+
+                debug("send request file list--->");
+
+                let hex = require("../../libs/helpers/helpersFunc").getRandomHex();
+
+                globalObject.setData("tasks", hex, {
+                    eventName: "part of the list files",
+                    eventForWidgets: false,
+                    userSessionID: sessionId,
+                    generationTime: +new Date(),
+                    socketId: socketIo.id,
+                });
+
+                conn.sendMessage({
+                    msgType: "command",
+                    msgSection: "information search control",
+                    msgInstruction: "get part of the list files",
+                    taskID: hex,
+                    options: {
+                        rtid: data.arguments.taskID,
+                        ps: data.arguments.partSize,
+                        olp: data.arguments.offsetListParts,
+                    },
+                });
+            }
         }).catch((err) => {
             debug(err);
 
@@ -236,10 +253,10 @@ function getListFilesTask(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
+            writeLogFile("error", err.toString() + funcName);
         });
 }
 
@@ -250,7 +267,7 @@ function getListFilesTask(socketIo, data){
  * @param {*} socketIo 
  * @param {*} data 
  */
-function getNextChunk(socketIo, data){
+function getNextChunk(socketIo, data) {
     debug("func 'getNextChunk', START...");
     debug(data);
 
@@ -274,7 +291,7 @@ function getNextChunk(socketIo, data){
         }).then((sessionId) => {
             debug(`user session ID: ${sessionId}`);
 
-            if(!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)){
+            if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
                 throw new MyError("management auth", "Ошибка авторизации. Информация о сессии недоступна.");
             }
 
@@ -285,8 +302,8 @@ function getNextChunk(socketIo, data){
             //debug(globalObject.getData("tmpModuleNetworkInteraction", sessionId));
             //debug(tasksDownloadFiles);
 
-            if(data.nextChunk === 1){
-                if(tasksDownloadFiles.numFound <= data.chunkSize){                   
+            if (data.nextChunk === 1) {
+                if (tasksDownloadFiles.numFound <= data.chunkSize) {
                     return { list: tasksDownloadFiles.listTasksDownloadFiles, taskFound: tasksDownloadFiles.numFound };
                 } else {
                     return { list: tasksDownloadFiles.listTasksDownloadFiles.slice(0, data.chunkSize), taskFound: tasksDownloadFiles.numFound };
@@ -295,22 +312,22 @@ function getNextChunk(socketIo, data){
                 let numBegin = data.chunkSize * (data.nextChunk - 1);
                 let nextNumBegin = numBegin + data.chunkSize;
 
-                if(tasksDownloadFiles.numFound <= nextNumBegin){                    
+                if (tasksDownloadFiles.numFound <= nextNumBegin) {
                     return { list: tasksDownloadFiles.listTasksDownloadFiles.slice(numBegin), taskFound: tasksDownloadFiles.numFound };
-                } else {                    
+                } else {
                     return { list: tasksDownloadFiles.listTasksDownloadFiles.slice(numBegin, nextNumBegin), taskFound: tasksDownloadFiles.numFound };
-                } 
+                }
             }
         }).then((objInfo) => {
             debug(`count new tasks: ${objInfo.list.length}`);
             //debug(objInfo.list);
 
             let numFullChunks = 1;
-            if(objInfo.taskFound > data.chunkSize){
-                numFullChunks = Math.ceil(objInfo.taskFound/data.chunkSize);
+            if (objInfo.taskFound > data.chunkSize) {
+                numFullChunks = Math.ceil(objInfo.taskFound / data.chunkSize);
             }
 
-            socketIo.emit("module NI API", { 
+            socketIo.emit("module NI API", {
                 "type": "get list tasks files not downloaded",
                 "taskID": data.taskID,
                 "options": {
@@ -322,7 +339,7 @@ function getNextChunk(socketIo, data){
                     tntf: objInfo.taskFound,
                     slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(objInfo.list),
                 }
-            });    
+            });
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
@@ -335,10 +352,9 @@ function getNextChunk(socketIo, data){
                     socketIo: socketIo,
                     type: "danger",
                     message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-                });    
+                });
             }
 
-            writeLogFile("error", err.toString()+funcName);
-        }); 
+            writeLogFile("error", err.toString() + funcName);
+        });
 }
-

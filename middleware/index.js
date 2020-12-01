@@ -92,9 +92,21 @@ module.exports = function(app, express, io) {
      * Socket.io
      * */
     let socketIo = io.sockets.on("connection", function(socket) {
+        globalObject.setData("descriptionSocketIo", "userConnections", socket.id, socket);
+
+        //console.log(`socketIo CONNECTION with id: '${socket.id}'`);
+
         //обработчик событий User Interface
         routeSocketIo.eventHandlingUserInterface(socket);
+
+        socket.on("disconnect", () => {
+            //console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
+
+            globalObject.deleteData("descriptionSocketIo", "userConnections", socket.id);
+        });
     });
+
+    globalObject.setData("descriptionSocketIo", "majorConnect", socketIo);
 
     /*
      * Public directory
@@ -112,6 +124,10 @@ module.exports = function(app, express, io) {
      * */
     let connectionWithModuleNetworkInteraction = () => {
         const TIME_INTERVAL = 7000;
+
+        //        console.log("func 'connectionWithModuleNetworkInteraction'");
+        //        console.log(`connectionEstablished status: ${globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
+
         if (globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             return;
         }
@@ -120,23 +136,37 @@ module.exports = function(app, express, io) {
         connection.createAPIConnection()
             .on("connect", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
+                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", true);
             })
             .on("connectFailed", (err) => {
                 writeLogFile("error", err.toString() + funcName);
             })
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
+
+                console.log("func 'connectionWithModuleNetworkInteraction'");
+                console.log("EVENT: close");
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
                 setTimeout((() => {
-                    connection.createAPIConnection();
+                    if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
                 }), TIME_INTERVAL);
             })
-            .on("error", () => {
+            .on("error", (err) => {
+                writeLogFile("error", err.toString() + funcName);
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
+                console.log("func 'connectionWithModuleNetworkInteraction'");
+                console.log("EVENT: error");
+
                 setTimeout((() => {
-                    connection.createAPIConnection();
+                    if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
                 }), TIME_INTERVAL);
             });
     };

@@ -8,10 +8,14 @@ global.$ = require("jquery");
 require("bootstrap");
 require("bootstrapNotify");
 require("bootstrapToggle");
+require("material-ui-lab");
+require("material-ui-core");
+require("material-ui-pickers");
+require("dateIoFnsUtils");
 require("datatablesNetBs");
-require("reactDatePicker");
 require("reactCustomizeTokenInput");
 
+require("lodash");
 require("moment");
 require("select2");
 

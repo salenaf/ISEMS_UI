@@ -1,6 +1,7 @@
 "use strict";
 
 const showNotify = require("../../libs/showNotify");
+const helpersFunc = require("../../libs/helpers/helpersFunc");
 const writeLogFile = require("../../libs/writeLogFile");
 const globalObject = require("../../configure/globalObject");
 
@@ -14,19 +15,8 @@ const MAX_CHUNK_SIZE = 10;
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
  * @param {*} sessionId - ID сессии
  */
-module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
-    let funcName = " (func 'receivedListAllTasks')";
-
-    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks")) {
-        showNotify({
-            socketIo: socketIo,
-            type: "danger",
-            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });
-
-        return writeLogFile("error", "the 'receivedListAllTasks' property was not found in 'globalObject'" + funcName);
-    }
-
+module.exports.receivedListAllTasks = function(socketIo, data, taskInfo) {
+    let sessionId = taskInfo.userSessionID;
     let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
 
     if ((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)) {
@@ -53,7 +43,7 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
 
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
-        socketIo.emit("module NI API", {
+        let msg = {
             "type": "send a list of found tasks",
             "taskID": data.taskID,
             "options": {
@@ -65,7 +55,11 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });
+        };
+
+        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+        }
     }
 };
 
@@ -75,7 +69,7 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
  * 
  * @param {*} socketIo - дескриптор socketIo соединения
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
- * @param {*} sessionId - ID сессии
+ * @param {*} taskInfo - краткая информация о задаче
  * 
  * Так как список задач файлы по которым не выгружались может
  * быть СЕГМЕНТИРОВАН и приходить в несколько частей нужно его 
@@ -84,19 +78,8 @@ module.exports.receivedListAllTasks = function(socketIo, data, sessionId) {
  * Исключение составляет первая или единственная часть которая
  * автоматически отправляется в UI
  */
-module.exports.receivedListTasksDownloadFiles = function(socketIo, data, sessionId) {
-    let funcName = " (func 'receivedListTasksDownloadFiles')";
-
-    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
-        showNotify({
-            socketIo: socketIo,
-            type: "danger",
-            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });
-
-        return writeLogFile("error", "the 'listTasksDownloadFiles' property was not found in 'globalObject'" + funcName);
-    }
-
+module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInfo) {
+    let sessionId = taskInfo.userSessionID;
     let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
 
     if ((typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)) {
@@ -121,9 +104,27 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
         numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
+    //если только для виджета
+    if (taskInfo.eventForWidgets) {
+        helpersFunc.sendBroadcastSocketIo("module NI API", {
+            "type": "get list tasks files not downloaded for widget",
+            "taskID": data.taskID,
+            "options": {
+                p: {
+                    cs: MAX_CHUNK_SIZE, //размер части
+                    cn: numFullChunks, //всего частей
+                    ccn: 1, //номер текущей части
+                },
+                tntf: data.options.tntf,
+            }
+        });
+
+        return;
+    }
+
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
-        socketIo.emit("module NI API", {
+        let msg = {
             "type": "get list tasks files not downloaded",
             "taskID": data.taskID,
             "options": {
@@ -135,7 +136,11 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });
+        };
+
+        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+        }
     }
 };
 
@@ -145,6 +150,7 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
  * 
  * @param {*} socketIo - дескриптор socketIo соединения
  * @param {*} data - полученные, от модуля сетевого взаимодействия, данные
+ * @param {*} taskInfo - краткая информация о задаче
  * 
  * Так как список задач, не отмеченых пользователем как завершенные, может
  * быть СЕГМЕНТИРОВАН и приходить в несколько частей нужно его 
@@ -153,19 +159,8 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, session
  * Исключение составляет первая или единственная часть которая
  * автоматически отправляется в UI
  */
-module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) {
-    let funcName = " (func 'receivedListUnresolvedTask')";
-
-    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {
-        showNotify({
-            socketIo: socketIo,
-            type: "danger",
-            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
-        });
-
-        return writeLogFile("error", "the 'listUnresolvedTask' property was not found in 'globalObject'" + funcName);
-    }
-
+module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
+    let sessionId = taskInfo.userSessionID;
     let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
 
     if ((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)) {
@@ -190,9 +185,27 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) 
         numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
     }
 
+    //если только для виджета
+    if (taskInfo.eventForWidgets) {
+        helpersFunc.sendBroadcastSocketIo("module NI API", {
+            "type": "get list unresolved task for widget",
+            "taskID": data.taskID,
+            "options": {
+                p: {
+                    cs: MAX_CHUNK_SIZE, //размер части
+                    cn: numFullChunks, //всего частей
+                    ccn: 1, //номер текущей части
+                },
+                tntf: data.options.tntf,
+            }
+        });
+
+        return;
+    }
+
     //отправляем в UI если это первый сегмент
     if (data.options.p.ccn === 1) {
-        socketIo.emit("module NI API", {
+        let msg = {
             "type": "get list unresolved task",
             "taskID": data.taskID,
             "options": {
@@ -204,6 +217,10 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, sessionId) 
                 tntf: data.options.tntf,
                 slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
             }
-        });
+        };
+
+        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+        }
     }
 };

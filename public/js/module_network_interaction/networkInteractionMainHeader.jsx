@@ -7,6 +7,7 @@ import CreatingWidgets from "./createWidgets.jsx";
 import ModalWindowLanCalc from "../modal_windows/modalWindowLanCalc.jsx";
 import ModalWindowEncodeDecoder from "../modal_windows/modalWindowEncodeDecoder.jsx";
 import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
+import ModalWindowShowInformationConnectionStatusSources from "../modal_windows/modalWindowShowInformationConnectionStatusSources.jsx";
 
 class CreatePageManagingNetworkInteractions extends React.Component {
     constructor(props){
@@ -32,18 +33,21 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowFiltration: false,
             showModalWindowEncodeDecoder: false,
             showModalWindowShowTaskInformation: false,
+            showModalWindowInfoConnectStatusSources: false,
         };
 
-        this.userPermission=this.props.listItems.userPermissions;
+        this.userPermission = this.props.listItems.userPermissions;
 
         this.handlerShowModalWindowLanCalc = this.handlerShowModalWindowLanCalc.bind(this);
         this.handlerCloseModalWindowLanCalc = this.handlerCloseModalWindowLanCalc.bind(this);
         this.handlerButtonSubmitWindowFilter = this.handlerButtonSubmitWindowFilter.bind(this);
-        this.handlerShowModalWindowFiltration=this.handlerShowModalWindowFiltration.bind(this);
-        this.handlerCloseModalWindowFiltration=this.handlerCloseModalWindowFiltration.bind(this);
+        this.handlerShowModalWindowFiltration = this.handlerShowModalWindowFiltration.bind(this);
+        this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerShowModalWindowEncodeDecoder = this.handlerShowModalWindowEncodeDecoder.bind(this);
         this.handlerCloseModalWindowEncodeDecoder = this.handlerCloseModalWindowEncodeDecoder.bind(this);
-        this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+        this.handlerCloseModalWindowShowTaskInformation = this.handlerCloseModalWindowShowTaskInformation.bind(this);
+        this.handlerShowModalWindowInfoConnectStatusSources = this.handlerShowModalWindowInfoConnectStatusSources.bind(this);
+        this.handlerCloseModalWindowInfoConnectStatusSources = this.handlerCloseModalWindowInfoConnectStatusSources.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
@@ -58,20 +62,13 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             return;
         }
 
-        console.log("class 'networkInteractionMainHeader'");
-        console.log(window.location.pathname);
-
         if(window.location.pathname !== "/network_interaction_page_file_download"){
-            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });            
+            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });            
         }
 
         if(window.location.pathname !== "/network_interaction_page_statistics_and_analytics"){
-            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });               
+            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: true } });               
         }
-
-        //для виджетов и некоторых страниц
-        //this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
-        //this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });   
     }
 
     handlerEvents(){
@@ -79,7 +76,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             if(data.type === "connectModuleNI"){
                 if(data.options.connectionStatus){
                     this.setState({ "connectionModuleNI": true });
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: {} });
+                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });
                 } else {
                     this.setState({ 
                         "connectionModuleNI": false,
@@ -96,7 +93,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             }
                 
             //для списка задач трафик по которым не выгружался
-            if(data.type === "get list tasks files not downloaded"){
+            if(data.type === "get list tasks files not downloaded for widget" || data.type === "get list tasks files not downloaded"){
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;
@@ -104,7 +101,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             }
     
             //для списка задач не отмеченных пользователем как завершеные
-            if(data.type === "get list unresolved task"){
+            if(data.type === "get list unresolved task for widget" || data.type === "get list unresolved task"){
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numUnresolvedTask = data.options.tntf;
@@ -119,14 +116,32 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             this.setState({ widgets: tmpCopy });
         });
 
-        //изменяем статус подключения источника для списка выбопа источника
+        //изменяем статус подключения источника для списка выбора источника
         this.props.socketIo.on("module-ni:change status source", (data) => {
             let objCopy = Object.assign({}, this.state);
 
             for(let source in objCopy.listSources){
                 if(+data.options.sourceID === +source){
+                    objCopy.listSources[source].appVersion = data.options.appVersion;
                     objCopy.listSources[source].connectTime = data.options.connectTime;
                     objCopy.listSources[source].connectStatus = data.options.connectStatus;
+                    objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate;
+
+                    this.setState(objCopy);
+
+                    break;
+                }
+            }
+        });
+
+        //добавляем версию и дату программного обеспечения исчтоника
+        this.props.socketIo.on("module-ni:send version app", (data) => {
+            let objCopy = Object.assign({}, this.state);
+
+            for(let source in objCopy.listSources){
+                if(+data.options.sourceID === +source){
+                    objCopy.listSources[source].appVersion = data.options.appVersion,
+                    objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate,
 
                     this.setState(objCopy);
 
@@ -137,6 +152,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     handlerShowModalWindowFiltration(){
+        this.props.socketIo.emit("give me new short source list", {});
+
         this.setState({ showModalWindowFiltration: true });
     }
 
@@ -166,6 +183,14 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
     handlerCloseModalWindowEncodeDecoder(){
         this.setState({ showModalWindowEncodeDecoder: false });
+    }
+
+    handlerShowModalWindowInfoConnectStatusSources(){
+        this.setState({ showModalWindowInfoConnectStatusSources: true });        
+    }
+
+    handlerCloseModalWindowInfoConnectStatusSources(){
+        this.setState({ showModalWindowInfoConnectStatusSources: false });
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
@@ -246,7 +271,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             <React.Fragment>
                 <CreatingWidgets 
                     widgets={this.state.widgets} 
-                    socketIo={this.props.socketIo} />
+                    socketIo={this.props.socketIo} 
+                    handlerShowModalWindowInfoConnectStatusSources={this.handlerShowModalWindowInfoConnectStatusSources} />
                 {this.showModuleConnectionError.call(this)}
                 <Row className="pt-4">
                     <Col md={12} className="text-right">
@@ -332,6 +358,10 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 <ModalWindowEncodeDecoder
                     show={this.state.showModalWindowEncodeDecoder} 
                     onHide={this.handlerCloseModalWindowEncodeDecoder} />
+                <ModalWindowShowInformationConnectionStatusSources 
+                    sourceList={this.state.listSources}
+                    show={this.state.showModalWindowInfoConnectStatusSources} 
+                    onHide={this.handlerCloseModalWindowInfoConnectStatusSources} />
             </React.Fragment>
         );
     }

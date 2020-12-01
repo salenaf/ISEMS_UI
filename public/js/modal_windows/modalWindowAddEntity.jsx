@@ -726,7 +726,7 @@ export default class ModalWindowAddEntity extends React.Component {
             objUpdate.modalBodySettings.organizationSettings.legalAddress.value = value;
 
             if(!helpers.checkInputValidation({
-                "name": "stringRuNumCharacter", 
+                "name": "fullNameHost", 
                 "value": value, 
             })){
                 objUpdate.modalBodySettings.organizationSettings.legalAddress.isInvalid = true;
@@ -755,7 +755,7 @@ export default class ModalWindowAddEntity extends React.Component {
             objUpdate.modalBodySettings.divisionSettings.divisionName.value = value;
 
             if(!helpers.checkInputValidation({
-                "name": "stringRuNumCharacter", 
+                "name": "fullNameHost", 
                 "value": value, 
             })){
                 objUpdate.modalBodySettings.divisionSettings.divisionName.isInvalid = true;
@@ -771,7 +771,7 @@ export default class ModalWindowAddEntity extends React.Component {
             objUpdate.modalBodySettings.divisionSettings.physicalAddress.value = value;
 
             if(!helpers.checkInputValidation({
-                "name": "stringRuNumCharacter", 
+                "name": "fullNameHost", 
                 "value": value, 
             })){
                 objUpdate.modalBodySettings.divisionSettings.physicalAddress.isInvalid = true;
@@ -889,6 +889,7 @@ export default class ModalWindowAddEntity extends React.Component {
                 size="lg"
                 show={this.props.show} 
                 onHide={this.windowClose}
+                backdrop={"static"}
                 aria-labelledby="example-modal-sizes-title-lg">
                 <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">

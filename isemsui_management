@@ -17,17 +17,17 @@ read NUM;
 
 case $NUM in
   1) 
-    node_modules/.bin/pm2 start app.js -e /var/log/isems-ui_errors.log --name isemsui_app;
+    pm2 start app.js -e /var/log/isems-ui_errors.log --name isemsui_app;
   ;;
 
   2)
-    node_modules/.bin/pm2 delete isemsui_app;
+    pm2 delete isemsui_app;
   ;;
 
   3)
-    node_modules/.bin/pm2 list
+    pm2 list
   ;;
   4)
-    node_modules/.bin/pm2 monit
+    pm2 monit
   ;;
 esac

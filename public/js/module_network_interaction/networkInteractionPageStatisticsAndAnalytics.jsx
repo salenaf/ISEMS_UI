@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, Row, OverlayTrigger, Tooltip, Table, Pagination } from "react-bootstrap";
+import { Col, Row, Table, Spinner } from "react-bootstrap";
+import { Pagination as Paginationmui } from "@material-ui/lab";
 import PropTypes from "prop-types";
 
 import {helpers} from "../common_helpers/helpers.js";
@@ -18,6 +19,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                 sourceName: "",
                 taskID: "",
             },
+            showSpinner: true,
             showModalWindowShowTaskInformation: false,
             listTasksFound: {
                 p: { cs: 0, cn: 0, ccn: 1 },
@@ -32,7 +34,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         this.handlerEvents.call(this);
 
         this.sortElement = this.sortElement.bind(this);
-        this.createPagination = this.createPagination.bind(this);
+        this.createPaginationMUI = this.createPaginationMUI.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
@@ -41,8 +43,12 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         this.requestEmitter.call(this);
     }
 
+    componentDidUpdate(){
+        $("[value='file_analysis']").tooltip();
+    }
+
     requestEmitter(){
-        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: {} });
+        this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: false } });
     }
 
     /**
@@ -73,6 +79,13 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     return;
                 }
 
+                /**
+                 * 
+                 * С пагинатором попрежнему какие то проблеммы
+                 * необходимо тестирование
+                 * 
+                 */
+
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -84,19 +97,23 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                     tntf: data.options.tntf,
                 };
                 this.setState({ 
+                    showSpinner: false,
                     listTasksFound: tmpCopy,
                     currentTaskID: data.taskID,
                 });
             }
 
-            if(data.type === "send a list of found unresolved tasks"){
+            if(data.type === "send a list of found unresolved tasks"){              
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
                     slft: data.options.slft, 
                     tntf: data.options.tntf,
                 };
-                this.setState({ listTasksFound: tmpCopy });
+                this.setState({ 
+                    showSpinner: false,
+                    listTasksFound: tmpCopy 
+                });
             }
         });
     }
@@ -131,10 +148,12 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         }
     }
 
-    headerNextItemPagination(num){
+    headerItemPagination(obj, num){
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
+
+        this.setState({ showSpinner: true });
 
         this.props.socketIo.emit("network interaction: get next chunk list unresolved tasks", {
             taskID: this.state.currentTaskID,
@@ -201,20 +220,32 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <small>{helpers.changeByteSize(item.tsffarf)}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "processed")}>
-                        <OverlayTrigger
-                            key={"tooltip_forward_arrow_img"}
-                            placement="bottom"
-                            overlay={<Tooltip>{`анализ файлов, задача ID ${item.tid}`}</Tooltip>}>
-                            <a href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}>
-                                <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
-                            </a>
-                        </OverlayTrigger>
+                        <a 
+                            href={`/network_interaction_page_statistics_and_analytics_detal_task?taskID=${item.tid}&sourceID=${item.sid}&sourceName=${item.sn}&taskBeginTime=${item.stte*1000}`}
+                            value="file_analysis"
+                            data-toggle="tooltip" 
+                            data-placement="top" 
+                            title={`анализ файлов, задача ID ${item.tid}`} >
+                            <img className="clickable_icon" width="24" height="24" src="../images/icons8-forward-button-48.png" alt="отметить как обработанную"></img>
+                        </a>
                     </td>
                 </tr>);
             });
 
             return tableBody;
         };
+
+        if(this.state.showSpinner){
+            return (
+                <Row className="pt-4">
+                    <Col md={12}>
+                        <Spinner animation="border" role="status" variant="primary">
+                            <span className="sr-only text-muted">Загрузка...</span>
+                        </Spinner>
+                    </Col>
+                </Row>
+            );
+        }
 
         if(this.state.listTasksFound.tntf === 0){
             return (
@@ -225,19 +256,19 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         }
 
         return (
-            <Row className="py-2">
+            <Row className="pt-4 pb-2">
                 <Col>
                     <Table size="sm" striped hover>
                         <thead>
                             <tr>
                                 <th></th>
                                 <th className="my_line_spacing">время создания</th>
-                                <th>sid</th>
-                                <th>источник</th>
+                                <th className="my_line_spacing">sid</th>
+                                <th className="my_line_spacing">источник</th>
                                 <th className="my_line_spacing">интервал времени</th>
-                                <th>ip</th>
-                                <th>network</th>
-                                <th>port</th>
+                                <th className="my_line_spacing">ip</th>
+                                <th className="my_line_spacing">network</th>
+                                <th className="my_line_spacing">port</th>
                                 <th className="my_line_spacing">файлов найдено / выгружено</th>
                                 <th className="my_line_spacing">общий размер</th>
                                 <th></th>
@@ -252,90 +283,30 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         );
     }
 
-    createPagination(){
+    createPaginationMUI(){
         if(this.state.listTasksFound.p.cn <= 1){
             return;
         }
 
-        let addEllipsis = false;
-        let items = [];
-        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
-            if(this.state.listTasksFound.p.cn < 5){
-                items.push(
-                    <Pagination.Item 
-                        key={`pag_${i}`} 
-                        active={this.state.listTasksFound.p.ccn === i}
-                        onClick={this.headerNextItemPagination.bind(this, i)} >
-                        {i}
-                    </Pagination.Item>
-                );
-            } else {
-                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){                   
-                    items.push(
-                        <Pagination.Item 
-                            key={`pag_${i}`} 
-                            active={this.state.listTasksFound.p.ccn === i}
-                            onClick={this.headerNextItemPagination.bind(this, i)} >
-                            {i}
-                        </Pagination.Item>
-                    );
-                } else {
-                    if(this.state.listTasksFound.p.ccn === i){
-                        items.push(
-                            <Pagination.Item 
-                                key={`pag_${i}`} 
-                                active={this.state.listTasksFound.p.ccn === i}
-                                onClick={this.headerNextItemPagination.bind(this, i)} >
-                                {i}
-                            </Pagination.Item>
-                        );
-                    } else {
-                        if(addEllipsis){
-                            continue;
-                        }
-    
-                        addEllipsis = true;
-                        items.push(
-                            <Pagination.Ellipsis 
-                                disabled={true}
-                                key={"pag_ellipsis"}/>
-                        );
-                    }
-                }
-            }
-        }
-
-        if(this.state.listTasksFound.p.cn > 3){
-            let pfd = this.state.listTasksFound.p.ccn === 1;
-            let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
-            
-            return (
-                <Row>
-                    <Col md={12} className="d-flex justify-content-center">
-                        <Pagination size="sm">
-                            <Pagination.First 
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, 1)} />
-                            <Pagination.Prev
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === 1) ? 1:this.state.listTasksFound.p.ccn-1))} />
-                            {items}
-                            <Pagination.Next
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn) ? this.state.listTasksFound.p.cn:this.state.listTasksFound.p.ccn+1))} />
-                            <Pagination.Last 
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, this.state.listTasksFound.p.cn)} />
-                        </Pagination>
-                    </Col>
-                </Row>
-            );
+        if(this.state.showSpinner){
+            return;
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{items}</Pagination>
+                    <Paginationmui 
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        count={this.state.listTasksFound.p.cn}
+                        onChange={this.headerItemPagination.bind(this)}
+                        page={this.state.listTasksFound.p.ccn}
+                        boundaryCount={2}
+                        siblingCount={0}
+                        showFirstButton
+                        showLastButton >
+                    </Paginationmui>
                 </Col>
             </Row>
         );
@@ -352,9 +323,11 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>
                 </Row>
-                {this.createPagination()}
+
+                {this.createPaginationMUI()}
                 {this.createTableListDownloadFile.call(this)}
-                {this.createPagination()}
+                {this.createPaginationMUI()}
+
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}

@@ -1,5 +1,7 @@
 "use strict";
 
+const debug = require("debug")("scmni");
+
 const MyError = require("../../helpers/myError");
 const helpersFunc = require("../../helpers/helpersFunc");
 const getSessionId = require("../../helpers/getSessionId");
@@ -53,13 +55,11 @@ module.exports.sourceManagementsAdd = function(sourceList) {
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
             if (conn !== null) {
-                let hex = helpersFunc.getRandomHex();
-
                 conn.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
                     msgInstruction: "performing an action",
-                    taskID: hex,
+                    taskID: helpersFunc.getRandomHex(),
                     options: { sl: list },
                 });
             }
@@ -115,13 +115,11 @@ module.exports.sourceManagementsUpdate = function(sourceList) {
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
             if (conn !== null) {
-                let hex = helpersFunc.getRandomHex();
-
                 conn.sendMessage({
                     msgType: "command",
                     msgSection: "source control",
                     msgInstruction: "performing an action",
-                    taskID: hex,
+                    taskID: helpersFunc.getRandomHex(),
                     options: { sl: list },
                 });
             }
@@ -175,12 +173,12 @@ module.exports.sourceManagementsDel = function(sourceList) {
     });
 };
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
+/** 
+ * Обработчик для мо дуля сетевого взаимодействия осуществляющий
  * управление удаленными источниками.
- * 
+ *  
  * Выполняет удаление источников из базы данных модуля. 
- * 
+ *  
  * @param {*} sourceList - список источников
  */
 module.exports.sourceManagementsReconnect = function(sourceList) {
@@ -240,14 +238,41 @@ module.exports.sourceManagementsReconnect = function(sourceList) {
     });
 };
 
-/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
 
 /**
+ * Запрос на получение нового списка источников
+ */
+module.exports.giveNewShortSourceList = function() {
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+                conn.sendMessage({
+                    msgType: "command",
+                    msgSection: "source control",
+                    msgInstruction: "get an updated list of sources",
+                    taskID: helpersFunc.getRandomHex(),
+                    options: {}
+                });
+            }
+
+            resolve();
+        });
+    });
+};
+
+/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ СЕТЕВОГО ТРАФИКА --- **/
+
+/**  
  * Обработчик для модуля сетевого взаимодействия осуществляющий
  * управление задачами по фильтрации сетевого трафика.
- *  
+ *   
  * Осуществляет запуск задачи по фильтрации сет. трафика. 
- * 
+ *  
  * @param {*} filteringParameters - параметры фильтрации
  * @param {*} userLogin - логин пользователя
  * @param {*} userName - имя пользователя
@@ -259,7 +284,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
             }
 
-            //проверяем существование источника и статус его соединения
+            //проверяем существо   вание источника и статус его соединения
             let sourceInfo = globalObject.getData("sources", filteringParameters.source);
             if (sourceInfo === null) {
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не найден.`));
@@ -296,10 +321,10 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
     });
 };
 
-/**
- * Обработчик для модуля сетевого взаимодействия осуществляющий
+/** 
+ * Обработчи к для модуля сетевого взаимодействия осуществляющий
  * управление задачами по фильтрации сетевого трафика.
- *  
+ *   
  * Осуществляет останов задачи по фильтрации сет. трафика. 
  * 
  * @param {*} taskID - ID останавливаемой задачи
@@ -324,15 +349,13 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
 
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
             if (conn !== null) {
-                let tmp = {
+                conn.sendMessage({
                     msgType: "command",
                     msgSection: "filtration control",
                     msgInstruction: "to cancel filtering",
                     taskID: taskID,
                     options: {},
-                };
-
-                conn.sendMessage(tmp);
+                });
             }
 
             resolve();
@@ -342,38 +365,50 @@ module.exports.managementTaskFilteringStop = function(taskID, sourceID) {
 
 /** ---  УПРАВЛЕНИЕ ЗАПРОСАМИ ДЛЯ ПОЛУЧЕНИЯ ИНФОРМАЦИИ О ЗАДАЧАХ --- **/
 
-/**
+/**    
  * Обработчик для модуля сетевого взаимодействия осуществляющий
  * запрос всей информации о задаче по ее ID.
- *  
+ * 
+ * @param {*} socketIo   
  * @param {*} taskID - ID задачи по которой нужно найти информацию
  */
-module.exports.managementRequestShowTaskAllInfo = function(taskID) {
+module.exports.managementRequestShowTaskAllInfo = function(socketIo, taskID) {
     return new Promise((resolve, reject) => {
-        process.nextTick(() => {
-            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
-                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
-            }
-
-            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            if (conn !== null) {
-                let tmp = {
-                    msgType: "command",
-                    msgSection: "information search control",
-                    msgInstruction: "get all information by task ID",
-                    taskID: helpersFunc.getRandomHex(),
-                    options: { rtid: taskID }
-                };
-
-                conn.sendMessage(tmp);
-            }
-
-            resolve();
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
         });
+    }).then((sessionId) => {
+        if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+        if (conn !== null) {
+            let hex = helpersFunc.getRandomHex();
+
+            globalObject.setData("tasks", hex, {
+                eventName: "show all information about task",
+                eventForWidgets: false,
+                userSessionID: sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "get all information by task ID",
+                taskID: hex,
+                options: { rtid: taskID }
+            });
+        }
     });
 };
 
-/**
+/**   
  * Обработчик для модуля сетевого взаимодействия осуществляющий
  * запрос всего списка задач 
  * 
@@ -388,6 +423,10 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
             else resolve(sessionId);
         });
     }).then((sessionId) => {
+
+        debug("func 'managementRequestGetListAllTasks'");
+        debug(`found user session id: ${sessionId}`);
+
         if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
         }
@@ -399,11 +438,15 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
             //записываем название события для генерации соответствующего ответа
             globalObject.setData("tasks", hex, {
                 eventName: "list all tasks",
+                eventForWidgets: false,
                 userSessionID: sessionId,
                 generationTime: +new Date(),
+                socketId: socketIo.id,
             });
 
-            let tmp = {
+            debug(`Get list all tasks, TaskID: ${hex}`);
+
+            conn.sendMessage({
                 msgType: "command",
                 msgSection: "information search control",
                 msgInstruction: "search common information",
@@ -411,9 +454,7 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
                 options: {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме 
                 },
-            };
-
-            conn.sendMessage(tmp);
+            });
         }
     });
 };
@@ -423,8 +464,12 @@ module.exports.managementRequestGetListAllTasks = function(socketIo) {
  * запрос списка задач по которым не были выгружены все файлы.
  *  
  * @param {*} socketIo 
+ * @param {*} data
  */
-module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
+module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo, data) {
+    let forWidgets = true;
+    let hex = helpersFunc.getRandomHex();
+
     return new Promise((resolve, reject) => {
         //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
         // временную информацию в globalObject.tmp
@@ -439,22 +484,31 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
 
         let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         if (conn !== null) {
-            let hex = helpersFunc.getRandomHex();
+            if ((typeof data.arguments === "undefined") || (typeof data.arguments.forWidgets === "undefined")) {
+                forWidgets = false;
+            } else {
+                forWidgets = data.arguments.forWidgets;
+            }
 
             //записываем название события для генерации соответствующего ответа
             globalObject.setData("tasks", hex, {
                 eventName: "list tasks which need to download files",
+                eventForWidgets: forWidgets,
                 userSessionID: sessionId,
                 generationTime: +new Date(),
+                socketId: socketIo.id,
             });
 
-            let tmp = {
+            debug(`Get list downloaded files tasks, TaskID: ${hex}, forWidgets: '${forWidgets}'`);
+
+            conn.sendMessage({
                 msgType: "command",
                 msgSection: "information search control",
                 msgInstruction: "search common information",
                 taskID: hex,
                 options: {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме
+                    jcn: forWidgets,
                     sft: "complete",
                     cpafid: true,
                     afid: false,
@@ -462,9 +516,7 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
                         fif: true,
                     }
                 },
-            };
-
-            conn.sendMessage(tmp);
+            });
         }
     });
 };
@@ -474,8 +526,12 @@ module.exports.managementRequestGetListTasksDownloadFiles = function(socketIo) {
  * запрос списка задач, не отмеченных пользователем как завершенные
  * 
  * @param {*} socketIo 
+ * @param {*} data
  */
-module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
+module.exports.managementRequestGetListUnresolvedTasks = function(socketIo, data) {
+    let forWidgets = true;
+    let hex = helpersFunc.getRandomHex();
+
     return new Promise((resolve, reject) => {
         //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
         // временную информацию в globalObject.tmp
@@ -484,28 +540,40 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
             else resolve(sessionId);
         });
     }).then((sessionId) => {
+
+        console.log(`session ID: ${sessionId}, func 'managementRequestGetListUnresolvedTasks'`);
+
         if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
         }
 
         let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         if (conn !== null) {
-            let hex = helpersFunc.getRandomHex();
+            if ((typeof data.arguments === "undefined") || (typeof data.arguments.forWidgets === "undefined")) {
+                forWidgets = false;
+            } else {
+                forWidgets = data.arguments.forWidgets;
+            }
 
             //записываем название события для генерации соответствующего ответа
             globalObject.setData("tasks", hex, {
                 eventName: "list unresolved tasks",
+                eventForWidgets: forWidgets,
                 userSessionID: sessionId,
                 generationTime: +new Date(),
+                socketId: socketIo.id,
             });
 
-            let tmp = {
+            debug(`Get list unresolved tasks, TaskID: ${hex}`);
+
+            conn.sendMessage({
                 msgType: "command",
                 msgSection: "information search control",
                 msgInstruction: "search common information",
                 taskID: hex,
                 options: {
                     sriga: true, //отмечаем что задача выполняется в автоматическом режиме
+                    jcn: forWidgets,
                     sft: "complete",
                     cptp: true,
                     tp: false,
@@ -515,9 +583,7 @@ module.exports.managementRequestGetListUnresolvedTasks = function(socketIo) {
                         fif: true,
                     }
                 },
-            };
-
-            conn.sendMessage(tmp);
+            });
         }
     });
 };
@@ -549,8 +615,10 @@ module.exports.managementRequestSearchInformationAboutTasks = function(socketIo,
             //записываем название события для генерации соответствующего ответа
             globalObject.setData("tasks", hex, {
                 eventName: "list all tasks",
+                eventForWidgets: false,
                 userSessionID: sessionId,
                 generationTime: +new Date(),
+                socketId: socketIo.id,
             });
 
             data.sriga = true;
@@ -561,15 +629,13 @@ module.exports.managementRequestSearchInformationAboutTasks = function(socketIo,
                 data.ifo.dt.e = 0;
             }
 
-            let tmp = {
+            conn.sendMessage({
                 msgType: "command",
                 msgSection: "information search control",
                 msgInstruction: "search common information",
                 taskID: hex,
                 options: data,
-            };
-
-            conn.sendMessage(tmp);
+            });
         }
     });
 };
@@ -578,8 +644,7 @@ module.exports.managementRequestSearchInformationAboutTasks = function(socketIo,
  * Обработчик для модуля сетевого взаимодействия осуществляющий
  * запрос на удаление информации о задачах
  * 
- * @param {*} socketIo 
- * @param {*} data 
+ * @param {*} listTaskID 
  */
 module.exports.managementRequestDeleteInformationAboutTask = function(listTaskID) {
     return new Promise((resolve, reject) => {
@@ -605,31 +670,43 @@ module.exports.managementRequestDeleteInformationAboutTask = function(listTaskID
 /**
  * Обработчик для модуля сетевого взаимодействия осуществляющий
  * запрос всей аналитической информации о задаче по ее ID.
- *  
+ * 
+ * @param {*} socketIo 
  * @param {*} taskID - ID задачи по которой нужно найти информацию
  */
-module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(taskID) {
+module.exports.managementRequestShowAnalyticsInformationAboutTaskID = function(socketIo, taskID) {
     return new Promise((resolve, reject) => {
-        process.nextTick(() => {
-            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
-                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
-            }
-
-            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            if (conn !== null) {
-                let tmp = {
-                    msgType: "command",
-                    msgSection: "information search control",
-                    msgInstruction: "get common analytics information about task ID",
-                    taskID: helpersFunc.getRandomHex(),
-                    options: { rtid: taskID }
-                };
-
-                conn.sendMessage(tmp);
-            }
-
-            resolve();
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
         });
+    }).then((sessionId) => {
+        if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+        if (conn !== null) {
+            let hex = helpersFunc.getRandomHex();
+
+            globalObject.setData("tasks", hex, {
+                eventName: "common analytics information about task ID",
+                eventForWidgets: false,
+                userSessionID: sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                msgType: "command",
+                msgSection: "information search control",
+                msgInstruction: "get common analytics information about task ID",
+                taskID: hex,
+                options: { rtid: taskID }
+            });
+        }
     });
 };
 
@@ -651,7 +728,7 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
 
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
             if (conn !== null) {
-                let tmp = {
+                conn.sendMessage({
                     msgType: "command",
                     msgSection: "information search control",
                     msgInstruction: "mark an task as completed",
@@ -661,9 +738,7 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
                         un: userName,
                         d: description,
                     }
-                };
-
-                conn.sendMessage(tmp);
+                });
             }
 
             resolve();

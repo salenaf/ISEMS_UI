@@ -1,62 +1,66 @@
-/**
- * Модуль формирующий информационные сообщения на странице
- * 
- * Версия 1.2, дата релиза 30.12.2019
- */
-
 "use strict";
 
 import React from "react";
-import ReactDOM from "react-dom";
-import NotificationSystem from "react-notification-system";
-
 import PropTypes from "prop-types";
+import { Snackbar } from "material-ui-core";
+import { Alert } from "material-ui-lab";
 
-class CreateAlert extends React.Component {
+class DrawingAlertMessage extends React.Component {
     constructor(props){
         super(props);
-     
-        this.notificationSystem = React.createRef();
-        this.eventsListener();
+
+        this.state = {
+            showSnackbar: true
+        };
+
+        this.titleObj = {
+            "success": {
+                title: "Успешно выполненное действие.",
+                severity: "success",
+            },
+            "info": {
+                title: "Информация.",
+                severity: "info",
+            },
+            "warning": {
+                title: "Внимание!",
+                severity: "warning",
+            },
+            "error": {
+                title: "Ошибка!!!",
+                severity: "error",
+            },
+        };
     }
 
-    eventsListener(){
-        this.props.socketIo.on("notify information", data => {
-            let msg = JSON.parse(data.notify);
-
-            const titleObj = {
-                "success": "Выполненное действие.",
-                "info": "Информация.",
-                "warning": "Внимание!",
-                "error": "Ошибка!!!",
-            };
-
-            const level = (msg.type === "danger")? "error": msg.type;
-            const notification = this.notificationSystem.current;
-            notification.addNotification({
-                title: titleObj[level],
-                message: msg.message,
-                level: level,
-                autoDismiss: 12,
-            });
-        });       
+    handleClose(){
+        this.setState({ showSnackbar: false });
     }
 
     render(){
-        let style = {
-            NotificationItem: {
-                DefaultStyle: {
-                    lineHeight: "16px",
-                },
-            }
-        };
+        let level = (this.props.notiyMsg.type === "danger")? "error": this.props.notiyMsg.type;
 
-        return <NotificationSystem ref={this.notificationSystem} style={style}/>;
+        if(typeof this.titleObj[level] === "undefined"){
+            return null;
+        }
+
+        return (
+            <Snackbar 
+                open={this.state.showSnackbar} 
+                onClose={this.handleClose.bind(this)} 
+                autoHideDuration={6000} 
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+                <Alert onClose={this.handleClose.bind(this)} severity={this.titleObj[level].severity}>
+                    {this.props.notiyMsg.message}
+                </Alert>
+            </Snackbar>
+        );
     }
 }
 
-CreateAlert.propTypes = {
+DrawingAlertMessage.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    notiyMsg: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreateAlert socketIo={socket} />, document.getElementById("location-alerts"));
+export { DrawingAlertMessage };

@@ -36,7 +36,7 @@ module.exports.checkUserSettingsManagementUsers = function(userSettings) {
 module.exports.checkInputValidation = (elem) => {
     let pattern = commons.getRegularExpression(elem.name);
 
-    if(typeof pattern === "undefined"){
+    if (typeof pattern === "undefined") {
         return false;
     }
 
@@ -60,8 +60,8 @@ module.exports.getCountConnectionSources = (go) => {
         numTasksNotDownloadFiles: 0,
     };
     let sources = go.getData("sources");
-    for(let source in sources){
-        if(sources[source].connectStatus){
+    for (let source in sources) {
+        if (sources[source].connectStatus) {
             obj.numConnect++;
         } else {
             obj.numDisconnect++;
@@ -78,13 +78,13 @@ module.exports.modifyListFoundTasks = (oldList) => {
     };
 
     return oldList.map((item) => {
-        if(tmpSource.sid === item.sid){
+        if (tmpSource.sid === item.sid) {
             item.sn = tmpSource.name;
 
             return item;
         }
 
-        if(!globalObject.hasData("sources", item.sid)){
+        if (!globalObject.hasData("sources", item.sid)) {
             item.sn = "нет данных";
         } else {
             let sourceInfo = globalObject.getData("sources", item.sid);
@@ -92,10 +92,31 @@ module.exports.modifyListFoundTasks = (oldList) => {
                 sid: item.sid,
                 name: sourceInfo.shortName,
             };
-        
-            item.sn = sourceInfo.shortName;   
+
+            item.sn = sourceInfo.shortName;
         }
 
         return item;
     });
+};
+
+module.exports.sendMessageByUserSocketIo = (userSocketId, e, msg) => {
+    let socketIo = globalObject.getData("descriptionSocketIo", "userConnections", userSocketId);
+
+    if (socketIo !== null) {
+        socketIo.emit(e, msg);
+
+        return true;
+    }
+
+    return false;
+};
+
+//Широковещательное сообщение по socket.io
+module.exports.sendBroadcastSocketIo = (e, msg) => {
+    let socketIo = globalObject.getData("descriptionSocketIo", "majorConnect");
+
+    if (socketIo !== null) {
+        socketIo.emit(e, msg);
+    }
 };

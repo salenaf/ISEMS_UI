@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Form, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default class CreateTableSources extends React.Component {
@@ -11,6 +11,11 @@ export default class CreateTableSources extends React.Component {
         this.showIconSourceReconnect = this.showIconSourceReconnect.bind(this);
     }
 
+    componentDidUpdate(){
+        $("[value='source_reconnect']").tooltip();
+        $("[value='edit_source']").tooltip();
+    }
+
     showInfo(sourceID){
         this.props.handlerShowInfoWindow(sourceID);
     }
@@ -18,7 +23,13 @@ export default class CreateTableSources extends React.Component {
     showIconChangeInfo(objInfo){
         if(this.props.userPermissions.management_sources.element_settings.edit.status){
             return (
-                <a href="#" onClick={this.props.handlerShowChangeInfo.bind(this, objInfo)}>
+                <a 
+                    href="#" 
+                    value="edit_source"
+                    data-toggle="tooltip" 
+                    data-placement="top" 
+                    title="редактировать информацию" 
+                    onClick={this.props.handlerShowChangeInfo.bind(this, objInfo)}>
                     <img className="clickable_icon" src="./images/icons8-edit-16.png" alt="редактировать"></img>
                 </a>
             );
@@ -29,7 +40,13 @@ export default class CreateTableSources extends React.Component {
 
     showIconSourceReconnect(objInfo){
         return (
-            <a href="#" onClick={this.props.handlerSourceReconnect.bind(this, objInfo)}>
+            <a 
+                href="#" 
+                value="source_reconnect"
+                data-toggle="tooltip" 
+                data-placement="top" 
+                title="переподключить источник" 
+                onClick={this.props.handlerSourceReconnect.bind(this, objInfo)}>
                 <img className="clickable_icon" src="./images/icons8-refresh-16.png" alt="переподключить"></img>
             </a>
         );
@@ -44,55 +61,80 @@ export default class CreateTableSources extends React.Component {
             hour: "numeric",
             minute: "numeric",
         });
+
+        //получаем номер самой свежей версии хостового приложения
+        let listTmp = [];
+        for(let item in this.props.tableSourceList){
+            if(this.props.tableSourceList[item].versionApp !== "" && (typeof this.props.tableSourceList[item].versionApp !== "undefined")){
+                listTmp.push(parseInt(this.props.tableSourceList[item].versionApp.replace(/[^\d]/g, "")));
+            }
+        }
+
+        listTmp.sort();
+        listTmp.reverse();
+
+        let maxValue = (listTmp.length > 0) ? listTmp[0] : 0; 
         let listInfo = [];
         let num = 0;
         this.props.tableSourceList.forEach((elem) => {           
             let status = (elem.connectionStatus) ? "my_circle_green":"my_circle_red";
             num++;
 
-            listInfo.push(<tr key={`tr_${elem.sid}`} className="text-muted">
-                <td key={`td_${elem.sourceID}_${elem.sid}_status`} className="text-center">
-                    <canvas className={status}></canvas>
-                </td>                
-                <td key={`td_${elem.sourceID}_${elem.sid}_source_id`} className="text-right">
-                    <a href="#" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>{elem.sourceID}</a>
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_short_name`} className="text-left">
-                    {elem.shortName}
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_field_activity`} className="text-left">
-                    {elem.fieldActivity}
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_date_register`} className="text-left">
-                    {formatter.format(elem.dateRegister)}
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_ver_app`} className="text-right">
-                    {elem.versionApp}
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_rel_app`} className="text-center">
-                    {elem.releaseApp}
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}>
-                    <OverlayTrigger
-                        key={`tooltip_${elem.sid}_img`}
-                        placement="top"
-                        overlay={<Tooltip>редактировать информацию</Tooltip>}>
-                        {this.showIconChangeInfo({ sid: elem.sid, sourceID: elem.sourceID })}
-                    </OverlayTrigger>
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
-                    <OverlayTrigger
-                        key={`tooltip_${elem.sid}_img`}
-                        placement="top"
-                        overlay={<Tooltip>переподключить источник</Tooltip>}>
+            let warningAppVersion = (parseInt(elem.versionApp.replace(/[^\d]/g, "")) < maxValue) ? "text-danger": "";
+
+            if(elem.sid.length === 0){
+                listInfo.push(<tr key={`tr_${num}_${elem.sid}`} className="text-muted">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_status`} className="text-center">
+                        <canvas className={status}></canvas>
+                    </td>                
+                    <td key={`td_${elem.sourceID}_${elem.sid}_source_id`} className="text-right">
+                        {elem.sourceID}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_short_name`} className="text-left">
+                        {elem.shortName}
+                    </td>
+                    <td colSpan={4} key={`td_${elem.sourceID}_${elem.sid}_info`} className="text-center text-danger">
+                        <small>сторонний источник, добавлен другим UI, взаимодействие ограниченно</small>
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}></td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
                         {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
-                    </OverlayTrigger>
-                </td>
-                <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right">              
-                    <OverlayTrigger
-                        key={`tooltip_${elem.sid}_checkbox`}
-                        placement="right"
-                        overlay={<Tooltip>отметить для удаления</Tooltip>}>
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right"></td>
+                </tr>);
+            } else {
+                listInfo.push(<tr key={`tr_${num}_${elem.sid}`} className="text-muted">
+                    <td key={`td_${elem.sourceID}_${elem.sid}_status`} className="text-center">
+                        <canvas className={status}></canvas>
+                    </td>                
+                    <td 
+                        key={`td_${elem.sourceID}_${elem.sid}_source_id`} 
+                        className="text-right text-info clicabe_cursor"
+                        onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})} >
+                        {elem.sourceID}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_short_name`} className="text-left clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
+                        {elem.shortName}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_field_activity`} className="text-left clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
+                        {elem.fieldActivity}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_date_register`} className="text-left clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
+                        {formatter.format(elem.dateRegister)}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_ver_app`} className="text-right clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
+                        <span className={warningAppVersion}>{elem.versionApp}</span>
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_rel_app`} className="text-center clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
+                        {elem.releaseApp}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}>
+                        {this.showIconChangeInfo({ sid: elem.sid, sourceID: elem.sourceID })}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
+                        {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
+                    </td>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right">              
                         <Form>
                             <Form.Check 
                                 className="mt-1"
@@ -102,9 +144,9 @@ export default class CreateTableSources extends React.Component {
                                 id={`checkbox-${elem.sourceID}`}
                                 label="" />
                         </Form>
-                    </OverlayTrigger>
-                </td>
-            </tr>);
+                    </td>
+                </tr>);
+            }
         });
 
         return (

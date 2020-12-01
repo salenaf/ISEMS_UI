@@ -58,21 +58,12 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     componentDidMount() {
-        this.elOrg = $("#select_list_organization");
-        this.elDiv = $("#select_list_division");
-       
+        this.elOrg = $("#select_list_organization");      
         this.elOrg.select2({
             placeholder: "добавить организацию",
-            maximumInputLength: 10,
+            maximumInputLength: 30,
         });
-
-        this.elDiv.select2({
-            placeholder: "добавить подразделение",
-            maximumInputLength: 10,
-        });
-    
         this.elOrg.on("change", this.selectedOrganization.bind(this));
-        this.elDiv.on("change", this.selectedDivision.bind(this));
     }
 
     handelrButtonAdd(){
@@ -83,6 +74,11 @@ export default class CreateBodyNewEntity extends React.Component {
         } else if(this.state.chosenOrganizationID !== null && this.state.chosenDivisionID === null){
             typeEntity = "division";
         }
+
+        console.log("func 'handelrButtonAdd'");
+        console.log(`organization ID: ${this.state.chosenOrganizationID}`);
+        console.log(`division ID: ${this.state.chosenDivisionID}`);
+        console.log(typeEntity);
 
         this.showModalWindow.call(this, typeEntity);
     }
@@ -100,6 +96,10 @@ export default class CreateBodyNewEntity extends React.Component {
             },
         };
 
+
+        console.log("func 'showModalWindow'");
+        console.log(typeEntity);
+
         this.resultBody = this.resultBody.bind(this);
         this.sendInfoNewEntity = this.sendInfoNewEntity.bind(this);
 
@@ -114,13 +114,22 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedOrganization(e){
+
+        console.log("func selectedOrganization");
+        
         let v = (e.target.value === "all") ? null: e.target.value;
 
-        this.setState({ chosenOrganizationID: v });
-        this.setState({ chosenDivisionID: null });
+        this.setState({ 
+            chosenOrganizationID: v,
+            chosenDivisionID: null 
+        });
     }
 
     selectedDivision(e){
+
+        console.log("func 'selectedDivision'");
+        console.log(e);
+
         let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
         this.setState({ chosenDivisionID: v });
@@ -133,6 +142,9 @@ export default class CreateBodyNewEntity extends React.Component {
             }
         }                
         
+        console.log(`state chosen org. id: ${this.state.chosenOrganizationID}`);
+        console.log(oid);
+
         if(this.state.chosenOrganizationID === null){
             this.setState({ chosenOrganizationID: oid });
         }
@@ -142,7 +154,6 @@ export default class CreateBodyNewEntity extends React.Component {
         let listOrg = listShortEntity.shortListOrganization.map((item) => {
             return { name: item.name, id: item.id };
         });
- 
         listOrg.sort((a, b) => {
             if(a.name > b.name) return 1;
             if(a.name === b.name) return 0;
@@ -174,17 +185,21 @@ export default class CreateBodyNewEntity extends React.Component {
         return (
             <Form.Group>
                 <Form.Label>Организация</Form.Label>
-                <Form.Control as="select" size="sm" id="select_list_organization">
-                    <option value="all" key={"select_organization_option_none"}>добавить организацию</option>
-                    {this.state.listOrganizationName.map((item) => {
-                        return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
-                    })}
+                <Form.Control as="select" size="sm"  id="select_list_organization">
+                    {[<option value="all" defaultValue key={"select_organization_option_none"}>добавить организацию</option>].concat(
+                        this.state.listOrganizationName.map((item) => {
+                            return <option value={item.id} key={`select_${item.id}_option`}>{item.name}</option>;
+                        }))}
                 </Form.Control>
             </Form.Group>
         );
     }
-    
+
     createListElementDivision(){
+        if(this.state.chosenOrganizationID === null){
+            return;
+        }
+        
         let listOptions = this.state.listDivisionName.map((item) => {
             let isEqual = this.state.chosenOrganizationID === item.oid;
 
@@ -196,7 +211,7 @@ export default class CreateBodyNewEntity extends React.Component {
         return (
             <Form.Group>
                 <Form.Label>Подразделение или филиал организации</Form.Label>
-                <Form.Control as="select" size="sm" id="select_list_division">
+                <Form.Control as="select" onChange={this.selectedDivision.bind(this)} id="select_list_division" custom>
                     <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
                     {listOptions}
                 </Form.Control>
@@ -447,18 +462,18 @@ export default class CreateBodyNewEntity extends React.Component {
     delAddedElem(elemID){
         function findAndDeleteItemByID(listEntity, listOrg, listDiv, id) {
             let iterator = (obj, func) => {
-                let newObj = {};
+                let newList = [];
                 for(let key in obj){
                     if(func(obj[key])){
-                        newObj[key] = obj[key];
+                        newList.push(obj[key]);
                     }
                 }
 
-                return newObj;
+                return newList;
             };
 
             let listNameID = ["id_organization", "id_division", "id_source"];
-            let searchIDAndDel = (listEntity, id) => {      
+            let searchIDAndDel = (listEntity, id) => {
                 for(let i = 0; i < listEntity.length; i++){
                     for(let name in listEntity[i]){
                         if(listNameID.includes(name)){   
@@ -466,7 +481,7 @@ export default class CreateBodyNewEntity extends React.Component {
                                 listEntity.splice(i, 1);
 
                                 if(name === "id_organization"){
-                                    listOrg = iterator(listOrg, (value) => value !== id);
+                                    listOrg = iterator(listOrg, (value) => value.id !== id);
                                     listDiv = iterator(listDiv, (value) => value.oid !== id);
                                 } 
                                 if(name === "id_division"){
@@ -505,9 +520,11 @@ export default class CreateBodyNewEntity extends React.Component {
             this.setState({ chosenDivisionID: null });
         }
 
-        this.setState({ listNewEntity: modifiedObject.listEntity });
-        this.setState({ listOrganizationName: modifiedObject.listOrganization });
-        this.setState({ listDivisionName: modifiedObject.listDivision });
+        this.setState({ 
+            listNewEntity: modifiedObject.listEntity,
+            listOrganizationName: modifiedObject.listOrganization,
+            listDivisionName: modifiedObject.listDivision
+        });
 
         //убираем кнопку 'сохранить'
         if(modifiedObject.listEntity.length === 0){
@@ -521,17 +538,25 @@ export default class CreateBodyNewEntity extends React.Component {
             arguments: this.state.listNewEntity,
         });
 
-        //очищаем список добавляемых объектов
-        this.setState({ listNewEntity: [] });
+        console.log(`func 'sendInfoNewEntity', BEFORE chosenOrganizationID: '${this.state.chosenOrganizationID}'`);
 
         //убираем кнопку 'сохранить'
-        this.setState({ addedNewEntity: false });
+        this.setState({ 
+            listNewEntity: [],
+            addedNewEntity: false,
+            chosenDivisionID: null,
+            chosenOrganizationID: null,
+        });
+
+        console.log(`func 'sendInfoNewEntity', AFTER chosenOrganizationID: '${this.state.chosenOrganizationID}'`);
     }
 
     listenerSocketIoConn(){
         this.props.socketIo.on("entity: new short source list", (data) => {
-            this.setState({ listOrganizationName: this.createListOrganization.call(this, data.arguments) });
-            this.setState({ listDivisionName: this.createListDivision.call(this, data.arguments) });
+            this.setState({ 
+                listOrganizationName: this.createListOrganization.call(this, data.arguments),
+                listDivisionName: this.createListDivision.call(this, data.arguments) 
+            });
         });
     }
 
@@ -544,6 +569,8 @@ export default class CreateBodyNewEntity extends React.Component {
                         <Form>
                             <Row>
                                 <Col>{this.createListElementOrganization()}</Col>
+                            </Row>
+                            <Row>
                                 <Col>{this.createListElementDivision()}</Col>
                             </Row>
                         </Form>
