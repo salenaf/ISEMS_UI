@@ -594,10 +594,14 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ПРАВИЛАМИ СОА --- Поиски указанного SID в БД sid_bd: find-sid */
     require("./route_handlers_socketio/handlerActionRulesSOA").addHandlers(socketIo);
 
-    /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ ПОЛУЧАЕМЫХ С User Interface --- */
-    require("./route_handlers_socketio/handlerActionUploadFiles").addHandlers(ss, socketIo);
+    /* --- УПРАВЛЕНИЕ ОБНОВЛЕНИЕМ ВЫБРАННОГО ПРАВИЛА SID --- */
+    require("./route_handlers_socketio/handlerActionUpDateSid").addHandlers(socketIo);
 
-    require("./route_handlers_socketio/handlerActionUpDateSid.js").addHandlers(socketIo);
+    /* --- УПРАВЛЕНИЕ УДАЛЕНИЕМ ВЫБРАННОГО ПРАВИЛА SID ---*/
+    require("./route_handlers_socketio/handlerActionDeleteSid").addHandlers(socketIo);
+
+    /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ИЗ ФАЙЛОВ ПРАВИЛ SID  --- */
+    require("./route_handlers_socketio/handlerActionUploadFiles").addHandlers(ss, socketIo);
 
     /* --- УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ ФАЙЛОВ --- */
     require("./route_handlers_socketio/handlerActionsFiltrationTask").addHandlers(socketIo);

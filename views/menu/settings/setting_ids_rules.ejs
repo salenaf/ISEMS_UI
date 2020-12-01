@@ -4,6 +4,7 @@
     <% include ../../head.ejs %>
     <script>
        var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
+       var receivedFromServerAccessSearch = <%- JSON.stringify(userPermissionsSearch) %>
        var receivedFromServerAccess = <%- JSON.stringify(userPermissions) %>
     </script>
     <% include ../../header.ejs %>
