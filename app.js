@@ -118,8 +118,6 @@ new Promise((resolve, reject) => {
                 listFieldActivity.push("иная деятельность");
 
                 globalObject.setData("commonSettings", "listFieldActivity", listFieldActivity);
-
-                callback(null);
             });
         }
     ], (err) => {

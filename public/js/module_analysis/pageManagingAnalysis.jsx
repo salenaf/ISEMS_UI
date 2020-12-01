@@ -27,7 +27,7 @@ class PageManagingAnalytics extends React.Component {
 
         let stream = this.props.ss.createStream();
 
-        this.props.ss(this.props.socketIo).emit("uploading files with SOA rules", stream, { name: file.name, size: file.size });
+        this.props.ss(this.props.socketIo).emit("uploading files with SOA rules !", stream, { name: file.name, size: file.size });
         let blobStream = this.props.ss.createBlobReadStream(file);
         //let size = 0;
         blobStream.pipe(stream);

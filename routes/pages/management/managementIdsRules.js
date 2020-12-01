@@ -68,6 +68,7 @@ module.exports = function(req, res, objHeader) {
             res.render("menu/settings/setting_ids_rules", {
                 header: objHeader,
                 mainInformation: result.mainInformation,
+                userPermissionsSearch: result.permissions.group_settings.management_search_rules.element_settings,
                 userPermissions: result.permissions.group_settings.management_ids_rules.element_settings,
             });
         }

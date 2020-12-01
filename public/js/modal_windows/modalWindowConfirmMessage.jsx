@@ -19,6 +19,7 @@ class ModalWindowConfirmMessage extends React.Component {
 
     handlerConfirm(){
         this.props.handlerConfirm(this.props.nameDel);
+        handlerClose();
     }
 
     showAlertMessage(){
@@ -31,10 +32,10 @@ class ModalWindowConfirmMessage extends React.Component {
             );
         }
     }
-
+/*centered*/
     render(){
         return (
-            <Modal show={this.props.show} onHide={this.handlerClose}>
+            <Modal show={this.props.show} onHide={this.handlerClose} >
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.msgTitle}</Modal.Title>
                 </Modal.Header>
@@ -43,8 +44,8 @@ class ModalWindowConfirmMessage extends React.Component {
                     {this.showAlertMessage()}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button size="sm" variant="outline-secondary" onClick={this.handlerClose}>отмена</Button>
-                    <Button size="sm" variant="outline-primary" onClick={this.handlerConfirm}>подтвердить</Button>
+                    <Button size="sm" variant="outline-secondary" onClick={this.handlerClose}>Отмена</Button>
+                    <Button size="sm" variant="outline-primary" onClick={this.handlerConfirm}>Подтвердить</Button>
                 </Modal.Footer>
             </Modal>
         );

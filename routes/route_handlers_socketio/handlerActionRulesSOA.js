@@ -12,12 +12,13 @@ const checkUserAuthentication = require("../../libs/check/checkUserAuthenticatio
 
 /**
  * Модуль обработчик действий над правилами СОА
- *
+ * Поиск в бд указанный SID 
+ * 
  * @param {*} socketIo 
  */
 module.exports.addHandlers = function(socketIo) {   
     const handlers = {
-        "sid_soa:find sid": findRuleToSID,
+        "sid_bd: find-sid": findRuleToSID,
     };
 
     for (let e in handlers) {
@@ -44,25 +45,25 @@ function findRuleToSID(socketIo, data){
                     models.modelSOARules, { 
                         query: { sid: data.sid }
                     },
-                    (err, list) => {
+                    (err, resultData) => {
                         if(err){
                             reject(new MyError("management request DB", err.toString()+funcName));
+                        } else{
+                            console.log("---------------------------------");
+                            console.log(resultData);
+
+                        //проверить на пустоту если пустой 
+                            if(resultData == null){
+                                showNotify({
+                                    socketIo: socketIo,
+                                    type: "warning",
+                                    message: "Правило не найдено."
+                                });
+                            }     
+                            resolve();
+                            socketIo.emit("result find SID", resultData);
+                        
                         }
-
-                        console.log(list);
-
-                        //проверить на пустоту
-                        //если пустой 
-                        showNotify({
-                            socketIo: socketIo,
-                            type: "warning",
-                            message: "Правило не найдено."
-                        });
-
-                        //если нет
-                        socketIo.emit("new list sid", list);
-
-                        resolve();
                         //console.log(list);
                         //if(err) callbackParallel(err);
                         //else callbackParallel(null, list);
@@ -130,7 +131,7 @@ function findRuleToSID(socketIo, data){
             });
 
             //если нет
-            socketIo.emit("new list sid", list);
+            socketIo.emit("result find SID", list);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({

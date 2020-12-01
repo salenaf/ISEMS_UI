@@ -3,6 +3,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const writeLogFile = require("../../libs/writeLogFile");
+
 /**
  * Модуль обработчик файлов поступающих из User Interface
  * 
@@ -14,16 +16,11 @@ module.exports.addHandlers = function(ss, socketIo) {
     };
 
     for (let e in handlers) {
-        ss(socketIo).on(e, handlers[e].bind(null));
+        ss(socketIo).on(e, handlers[e].bind(null, socketIo));
     }
 };
 
 function  wordOut(strBody, keywordStart, keywordEnd, posNull =0 ){
-    // let strBody ="alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (  msg:\"Downloader.MediaDrug.HTTP.C&C\"; flow:established,to_server;  content:\"GET\"; http_method; content:\"advert_key=\"; http_uri; fast_pattern;   content:\"app=\"; http_uri;  content:\"oslang=\"; http_uri; classtype:trojan-activity; sid:35586741; rev:0;)";
-    /*
-    let keyword1= "classtype";
-    let keywordEnd1 = ";";              */
-
     let posStart = 0, posEnd = 0;
     let resultStr = null ;
     posStart = strBody.indexOf(keywordStart , posNull);
@@ -32,7 +29,7 @@ function  wordOut(strBody, keywordStart, keywordEnd, posNull =0 ){
         if(posEnd!=-1){
             resultStr = strBody.slice(posStart + keywordStart.length , posEnd) ;
         }
-    // console.log (`pos1 = ${posStart}; pos2 = ${posEnd}; resultStr = ${resultStr}`);
+
     }
     return resultStr;
 }
@@ -55,8 +52,9 @@ function parser(data){
     // console.log(`${n}`); 
     let a_classType,b_sid,c_msg;
     let strBody = "";
-   
     let listRules = data.split("\n");
+    
+    //let mongooseModel = require("../../controllers/models").modelSOARules;
     
     for(let i=0; i<listRules.length; i++){
         strBody = listRules[i];
@@ -77,7 +75,6 @@ function parser(data){
                 classType: a_classType,
                 msg: c_msg,
                 body: strBody,
-                   
             };
             
             arrList.push(element);
@@ -89,6 +86,7 @@ function parser(data){
         //if(i>=50) {break;}
         
     }
+    //console.log(arrList);
     arrList.sort(function(x, y) { return x.sid - y.sid; });
     // arrList.sort((prev, next) => prev.sid - next.sid);
     return Promise.resolve(arrList);
@@ -104,7 +102,7 @@ async function writeData(listRules){
                 else resolve(doc); 
             });
         });
-    })(listRules);
+    })(listRules);queryUpdateBD
 }queryDataSave
 */
 async function processing(fileName){
@@ -112,9 +110,13 @@ async function processing(fileName){
     try{
         let data = await readFileRule(fileName);
         let listRules = await parser(data);
+        let mongooseModel = require("../../controllers/models").modelSOARules;
+        let requireMong = (require("../../middleware/mongodbQueryProcessor"));
+       
         await ((listRules ) => {
             return new Promise((resolve,reject) => {
-                (require("../../middleware/mongodbQueryProcessor")).queryDataSave(require("../../controllers/models").modelSOARules,  listRules , (err, doc) => {
+                // requireMong.queryUpdate(mongooseModel,  listRules , (err, doc) => {
+                requireMong.queryInsertMany(mongooseModel,  listRules , (err, doc) => {
                     if(err) {
                         reject(err);
                     }
@@ -127,15 +129,43 @@ async function processing(fileName){
         throw err;
     }
 }
+/*
+async function processing(fileName){
+ 
+    // eslint-disable-next-line no-useless-catch
+    try{
+        let data = await readFileRule(fileName);
+        let listRules = await parser(data);
+        await ((listRules ) => {
+            return new Promise((resolve, reject) => {
+                (require("../../middleware/mongodbQueryProcessor")).queryUpdate(require("../../controllers/models").modelSOARules, {
+                    query: { sid: listRules.sid },
+                    update: {
+                        sid: listRules.sid,
+                        type: listRules.type,
+                        body: listRules.body,
+                    },
+                }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        })(listRules);
+    } catch(err){
+        throw err;
+    }
+}
+*/
 
-function receivedFilesRulesSOA(stream, data){
+function receivedFilesRulesSOA(socketIo, stream, data){
     console.log("func 'receivedFilesRulesSOA', START...");
     console.log(data);
+
 
     // console.log(__dirname);
     // console.log(__dirname.substr(0, (__dirname.length - 28)));
 
-    let filename = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + path.basename(data.name);
+    let filename = (__dirname.substr(0, (__dirname.length - 30)) + "uploads/") + path.basename(data.name);
     let tempFile = fs.createWriteStream(filename, { flags: "w", defaultEncoding: "utf8", autoClose: true });
 
     stream.pipe(tempFile);
@@ -143,14 +173,20 @@ function receivedFilesRulesSOA(stream, data){
     tempFile.on("close", () => {
         console.log("UPLOADING FILE IS COMPLETE");
 
-        let fileName = (__dirname.substr(0, (__dirname.length - 28)) + "uploads/") + data.name;//"snort.rules"
+        let fileName = (__dirname.substr(0, (__dirname.length - 30)) + "uploads/") + data.name;//"snort.rules"
         console.log(`Имя файла = ${fileName}`);
         
         processing(fileName).then(() => {
             console.log("ОK");
+
+            socketIo.emit("file upload result", { info: "insert OK" });
         }).catch((err) => {
             //console.log(err);
-            console.log(` ${err}`);
+            console.log(`--------> ${err}`);
+            
+            writeLogFile("error", `function 'receivedFilesRulesSOA': ${err.toString()}`);
+
+            socketIo.emit("file upload result", { info: `insert ${err.toString()}` });
         });
     });
     
