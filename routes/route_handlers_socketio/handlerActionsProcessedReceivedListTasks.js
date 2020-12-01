@@ -79,17 +79,24 @@ module.exports.receivedListAllTasks = function(socketIo, data, taskInfo) {
  * автоматически отправляется в UI
  */
 module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInfo) {
-    let funcName = " (func 'receivedListTasksDownloadFiles')";
     let sessionId = taskInfo.userSessionID;
+    let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
 
-    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles")) {
-        showNotify({
-            socketIo: socketIo,
-            type: "danger",
-            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+    if ((typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)) {
+        //если ID задачи не совпадают создаем новую запись
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles", {
+            taskID: data.taskID,
+            status: data.options.s,
+            numFound: data.options.tntf,
+            paginationOptions: {
+                chunkSize: data.options.p.cs,
+                chunkNumber: data.options.p.cn,
+                chunkCurrentNumber: data.options.p.ccn
+            },
+            listTasksDownloadFiles: data.options.slft,
         });
-
-        return writeLogFile("error", "the 'listTasksDownloadFiles' property was not found in 'globalObject'" + funcName);
+    } else {
+        tasksDownloadFiles.listTasksDownloadFiles.push(data.options.slft);
     }
 
     let numFullChunks = 1;
@@ -113,25 +120,6 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
         });
 
         return;
-    }
-
-    let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
-
-    if ((typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)) {
-        //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles", {
-            taskID: data.taskID,
-            status: data.options.s,
-            numFound: data.options.tntf,
-            paginationOptions: {
-                chunkSize: data.options.p.cs,
-                chunkNumber: data.options.p.cn,
-                chunkCurrentNumber: data.options.p.ccn
-            },
-            listTasksDownloadFiles: data.options.slft,
-        });
-    } else {
-        tasksDownloadFiles.listTasksDownloadFiles.push(data.options.slft);
     }
 
     //отправляем в UI если это первый сегмент
@@ -172,17 +160,24 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
  * автоматически отправляется в UI
  */
 module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
-    let funcName = " (func 'receivedListUnresolvedTask')";
     let sessionId = taskInfo.userSessionID;
+    let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
 
-    if (!globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask")) {
-        showNotify({
-            socketIo: socketIo,
-            type: "danger",
-            message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+    if ((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)) {
+        //если ID задачи не совпадают создаем новую запись
+        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", {
+            taskID: data.taskID,
+            status: data.options.s,
+            numFound: data.options.tntf,
+            paginationOptions: {
+                chunkSize: data.options.p.cs,
+                chunkNumber: data.options.p.cn,
+                chunkCurrentNumber: data.options.p.ccn
+            },
+            listUnresolvedTask: data.options.slft,
         });
-
-        return writeLogFile("error", `the 'listUnresolvedTask' property for sessionId '${sessionId}' was not found in 'globalObject' ${funcName}`);
+    } else {
+        unresolvedTask.listUnresolvedTask.push(data.options.slft);
     }
 
     let numFullChunks = 1;
@@ -206,25 +201,6 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
         });
 
         return;
-    }
-
-    let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
-
-    if ((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)) {
-        //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", {
-            taskID: data.taskID,
-            status: data.options.s,
-            numFound: data.options.tntf,
-            paginationOptions: {
-                chunkSize: data.options.p.cs,
-                chunkNumber: data.options.p.cn,
-                chunkCurrentNumber: data.options.p.ccn
-            },
-            listUnresolvedTask: data.options.slft,
-        });
-    } else {
-        unresolvedTask.listUnresolvedTask.push(data.options.slft);
     }
 
     //отправляем в UI если это первый сегмент

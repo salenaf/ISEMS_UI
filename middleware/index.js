@@ -144,23 +144,27 @@ module.exports = function(app, express, io) {
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
 
-                //                console.log("func 'connectionWithModuleNetworkInteraction'");
-                //                console.log("EVENT: close");
+                console.log("func 'connectionWithModuleNetworkInteraction'");
+                console.log("EVENT: close");
 
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
                 setTimeout((() => {
-                    connection.createAPIConnection();
+                    if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
                 }), TIME_INTERVAL);
             })
             .on("error", () => {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
 
-                //                console.log("func 'connectionWithModuleNetworkInteraction'");
-                //                console.log("EVENT: error");
+                console.log("func 'connectionWithModuleNetworkInteraction'");
+                console.log("EVENT: error");
 
                 setTimeout((() => {
-                    connection.createAPIConnection();
+                    if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
                 }), TIME_INTERVAL);
             });
     };
