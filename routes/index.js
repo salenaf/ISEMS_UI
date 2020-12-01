@@ -63,10 +63,10 @@ module.exports = function(app) {
             access: "menuSettings.element_settings.submenu.setting_ids_rules.status",
             handler: pages.managementIdsRules,
         },
-        "/setting_search_rules": {
-            access: "menuSettings.element_settings.submenu.setting_search_rules.status",
-            handler: pages.managementSearchRules,
-        },
+        // "/setting_search_rules": {
+        //     access: "menuSettings.element_settings.submenu.setting_search_rules.status",
+        //     handler: pages.managementIdsRules,//managementSearchRules,
+        // },
         "/setting_geoip": {
             access: "menuSettings.element_settings.submenu.setting_geoip.status",
             handler: pages.managementGeoIp,

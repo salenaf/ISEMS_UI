@@ -335,10 +335,16 @@ module.exports.eventHandlingUserInterface = function(socketIo) {
     /* --- УПРАВЛЕНИЕ ОРГАНИЗАЦИЯМИ, ПОДРАЗДЕЛЕНИЯМИ И ИСТОЧНИКАМИ --- */
     require("./route_handlers_socketio/handlerActionsOrganizationsAndSources").addHandlers(socketIo);
 
-    /* --- УПРАВЛЕНИЕ ПРАВИЛАМИ СОА --- sid_soa:find sid */
+    /* --- УПРАВЛЕНИЕ ПРАВИЛАМИ СОА --- Поиски указанного SID в БД sid_bd: find-sid */
     require("./route_handlers_socketio/handlerActionRulesSOA").addHandlers(socketIo);
 
-    /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ФАЙЛОВ ПОЛУЧАЕМЫХ С User Interface --- */
+    /* --- УПРАВЛЕНИЕ ОБНОВЛЕНИЕМ ВЫБРАННОГО ПРАВИЛА SID --- */
+    require("./route_handlers_socketio/handlerActionUpDateSid").addHandlers(socketIo);
+
+    /* --- УПРАВЛЕНИЕ УДАЛЕНИЕМ ВЫБРАННОГО ПРАВИЛА SID ---*/
+    require("./route_handlers_socketio/handlerActionDeleteSid").addHandlers(socketIo);
+
+    /* --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ИЗ ФАЙЛОВ ПРАВИЛ SID  --- */
     require("./route_handlers_socketio/handlerActionUploadFiles").addHandlers(ss, socketIo);
 
     /* --- УПРАВЛЕНИЕ ЗАДАЧАМИ ПО ФИЛЬТРАЦИИ ФАЙЛОВ --- */

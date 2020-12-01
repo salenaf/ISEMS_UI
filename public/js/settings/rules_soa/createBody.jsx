@@ -2,7 +2,10 @@ import React from "react";
 import { Button, Badge, Card, Col, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-
+/* 
+ * Test
+ * 
+*/
 export default class CreateBody extends React.Component {
     constructor(props){
         super(props);
@@ -78,5 +81,5 @@ export default class CreateBody extends React.Component {
 CreateBody.propTypes ={
     ss: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
-    listSourcesInformation: PropTypes.object.isRequired,
+   // listSourcesInformation: PropTypes.object.isRequired,
 };
