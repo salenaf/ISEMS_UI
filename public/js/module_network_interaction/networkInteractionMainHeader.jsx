@@ -122,8 +122,26 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
             for(let source in objCopy.listSources){
                 if(+data.options.sourceID === +source){
+                    objCopy.listSources[source].appVersion = data.options.appVersion;
                     objCopy.listSources[source].connectTime = data.options.connectTime;
                     objCopy.listSources[source].connectStatus = data.options.connectStatus;
+                    objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate;
+
+                    this.setState(objCopy);
+
+                    break;
+                }
+            }
+        });
+
+        //добавляем версию и дату программного обеспечения исчтоника
+        this.props.socketIo.on("module-ni:send version app", (data) => {
+            let objCopy = Object.assign({}, this.state);
+
+            for(let source in objCopy.listSources){
+                if(+data.options.sourceID === +source){
+                    objCopy.listSources[source].appVersion = data.options.appVersion,
+                    objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate,
 
                     this.setState(objCopy);
 

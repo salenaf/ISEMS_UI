@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, Row, Table, Pagination, Spinner } from "react-bootstrap";
+import { Col, Row, Table, Spinner } from "react-bootstrap";
+import { Pagination as Paginationmui } from "@material-ui/lab";
 import PropTypes from "prop-types";
 
 import {helpers} from "../common_helpers/helpers.js";
@@ -33,7 +34,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         this.handlerEvents.call(this);
 
         this.sortElement = this.sortElement.bind(this);
-        this.createPagination = this.createPagination.bind(this);
+        this.createPaginationMUI = this.createPaginationMUI.bind(this);
         this.createTableListDownloadFile = this.createTableListDownloadFile.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
@@ -147,7 +148,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         }
     }
 
-    headerNextItemPagination(num){
+    headerItemPagination(obj, num){
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
@@ -234,6 +235,18 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
             return tableBody;
         };
 
+        if(this.state.showSpinner){
+            return (
+                <Row className="pt-4">
+                    <Col md={12}>
+                        <Spinner animation="border" role="status" variant="primary">
+                            <span className="sr-only text-muted">Загрузка...</span>
+                        </Spinner>
+                    </Col>
+                </Row>
+            );
+        }
+
         if(this.state.listTasksFound.tntf === 0){
             return (
                 <React.Fragment>
@@ -243,7 +256,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         }
 
         return (
-            <Row className="py-2">
+            <Row className="pt-4 pb-2">
                 <Col>
                     <Table size="sm" striped hover>
                         <thead>
@@ -270,118 +283,36 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         );
     }
 
-    createPagination(){
+    createPaginationMUI(){
         if(this.state.listTasksFound.p.cn <= 1){
             return;
         }
 
-        let addEllipsis = false;
-        let items = [];
-        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
-            if(this.state.listTasksFound.p.cn < 5){
-                items.push(
-                    <Pagination.Item 
-                        key={`pag_${i}`} 
-                        active={this.state.listTasksFound.p.ccn === i}
-                        onClick={this.headerNextItemPagination.bind(this, i)} >
-                        {i}
-                    </Pagination.Item>
-                );
-            } else {
-                if((i <= 2) || (i > this.state.listTasksFound.p.cn-2)){                   
-                    items.push(
-                        <Pagination.Item 
-                            key={`pag_${i}`} 
-                            active={this.state.listTasksFound.p.ccn === i}
-                            onClick={this.headerNextItemPagination.bind(this, i)} >
-                            {i}
-                        </Pagination.Item>
-                    );
-                } else {
-                    if(this.state.listTasksFound.p.ccn === i){
-                        items.push(
-                            <Pagination.Item 
-                                key={`pag_${i}`} 
-                                active={this.state.listTasksFound.p.ccn === i}
-                                onClick={this.headerNextItemPagination.bind(this, i)} >
-                                {i}
-                            </Pagination.Item>
-                        );
-                    } else {
-                        if(addEllipsis){
-                            continue;
-                        }
-    
-                        if((this.state.listTasksFound.p.ccn < i) || (this.state.listTasksFound.p.ccn - numItemPaginator) >= i){
-                            addEllipsis = true;
-                        }
-
-                        items.push(
-                            <Pagination.Ellipsis 
-                                disabled={true}
-                                key={"pag_ellipsis"}/>
-                        );
-                    }
-                }
-            }
-        }
-
-        if(this.state.listTasksFound.p.cn > 3){
-            let pfd = this.state.listTasksFound.p.ccn === 1;
-            let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
-            
-            return (
-                <Row>
-                    <Col md={12} className="d-flex justify-content-center">
-                        <Pagination size="sm">
-                            <Pagination.First 
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, 1)} />
-                            <Pagination.Prev
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === 1) ? 1:this.state.listTasksFound.p.ccn-1))} />
-                            {items}
-                            <Pagination.Next
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn) ? this.state.listTasksFound.p.cn:this.state.listTasksFound.p.ccn+1))} />
-                            <Pagination.Last 
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, this.state.listTasksFound.p.cn)} />
-                        </Pagination>
-                    </Col>
-                </Row>
-            );
+        if(this.state.showSpinner){
+            return;
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{items}</Pagination>
+                    <Paginationmui 
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        count={this.state.listTasksFound.p.cn}
+                        onChange={this.headerItemPagination.bind(this)}
+                        page={this.state.listTasksFound.p.ccn}
+                        boundaryCount={2}
+                        siblingCount={0}
+                        showFirstButton
+                        showLastButton >
+                    </Paginationmui>
                 </Col>
             </Row>
         );
     }
 
     render(){
-        let showSpinner = (
-            <React.Fragment>
-                {this.createPagination()}
-                {this.createTableListDownloadFile.call(this)}
-                {this.createPagination()}
-            </React.Fragment>
-        );
-        if(this.state.showSpinner){
-            showSpinner = (
-                <Row className="pt-4">
-                    <Col md={12}>
-                        <Spinner animation="border" role="status" variant="primary">
-                            <span className="sr-only text-muted">Загрузка...</span>
-                        </Spinner>
-                    </Col>
-                </Row>
-            );
-        }
-
         return (
             <React.Fragment>
                 <Row>
@@ -392,7 +323,11 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>
                 </Row>
-                {showSpinner}
+
+                {this.createPaginationMUI()}
+                {this.createTableListDownloadFile.call(this)}
+                {this.createPaginationMUI()}
+
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}

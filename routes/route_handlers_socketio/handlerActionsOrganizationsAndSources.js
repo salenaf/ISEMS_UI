@@ -101,6 +101,8 @@ function addNewEntitys(socketIo, data) {
                                 connectStatus: false,
                                 connectTime: 0,
                                 id: item.id,
+                                appVersion: "",
+                                appReleaseDate: 0,
                             });
                         });
 

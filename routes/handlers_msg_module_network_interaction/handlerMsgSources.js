@@ -28,6 +28,22 @@ function sendVersionApp(msg) {
         if (err) {
             writeLogFile("error", err.toString());
         }
+
+        console.log("func 'sendVersionApp', START...");
+        console.log(msg.options);
+
+        globalObject.modifyData("sources", msg.options.id, [
+            ["appVersion", msg.options.av],
+            ["appReleaseDate", msg.options.ard],
+        ]);
+
+        helpersFunc.sendBroadcastSocketIo("module-ni:send version app", {
+            options: {
+                sourceID: msg.options.id,
+                appVersion: msg.options.av,
+                appReleaseDate: msg.options.ard,
+            }
+        });
     });
 }
 
@@ -52,7 +68,9 @@ function changeStatusSource(msg) {
                     description: sourceInfo.description,
                     connectStatus: sourceInfo.connectStatus,
                     connectTime: sourceInfo.connectTime,
-                    id: sourceInfo.id
+                    id: sourceInfo.id,
+                    appVersion: "",
+                    appReleaseDate: 0,
                 }
             });
             helpersFunc.sendBroadcastSocketIo("module-ni:change sources connection", helpersFunc.getCountConnectionSources(globalObject));
@@ -91,7 +109,9 @@ function sendCurrentSourceList(msg) {
                 description: item.d,
                 connectStatus: item.cs,
                 connectTime: item.dlc,
-                id: ""
+                id: "",
+                appVersion: "",
+                appReleaseDate: 0,
             });
         }
     });

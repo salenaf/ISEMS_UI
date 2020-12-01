@@ -187,6 +187,10 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     debug(`received message 'processing information search task', TYPE: '${taskInfo.eventName}' TO WIDGET '${taskInfo.eventForWidgets}'`);
 
                     if (taskInfo.eventName === "list all tasks") {
+
+                        console.log(msg.options.slft[0]);
+                        console.log(msg.options.slft[0].pf.f);
+
                         require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo);
                     }
 

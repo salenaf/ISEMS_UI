@@ -1,8 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Row, Table, Form, Pagination, Spinner } from "react-bootstrap";
-import { Snackbar } from "material-ui-core";
-import { Alert } from "material-ui-lab";
+import { Button, Col, Row, Table, Form, Spinner } from "react-bootstrap";
+import { Pagination as Paginationmui } from "@material-ui/lab";
 import PropTypes from "prop-types";
 
 import GetStatusDownload from "../commons/getStatusDownload.jsx";
@@ -78,7 +77,7 @@ class CreatePageSearchTasks extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "send a list of found tasks"){
+            if(data.type === "send a list of found tasks"){               
                 let tmpCopy = Object.assign(this.state.listTasksFound);
                 tmpCopy = { 
                     p: data.options.p,
@@ -153,7 +152,7 @@ class CreatePageSearchTasks extends React.Component {
         this.setState({ showModalWindowFiltration: false });
     }
 
-    headerNextItemPagination(num){
+    headerItemPagination(obj, num){
         if(this.state.listTasksFound.p.ccn === num){
             return;
         }
@@ -451,94 +450,30 @@ class CreatePageSearchTasks extends React.Component {
         );
     }
 
-    createPagination(){
+    createPaginationMUI(){
         if(this.state.listTasksFound.p.cn <= 1){
             return;
         }
 
-        const numItemPaginator = 2;
-        let addEllipsis = false;
-        let items = [];
-        for(let i = 1; i < this.state.listTasksFound.p.cn+1; i++){
-            if(this.state.listTasksFound.p.cn < 5){
-                items.push(
-                    <Pagination.Item 
-                        key={`pag_${i}`} 
-                        active={this.state.listTasksFound.p.ccn === i}
-                        onClick={this.headerNextItemPagination.bind(this, i)} >
-                        {i}
-                    </Pagination.Item>
-                );
-            } else {
-                if((i <= numItemPaginator) || (i > this.state.listTasksFound.p.cn - numItemPaginator)){                   
-                    items.push(
-                        <Pagination.Item 
-                            key={`pag_${i}`} 
-                            active={this.state.listTasksFound.p.ccn === i}
-                            onClick={this.headerNextItemPagination.bind(this, i)} >
-                            {i}
-                        </Pagination.Item>
-                    );
-                } else {
-                    if(this.state.listTasksFound.p.ccn === i){
-                        items.push(
-                            <Pagination.Item 
-                                key={`pag_${i}`} 
-                                active={this.state.listTasksFound.p.ccn === i}
-                                onClick={this.headerNextItemPagination.bind(this, i)} >
-                                {i}
-                            </Pagination.Item>
-                        );
-                    } else {
-                        if(addEllipsis){                            
-                            continue;
-                        }
-
-                        if((this.state.listTasksFound.p.ccn < i) || (this.state.listTasksFound.p.ccn - numItemPaginator) >= i){
-                            addEllipsis = true;
-                        }
-
-                        items.push(
-                            <Pagination.Ellipsis 
-                                disabled={true}
-                                key={`pag_ellipsis_${i}`}/>
-                        );
-                    }
-                }
-            }
-        }
-
-        if(this.state.listTasksFound.p.cn > 3){
-            let pfd = this.state.listTasksFound.p.ccn === 1;
-            let pld = this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn;
-            
-            return (
-                <Row>
-                    <Col md={12} className="d-flex justify-content-center">
-                        <Pagination size="sm">
-                            <Pagination.First 
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, 1)} />
-                            <Pagination.Prev
-                                disabled={pfd}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === 1) ? 1:this.state.listTasksFound.p.ccn-1))} />
-                            {items}
-                            <Pagination.Next
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, ((this.state.listTasksFound.p.ccn === this.state.listTasksFound.p.cn) ? this.state.listTasksFound.p.cn:this.state.listTasksFound.p.ccn+1))} />
-                            <Pagination.Last 
-                                disabled={pld}
-                                onClick={this.headerNextItemPagination.bind(this, this.state.listTasksFound.p.cn)} />
-                        </Pagination>
-                    </Col>
-                </Row>
-            );
+        if(this.state.showSpinner){
+            return;
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{items}</Pagination>
+                    <Paginationmui 
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        count={this.state.listTasksFound.p.cn}
+                        onChange={this.headerItemPagination.bind(this)}
+                        page={this.state.listTasksFound.p.ccn}
+                        boundaryCount={2}
+                        siblingCount={0}
+                        showFirstButton
+                        showLastButton >
+                    </Paginationmui>
                 </Col>
             </Row>
         );
@@ -563,7 +498,7 @@ class CreatePageSearchTasks extends React.Component {
                     listSources={this.props.listItems.listSources}
                     handlerButtonSearch={this.handlerButtonSearch} />
                 {this.createTableListDownloadFile.call(this)}
-                {this.createPagination.call(this)}
+                {this.createPaginationMUI.call(this)}
 
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}

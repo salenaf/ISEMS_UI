@@ -81,6 +81,8 @@ class SocketioEventResponse extends EventEmitter {}
  *              description: описание,
  *              connectStatus: статус соединения,
  *              connectTime: время соединения,
+ *              appVersion: версия ПО  модуля ISEMS-NIH-slave,
+ *              appReleaseDate: версия даты релиза  модуля ISEMS-NIH-slave,
  *              id: id источника,
  *          },
  *       },

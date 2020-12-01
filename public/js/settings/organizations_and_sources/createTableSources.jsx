@@ -61,11 +61,26 @@ export default class CreateTableSources extends React.Component {
             hour: "numeric",
             minute: "numeric",
         });
+
+        //получаем номер самой свежей версии хостового приложения
+        let listTmp = [];
+        for(let item in this.props.tableSourceList){
+            if(this.props.tableSourceList[item].versionApp !== "" && (typeof this.props.tableSourceList[item].versionApp !== "undefined")){
+                listTmp.push(parseInt(this.props.tableSourceList[item].versionApp.replace(/[^\d]/g, "")));
+            }
+        }
+
+        listTmp.sort();
+        listTmp.reverse();
+
+        let maxValue = (listTmp.length > 0) ? listTmp[0] : 0; 
         let listInfo = [];
         let num = 0;
         this.props.tableSourceList.forEach((elem) => {           
             let status = (elem.connectionStatus) ? "my_circle_green":"my_circle_red";
             num++;
+
+            let warningAppVersion = (parseInt(elem.versionApp.replace(/[^\d]/g, "")) < maxValue) ? "text-danger": "";
 
             if(elem.sid.length === 0){
                 listInfo.push(<tr key={`tr_${num}_${elem.sid}`} className="text-muted">
@@ -108,7 +123,7 @@ export default class CreateTableSources extends React.Component {
                         {formatter.format(elem.dateRegister)}
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_ver_app`} className="text-right clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
-                        {elem.versionApp}
+                        <span className={warningAppVersion}>{elem.versionApp}</span>
                     </td>
                     <td key={`td_${elem.sourceID}_${elem.sid}_rel_app`} className="text-center clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {elem.releaseApp}
