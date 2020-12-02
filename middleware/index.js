@@ -1,35 +1,27 @@
-/*
- * Настройка express
- *
- * Версия 0.1, дата релиза 14.01.2019
- * */
-
 "use strict";
 
+const ejs = require("ejs-locals");
+const path = require("path");
+
+const helmet = require("helmet");
+const favicon = require("serve-favicon");
+const session = require("express-session");
+const passport = require("passport");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const errorHandler = require("errorhandler");
+const cookieParser = require("cookie-parser");
+const LocalStrategy = require("passport-local").Strategy;
+const MongoStore = require("connect-mongo")(session);
+
+const routes = require("../routes");
+const helpersFunc = require("../libs/helpers/helpersFunc");
+const globalObject = require("../configure/globalObject");
+const writeLogFile = require("../libs/writeLogFile");
+const routeSocketIo = require("../routes/routeSocketIo");
+const AuthenticateStrategy = require("./authenticateStrategy");
+
 module.exports = function(app, express, io) {
-    //    const ss = require("socket.io-stream");
-    const ejs = require("ejs-locals");
-    const path = require("path");
-
-    //const logger = require('morgan');
-
-    const helmet = require("helmet");
-    const favicon = require("serve-favicon");
-    const session = require("express-session");
-    const passport = require("passport");
-    const mongoose = require("mongoose");
-    const bodyParser = require("body-parser");
-    const errorHandler = require("errorhandler");
-    const cookieParser = require("cookie-parser");
-    const LocalStrategy = require("passport-local").Strategy;
-    const MongoStore = require("connect-mongo")(session);
-
-    const routes = require("../routes");
-    const globalObject = require("../configure/globalObject");
-    const writeLogFile = require("../libs/writeLogFile");
-    const routeSocketIo = require("../routes/routeSocketIo");
-    const AuthenticateStrategy = require("./authenticateStrategy");
-
     //срок окончания хранения постоянных cookie 14 суток
     let expiresDate = new Date(Date.now() + ((60 * 60 * 24 * 14) * 1000));
     let funcName = " (middleware/index.js)";
@@ -139,6 +131,11 @@ module.exports = function(app, express, io) {
 
                 console.log("func 'connectionWithModuleNetworkInteraction', Connection with module network interaction");
 
+                helpersFunc.sendBroadcastSocketIo("module NI API", {
+                    type: "connectModuleNI",
+                    options: { connectionStatus: true },
+                });
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
                 globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", true);
             })
@@ -157,11 +154,24 @@ module.exports = function(app, express, io) {
                 console.log("EVENT: close");
                 console.log(msg);
 
-                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
-                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
+                helpersFunc.sendBroadcastSocketIo("module NI API", {
+                    type: "connectModuleNI",
+                    options: { connectionStatus: false },
+                });
+                //                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                //                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
+
+                globalObject.modifyData("descriptionAPI", "networkInteraction", [
+                    ["connectionEstablished", false],
+                    ["previousConnectionStatus", false]
+                ]);
 
                 setTimeout((() => {
-                    if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+
+                    console.log("------> request new connection");
+                    console.log(`connectionEstablished: ${globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
+
+                    if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
 
                         console.log("New connection from close");
@@ -171,6 +181,11 @@ module.exports = function(app, express, io) {
             .on("error", (err) => {
                 writeLogFile("error", err.toString() + funcName);
 
+                helpersFunc.sendBroadcastSocketIo("module NI API", {
+                    type: "connectModuleNI",
+                    options: { connectionStatus: false },
+                });
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
                 globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
@@ -179,7 +194,7 @@ module.exports = function(app, express, io) {
                 console.log(err);
 
                 setTimeout((() => {
-                    if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                    if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
 
                         console.log("New connection from err");

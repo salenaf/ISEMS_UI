@@ -65,9 +65,21 @@ export default class CreateTableSources extends React.Component {
         //получаем номер самой свежей версии хостового приложения
         let listTmp = [];
         for(let item in this.props.tableSourceList){
-            if(this.props.tableSourceList[item].versionApp !== "" && (typeof this.props.tableSourceList[item].versionApp !== "undefined")){
-                listTmp.push(parseInt(this.props.tableSourceList[item].versionApp.replace(/[^\d]/g, "")));
+            if(this.props.tableSourceList[item].versionApp === ""){
+                continue;
             }
+
+            if(typeof this.props.tableSourceList[item].versionApp === "undefined"){
+                continue;
+            }
+
+            let int = parseInt(this.props.tableSourceList[item].versionApp.replace(/[^\d]/g, ""));
+
+            if(!isFinite(int)){
+                continue;
+            }
+
+            listTmp.push(int);
         }
 
         listTmp.sort();
