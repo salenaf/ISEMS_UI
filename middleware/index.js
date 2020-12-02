@@ -135,23 +135,36 @@ module.exports = function(app, express, io) {
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
             .on("connect", () => {
+                writeLogFile("info", `Connection with module network interaction ${funcName}`);
+
+                console.log("func 'connectionWithModuleNetworkInteraction', Connection with module network interaction");
+
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
                 globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", true);
             })
             .on("connectFailed", (err) => {
                 writeLogFile("error", err.toString() + funcName);
+
+                console.log(err);
+            })
+            .on("error message", (msg) => {
+                writeLogFile("error", msg.toString() + funcName);
             })
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
 
                 console.log("func 'connectionWithModuleNetworkInteraction'");
                 console.log("EVENT: close");
+                console.log(msg);
 
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
                 setTimeout((() => {
                     if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
+
+                        console.log("New connection from close");
                     }
                 }), TIME_INTERVAL);
             })
@@ -159,13 +172,17 @@ module.exports = function(app, express, io) {
                 writeLogFile("error", err.toString() + funcName);
 
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
                 console.log("func 'connectionWithModuleNetworkInteraction'");
                 console.log("EVENT: error");
+                console.log(err);
 
                 setTimeout((() => {
                     if (!globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
+
+                        console.log("New connection from err");
                     }
                 }), TIME_INTERVAL);
             });

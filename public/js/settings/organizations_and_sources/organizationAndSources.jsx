@@ -8,7 +8,7 @@ import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
 import CreateBodyManagementEntity from "./createBodyManagementEntity.jsx";
 import ModalWindowSourceInfo from "../../modal_windows/modalWindowSourceInfo.jsx";
 import ModalWindowChangeSource from "../../modal_windows/modalWindowChangeSource.jsx";
-import { ModalWindowConfirmMessage } from "../../modal_windows/modalWindowConfirmMessage.jsx";
+import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 
 import { helpers } from "../../common_helpers/helpers.js";
 

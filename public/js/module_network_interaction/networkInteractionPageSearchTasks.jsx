@@ -8,7 +8,7 @@ import GetStatusDownload from "../commons/getStatusDownload.jsx";
 import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
-import { ModalWindowConfirmMessage } from "../modal_windows/modalWindowConfirmMessage.jsx";
+import { ModalWindowConfirmMessage } from "../commons/modalWindowConfirmMessage.jsx";
 import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
 import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
 

@@ -29,6 +29,9 @@ class MyEventEmitter extends EventEmitter {
     }
 
     createAPIConnection(isDebug = false) {
+
+        console.log("Create API connection...");
+
         let websocketTmp = new webSocketClient({
             closeTimeout: 3000,
             tlsOptions: {
@@ -62,7 +65,7 @@ class MyEventEmitter extends EventEmitter {
 
             connection.on("message", (msg) => {
                 if (msg.type !== "utf8") {
-                    this.emit("error", new Error("Incorrect message format is accepted, binary data may be accepted"));
+                    this.emit("error message", new Error("Incorrect message format is accepted, binary data may be accepted"));
 
                     return;
                 }
@@ -71,17 +74,13 @@ class MyEventEmitter extends EventEmitter {
                     let json = JSON.parse(msg.utf8Data);
 
                     if (typeof this.msgType[json.t] === "undefined") {
-                        this.emit("error", new Error("Invalid JSON message type accepted"));
-
-                        return;
+                        throw new Error("Invalid JSON message type accepted");
                     }
 
                     let mt = this.msgType[json.t];
 
                     if (typeof mt[json.s] === "undefined") {
-                        this.emit("error", new Error("Invalid value in \"section\" field of JSON message"));
-
-                        return;
+                        throw new Error("Invalid value in \"section\" field of JSON message");
                     }
 
                     this.emit(mt[json.s], {
@@ -90,7 +89,7 @@ class MyEventEmitter extends EventEmitter {
                         options: json.o
                     });
                 } catch (err) {
-                    this.emit("error", err);
+                    this.emit("error message", err);
                 }
             });
         });
@@ -115,7 +114,7 @@ class MyEventEmitter extends EventEmitter {
         };
 
         //предварительный HTTP запрос
-        let req = https.request(options, (res) => {           
+        let req = https.request(options, (res) => {
             if (res.statusCode !== 301) {
                 this.emit("error", new Error(`Connection error to remote host ${this.configSettings.ip}:${this.configSettings.port}`));
 
