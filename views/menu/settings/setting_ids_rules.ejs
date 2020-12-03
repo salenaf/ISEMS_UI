@@ -4,7 +4,6 @@
     <% include ../../head.ejs %>
     <script>
        var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
-       var receivedFromServerAccessSearch = <%- JSON.stringify(userPermissionsSearch) %>
        var receivedFromServerAccess = <%- JSON.stringify(userPermissions) %>
     </script>
     <% include ../../header.ejs %>
@@ -29,18 +28,10 @@
                 <div class="col-md-12 text-center" id="page-rules-soa"></div>
             </div>
         </div>
-        <section class="footer-section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        Система управления событиями информационной безопасности ISEMS-UI, версия 1.1.0 2020
-                    </div>
-                </div>
-            </div>
-        </section>
-    </section>
+        <% include ../../footer.ejs %>
+    </section> 
 </body>
-
+</html>
 <!-- формирование основного раздела страницы -->
 <script src="/dist/settingRulesSAOPage.js"></script>
-</html>
+   
