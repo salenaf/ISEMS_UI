@@ -105,7 +105,7 @@ class CreatePageDownloadFile extends React.Component {
 
     render(){
         let showSpinner = (
-            <Row>
+            <Row className="pt-3">
                 <Col md={12}>
                     <CreateBodyDownloadFiles
                         socketIo={this.props.socketIo}
@@ -130,9 +130,6 @@ class CreatePageDownloadFile extends React.Component {
 
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left text-muted">выгрузка файлов</Col>
-                </Row>
                 {showSpinner}
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}

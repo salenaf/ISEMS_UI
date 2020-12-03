@@ -17,8 +17,12 @@ module.exports = function(msg) {
         "send current source list": sendCurrentSourceList,
     };
 
-    if (objHandlerMsgInstraction[msg.instruction]) {
-        objHandlerMsgInstraction[msg.instruction](msg);
+    try {
+        if (objHandlerMsgInstraction[msg.instruction]) {
+            objHandlerMsgInstraction[msg.instruction](msg);
+        }
+    } catch (err) {
+        writeLogFile("error", `${err.toString()} (func 'handlerMsgSources')`);
     }
 };
 
@@ -26,7 +30,7 @@ function sendVersionApp(msg) {
     //добавляем в БД
     require("../../libs/mongodb_requests/module_network_interaction/addVersionApp")(msg.options, (err) => {
         if (err) {
-            writeLogFile("error", err.toString());
+            throw err;
         }
 
         console.log("func 'sendVersionApp', START...");

@@ -46,16 +46,14 @@ class CreatePageDimanic extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left text-muted">выполняемые задачи</Col>
-                </Row>
-                <Row>
+                <Row className="pt-3">
                     <Col md={12}>
                         <CreateBodyDynamics 
                             socketIo={this.props.socketIo}
                             handlerModalWindowShowTaskTnformation={this.handlerModalWindowShowTaskTnformation} />
                     </Col>
                 </Row>
+                
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
                     onHide={this.handlerCloseModalWindowShowTaskInformation}

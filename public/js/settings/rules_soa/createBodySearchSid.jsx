@@ -1,11 +1,8 @@
 import React from "react";
-import { Button, Badge, Card, Toast, Col, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Col, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
 
-import { ModalWindowConfirmMessage } from "../../modal_windows/modalWindowConfirmMessage.jsx";
+import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 import PropTypes from "prop-types";
-
-import { data } from "jquery";
-import { obj } from "../../../../configure/globalObject.js";
 
 /* 
  * Search Sid
@@ -44,24 +41,24 @@ export default class CreateBodySearchSid extends React.Component {
         //this.resultS = "";
         this.contentEdit = "false";
 
- /*  */ this.typeList =[        ];
-            // { size: 1,  nameType: "trojan-activity", },
-            // { size: 2,  nameType: "unsuccessful-user"},
-            // { size: 3,  nameType: "attempted-admin"},
-            // { size: 4,  nameType: "attempted-user"},
-            // { size: 5,  nameType: "attempted-dos"},
-            // { size: 6,  nameType: "protocol-command-decode"},
-            // { size: 7,  nameType: "misc-attack"},
-            // { size: 8,  nameType: "web-application-activity"},
-            // { size: 9,  nameType: "web-application-attack"},
-            // { size: 10, nameType: "successful-recon-limited" },
-            // { size: 11, nameType: "successful-admin" },  
-            // { size: 12, nameType: "successful-user" },
-            // { size: 13, nameType: "policy-violation"},
+        /*  */ this.typeList =[        ];
+        // { size: 1,  nameType: "trojan-activity", },
+        // { size: 2,  nameType: "unsuccessful-user"},
+        // { size: 3,  nameType: "attempted-admin"},
+        // { size: 4,  nameType: "attempted-user"},
+        // { size: 5,  nameType: "attempted-dos"},
+        // { size: 6,  nameType: "protocol-command-decode"},
+        // { size: 7,  nameType: "misc-attack"},
+        // { size: 8,  nameType: "web-application-activity"},
+        // { size: 9,  nameType: "web-application-attack"},
+        // { size: 10, nameType: "successful-recon-limited" },
+        // { size: 11, nameType: "successful-admin" },  
+        // { size: 12, nameType: "successful-user" },
+        // { size: 13, nameType: "policy-violation"},
 
 
 
-       // console.log(this.props.socketIo);
+        // console.log(this.props.socketIo);
         
         this.resultSearch    = this.resultSearch.bind(this);
         this.handleSubmit    = this.handleSubmit.bind(this); 
@@ -84,7 +81,7 @@ export default class CreateBodySearchSid extends React.Component {
         this.handlerSourceSave  = this.handlerSourceSave.bind(this);
         //  this.findSid        = this.findSid.bind(this, this.valueInPut );
         //   this.listenerSocketIoConn = this.listenerSocketIoConn.bind(this);
-}
+    }
 
     handlerEvents(){
         console.log("func 'handlerEvents'");
@@ -189,17 +186,17 @@ export default class CreateBodySearchSid extends React.Component {
 
     // Валидация редактируемых данных
     wordOut(strBody, keywordStart, keywordEnd){
-            let posStart = 0, posEnd = 0;
-            let resultStr = null ;
-            posStart = strBody.indexOf(keywordStart , posNull);
-            if(posStart!=-1){
-                posEnd = strBody.indexOf(keywordEnd, posStart+1);
-                if(posEnd!=-1){
-                    resultStr = strBody.slice(posStart + keywordStart.length , posEnd) ;
-                }
-        
+        let posStart = 0, posEnd = 0;
+        let resultStr = null ;
+        posStart = strBody.indexOf(keywordStart , posNull);
+        if(posStart!=-1){
+            posEnd = strBody.indexOf(keywordEnd, posStart+1);
+            if(posEnd!=-1){
+                resultStr = strBody.slice(posStart + keywordStart.length , posEnd) ;
             }
-            return resultStr;
+        
+        }
+        return resultStr;
     }
        
         
@@ -210,7 +207,7 @@ export default class CreateBodySearchSid extends React.Component {
             sid:        /sid(:| :|: | : )\d+?(;| ;)/gi,
             classtype:  /classtype(:| :|: | : ).+?(;| ;)/gi,
             space:      /:/gui,
-        }  
+        };  
         
         let err = {
             sid: null,
@@ -237,8 +234,8 @@ export default class CreateBodySearchSid extends React.Component {
         if(result.msg.length == 1){
             //console.log(result.msg[0].match(regexp.space));
             if(result.msg[0].match(regexp.space).length != 1){
-                err.msg = "Не корректно введён msg. Возможно потеряна \";\". msg: \"...\";"
-               // console.log(err);
+                err.msg = "Не корректно введён msg. Возможно потеряна \";\". msg: \"...\";";
+                // console.log(err);
             } else {   // успех
                 msg = true;
             }
@@ -260,8 +257,8 @@ export default class CreateBodySearchSid extends React.Component {
         if(result.classtype.length == 1){
             //console.log(result.classtype[0].match(regexp.space));
             if(result.classtype[0].match(regexp.space).length != 1){
-                err.classtype = "Не корректно введён classtype. Возможно потеряна \";\". classtype: ...;"
-               // console.log(err);
+                err.classtype = "Не корректно введён classtype. Возможно потеряна \";\". classtype: ...;";
+                // console.log(err);
             } else {   // успех
                 classType = true;
             }
@@ -344,31 +341,31 @@ export default class CreateBodySearchSid extends React.Component {
     handlerSourceSave(){
         let flag = this.state.msgModWindow.comandModWindow;
         switch(flag) {
-            case 'save':
-                if(this.bodyForUpdate != ""){
-                    this.props.socketIo.emit("update value SID", {
-                        checkSID: this.state.buffSidOut.sid,
-                        updateBody: this.bodyForUpdate,
-                    });
-                }
-                break;
-            case 'delete':  
-                this.props.socketIo.emit("delete value SID", {
+        case "save":
+            if(this.bodyForUpdate != ""){
+                this.props.socketIo.emit("update value SID", {
                     checkSID: this.state.buffSidOut.sid,
+                    updateBody: this.bodyForUpdate,
                 });
-                this.setState({
-                    filter_error: null,
-                });
-                break;
-            case 'not save':  
-                this.bodyForUpdate = this.state.buffSidOut.body;
-                this.setState({
+            }
+            break;
+        case "delete":  
+            this.props.socketIo.emit("delete value SID", {
+                checkSID: this.state.buffSidOut.sid,
+            });
+            this.setState({
                 filter_error: null,
-                });
-                break;
-            default:
-                console.log("Что-то пошло не так");
-                break;
+            });
+            break;
+        case "not save":  
+            this.bodyForUpdate = this.state.buffSidOut.body;
+            this.setState({
+                filter_error: null,
+            });
+            break;
+        default:
+            console.log("Что-то пошло не так");
+            break;
         }
         this.state.msgModWindow={
             msgBody:"",
@@ -403,8 +400,8 @@ export default class CreateBodySearchSid extends React.Component {
                             <img className="clickable_icon" src="./images/icons-save-2.png" alt= "Сохранить изменения" ></img>
                         </a>
                     </OverlayTrigger> 
-                   {/*<pre><p> </p></pre>*/} 
-                   <OverlayTrigger key="Not save" placement="top-end" overlay={<Tooltip>Не сохранять изменения</Tooltip>}>
+                    {/*<pre><p> </p></pre>*/} 
+                    <OverlayTrigger key="Not save" placement="top-end" overlay={<Tooltip>Не сохранять изменения</Tooltip>}>
                         <a className = "btn  btn-sm" onClick={this.notSaveInfo.bind(this)}>
                             <img className="clickable_icon" src="./images/icons8-refresh-16.png" alt ="Не сохранять изменения" ></img>
                         </a>
@@ -413,11 +410,11 @@ export default class CreateBodySearchSid extends React.Component {
             );
         }else{
             return (<React.Fragment>
-                        <OverlayTrigger placement="top-end" overlay={<Tooltip>Редактировать</Tooltip>}>
-                            <a className = {`btn btn-sm ${disableEdit.str}`} onClick={this.readWrite.bind(this)} aria-disabled = {`${disableEdit.bool}`}>
-                                <img className="clickable_icon" src="./images/icons8-edit-1.png" alt="редактировать"/>
-                            </a> 
-                        </OverlayTrigger>
+                <OverlayTrigger placement="top-end" overlay={<Tooltip>Редактировать</Tooltip>}>
+                    <a className = {`btn btn-sm ${disableEdit.str}`} onClick={this.readWrite.bind(this)} aria-disabled = {`${disableEdit.bool}`}>
+                        <img className="clickable_icon" src="./images/icons8-edit-1.png" alt="редактировать"/>
+                    </a> 
+                </OverlayTrigger>
             </React.Fragment>);
         }
     }
@@ -446,6 +443,8 @@ export default class CreateBodySearchSid extends React.Component {
         }
         if(this.props.userPermissions.edit.status){
      // if(this.props.userPermissions.create.status){    
+        };
+        if(this.props.userPermissionsSearch.edit.status){
             disableEdit = {
                 str: "",
                 bool: "false"
@@ -458,7 +457,7 @@ export default class CreateBodySearchSid extends React.Component {
             };
         }
 
-//icons8-delete-16.png
+        //icons8-delete-16.png
         return <React.Fragment>
             <div className={visPole}> 
                 <div className="text-left">     
@@ -495,12 +494,12 @@ export default class CreateBodySearchSid extends React.Component {
                 </div>
             </div>
             <ModalWindowConfirmMessage 
-                    show={this.state.modalWindowStatus}
-                    onHide={this.closeModalWindow}
-                    msgBody= {this.state.msgModWindow.msgBody}
-                    msgTitle={this.state.msgModWindow.msgTitle}
-                    nameDel={this.state.saveOrNot}
-                    handlerConfirm={this.handlerSourceSave} />
+                show={this.state.modalWindowStatus}
+                onHide={this.closeModalWindow}
+                msgBody= {this.state.msgModWindow.msgBody}
+                msgTitle={this.state.msgModWindow.msgTitle}
+                nameDel={this.state.saveOrNot}
+                handlerConfirm={this.handlerSourceSave} />
         </React.Fragment>;
     }
     
@@ -559,37 +558,38 @@ export default class CreateBodySearchSid extends React.Component {
             let classtype = <div></div>;
             let noChange = <div></div>;
             if(this.state.filter_error.msg!=null)
-                    msg = <div  className="alert alert-danger" role="alert">
-                           <h6> {this.state.filter_error.msg}</h6>
-                          </div>;
+                msg = <div  className="alert alert-danger" role="alert">
+                    <h6> {this.state.filter_error.msg}</h6>
+                </div>;
             if(this.state.filter_error.sid!=null)        
-                    sid = <div  className="alert alert-danger" role="alert">
-                           <h6>{this.state.filter_error.sid}   </h6> 
-                          </div>;
+                sid = <div  className="alert alert-danger" role="alert">
+                    <h6>{this.state.filter_error.sid}   </h6> 
+                </div>;
             if(this.state.filter_error.classtype!=null)
-                    classtype = <div  className="alert alert-danger" role="alert">
-                              <h6>      {this.state.filter_error.classtype}  </h6>       
-                                </div>;
+                classtype = <div  className="alert alert-danger" role="alert">
+                    <h6>      {this.state.filter_error.classtype}  </h6>       
+                </div>;
             if(this.state.filter_error.noChange!=null)
-                    noChange = <div  className="alert alert-danger" role="alert">
-                              <h6>  {this.state.filter_error.noChange}</h6>               
-                    </div>;
+                noChange = <div  className="alert alert-danger" role="alert">
+                    <h6>  {this.state.filter_error.noChange}</h6>               
+                </div>;
  
 
             return <div>
-                    {msg}
-                    {sid}
-                    {classtype}
-                    {noChange}
-                  </div>;
+                {msg}
+                {sid}
+                {classtype}
+                {noChange}
+            </div>;
         } else {
-            return <div> </div>
+            return <div> </div>;
         }
     };
     handleKeyPress(event) {
         if(event.key == "Enter"){
             this.addPortNetworkIP();
         }
+    }
     }
     render(){
         const {  filter_error } = this.state;
@@ -630,7 +630,7 @@ export default class CreateBodySearchSid extends React.Component {
                 <div className="col-md-8 text-left"> { this.resultS} </div>
                 {this.resultSearch()}
                 {this.state.errorMsg()} 
-         </React.Fragment>
+            </React.Fragment>
         );
     }
 }
@@ -652,3 +652,6 @@ CreateBodySearchSid.propTypes ={
 //                                 isValid={this.state.filter_search}
 //                                 isInvalid={this.state.inputFieldIsInvalid} 
 //                                 placeholder="введите sid, подсеть или сетевой порт" />
+    userPermissionsSearch: PropTypes.object.isRequired, 
+    // listSourcesInformation: PropTypes.object.isRequired,
+};

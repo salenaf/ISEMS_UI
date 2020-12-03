@@ -55,7 +55,7 @@ class CreateNotificationTypeList extends React.Component {
         ];
 
         return list.map((item) => {
-            return <option key={`key_n_${item.t}`} value={item.t}>{item.n}</option>;
+            return <option key={`key_n_${item.t}`} className={`text-${item.t}`} value={item.t}>{item.n}</option>;
         });
     }
 
@@ -88,6 +88,7 @@ class CreatePageNotificationLog extends React.Component {
             msgList: this.props.listItems.mainInformation.foundList,
         };
 
+        this.formaterInt = new Intl.NumberFormat();
         this.createBodyTable = this.createBodyTable.bind(this);
         this.handlerNextChunk = this.handlerNextChunk.bind(this);
         this.handlerButtonSubmit = this.handlerButtonSubmit.bind(this);
@@ -231,10 +232,7 @@ class CreatePageNotificationLog extends React.Component {
 
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left text-muted">журнал информационных сообщений</Col>
-                </Row>
-                <Row>
+                <Row className="pt-3">
                     <Col md={3} className="mt-2">
                         <CreateSourceList 
                             listSources={this.props.listItems.listSources}
@@ -253,10 +251,18 @@ class CreatePageNotificationLog extends React.Component {
                         </Button>
                     </Col>
                     <Col md={6} className="text-right text-muted">
-                        информационных сообщений найдено:&nbsp; 
-                        <span className="text-info">{this.state.countDocument}</span>, 
-                        из них на странице:&nbsp;
-                        <span className="text-info">{this.state.msgList.length}</span>
+                        <Row className="pt-1">
+                            <Col md={12}>
+                            информационных сообщений найдено:&nbsp; 
+                                <span className="text-info">{this.formaterInt.format(this.state.countDocument)}</span>
+                            </Col>
+                        </Row>
+                        <Row className="mt-n2">
+                            <Col md={12}>
+                            из них на странице:&nbsp;
+                                <span className="text-info">{this.state.msgList.length}</span>
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
                 <Row>

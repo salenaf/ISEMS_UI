@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Alert, Button, Col, Row, Spinner, Nav } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
+import { Alert } from "material-ui-lab";
+import { Tab, Tabs, LinearProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
@@ -34,6 +36,15 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowEncodeDecoder: false,
             showModalWindowShowTaskInformation: false,
             showModalWindowInfoConnectStatusSources: false,
+        };
+
+        this.menuItem = {
+            "/network_interaction": { "num": 0, "label": "прогресс" },
+            "/network_interaction_page_file_download": { "num": 1, "label": "выгрузка файлов" },
+            "/network_interaction_page_search_tasks": { "num": 2, "label": "поиск" },
+            "/network_interaction_page_statistics_and_analytics": { "num": 3, "label": "аналитика" },
+            "/network_interaction_page_telemetry": { "num": 4, "label": "телеметрия" },
+            "/network_interaction_page_notification_log": { "num": 5, "label": "журнал событий" },
         };
 
         this.userPermission = this.props.listItems.userPermissions;
@@ -76,7 +87,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             if(data.type === "connectModuleNI"){
                 if(data.options.connectionStatus){
                     this.setState({ "connectionModuleNI": true });
-                    this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });
+
+                    location.reload();
                 } else {
                     this.setState({ 
                         "connectionModuleNI": false,
@@ -236,18 +248,18 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         if(!this.state.connectionModuleNI){
             return (                
                 <React.Fragment>
-                    <br/>
-                    <Alert variant="danger">
-                        <Alert.Heading>Ошибка! Модуль управления сетевыми взаимодействиями.</Alert.Heading>
-                        <p>
-                        Отсутствует доступ к модулю. Невозможно управление сетевыми взаимодействиями
-                        с удаленными источниками.
-                        </p>
-                    </Alert>
-                    <h6>
-                        Соединение&nbsp;<Spinner animation="border" variant="primary" size="sm"/>
-                    </h6>
-                    
+                    <Row className="mt-2">
+                        <Col md={12}>
+                            <Alert variant="filled" severity="error">
+                                <strong>Ошибка!</strong> Отсутствует доступ к модулю управления сетевыми взаимодействиями. Пытаемся установить соединение...
+                            </Alert>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={12}>
+                            <LinearProgress color="secondary" />
+                        </Col>
+                    </Row>                   
                 </React.Fragment>
             );
         }
@@ -264,6 +276,36 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         }      
 
         return (this.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
+    }
+
+    createMenuItems(){
+        let list = [];
+        for(let item in this.menuItem){
+            if(item === "/network_interaction_page_telemetry"){
+                list.push(<Tab disabled href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
+            } else {
+                list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
+            }
+        }
+
+        return (
+            <Row>
+                <Col md={12} className="mt-2">
+                    <Tabs
+                        value={this.getSelectedMenuItem.call(this)}
+                        indicatorColor="primary"
+                        centered >
+                        {list}
+                    </Tabs>
+                </Col>
+            </Row>
+        );
+    }
+
+    getSelectedMenuItem(){
+        let numMenuItem = this.menuItem[window.location.pathname].num;
+
+        return (typeof numMenuItem !== "undefined") ? numMenuItem : 0;
     }
 
     render(){
@@ -300,42 +342,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                         </Button>
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={12} className="mt-2">
-                        <Nav justify variant="tabs">
-                            <Nav.Item>
-                                <Nav.Link href="/network_interaction">
-                                    <small>выполняемые задачи</small>
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link href="/network_interaction_page_file_download">
-                                    <small>выгрузка файлов</small>
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link href="/network_interaction_page_search_tasks">
-                                    <small>поиск</small>
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link href="/network_interaction_page_statistics_and_analytics">
-                                    <small>статистика и аналитика</small>
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="link-4" disabled>
-                                    <small>телеметрия</small>
-                                </Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link href="/network_interaction_page_notification_log">
-                                    <small>журнал событий</small>
-                                </Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                    </Col>
-                </Row>
+                {this.createMenuItems.call(this)}
 
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}

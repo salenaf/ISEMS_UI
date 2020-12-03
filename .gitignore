@@ -10,3 +10,4 @@ keys/isems_ui_private_key.pem
 public/dist/
 spec/my_page_models/dist/
 best_practices.txt
+package-lock.json

@@ -1,6 +1,5 @@
 "use strict";
 
-const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
 const writeLogFile = require("../../libs/writeLogFile");
 const globalObject = require("../../configure/globalObject");
@@ -17,50 +16,63 @@ const MAX_CHUNK_SIZE = 10;
  */
 module.exports.receivedListAllTasks = function(socketIo, data, taskInfo) {
     let sessionId = taskInfo.userSessionID;
-    let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
 
-    if ((typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)) {
-        //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks", {
-            taskID: data.taskID,
-            status: data.options.s,
-            numFound: data.options.tntf,
-            paginationOptions: {
-                chunkSize: data.options.p.cs,
-                chunkNumber: data.options.p.cn,
-                chunkCurrentNumber: data.options.p.ccn
-            },
-            listTasksDownloadFiles: data.options.slft,
-        });
-    } else {
-        resultFoundTasks.listTasksDownloadFiles.push(data.options.slft);
-    }
-
-    let numFullChunks = 1;
-    if (data.options.tntf > MAX_CHUNK_SIZE) {
-        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
-    }
-
-    //отправляем в UI если это первый сегмент
-    if (data.options.p.ccn === 1) {
-        let msg = {
-            "type": "send a list of found tasks",
-            "taskID": data.taskID,
-            "options": {
-                p: {
-                    cs: MAX_CHUNK_SIZE, //размер части
-                    cn: numFullChunks, //всего частей
-                    ccn: 1, //номер текущей части
-                },
-                tntf: data.options.tntf,
-                slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+    try {
+        let resultFoundTasks = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks");
+        if ((resultFoundTasks === null) || (typeof resultFoundTasks.taskID === "undefined") || (resultFoundTasks.taskID !== data.taskID)) {
+            if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
+                globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
+                    tasksDownloadFiles: {},
+                    unresolvedTask: {},
+                    resultFoundTasks: {},
+                });
             }
-        };
 
-        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
-            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+            //если ID задачи не совпадают создаем новую запись
+            globalObject.setData("tmpModuleNetworkInteraction", sessionId, "resultFoundTasks", {
+                taskID: data.taskID,
+                status: data.options.s,
+                numFound: data.options.tntf,
+                paginationOptions: {
+                    chunkSize: data.options.p.cs,
+                    chunkNumber: data.options.p.cn,
+                    chunkCurrentNumber: data.options.p.ccn
+                },
+                listTasksDownloadFiles: data.options.slft,
+            });
+        } else {
+            resultFoundTasks.listTasksDownloadFiles.push(data.options.slft);
         }
+
+        let numFullChunks = 1;
+        if (data.options.tntf > MAX_CHUNK_SIZE) {
+            numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
+        }
+
+        //отправляем в UI если это первый сегмент
+        if (data.options.p.ccn === 1) {
+            let msg = {
+                "type": "send a list of found tasks",
+                "taskID": data.taskID,
+                "options": {
+                    p: {
+                        cs: MAX_CHUNK_SIZE, //размер части
+                        cn: numFullChunks, //всего частей
+                        ccn: 1, //номер текущей части
+                    },
+                    tntf: data.options.tntf,
+                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+                }
+            };
+
+            if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+                helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+            }
+        }
+    } catch (err) {
+        writeLogFile("error", `${err.toString()} (func 'receivedListAllTasks')`);
     }
+
 };
 
 /**
@@ -80,67 +92,79 @@ module.exports.receivedListAllTasks = function(socketIo, data, taskInfo) {
  */
 module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInfo) {
     let sessionId = taskInfo.userSessionID;
-    let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
 
-    if ((typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)) {
-        //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles", {
-            taskID: data.taskID,
-            status: data.options.s,
-            numFound: data.options.tntf,
-            paginationOptions: {
-                chunkSize: data.options.p.cs,
-                chunkNumber: data.options.p.cn,
-                chunkCurrentNumber: data.options.p.ccn
-            },
-            listTasksDownloadFiles: data.options.slft,
-        });
-    } else {
-        tasksDownloadFiles.listTasksDownloadFiles.push(data.options.slft);
-    }
-
-    let numFullChunks = 1;
-    if (data.options.tntf > MAX_CHUNK_SIZE) {
-        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
-    }
-
-    //если только для виджета
-    if (taskInfo.eventForWidgets) {
-        helpersFunc.sendBroadcastSocketIo("module NI API", {
-            "type": "get list tasks files not downloaded for widget",
-            "taskID": data.taskID,
-            "options": {
-                p: {
-                    cs: MAX_CHUNK_SIZE, //размер части
-                    cn: numFullChunks, //всего частей
-                    ccn: 1, //номер текущей части
-                },
-                tntf: data.options.tntf,
+    try {
+        let tasksDownloadFiles = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles");
+        if ((tasksDownloadFiles === null) || (typeof tasksDownloadFiles.taskID === "undefined") || (tasksDownloadFiles.taskID !== data.taskID)) {
+            if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
+                globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
+                    tasksDownloadFiles: {},
+                    unresolvedTask: {},
+                    resultFoundTasks: {},
+                });
             }
-        });
 
-        return;
-    }
-
-    //отправляем в UI если это первый сегмент
-    if (data.options.p.ccn === 1) {
-        let msg = {
-            "type": "get list tasks files not downloaded",
-            "taskID": data.taskID,
-            "options": {
-                p: {
-                    cs: MAX_CHUNK_SIZE, //размер части
-                    cn: numFullChunks, //всего частей
-                    ccn: 1, //номер текущей части
+            //если ID задачи не совпадают создаем новую запись
+            globalObject.setData("tmpModuleNetworkInteraction", sessionId, "tasksDownloadFiles", {
+                taskID: data.taskID,
+                status: data.options.s,
+                numFound: data.options.tntf,
+                paginationOptions: {
+                    chunkSize: data.options.p.cs,
+                    chunkNumber: data.options.p.cn,
+                    chunkCurrentNumber: data.options.p.ccn
                 },
-                tntf: data.options.tntf,
-                slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
-            }
-        };
-
-        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
-            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+                listTasksDownloadFiles: data.options.slft,
+            });
+        } else {
+            tasksDownloadFiles.listTasksDownloadFiles.push(data.options.slft);
         }
+
+        let numFullChunks = 1;
+        if (data.options.tntf > MAX_CHUNK_SIZE) {
+            numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
+        }
+
+        //если только для виджета
+        if (taskInfo.eventForWidgets) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
+                "type": "get list tasks files not downloaded for widget",
+                "taskID": data.taskID,
+                "options": {
+                    p: {
+                        cs: MAX_CHUNK_SIZE, //размер части
+                        cn: numFullChunks, //всего частей
+                        ccn: 1, //номер текущей части
+                    },
+                    tntf: data.options.tntf,
+                }
+            });
+
+            return;
+        }
+
+        //отправляем в UI если это первый сегмент
+        if (data.options.p.ccn === 1) {
+            let msg = {
+                "type": "get list tasks files not downloaded",
+                "taskID": data.taskID,
+                "options": {
+                    p: {
+                        cs: MAX_CHUNK_SIZE, //размер части
+                        cn: numFullChunks, //всего частей
+                        ccn: 1, //номер текущей части
+                    },
+                    tntf: data.options.tntf,
+                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+                }
+            };
+
+            if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+                helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+            }
+        }
+    } catch (err) {
+        writeLogFile("error", `${err.toString()} (func 'receivedListTasksDownloadFiles')`);
     }
 };
 
@@ -161,66 +185,78 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
  */
 module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
     let sessionId = taskInfo.userSessionID;
-    let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
 
-    if ((typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)) {
-        //если ID задачи не совпадают создаем новую запись
-        globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", {
-            taskID: data.taskID,
-            status: data.options.s,
-            numFound: data.options.tntf,
-            paginationOptions: {
-                chunkSize: data.options.p.cs,
-                chunkNumber: data.options.p.cn,
-                chunkCurrentNumber: data.options.p.ccn
-            },
-            listUnresolvedTask: data.options.slft,
-        });
-    } else {
-        unresolvedTask.listUnresolvedTask.push(data.options.slft);
-    }
-
-    let numFullChunks = 1;
-    if (data.options.tntf > MAX_CHUNK_SIZE) {
-        numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
-    }
-
-    //если только для виджета
-    if (taskInfo.eventForWidgets) {
-        helpersFunc.sendBroadcastSocketIo("module NI API", {
-            "type": "get list unresolved task for widget",
-            "taskID": data.taskID,
-            "options": {
-                p: {
-                    cs: MAX_CHUNK_SIZE, //размер части
-                    cn: numFullChunks, //всего частей
-                    ccn: 1, //номер текущей части
-                },
-                tntf: data.options.tntf,
+    try {
+        let unresolvedTask = globalObject.getData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask");
+        if ((unresolvedTask === null) || (typeof unresolvedTask.taskID === "undefined") || (unresolvedTask.taskID !== data.taskID)) {
+            if (!globalObject.hasData("tmpModuleNetworkInteraction", sessionId)) {
+                globalObject.setData("tmpModuleNetworkInteraction", sessionId, {
+                    tasksDownloadFiles: {},
+                    unresolvedTask: {},
+                    resultFoundTasks: {},
+                });
             }
-        });
 
-        return;
-    }
-
-    //отправляем в UI если это первый сегмент
-    if (data.options.p.ccn === 1) {
-        let msg = {
-            "type": "get list unresolved task",
-            "taskID": data.taskID,
-            "options": {
-                p: {
-                    cs: MAX_CHUNK_SIZE, //размер части
-                    cn: numFullChunks, //всего частей
-                    ccn: 1, //номер текущей части
+            //если ID задачи не совпадают создаем новую запись
+            globalObject.setData("tmpModuleNetworkInteraction", sessionId, "unresolvedTask", {
+                taskID: data.taskID,
+                status: data.options.s,
+                numFound: data.options.tntf,
+                paginationOptions: {
+                    chunkSize: data.options.p.cs,
+                    chunkNumber: data.options.p.cn,
+                    chunkCurrentNumber: data.options.p.ccn
                 },
-                tntf: data.options.tntf,
-                slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
-            }
-        };
-
-        if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
-            helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+                listUnresolvedTask: data.options.slft,
+            });
+        } else {
+            unresolvedTask.listUnresolvedTask.push(data.options.slft);
         }
+
+        let numFullChunks = 1;
+        if (data.options.tntf > MAX_CHUNK_SIZE) {
+            numFullChunks = Math.ceil(data.options.tntf / MAX_CHUNK_SIZE);
+        }
+
+        //если только для виджета
+        if (taskInfo.eventForWidgets) {
+            helpersFunc.sendBroadcastSocketIo("module NI API", {
+                "type": "get list unresolved task for widget",
+                "taskID": data.taskID,
+                "options": {
+                    p: {
+                        cs: MAX_CHUNK_SIZE, //размер части
+                        cn: numFullChunks, //всего частей
+                        ccn: 1, //номер текущей части
+                    },
+                    tntf: data.options.tntf,
+                }
+            });
+
+            return;
+        }
+
+        //отправляем в UI если это первый сегмент
+        if (data.options.p.ccn === 1) {
+            let msg = {
+                "type": "get list unresolved task",
+                "taskID": data.taskID,
+                "options": {
+                    p: {
+                        cs: MAX_CHUNK_SIZE, //размер части
+                        cn: numFullChunks, //всего частей
+                        ccn: 1, //номер текущей части
+                    },
+                    tntf: data.options.tntf,
+                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+                }
+            };
+
+            if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+                helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+            }
+        }
+    } catch (err) {
+        writeLogFile("error", `${err.toString()} (func 'receivedListUnresolvedTask')`);
     }
 };

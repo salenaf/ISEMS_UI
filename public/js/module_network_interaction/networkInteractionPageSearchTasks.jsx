@@ -8,7 +8,7 @@ import GetStatusDownload from "../commons/getStatusDownload.jsx";
 import GetStatusFiltering from "../commons/getStatusFiltering.jsx";
 import CreateBodySearchTask from "./createBodySearchTask.jsx";
 import ListNetworkParameters from "../commons/listNetworkParameters.jsx";
-import { ModalWindowConfirmMessage } from "../modal_windows/modalWindowConfirmMessage.jsx";
+import { ModalWindowConfirmMessage } from "../commons/modalWindowConfirmMessage.jsx";
 import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
 import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
 
@@ -88,13 +88,42 @@ class CreatePageSearchTasks extends React.Component {
                     showSpinner: false,
                     listTasksFound: tmpCopy 
                 });
+
+                console.log(tmpCopy);
             }
+
             if(data.type === "deleteAllInformationAboutTask"){
                 let tmpCopy = Object.assign(this.state.listCheckboxMarkedTasksDel);
                 tmpCopy.clear();
                 this.setState({ listCheckboxMarkedTasksDel: tmpCopy });
 
                 this.props.socketIo.emit("network interaction: get list all tasks", { arguments: {} });
+            }
+
+            if((data.type === "filtrationProcessing") || (data.type === "downloadProcessing")){
+                let isComplete = data.options.status === "complete";
+                let isRefused = data.options.status === "refused";
+                let isStop = data.options.status === "stop";
+                if(isComplete || isRefused || isStop){
+                    console.log(`'${data.type}' processing, status: '${data.options.status}'`);
+                
+                    let tmpCopy = Object.assign(this.state.listTasksFound);
+                    for(let i = 0; i < tmpCopy.slft; i++){
+                        if(tmpCopy.slft[i].ctid === data.options.taskID){
+                            console.log(`Search Task ID '${tmpCopy.slft[i].ctid}'`);    
+                            console.log(tmpCopy.slft[i]);
+
+                            if(data.type === "filtrationProcessing"){
+                                tmpCopy.slft[i].fts = data.options.status;
+                            }
+
+                            if(data.type === "downloadProcessing"){
+                                tmpCopy.slft[i].fdts = data.options.status;
+                            }
+                        }
+                    }
+                    this.setState({ listTasksFound: tmpCopy });
+                }
             }
         });
     }
@@ -489,16 +518,16 @@ class CreatePageSearchTasks extends React.Component {
 
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left text-muted">поиск задач</Col>
+                <Row className="pt-3">
+                    <Col md={12}>
+                        <CreateBodySearchTask 
+                            socketIo={this.props.socketIo} 
+                            listSources={this.props.listItems.listSources}
+                            handlerButtonSearch={this.handlerButtonSearch} />
+                        {this.createTableListDownloadFile.call(this)}
+                        {this.createPaginationMUI.call(this)}
+                    </Col>
                 </Row>
-
-                <CreateBodySearchTask 
-                    socketIo={this.props.socketIo} 
-                    listSources={this.props.listItems.listSources}
-                    handlerButtonSearch={this.handlerButtonSearch} />
-                {this.createTableListDownloadFile.call(this)}
-                {this.createPaginationMUI.call(this)}
 
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
