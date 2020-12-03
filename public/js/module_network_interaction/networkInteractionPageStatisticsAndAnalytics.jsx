@@ -29,7 +29,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
             currentTaskID: "",
         };
 
-        this.userPermission=this.props.listItems.userPermissions;
+        this.userPermission = this.props.listItems.userPermissions;
 
         this.handlerEvents.call(this);
 
@@ -315,9 +315,6 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left text-muted">статистика и аналитика</Col>
-                </Row>
                 <Row>
                     <Col md={12} className="text-right text-muted">
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>

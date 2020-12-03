@@ -55,7 +55,7 @@ class CreateNotificationTypeList extends React.Component {
         ];
 
         return list.map((item) => {
-            return <option key={`key_n_${item.t}`} value={item.t}>{item.n}</option>;
+            return <option key={`key_n_${item.t}`} className={`text-${item.t}`} value={item.t}>{item.n}</option>;
         });
     }
 
@@ -232,10 +232,7 @@ class CreatePageNotificationLog extends React.Component {
 
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left text-muted">журнал информационных сообщений</Col>
-                </Row>
-                <Row>
+                <Row className="pt-3">
                     <Col md={3} className="mt-2">
                         <CreateSourceList 
                             listSources={this.props.listItems.listSources}

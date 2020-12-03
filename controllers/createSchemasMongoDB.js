@@ -39,14 +39,14 @@ module.exports = function(cb) {
                 else callback(null);
             });
         },
-        
+
         //создание модели для поиска вродь !!!!!!!!!!!
         (callback) => {
             createModelRulesIDS(require("./models").modelSOARules, (err) => {
                 if (err) callback(err);
                 else callback(null);
             });
-        }        
+        }
         /*
         //создание модели для хранения информации о пользователе по ID passport
         (callback) => {
@@ -318,20 +318,20 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5("administrator_management_organizations_and_source_organization"),
                         name: "управление организациями",
                         element_settings: {
-                            create: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_create"), 
-                                status: true, 
-                                description: "создание" 
+                            create: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_create"),
+                                status: true,
+                                description: "создание"
                             },
-                            edit: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_edit"),  
-                                status: true, 
-                                description: "редактирование" 
+                            edit: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_edit"),
+                                status: true,
+                                description: "редактирование"
                             },
-                            delete: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_delete"), 
-                                status: true, 
-                                description: "удаление" 
+                            delete: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_organization_delete"),
+                                status: true,
+                                description: "удаление"
                             }
                         }
                     },
@@ -339,20 +339,20 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5("administrator_management_organizations_and_source_division"),
                         name: "управление подразделениями",
                         element_settings: {
-                            create: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_create"), 
-                                status: true, 
-                                description: "создание" 
+                            create: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_create"),
+                                status: true,
+                                description: "создание"
                             },
-                            edit: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_edit"),  
-                                status: true, 
-                                description: "редактирование" 
+                            edit: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_edit"),
+                                status: true,
+                                description: "редактирование"
                             },
-                            delete: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_delete"), 
-                                status: true, 
-                                description: "удаление" 
+                            delete: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_division_delete"),
+                                status: true,
+                                description: "удаление"
                             }
                         }
                     },
@@ -360,20 +360,20 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5("administrator_management_organizations_and_source_sources"),
                         name: "управление источниками",
                         element_settings: {
-                            create: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_create"), 
-                                status: true, 
-                                description: "создание" 
+                            create: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_create"),
+                                status: true,
+                                description: "создание"
                             },
-                            edit: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_edit"),  
-                                status: true, 
-                                description: "редактирование" 
+                            edit: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_edit"),
+                                status: true,
+                                description: "редактирование"
                             },
-                            delete: { 
-                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_delete"), 
-                                status: true, 
-                                description: "удаление" 
+                            delete: {
+                                id: createUniqID.getMD5("administrator_management_organizations_and_source_sources_delete"),
+                                status: true,
+                                description: "удаление"
                             }
                         }
                     },
@@ -387,6 +387,11 @@ function createModelGroups(modelGroup, next) {
                         id: createUniqID.getMD5("administrator_management_ids_rules_create"),
                         status: true,
                         description: "создание"
+                    },
+                    edit: {
+                        id: createUniqID.getMD5("administrator_management_ids_rules_edit"),
+                        status: true,
+                        description: "редактирование"
                     },
                     delete: {
                         id: createUniqID.getMD5("administrator_management_ids_rules_delete"),
@@ -479,12 +484,12 @@ function createModelSource(modelSource, next) {
 function createModelRulesIDS(modelSOARules, next) {
 
     debug("find IDS rules model");
-    
+
     modelSOARules.find({}, { _id: 1 }, (err, list) => {
         if (err) {
             next(err);
         } else {
-            if(list.length === 0){
+            if (list.length === 0) {
                 /*  new modelSOARules({
                     sid: 0000,
                     classType: "trojan-activity",

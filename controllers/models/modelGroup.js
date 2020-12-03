@@ -135,6 +135,7 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
+            edit: { id: String, status: Boolean, description: String },
             delete: { id: String, status: Boolean, description: String }
         }
     },

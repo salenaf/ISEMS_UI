@@ -745,34 +745,41 @@ export default class CreateBodySearchTask extends React.Component {
                             <small className="mr-1">сет. протокол</small>
                             <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
                         </Col>
-                        <Col md={5}>
+                        <Col md={4}>
                             <Form.Row className="ml-2">
                                 <TokenInput 
                                     className="react-token-input"
                                     validator={this.handlerFieldInputValidator}
                                     onTokensUpdate={this.handlerFieldInput}
                                     placeholder="ip адрес, порт или подсеть" />
-                                <a href="#" 
-                                    id="elem_helper"
-                                    data-toggle="tooltip" 
-                                    data-placement="top" 
-                                    title="Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.">
-                                    <img className="clickable_icon ml-1" src="../images/icons8-help-28.png" alt=""></img>
-                                </a>
                             </Form.Row>
                         </Col>
-                    </Form.Row>
-                    <Row>
-                        <Col className="text-right mt-4 mb-n2">
-                            <Button 
-                                size="sm" 
-                                onClick={this.handlerButtonSearch} 
-                                disabled={this.state.disabledButtonSearch}
-                                variant="outline-primary">
-                                поиск
-                            </Button>
+                        <Col md={1} className="text-right">
+                            <Row className="text-left mt-n2">
+                                <Col>
+                                    <a href="#" 
+                                        id="elem_helper"
+                                        data-toggle="tooltip" 
+                                        data-placement="top" 
+                                        title="Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.">
+                                        <img className="clickable_icon" width="20" height="20" src="../images/icons8-help-28.png" alt=""></img>
+                                    </a>
+                                </Col>
+                            </Row>
+                            <Row className="text-right mt-2">
+                                <Col>
+                                    <Button 
+                                        size="sm" 
+                                        onClick={this.handlerButtonSearch} 
+                                        disabled={this.state.disabledButtonSearch}
+                                        variant="outline-primary">
+                                        поиск
+                                    </Button>
+                                </Col>
+                            </Row>
+
                         </Col>
-                    </Row>
+                    </Form.Row>
                 </Card>
             </React.Fragment>
         );
