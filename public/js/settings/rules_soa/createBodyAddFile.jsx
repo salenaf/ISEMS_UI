@@ -6,7 +6,7 @@ import { relativeTimeRounding } from "moment";
 import { timeout } from "async";
 
 /* 
- * Body Add File
+ * Загрузка файла(ов) с правилами
  * 
 */
 

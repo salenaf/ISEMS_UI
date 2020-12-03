@@ -70,7 +70,7 @@ export default class CreateBodySearchSid extends React.Component {
         this.notSaveInfo     = this.notSaveInfo.bind(this);
         this.deleteInfo      = this.deleteInfo.bind(this);
         this.geveNewValueSID = this.geveNewValueSID.bind(this);
-        
+        this.handleKeyPress  = this.handleKeyPress.bind(this);
         this.showIconSaveChange =this.showIconSaveChange.bind(this);
         
         this.handlerEvents   = this.handlerEvents.call(this);
@@ -431,7 +431,7 @@ export default class CreateBodySearchSid extends React.Component {
         let color = this.state.color;
         
         console.log("_______________");
-        console.log(this.props.userPermissionsSearch);
+        console.log(this.props.userPermissions);
 
         let  disableEdit = {
             str: "disabled",
@@ -440,6 +440,9 @@ export default class CreateBodySearchSid extends React.Component {
         let disableDelete = {
             str: "disabled",
             bool: "true"
+        }
+        if(this.props.userPermissions.edit.status){
+     // if(this.props.userPermissions.create.status){    
         };
         if(this.props.userPermissionsSearch.edit.status){
             disableEdit = {
@@ -447,7 +450,7 @@ export default class CreateBodySearchSid extends React.Component {
                 bool: "false"
             };
         }
-        if(this.props.userPermissionsSearch.delete.status){
+        if(this.props.userPermissions.delete.status){
             disableDelete = {
                 str: "",
                 bool: "false"
@@ -581,8 +584,13 @@ export default class CreateBodySearchSid extends React.Component {
         } else {
             return <div> </div>;
         }
+    };
+    handleKeyPress(event) {
+        if(event.key == "Enter"){
+            this.addPortNetworkIP();
+        }
     }
-
+    }
     render(){
         const {  filter_error } = this.state;
         let k = 0;
@@ -610,6 +618,7 @@ export default class CreateBodySearchSid extends React.Component {
                 <Row>
                     <Col md={6}>
                         <input className="form-control mr-sm-2" placeholder="Введите sid" value = {this.state.filter_search} onChange = {this.onChangeSearch}  type="search" aria-label="Search"/>
+                        
                     </Col>
                     <Col md={6} className="text-left">
                         <button className="btn btn-outline-success my-2 my-sm-0"  onClick={this.handleSubmit.bind(this)} type="submit"> Поиск </button>  
@@ -629,6 +638,20 @@ export default class CreateBodySearchSid extends React.Component {
 CreateBodySearchSid.propTypes ={
     socketIo: PropTypes.object.isRequired,
     listShortEntity: PropTypes.object.isRequired,
+    userPermissions: PropTypes.object.isRequired, 
+       // listSourcesInformation: PropTypes.object.isRequired,
+};
+
+
+// <FormControl
+//                                 id="input_ip_network_port"
+//                                 aria-describedby="basic-addon2"
+//                                 onChange={this.onChangeSearch}
+//                                 onKeyPress={this.handleKeyPress.bind(this)}
+//                                 disabled={disabled}
+//                                 isValid={this.state.filter_search}
+//                                 isInvalid={this.state.inputFieldIsInvalid} 
+//                                 placeholder="введите sid, подсеть или сетевой порт" />
     userPermissionsSearch: PropTypes.object.isRequired, 
     // listSourcesInformation: PropTypes.object.isRequired,
 };
