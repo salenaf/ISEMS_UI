@@ -23,7 +23,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
     let connModuleNetInteraction = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
-    setTimeout(() => {
+    /*setInterval(() => {
         helpersFunc.sendBroadcastSocketIo("module NI API", {
             "type": "filtrationProcessing",
             "options": {
@@ -43,7 +43,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 },
             },
         });
-    }, 5000);
+    }, 15000);*/
 
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction

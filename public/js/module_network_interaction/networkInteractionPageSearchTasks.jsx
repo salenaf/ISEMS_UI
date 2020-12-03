@@ -108,7 +108,11 @@ class CreatePageSearchTasks extends React.Component {
                     console.log(`'${data.type}' processing, status: '${data.options.status}'`);
                 
                     let tmpCopy = Object.assign(this.state.listTasksFound);
+                    
+                    console.log(tmpCopy);
                     for(let i = 0; i < tmpCopy.slft; i++){
+                        console.log(`tmpCopy.slft[i].ctid (${tmpCopy.slft[i].ctid}) === (${data.options.taskID}) data.options.taskID`);
+
                         if(tmpCopy.slft[i].ctid === data.options.taskID){
                             console.log(`Search Task ID '${tmpCopy.slft[i].ctid}'`);    
                             console.log(tmpCopy.slft[i]);

@@ -440,10 +440,10 @@ export default class CreateBodySearchSid extends React.Component {
         let disableDelete = {
             str: "disabled",
             bool: "true"
-        }
-        if(this.props.userPermissions.edit.status){
-     // if(this.props.userPermissions.create.status){    
         };
+        if(this.props.userPermissions.edit.status){
+            // if(this.props.userPermissions.create.status){    
+        }
         if(this.props.userPermissionsSearch.edit.status){
             disableEdit = {
                 str: "",
@@ -584,13 +584,13 @@ export default class CreateBodySearchSid extends React.Component {
         } else {
             return <div> </div>;
         }
-    };
+    }
     handleKeyPress(event) {
         if(event.key == "Enter"){
             this.addPortNetworkIP();
         }
     }
-    }
+    
     render(){
         const {  filter_error } = this.state;
         let k = 0;
@@ -639,19 +639,4 @@ CreateBodySearchSid.propTypes ={
     socketIo: PropTypes.object.isRequired,
     listShortEntity: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired, 
-       // listSourcesInformation: PropTypes.object.isRequired,
-};
-
-
-// <FormControl
-//                                 id="input_ip_network_port"
-//                                 aria-describedby="basic-addon2"
-//                                 onChange={this.onChangeSearch}
-//                                 onKeyPress={this.handleKeyPress.bind(this)}
-//                                 disabled={disabled}
-//                                 isValid={this.state.filter_search}
-//                                 isInvalid={this.state.inputFieldIsInvalid} 
-//                                 placeholder="введите sid, подсеть или сетевой порт" />
-    userPermissionsSearch: PropTypes.object.isRequired, 
-    // listSourcesInformation: PropTypes.object.isRequired,
 };
