@@ -23,6 +23,28 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
     let connModuleNetInteraction = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
 
+    setTimeout(() => {
+        helpersFunc.sendBroadcastSocketIo("module NI API", {
+            "type": "filtrationProcessing",
+            "options": {
+                sourceID: 1000,
+                name: "Test Source 1",
+                taskID: "fc88a37bd7044b3ed817e5c3b0b8aeb2375ca502",
+                taskIDModuleNI: "6418bd7715cf12b5e47c849a1caf6a03",
+                status: "stop",
+                parameters: {
+                    numDirectoryFiltration: 5,
+                    numAllFiles: 234,
+                    numProcessedFiles: 132,
+                    numProcessedFilesError: 0,
+                    numFindFiles: 120,
+                    sizeAllFiles: 14837872,
+                    sizeFindFiles: 544232,
+                },
+            },
+        });
+    }, 5000);
+
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
         .on("connect", () => {
