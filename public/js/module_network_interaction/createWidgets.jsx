@@ -13,7 +13,9 @@ export default class CreatingWidgets extends React.Component {
 
         this.handlerEvents.call(this);
 
-        this.handlerClickTonWidgetUnresolvedTask = this.handlerClickTonWidgetUnresolvedTask.bind(this);
+        this.handlerClickOnWidgetProcessingTask = this.handlerClickOnWidgetProcessingTask.bind(this);
+        this.handlerClickOnWidgetUnresolvedTask = this.handlerClickOnWidgetUnresolvedTask.bind(this);
+        this.handlerClickOnWidgetNotDownloadTask = this.handlerClickOnWidgetNotDownloadTask.bind(this);
     }
 
     handlerEvents(){
@@ -49,8 +51,16 @@ export default class CreatingWidgets extends React.Component {
         });
     }
 
-    handlerClickTonWidgetUnresolvedTask(){
+    handlerClickOnWidgetProcessingTask(){
+        window.location.href = "/network_interaction";
+    }
+
+    handlerClickOnWidgetUnresolvedTask(){
         window.location.href = "/network_interaction_page_statistics_and_analytics";
+    }
+
+    handlerClickOnWidgetNotDownloadTask(){
+        window.location.href = "/network_interaction_page_file_download";
     }
 
     render(){
@@ -66,18 +76,26 @@ export default class CreatingWidgets extends React.Component {
                     <span className="my-n2 text-danger">{this.props.widgets.numDisconnect}</span>
                     <small className="text-muted">не доступно</small>
                 </Card>
-                <Card className="ml-3" border="dark" style={{ width: "10rem" }}>
+                <Card 
+                    onClick={this.handlerClickOnWidgetProcessingTask}
+                    className="ml-3 clicabe_cursor" 
+                    border="dark" 
+                    style={{ width: "10rem" }}>
                     <small>фильтрация</small>
                     <span className="my-n2">{this.state.filtration.size}</span>
                     <small className="text-muted">выполняется</small>
                 </Card>
-                <Card className="ml-3" border="info" style={{ width: "13rem" }}>
+                <Card 
+                    onClick={this.handlerClickOnWidgetNotDownloadTask}
+                    className="ml-3 clicabe_cursor" 
+                    border="info" 
+                    style={{ width: "13rem" }}>
                     <small>выгрузка файлов</small>
                     <span className="my-n2 text-info">{this.state.download.size} / {this.props.widgets.numTasksNotDownloadFiles}</span>
                     <small className="text-muted"> выполняется / доступна</small>
                 </Card>
                 <Card 
-                    onClick={this.handlerClickTonWidgetUnresolvedTask}
+                    onClick={this.handlerClickOnWidgetUnresolvedTask}
                     className="ml-3 clicabe_cursor" 
                     border="info" 
                     style={{ width: "13rem" }}>

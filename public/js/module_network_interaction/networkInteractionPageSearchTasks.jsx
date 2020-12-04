@@ -88,8 +88,6 @@ class CreatePageSearchTasks extends React.Component {
                     showSpinner: false,
                     listTasksFound: tmpCopy 
                 });
-
-                console.log(tmpCopy);
             }
 
             if(data.type === "deleteAllInformationAboutTask"){
@@ -104,19 +102,11 @@ class CreatePageSearchTasks extends React.Component {
                 let isComplete = data.options.status === "complete";
                 let isRefused = data.options.status === "refused";
                 let isStop = data.options.status === "stop";
-                if(isComplete || isRefused || isStop){
-                    console.log(`'${data.type}' processing, status: '${data.options.status}'`);
-                
+                if(isComplete || isRefused || isStop){               
                     let tmpCopy = Object.assign(this.state.listTasksFound);
                     
-                    console.log(tmpCopy);
-                    for(let i = 0; i < tmpCopy.slft; i++){
-                        console.log(`tmpCopy.slft[i].ctid (${tmpCopy.slft[i].ctid}) === (${data.options.taskID}) data.options.taskID`);
-
+                    for(let i = 0; i < tmpCopy.slft.length; i++){
                         if(tmpCopy.slft[i].ctid === data.options.taskID){
-                            console.log(`Search Task ID '${tmpCopy.slft[i].ctid}'`);    
-                            console.log(tmpCopy.slft[i]);
-
                             if(data.type === "filtrationProcessing"){
                                 tmpCopy.slft[i].fts = data.options.status;
                             }

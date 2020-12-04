@@ -43,7 +43,31 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 },
             },
         });
-    }, 15000);*/
+    }, 15000);
+
+    setInterval(() => {
+        helpersFunc.sendBroadcastSocketIo("module NI API", {
+            "type": "downloadProcessing",
+            "options": {
+                sourceID: 1000,
+                name: "Test Source 1",
+                taskID: "fc88a37bd7044b3ed817e5c3b0b8aeb2375ca502",
+                taskIDModuleNI: "6418bd7715cf12b5e47c849a1caf6a03",
+                status: "refused",
+                parameters: {
+                    numberFilesTotal: 235, //общее количество скачиваемых файлов
+                    numberFilesDownloaded: 22, //количество успешно скаченных файлов
+                    numberFilesDownloadedError: 45, //количество файлов скаченных с ошибкой
+                    dfi: { //DetailedFileInformation — подробная информация о скачиваемом файле
+                        fileName: "", //название файла
+                        fullSizeByte: 55553332, //полный размер файла в байтах
+                        acceptedSizeByte: 3244, //скаченный размер файла в байтах
+                        acceptedSizePercent: 5454, //скаченный размер файла в процентах
+                    }
+                },
+            },
+        });
+    }, 16000);*/
 
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction

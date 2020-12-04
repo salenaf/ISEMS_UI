@@ -1,5 +1,7 @@
 import React from "react";
-import { Col, Row, Table, Pagination } from "react-bootstrap";
+import { Col, Row, Table } from "react-bootstrap";
+import { Pagination as Paginationmui } from "@material-ui/lab";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
@@ -30,7 +32,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
         }
     }
 
-    headerNextItemPagination(num){
+    headerNextItemPagination(obj, num){
         if(this.props.listFileDownloadOptions.p.ccn === num){
             return;
         }
@@ -42,27 +44,26 @@ export default class CreateBodyDownloadFiles extends React.Component {
         });
     }
 
-    createPagination(){
+    createPaginationMUI(){
         if(this.props.listFileDownloadOptions.p.cn <= 1){
             return;
-        }
-
-        let listItem = [];
-        for(let i = 1; i < this.props.listFileDownloadOptions.p.cn+1; i++){       
-            listItem.push(
-                <Pagination.Item 
-                    key={`pag_${i}`} 
-                    active={this.props.listFileDownloadOptions.p.ccn === i}
-                    onClick={this.headerNextItemPagination.bind(this, i)} >
-                    {i}
-                </Pagination.Item>
-            );
         }
 
         return (
             <Row>
                 <Col md={12} className="d-flex justify-content-center">
-                    <Pagination size="sm">{listItem}</Pagination>
+                    <Paginationmui 
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                        count={this.props.listFileDownloadOptions.p.cn}
+                        onChange={this.headerNextItemPagination.bind(this)}
+                        page={this.props.listFileDownloadOptions.p.ccn}
+                        boundaryCount={2}
+                        siblingCount={0}
+                        showFirstButton
+                        showLastButton >
+                    </Paginationmui>
                 </Col>
             </Row>
         );
@@ -127,7 +128,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "download")}>
                         <a href="#">
-                            <img className="clickable_icon" width="32" height="32" src="../images/icons8-download-from-the-cloud-48.png" alt="скачать"></img>
+                            <CloudDownloadIcon style={{ fontSize: 25 }} />
                         </a>
                     </td>
                 </tr>);
@@ -173,7 +174,7 @@ export default class CreateBodyDownloadFiles extends React.Component {
     }
 
     render(){
-        let createPagination = this.createPagination.call(this);
+        let pagination = this.createPaginationMUI.call(this);
 
         return (
             <React.Fragment>
@@ -182,9 +183,9 @@ export default class CreateBodyDownloadFiles extends React.Component {
                     задач, по которым не выполнялась выгрузка файлов: <i>{this.props.listFileDownloadOptions.tntf}</i>
                     </Col>
                 </Row>
-                {createPagination}
+                {pagination}
                 {this.createTableListDownloadFile.call(this)}
-                {createPagination}
+                {pagination}
             </React.Fragment>
         );
     }
