@@ -90,6 +90,15 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 
                     location.reload();
                 } else {
+                    if(!this.state.connectionModuleNI){
+                        return;
+                    }
+
+                    let objClone = Object.assign({}, this.state.listSources);
+                    for(let sid in objClone){
+                        objClone[sid].connectStatus = false;
+                    }
+
                     this.setState({ 
                         "connectionModuleNI": false,
                         "widgets": {
@@ -100,6 +109,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             numTasksNotDownloadFiles: 0,
                             numUnresolvedTask: 0,
                         },
+                        "listSources": objClone,
                     });
                 }
             }
@@ -281,11 +291,13 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     createMenuItems(){
         let list = [];
         for(let item in this.menuItem){
-            if(item === "/network_interaction_page_telemetry"){
+            /*if(item === "/network_interaction_page_telemetry"){
                 list.push(<Tab disabled href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
             } else {
                 list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            }
+            }*/
+
+            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
         }
 
         return (

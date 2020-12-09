@@ -10,8 +10,15 @@ class CreatePageTelemetry extends React.Component {
         //        this.getListSource = this.getListSource.bind(this);
     
         console.log(this.props.listItems);
+
+        this.testRequest.call(this);
     }
 
+    testRequest(){
+        this.props.socketIo.emit("network interaction: get telemetry for list source", { arguments: {
+            listSource: [ 1000 ],
+        }});
+    }
     /*    getListSource(){
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID, num) => {
             return (

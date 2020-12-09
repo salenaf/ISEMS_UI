@@ -43,6 +43,10 @@ module.exports = function(app) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionpageStatisticsAndAnalyticsDetalTask,
         },
+        "/network_interaction_page_telemetry": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageTelemetry,
+        },
         "/network_interaction_page_notification_log": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageNotificationLog,
