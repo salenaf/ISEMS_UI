@@ -121,16 +121,15 @@ export default class CreateBodyAddFile extends React.Component {
                             setTimeout(
                                 () => {
                                     this.setState({ loadProcess: -1 });
+                                    setTimeout(
+                                        () => {
+                                            window.location.reload();
+                                        },
+                                        500
+                                    );
                                 },
                                 1 * 1000
                             );
-                            setTimeout(
-                                () => {
-                                   // window.location.reload();
-                                },
-                                2 * 1000
-                            );
-
                           }
                         console.log(`Загружен ${data}`);
                         this.handleDeleteElement(data);
@@ -223,7 +222,6 @@ export default class CreateBodyAddFile extends React.Component {
         return (
             <React.Fragment>
                 <label> Выберите файл </label>
-                <p> Не обновляет данные в бд, а только дописывает тех, которых нет </p>
                 <form onSubmit={this.handleSubmit}>
                     <div className="custom-file">
                         <input type="file" className="custom-file-input" type="file" onChange={this.addList.bind(this)} ref={this.fileInput}  id="files" name="files[]" multiple />

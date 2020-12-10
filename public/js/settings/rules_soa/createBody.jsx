@@ -10,54 +10,20 @@ export default class CreateBody extends React.Component {
     constructor(props){
         super(props);
         //this.dropZone = "";
-        this.state = {
-            elements: [
-                {
-                    id: 1,
-                    name: "First",
-                    type: ".js",  
-                    size: "3421",
-                },
-                {
-                    id: 2,
-                    name: "Second",
-                    type: ".js4",
-                    size: "3467",               
-                },
-                {
-                    id: 3,
-                    name: "Second1",
-                    type: ".js3",
-                    size: "32234",                  
-                },
-                {
-                    id: 4,
-                    name: "Second2",
-                    type: ".js2",
-                    size: "3445",  
-                },
-                {
-                    id: 5,
-                    name: "Second3",
-                    type: ".js1",
-                    size: "3243", 
-                },
-            ],
-        };
+        this.state = {    };
 
         this.handleDeleteElement = id => {
             this.setState(prevState => ({
                 elements: prevState.elements.filter(el => el.id != id),
             }));
         };
-        this.funOut = this.funOut.bind(this);
-        this.f      = this.f.bind(this);
-    }
-
-    
-    f(){
+        this.onDragOver = this.onDragOver.bind(this);
 
     }
+
+    onDragOver (event){
+            event.preventDefault();
+    }  
     
     funOut(){
         //const { elements } = this.state;
@@ -72,7 +38,17 @@ export default class CreateBody extends React.Component {
        
         return (
             <React.Fragment>
-                
+                <div class='parent'>
+                    <span id='draggableSpan'
+                        draggable='true'
+                        ondragstart={this.onDragOver.bind(this)}>
+                    draggable
+                    </span>
+ 
+            <span ondragover={this.onDragOver.bind(this)}>
+            dropzone
+            </span>
+            </div>
             </React.Fragment>
         );
     }

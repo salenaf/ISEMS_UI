@@ -91,6 +91,21 @@ class QueryProcessor {
                 else callback(null, doc);
             });
     }
+
+
+    queryUpdateBulkWrite(mongooseModel, documentsArr, callback) {
+        //mongooseModel.adminCommand( { setParameter: 1, transactionLifetimeLimitSeconds: 600 } );
+        mongooseModel.bulkWrite(
+            documentsArr, 
+            (err, doc) => {
+                if (err) callback(err);
+                else callback(null, doc);
+            });
+            /*.then(res => {
+                // Prints "1 1 1"
+                console.log(res.insertedCount, res.modifiedCount, res.deletedCount);
+            })*/;
+    }
     
     /**
      * Вставка и обновление элементов

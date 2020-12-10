@@ -3,6 +3,7 @@ import { Col, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
 
 import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 import PropTypes from "prop-types";
+import ClearIcon from '@material-ui/icons/Clear';
 
 /* 
  * Search Sid
@@ -391,7 +392,6 @@ export default class CreateBodySearchSid extends React.Component {
 
     //this.props.userPermissionsSearch.edit.status
     showIconSaveChange(disableEdit){
-
         if(this.state.contentEdit == "true"){
             return (
                 <React.Fragment>
@@ -403,19 +403,21 @@ export default class CreateBodySearchSid extends React.Component {
                     {/*<pre><p> </p></pre>*/} 
                     <OverlayTrigger key="Not save" placement="top-end" overlay={<Tooltip>Не сохранять изменения</Tooltip>}>
                         <a className = "btn  btn-sm" onClick={this.notSaveInfo.bind(this)}>
-                            <img className="clickable_icon" src="./images/icons8-refresh-16.png" alt ="Не сохранять изменения" ></img>
+                            <img className="clickable_icon" src="./images/icons8-delete-16.png" alt ="Не сохранять изменения" ></img>
                         </a>
                     </OverlayTrigger>
                 </React.Fragment>
             );
-        }else{
-            return (<React.Fragment>
-                <OverlayTrigger placement="top-end" overlay={<Tooltip>Редактировать</Tooltip>}>
-                    <a className = {`btn btn-sm ${disableEdit.str}`} onClick={this.readWrite.bind(this)} aria-disabled = {`${disableEdit.bool}`}>
-                        <img className="clickable_icon" src="./images/icons8-edit-1.png" alt="редактировать"/>
-                    </a> 
-                </OverlayTrigger>
-            </React.Fragment>);
+        } else {
+            return (
+                <React.Fragment>
+                    <OverlayTrigger placement="top-end" overlay={<Tooltip>Редактировать</Tooltip>}>
+                        <a className = {`btn btn-sm ${disableEdit.str}`} onClick={this.readWrite.bind(this)} aria-disabled = {`${disableEdit.bool}`}>
+                            <img className="clickable_icon" src="./images/icons8-edit-1.png" alt="редактировать"/>
+                        </a> 
+                    </OverlayTrigger>
+                </React.Fragment>
+                );
         }
     }
 
@@ -444,7 +446,7 @@ export default class CreateBodySearchSid extends React.Component {
         if(this.props.userPermissions.edit.status){
      // if(this.props.userPermissions.create.status){    
         };
-        if(this.props.userPermissionsSearch.edit.status){
+        if(this.props.userPermissions.edit.status){
             disableEdit = {
                 str: "",
                 bool: "false"
@@ -590,7 +592,7 @@ export default class CreateBodySearchSid extends React.Component {
             this.addPortNetworkIP();
         }
     }
-    }
+    
     render(){
         const {  filter_error } = this.state;
         let k = 0;
@@ -652,6 +654,6 @@ CreateBodySearchSid.propTypes ={
 //                                 isValid={this.state.filter_search}
 //                                 isInvalid={this.state.inputFieldIsInvalid} 
 //                                 placeholder="введите sid, подсеть или сетевой порт" />
-    userPermissionsSearch: PropTypes.object.isRequired, 
+ //   userPermissionsSearch: PropTypes.object.isRequired, 
     // listSourcesInformation: PropTypes.object.isRequired,
-};
+//};

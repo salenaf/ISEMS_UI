@@ -55,12 +55,12 @@ function parser(data){
     let listRules = data.split("\n");
     
     //let mongooseModel = require("../../controllers/models").modelSOARules;
-    
+    let element1={};
     for(let i=0; i<listRules.length; i++){
         strBody = listRules[i];
        
         a_classType = wordOut(strBody, "classtype:",";"); 
-        b_sid = wordOut(strBody, "sid:",";"); 
+        b_sid = wordOut(strBody, " sid:",";"); 
         c_msg = wordOut(strBody, "msg:",";"); 
         
         if(( a_classType !=null)&(b_sid!=null)&(c_msg!=null)) {
@@ -70,23 +70,29 @@ function parser(data){
             {
                 c_msg = c_msg.slice(c_msg.indexOf("\"")+1, c_msg.indexOf("\"", 3));
             }
-            element = {
+            element1 = {
                 sid: b_sid,
                 classType: a_classType,
                 msg: c_msg,
                 body: strBody,
             };
-            
+            element ={
+                updateOne: {
+                    filter: {  sid: b_sid, },
+                    upsert: true,
+                    update: {                 
+                        sid: b_sid,
+                        classType: a_classType,
+                        msg: c_msg,
+                        body: strBody, 
+                    }
+                  }
+            }
             arrList.push(element);
             // console.log(`sid ${b_sid} classType ${a_classType}`);
         }
-       
-        
-        //if(i>=15000) {break;}
-        //if(i>=50) {break;}
-        
     }
-    //console.log(arrList);
+    console.log(`Длина: ${arrList.length}`);
     arrList.sort(function(x, y) { return x.sid - y.sid; });
     // arrList.sort((prev, next) => prev.sid - next.sid);
     return Promise.resolve(arrList);
@@ -116,7 +122,7 @@ async function processing(fileName){
         await ((listRules ) => {
             return new Promise((resolve,reject) => {
                 // requireMong.queryUpdate(mongooseModel,  listRules , (err, doc) => {
-                requireMong.queryInsertMany(mongooseModel,  listRules , (err, doc) => {
+                requireMong.queryUpdateBulkWrite(mongooseModel,  listRules , (err, doc) => {
                     if(err) {
                         reject(err);
                     }
