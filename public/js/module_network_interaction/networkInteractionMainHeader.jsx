@@ -291,13 +291,13 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     createMenuItems(){
         let list = [];
         for(let item in this.menuItem){
-            /*if(item === "/network_interaction_page_telemetry"){
+            if(item === "/network_interaction_page_telemetry"){
                 list.push(<Tab disabled href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
             } else {
                 list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            }*/
+            }
 
-            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
+            //list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
         }
 
         return (
