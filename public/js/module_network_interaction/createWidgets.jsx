@@ -36,6 +36,11 @@ export default class CreatingWidgets extends React.Component {
                 let objCopy = Object.assign({}, this.state);
 
                 if((msg.options.status === "complete") || (msg.options.status === "refused")){
+                    
+                    console.log("func 'createWidgets'");
+                    console.log(`download status '${msg.options.status}, deleting task id: ${msg.options.taskID}'`);
+                    
+                    
                     objCopy.download.delete(msg.options.taskID);
                 
                     //если выгрузка файлов завершена успешно
