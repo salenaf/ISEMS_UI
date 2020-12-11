@@ -67,7 +67,8 @@ module.exports.modulesEventGenerator = function(socketIo) {
                 },
             },
         });
-    }, 16000);*/
+    }, 16000);
+    */
 
     //обработчик для модуля NetworkInteraction
     connModuleNetInteraction
@@ -117,7 +118,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
         }).on("information source control", (msg) => {
-            /*debug("----- information source control -----");
+            /*            debug("----- information source control -----");
             debug(msg);
             debug("--------------------------------------");*/
 

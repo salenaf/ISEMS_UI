@@ -284,7 +284,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
             }
 
-            //проверяем существо   вание источника и статус его соединения
+            //проверяем существование источника и статус его соединения
             let sourceInfo = globalObject.getData("sources", filteringParameters.source);
             if (sourceInfo === null) {
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не найден.`));
@@ -739,6 +739,48 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
                         d: description,
                     }
                 });
+            }
+
+            resolve();
+        });
+    });
+};
+
+/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ СВЯЗАННЫМИ С ПОЛУЧЕНИЕМ ТЕЛЕМЕТРИИ ИСТОЧНИКОВ --- **/
+
+/**  
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * управление задачами по получению телеметрии с источников.
+ *   
+ * Осуществляет запрос телеметрии с источника или группы источников. 
+ *  
+ * @param {*} sourceList - список источников
+ */
+module.exports.managementTaskGetTelemetry = function(sourceList) {
+
+    console.log("func 'managementTaskGetTelemetry'");
+    console.log(sourceList);
+
+    return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+            if (conn !== null) {
+                let tmp = {
+                    msgType: "command",
+                    msgSection: "source control",
+                    msgInstruction: "give information about state of source",
+                    taskID: helpersFunc.getRandomHex(),
+                    options: {
+                        lsid: sourceList,
+                        ga: false,
+                    },
+                };
+
+                conn.sendMessage(tmp);
             }
 
             resolve();

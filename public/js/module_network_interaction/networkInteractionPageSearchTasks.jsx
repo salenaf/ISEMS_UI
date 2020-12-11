@@ -101,6 +101,7 @@ class CreatePageSearchTasks extends React.Component {
                     tsffarf: ""
                 }].concat(tmpCopy.slft);
                 tmpCopy.slft = newTaskList;
+                tmpCopy.tntf = tmpCopy.tntf+1;
                 this.setState({ listTasksFound: tmpCopy });
             }
         });   
@@ -298,6 +299,7 @@ class CreatePageSearchTasks extends React.Component {
             tsffarf: ""
         }].concat(tmpCopy.slft);
         tmpCopy.slft = newTaskList;
+        tmpCopy.tntf = tmpCopy.tntf+1;
         this.setState({ listTasksFound: tmpCopy });
 
         this.handlerCloseModalWindowFiltration();

@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+
 <head>
     <% include ../../head.ejs %>
-    <script>
-        var receivedFromServer = <%- JSON.stringify(listItems) %>
-    </script>
-    <% include ../../header.ejs %>
+        <script>
+            var receivedFromServer = <%- JSON.stringify(listItems) %>
+        </script>
+        <% include ../../header.ejs %>
 </head>
+
 <body>
-    <section id="container" >
+    <section id="container">
         <div class="content-wrapper">
             <div class="container">
                 <div class="col-md-12 text-center" id="header-page-content"></div>
@@ -21,4 +23,5 @@
 
 <script src="/dist/networkInteractionMainHeader.js"></script>
 <script src="/dist/networkInteractionMainPageDinamic.js"></script>
+
 </html>

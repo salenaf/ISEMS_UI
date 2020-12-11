@@ -15,6 +15,8 @@ module.exports = function(msg) {
         "send version app": sendVersionApp,
         "change status source": changeStatusSource,
         "send current source list": sendCurrentSourceList,
+        "give information about state of source": giveInformationAboutStateSource,
+        "reject give information about state of source": rejectGiveInformationAboutStateSource,
     };
 
     try {
@@ -26,15 +28,17 @@ module.exports = function(msg) {
     }
 };
 
+/**
+ * Обработка сообщения с версией ПО ISEMS-NIH_slave
+ * 
+ * @param {*} msg 
+ */
 function sendVersionApp(msg) {
     //добавляем в БД
     require("../../libs/mongodb_requests/module_network_interaction/addVersionApp")(msg.options, (err) => {
         if (err) {
             throw err;
         }
-
-        console.log("func 'sendVersionApp', START...");
-        console.log(msg.options);
 
         globalObject.modifyData("sources", msg.options.id, [
             ["appVersion", msg.options.av],
@@ -51,6 +55,11 @@ function sendVersionApp(msg) {
     });
 }
 
+/**
+ * Обработчик изменения статуса соединения
+ * 
+ * @param {*} msg 
+ */
 function changeStatusSource(msg) {
     if (!Array.isArray(msg.options.sl)) {
         return;
@@ -82,11 +91,14 @@ function changeStatusSource(msg) {
     });
 }
 
+/**
+ * Здесь получаем список актуальных источников из базы
+ * данных модуля сетевого взаимодействия.
+ * 
+ * @param {*} msg 
+ */
 function sendCurrentSourceList(msg) {
     /**
-     *
-     * Здесь получаем список актуальных источников из базы
-     * данных модуля сетевого взаимодействия.
      *
      * Пока из него только извлекаем состояния сетевого соединения
      * источников и записываем в глобальный объект
@@ -135,4 +147,25 @@ function sendCurrentSourceList(msg) {
     helpersFunc.sendBroadcastSocketIo("module-ni: short source list", {
         arguments: globalObject.getData("sources")
     });
+}
+
+/**
+ * Обработчик сообщения с информацией о телеметрии
+ * 
+ * @param {*} msg 
+ */
+function giveInformationAboutStateSource(msg) {
+    console.log("func 'giveInformationAboutStateSource', START...");
+    console.log(msg);
+}
+
+/**
+ * Обработчик сообщения с ошибками возникшими при обработке
+ * запроса на получения телеметрии 
+ * 
+ * @param {*} msg 
+ */
+function rejectGiveInformationAboutStateSource(msg) {
+    console.log("func 'rejectGiveInformationAboutStateSource', START...");
+    console.log(msg);
 }
