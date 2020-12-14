@@ -756,34 +756,45 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
  *  
  * @param {*} sourceList - список источников
  */
-module.exports.managementTaskGetTelemetry = function(sourceList) {
+module.exports.managementTaskGetTelemetry = function(socketIo, sourceList) {
 
     console.log("func 'managementTaskGetTelemetry'");
     console.log(sourceList);
 
     return new Promise((resolve, reject) => {
-        process.nextTick(() => {
-            if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
-                return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
-            }
-
-            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-            if (conn !== null) {
-                let tmp = {
-                    msgType: "command",
-                    msgSection: "source control",
-                    msgInstruction: "give information about state of source",
-                    taskID: helpersFunc.getRandomHex(),
-                    options: {
-                        lsid: sourceList,
-                        ga: false,
-                    },
-                };
-
-                conn.sendMessage(tmp);
-            }
-
-            resolve();
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
         });
+    }).then((sessionId) => {
+        if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+        if (conn !== null) {
+            let hex = helpersFunc.getRandomHex();
+
+            globalObject.setData("tasks", hex, {
+                eventName: "give information about state of source",
+                eventForWidgets: false,
+                userSessionID: sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                msgType: "command",
+                msgSection: "source control",
+                msgInstruction: "give information about state of source",
+                taskID: hex,
+                options: {
+                    lsid: sourceList,
+                    ga: false,
+                },
+            });
+        }
     });
 };

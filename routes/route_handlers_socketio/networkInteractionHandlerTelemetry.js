@@ -51,7 +51,7 @@ function getTelemetryForListSource(socketIo, data) {
 
             return;
         }).then(() => {
-            return require("../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction").managementTaskGetTelemetry(data.arguments.listSource);
+            return require("../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction").managementTaskGetTelemetry(socketIo, data.arguments.listSource);
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({

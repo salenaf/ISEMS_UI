@@ -157,6 +157,19 @@ function sendCurrentSourceList(msg) {
 function giveInformationAboutStateSource(msg) {
     console.log("func 'giveInformationAboutStateSource', START...");
     console.log(msg);
+
+    if (!globalObject.hasData("tasks", msg.taskID)) {
+        helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+    }
+
+    let taskInfo = globalObject.getData("tasks", msg.taskID);
+    if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+        helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+    }
+
+    console.log(taskInfo);
+
+
 }
 
 /**
@@ -168,4 +181,13 @@ function giveInformationAboutStateSource(msg) {
 function rejectGiveInformationAboutStateSource(msg) {
     console.log("func 'rejectGiveInformationAboutStateSource', START...");
     console.log(msg);
+
+    if (!globalObject.hasData("tasks", msg.taskID)) {
+        helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+    }
+
+    let taskInfo = globalObject.getData("tasks", msg.taskID);
+    if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+        helpersFunc.sendBroadcastSocketIo("module NI API", msg);
+    }
 }

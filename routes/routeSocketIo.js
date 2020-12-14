@@ -118,7 +118,7 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
             globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
         }).on("information source control", (msg) => {
-            /*            debug("----- information source control -----");
+            /*debug("----- information source control -----");
             debug(msg);
             debug("--------------------------------------");*/
 
