@@ -1,8 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
-import Paper from "@material-ui/core/Paper";
-import Close from "@material-ui/icons/Close";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,23 +20,25 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateChip(props) {
     const classes = useStyles();
 
+    const handleDelete = (sid) => {
+        props.handleDelete(sid);
+    };
+
+    if(props.chipData.length === 0){
+        return null;
+    }
+
     return (
-        <Paper component="ul" className={classes.root}>
-            {props.chipData.map((sid) => {
-                console.log(sid);
-               
-                return (
-                    <li key={`key_sid_${sid}`}>
-                        <Chip
-                            icon={<Close fontSize="large" />}
-                            label={sid}
-                            onDelete={props.handleDelete(sid)}
-                            className={classes.chip}
-                        />
-                    </li>
-                );
-            })}
-        </Paper>
+        props.chipData.map((sid) => {              
+            return (
+                <Chip
+                    key={`key_sid_${sid}`}
+                    label={sid}
+                    onDelete={handleDelete.bind(null, sid)}
+                    variant="outlined"
+                    className={classes.chip} />
+            );
+        })
     );
 }
 

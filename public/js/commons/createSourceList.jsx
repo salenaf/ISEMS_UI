@@ -13,23 +13,21 @@ export default class CreateSourceList extends React.Component {
 
     getListSource(){
         return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID, num) => {
-            let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
+            let isDisabled = false;
+            if(this.props.swithCheckConnectionStatus){
+                isDisabled = !(this.props.listSources[sourceID].connectStatus);          
+            }
 
             return (
                 <option 
                     key={`key_source_${num}_${this.props.listSources[sourceID].id}`} 
                     value={sourceID} 
-                >
+                    disabled={isDisabled} >
                     {`${sourceID} ${this.props.listSources[sourceID].shortName}`}
                 </option>
             );
         });
     }
-
-    /** 
-     *          ВНИМАНИЕ!!!
-     * убираем  disabled={isDisabled} из options ТОЛЬКО ДЛЯ ТЕСТОВ 
-     * */
 
     render(){
         let disabled = false;
@@ -41,16 +39,19 @@ export default class CreateSourceList extends React.Component {
             }
         }
 
+        console.log("create list sources");
+        console.log(`chosen item: '${this.props.currentSource}'`);
+
         return (
             <Form.Group>
                 <Form.Control 
+                    as="select" 
+                    size="sm" 
                     disabled={disabled} 
                     onChange={this.props.handlerChosen} 
                     defaultValue={this.props.currentSource} 
-                    as="select" 
-                    size="sm" 
                     id="dropdown_list_sources" >
-                    <option></option>
+                    <option key="key_source_0_0" value={0}></option>
                     {this.getListSource()}
                 </Form.Control>
             </Form.Group>
@@ -64,4 +65,5 @@ CreateSourceList.propTypes = {
     listSources: PropTypes.object.isRequired,
     currentSource: PropTypes.number.isRequired,
     handlerChosen: PropTypes.func.isRequired,
+    swithCheckConnectionStatus: PropTypes.bool.isRequired,
 };

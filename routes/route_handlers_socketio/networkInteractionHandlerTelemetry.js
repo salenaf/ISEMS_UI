@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("niht");
-
 //const models = require("../../controllers/models");
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
@@ -29,8 +27,8 @@ module.exports.addHandlers = function(socketIo) {
 function getTelemetryForListSource(socketIo, data) {
     let funcName = " (func 'getTelemetryForListSource')";
 
-    debug("func 'getTelemetryForListSource'");
-    debug(data);
+    console.log("func 'getTelemetryForListSource'");
+    console.log(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {

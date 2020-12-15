@@ -531,7 +531,8 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                         hiddenFields={this.state.hiddenFields}
                         listSources={this.props.listSources}
                         currentSource={this.props.currentFilteringParameters.sid}
-                        handlerChosen={this.handlerChosenSource} />
+                        handlerChosen={this.handlerChosenSource}
+                        swithCheckConnectionStatus={true} />
                     <CreateMainFields
                         typeModal={tm}
                         hiddenFields={this.state.hiddenFields}

@@ -315,9 +315,11 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     getSelectedMenuItem(){
-        let numMenuItem = this.menuItem[window.location.pathname].num;
+        if((typeof this.menuItem[window.location.pathname] === "undefined") || (this.menuItem[window.location.pathname] === null)){           
+            return 3;
+        }
 
-        return (typeof numMenuItem !== "undefined") ? numMenuItem : 0;
+        return (typeof this.menuItem[window.location.pathname].num !== "undefined") ? this.menuItem[window.location.pathname].num : 0;
     }
 
     render(){
