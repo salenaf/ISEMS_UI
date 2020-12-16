@@ -216,7 +216,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
-        let checkExistInputValue = () => {
+        /*let checkExistInputValue = () => {
             let isEmpty = true;
 
             done:
@@ -236,7 +236,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         //проверяем наличие хотя бы одного параметра в inputValue
         if(checkExistInputValue()){
             return;
-        }
+        }*/
 
         this.props.socketIo.emit("network interaction: start new filtration task", {
             actionType: "add new task",
@@ -251,7 +251,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             },
         });
 
-        this.handlerCloseModalWindowFiltration();
+        //this.handlerCloseModalWindowFiltration();
     }
 
     showModuleConnectionError(){

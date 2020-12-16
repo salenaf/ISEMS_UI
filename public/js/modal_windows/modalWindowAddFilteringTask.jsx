@@ -435,6 +435,28 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     handlerButtonSubmit(){
+        let checkExistInputValue = () => {
+            let isEmpty = true;
+
+            done:
+            for(let et in this.state.inputValue){
+                for(let d in this.state.inputValue[et]){
+                    if(Array.isArray(this.state.inputValue[et][d]) && this.state.inputValue[et][d].length > 0){
+                        isEmpty = false;
+
+                        break done;  
+                    }
+                }
+            }
+
+            return isEmpty;
+        };
+
+        //проверяем наличие хотя бы одного параметра в inputValue
+        if(checkExistInputValue()){
+            return;
+        }
+
         this.props.handlerButtonSubmit({
             source: this.state.source,
             startDate: this.state.startDate,

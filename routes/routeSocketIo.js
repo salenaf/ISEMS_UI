@@ -137,6 +137,12 @@ module.exports.modulesEventGenerator = function(socketIo) {
             //debug(msg);
             //debug("------------------------------------------");
 
+            if (msg.options.s === "complete" || msg.options.s === "stop") {
+                debug("----- information filtration control -----");
+                debug(msg);
+                debug("---------------------------------------");
+            }
+
             let sourceInfo = globalObject.getData("sources", msg.options.id);
 
             //формируем сообщение о выполнении процесса фильтрации
@@ -159,10 +165,10 @@ module.exports.modulesEventGenerator = function(socketIo) {
                     },
                 },
             });
-        }).on("command filtration control", ( /*msg*/ ) => {
+        }).on("command filtration control", ( /* msg */ ) => {
             /*debug("----- command filtration control -----");
-            debug(msg);
-            debug("---------------------------------------");*/
+                debug(msg);
+                debug("---------------------------------------");*/
 
         }).on("information download control", (msg) => {
             /*debug("----- information download control -----");
