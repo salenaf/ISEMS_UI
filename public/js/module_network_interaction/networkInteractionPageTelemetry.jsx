@@ -235,7 +235,7 @@ class CreatePageTelemetry extends React.Component {
                     </Row>
                 </Col>
                 <Col md={9}>
-                    {this.createCommonTelemetryInformation()}                   
+                    {/*this.createCommonTelemetryInformation()*/}                   
                     {this.createListSourceInformation()}
                 </Col>
             </Row>

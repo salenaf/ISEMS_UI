@@ -2,7 +2,6 @@ import React from "react";
 import { Badge, Col, Row, } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -71,7 +70,7 @@ export default function CreateCardSourceTelemetry(props) {
         return (
             <Col md={6} className="text-right">
                 <Typography variant="body2" component="p">
-                        локальное время источника: <i>{formatter.format(props.sourceInfo.informationTelemetry.currentDateTime)}</i>
+                    локальное время источника: <i>{formatter.format(props.sourceInfo.informationTelemetry.currentDateTime)}</i>
                 </Typography>
             </Col>
         );
@@ -139,21 +138,21 @@ export default function CreateCardSourceTelemetry(props) {
                 <Row>
                     <Col md={12} className="text-left mt-2">
                         <Typography variant="body2" component="p">
-                        временной диапазон хранящихся файлов: с <i>{dateTimeBegin}</i> по <i>{dateTimeEnd}</i>
+                            временной диапазон хранящихся файлов: с <i>{dateTimeBegin}</i> по <i>{dateTimeEnd}</i>
                         </Typography>
                     </Col>
                 </Row>
                 <Row>
                     <Col md={12} className="text-left">
                         <Typography variant="body2" component="p">
-                        среднее время хранящихся файлов: <strong>{timeStorageFiles}</strong> сут.
+                            среднее время хранящихся файлов: <strong>{timeStorageFiles}</strong> сут.
                         </Typography>
                     </Col>
                 </Row>
                 <Row>
                     <Col md={12} className="text-left  mb-2">
                         <Typography variant="body2" component="p">
-                        отставание от текущего времени: <strong className={behindCurrentTimeColor}>{behindCurrentTime.toFixed(1)}</strong> ч. {iconWarning}
+                            отставание от текущего времени: <strong className={behindCurrentTimeColor}>{behindCurrentTime.toFixed(1)}</strong> ч. {iconWarning}
                         </Typography>
                     </Col>
                 </Row>

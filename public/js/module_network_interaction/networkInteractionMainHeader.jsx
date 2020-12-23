@@ -305,12 +305,37 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 <Col md={12} className="mt-2">
                     <Tabs
                         value={this.getSelectedMenuItem.call(this)}
-                        indicatorColor="primary"
+                        indicatorColor="primary"                        
                         centered >
                         {list}
                     </Tabs>
                 </Col>
             </Row>
+        );
+    }
+
+    /**
+                        orientation="vertical"
+                        variant="scrollable"
+                        aria-label="Vertical tabs example"
+
+ */
+
+    createMenuItemsVertical(){
+        let list = [];
+        for(let item in this.menuItem){
+            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
+        }
+
+        return (
+            <Tabs
+                value={this.getSelectedMenuItem.call(this)}
+                indicatorColor="primary"
+                orientation="vertical"
+                variant="scrollable"
+                aria-label="Vertical tabs example" >
+                {list}
+            </Tabs>
         );
     }
 
@@ -357,6 +382,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     </Col>
                 </Row>
                 {this.createMenuItems.call(this)}
+
+                {/*this.createMenuItemsVertical.call(this)*/}
 
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}
