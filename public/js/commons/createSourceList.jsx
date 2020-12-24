@@ -39,9 +39,6 @@ export default class CreateSourceList extends React.Component {
             }
         }
 
-        console.log("create list sources");
-        console.log(`chosen item: '${this.props.currentSource}'`);
-
         return (
             <Form.Group>
                 <Form.Control 
@@ -51,7 +48,7 @@ export default class CreateSourceList extends React.Component {
                     onChange={this.props.handlerChosen} 
                     defaultValue={this.props.currentSource} 
                     id="dropdown_list_sources" >
-                    <option key="key_source_0_0" value={0}></option>
+                    <option key="key_source_0_0" value={0}>выберите источник</option>
                     {this.getListSource()}
                 </Form.Control>
             </Form.Group>

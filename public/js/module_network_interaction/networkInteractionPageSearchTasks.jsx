@@ -577,11 +577,17 @@ class CreatePageSearchTasks extends React.Component {
         return (
             <React.Fragment>
                 <Row className="pt-3">
-                    <Col md={12}>
+                    <Col md={1}></Col>
+                    <Col md={10}>
                         <CreateBodySearchTask 
                             socketIo={this.props.socketIo} 
                             listSources={this.props.listItems.listSources}
                             handlerButtonSearch={this.handlerButtonSearch} />
+                    </Col>
+                    <Col md={1}></Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
                         {this.createTableListDownloadFile.call(this)}
                         {this.createPaginationMUI.call(this)}
                     </Col>

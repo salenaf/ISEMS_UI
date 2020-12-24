@@ -109,6 +109,12 @@ body {
     height: 60px;
 }
 
+.widget-main {
+    height: auto;
+    max-height: 780px;
+    overflow: auto;
+}
+
 .chat-widget-main {
     height: 170px;
     max-height: 170px;

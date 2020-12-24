@@ -45,6 +45,7 @@ module.exports = {
         settingGroupsPage: "./settings/group/settingGroupsPage.jsx",
         settingOrganizationAndSourcesPage: "./settings/organizations_and_sources/organizationAndSources.jsx",
         settingRulesSAOPage: "./settings/rules_soa/rulesSOA.jsx",
+        createVerticalMenuItems: "./module_network_interaction/createVerticalMenuItems.jsx",
         networkInteractionMainHeader: "./module_network_interaction/networkInteractionMainHeader.jsx",
         networkInteractionPageTelemetry: "./module_network_interaction/networkInteractionPageTelemetry.jsx",
         networkInteractionMainPageDinamic: "./module_network_interaction/networkInteractionMainPageDinamic.jsx",
@@ -182,11 +183,11 @@ module.exports = {
                 }
             },
             /*{
-                                                                                                                 test: /\.(js|jsx)$/,
-                                                                                                                test: /\.js$/,
-                                                                                                                exclude: /node_modules/,
-                                                                                                                use: ["babel-loader"] //, 'eslint-loader']
-                                                                                                            },*/
+                                                                                                                     test: /\.(js|jsx)$/,
+                                                                                                                    test: /\.js$/,
+                                                                                                                    exclude: /node_modules/,
+                                                                                                                    use: ["babel-loader"] //, 'eslint-loader']
+                                                                                                                },*/
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
@@ -215,19 +216,19 @@ module.exports = {
                 }, ],
             },
             /*{
-                                                                                                                test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
-                                                                                                                loader: "imports-loader?this=>window&exports=>false&define=>false"
-                                                                                                            },
-                                                                                                                        {
-                                                                                                                                            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                                                                                            include: /\/node_modules\//,
-                                                                                                                                            loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
-                                                                                                                                        },
-                                                                                                                                        {
-                                                                                                                                            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                                                                                            exclude: /\/node_modules\//,
-                                                                                                                                            loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
-                                                                                                                                        },*/
+                                                                                                                    test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
+                                                                                                                    loader: "imports-loader?this=>window&exports=>false&define=>false"
+                                                                                                                },
+                                                                                                                            {
+                                                                                                                                                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                                                                                                                include: /\/node_modules\//,
+                                                                                                                                                loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
+                                                                                                                                            },
+                                                                                                                                            {
+                                                                                                                                                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+                                                                                                                                                exclude: /\/node_modules\//,
+                                                                                                                                                loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
+                                                                                                                                            },*/
             {
                 test: /\.ejs$/,
                 loader: "ejs-loader"

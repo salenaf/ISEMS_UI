@@ -88,11 +88,10 @@ export default function CreateCardSourceTelemetry(props) {
         }
     };
 
-    const createStoragesDiskSpace = () => {
+    const commonStoragesSpace = () => {
         let storageTimeInterval = props.sourceInfo.informationTelemetry.timeInterval;
         let dateMin = 0;
         let dateMax = 0;
-        let listStorages = [];
 
         for(let key in storageTimeInterval){
             if(dateMin === 0 || dateMin > storageTimeInterval[key].dateMin){
@@ -102,28 +101,12 @@ export default function CreateCardSourceTelemetry(props) {
             if(dateMax < storageTimeInterval[key].dateMax){
                 dateMax = storageTimeInterval[key].dateMax;
             }
-
-            listStorages.push(<Row key={`key_${key}`}>
-                <Col md={6} className="text-left">
-                    <Typography variant="body2" component="p">{key}</Typography>
-                </Col>
-                <Col md={3} className="text-right">
-                    <Typography variant="body2" component="p">
-                        <i>{formatter.format(storageTimeInterval[key].dateMin)}</i>
-                    </Typography>
-                </Col>
-                <Col md={3} className="text-right">
-                    <Typography variant="body2" component="p">
-                        <i>{formatter.format(storageTimeInterval[key].dateMax)}</i>
-                    </Typography>
-                </Col>
-            </Row>);
         }
 
         let dateTimeBegin = formatter.format(dateMin);
         let dateTimeEnd = formatter.format(dateMax);
         let timeStorageFiles = ((dateMax - dateMin) / 86400000).toFixed(1);
-        let behindCurrentTime = (+new Date - dateMax) / 3600000;
+        let behindCurrentTime = ((+new Date) <= dateMax) ? 0.0: (+new Date - dateMax) / 3600000;
 
         let iconWarning = "";
         let behindCurrentTimeColor = ""; 
@@ -156,10 +139,53 @@ export default function CreateCardSourceTelemetry(props) {
                         </Typography>
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={12}>{listStorages}</Col>
-                </Row>
             </React.Fragment>
+        );
+    };
+
+    const createStoragesDiskSpace = () => {
+        let storageTimeInterval = props.sourceInfo.informationTelemetry.timeInterval;
+        let dateMin = 0;
+        let dateMax = 0;
+        let listStorages = [];
+
+        for(let key in storageTimeInterval){
+            if(dateMin === 0 || dateMin > storageTimeInterval[key].dateMin){
+                dateMin = storageTimeInterval[key].dateMin;
+            }
+
+            if(dateMax < storageTimeInterval[key].dateMax){
+                dateMax = storageTimeInterval[key].dateMax;
+            }
+
+            let timeStorage = ((storageTimeInterval[key].dateMax - storageTimeInterval[key].dateMin) / 86400000).toFixed(1);
+
+            listStorages.push(<TableRow key={`key_dir_name_${key}`}>
+                <TableCell>{key}</TableCell>
+                <TableCell><i>{formatter.format(storageTimeInterval[key].dateMin)} {formatter.format(storageTimeInterval[key].dateMax)}</i></TableCell>
+                <TableCell align="right">{timeStorage}</TableCell>
+            </TableRow>);
+        }
+        
+        return (
+            <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1c-content"
+                    id="panel1c-header" >                               
+                    <Typography variant="body2">локальное хранилище</Typography>
+                </AccordionSummary>
+                <Table size="small" aria-label="a dense table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><strong>директория</strong></TableCell>
+                            <TableCell><strong>диапазон</strong></TableCell>
+                            <TableCell align="right" className="align-middle"><strong>сутки</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>{listStorages}</TableBody>
+                </Table>
+            </Accordion>
         );
     };
 
@@ -171,7 +197,7 @@ export default function CreateCardSourceTelemetry(props) {
                 <TableCell>{item.diskName}</TableCell>
                 <TableCell>{item.mounted}</TableCell>
                 <TableCell align="right">{item.maxSpace}</TableCell>
-                <TableCell align="right">{getLevelColor(used)}%</TableCell>    
+                <TableCell align="right">{getLevelColor(used)} %</TableCell>    
             </TableRow>);
         });
 
@@ -195,7 +221,6 @@ export default function CreateCardSourceTelemetry(props) {
                     <TableBody>{list}</TableBody>
                 </Table>
             </Accordion>
-
         );
     };
 
@@ -206,8 +231,8 @@ export default function CreateCardSourceTelemetry(props) {
         for(let ifname in loadNetwork){
             list.push(<Row key={`key_${ifname}`}>
                 <Col md={4} className="text-left"><Typography variant="body2">{ifname}</Typography></Col>
-                <Col md={4} className="text-left"><Typography variant="body2">RX: {numFormatter.format(loadNetwork[ifname].RX)}</Typography></Col>
-                <Col md={4} className="text-left"><Typography variant="body2">TX: {numFormatter.format(loadNetwork[ifname].TX)}</Typography></Col>
+                <Col md={4} className="text-left"><Typography variant="body2">RX: {numFormatter.format(loadNetwork[ifname].RX)} бит</Typography></Col>
+                <Col md={4} className="text-left"><Typography variant="body2">TX: {numFormatter.format(loadNetwork[ifname].TX)} бит</Typography></Col>
             </Row>);
         }
 
@@ -241,7 +266,7 @@ export default function CreateCardSourceTelemetry(props) {
                 <Row>
                     <Col className="text-left" md={2}>
                         <Typography variant="body2" component="p">
-                            ЦП: {getLevelColor(+tele.loadCPU)}%
+                            ЦП: {getLevelColor(+tele.loadCPU)} %
                         </Typography>
                     </Col>
                     <Col className="text-right" md={10}>
@@ -251,13 +276,12 @@ export default function CreateCardSourceTelemetry(props) {
                     </Col>
                 </Row>
                 <Row>
-                    <Col md={0}>{createStoragesDiskSpace()}</Col>
+                    <Col md={6}>{commonStoragesSpace()}</Col>
+                    <Col md={6} className="mt-3">{createStoragesDiskSpace()}</Col>
                 </Row>
                 <Row className="mt-2">
-                    <Col md={12}>{createLocalDiskSpace()}</Col>
-                </Row>
-                <Row className="mt-2">
-                    <Col md={12}>{createNetworkIntarface()}</Col>
+                    <Col md={7}>{createLocalDiskSpace()}</Col>
+                    <Col md={5}>{createNetworkIntarface()}</Col>
                 </Row>
             </React.Fragment>
         );
@@ -270,7 +294,7 @@ export default function CreateCardSourceTelemetry(props) {
                     {`Источник №${props.sourceID} (${props.sourceShortName})`}
                 </Typography>
                 {(!props.sourceInfo.status) ?
-                    <Skeleton animation="wave" height={150} width="100%" style={{ marginBottom: 6 }} /> 
+                    <Skeleton animation="wave" height={180} width="100%" style={{ marginBottom: 6 }} /> 
                     :
                     <React.Fragment>
                         <Row>

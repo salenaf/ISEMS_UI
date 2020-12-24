@@ -12,15 +12,21 @@
 <body>
     <section id="container">
         <div class="content-wrapper">
-            <div class="container">
-                <div class="col-md-12 text-center" id="header-page-content"></div>
-                <div class="col-md-12 text-center" id="main-page-content"></div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12 text-center" id="header-page-content"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2" id="header-page-vertical_menu"></div>
+                    <div class="col-md-10 panel-body widget-main text-center mt-3" id="main-page-content"></div>
+                </div>
             </div>
         </div>
         <% include ../../footer.ejs %>
     </section>
 </body>
 
+<script src="/dist/createVerticalMenuItems.js"></script>
 <script src="/dist/networkInteractionMainHeader.js"></script>
 <script src="/dist/networkInteractionPageTelemetry.js"></script>
 

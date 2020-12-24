@@ -755,7 +755,7 @@ export default class CreateBodySearchTask extends React.Component {
                             </Form.Row>
                         </Col>
                         <Col md={1} className="text-right">
-                            <Row className="text-left mt-n2">
+                            <Row className=" mt-n2">
                                 <Col>
                                     <a href="#" 
                                         id="elem_helper"

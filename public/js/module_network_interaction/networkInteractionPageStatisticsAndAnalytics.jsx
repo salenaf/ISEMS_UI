@@ -316,7 +316,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Row>
+                <Row className="pt-3">
                     <Col md={12} className="text-right text-muted">
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>

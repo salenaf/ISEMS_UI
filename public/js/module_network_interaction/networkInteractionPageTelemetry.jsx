@@ -43,9 +43,6 @@ class CreatePageTelemetry extends React.Component {
     handlerEvents(){
         this.props.socketIo.on("module NI API", (data) => {
             if(data.instruction === "reject give information about state of source"){
-                //                console.log("--- reject give information about state of source ---");
-                //                console.log(data);
-
                 let isChange = false;
                 let objCopy = Object.assign({}, this.state);
 
@@ -69,9 +66,6 @@ class CreatePageTelemetry extends React.Component {
             }
 
             if(data.instruction === "give information about state of source"){
-                //                console.log("--- give information about state of source ---");
-                //                console.log(data);
-
                 if(!this.state.chosenSources.includes(data.options.id)){
                     return;
                 }
@@ -208,37 +202,33 @@ class CreatePageTelemetry extends React.Component {
 
     render(){
         return (
-            <Row className="pt-3">
-                <Col md={3}>
-                    <Row>
-                        <Col md={12}>
-                            <CreateSourceList 
-                                typeModal={"новая"}
-                                hiddenFields={false}
-                                listSources={this.props.listItems.listSources}
-                                currentSource={this.state.chosedSource}
-                                handlerChosen={this.handlerChosenSource}
-                                swithCheckConnectionStatus={false} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md={12} className="text-left">
-                            <CreateChipSource 
-                                chipData={this.state.chosenSources} 
-                                handleDelete={this.handlerChosenSourceDelete}/>
-                        </Col>
-                    </Row>
-                    <Row className="pt-2 text-right">
-                        <Col md={12}>
-                            {this.createButtonRequest()}
-                        </Col>
-                    </Row>
-                </Col>
-                <Col md={9}>
-                    {/*this.createCommonTelemetryInformation()*/}                   
-                    {this.createListSourceInformation()}
-                </Col>
-            </Row>
+            <React.Fragment>
+                <Row className="pt-3">
+                    <Col md={5} className="text-left">
+                        <CreateSourceList 
+                            typeModal={"новая"}
+                            hiddenFields={false}
+                            listSources={this.props.listItems.listSources}
+                            currentSource={this.state.chosedSource}
+                            handlerChosen={this.handlerChosenSource}
+                            swithCheckConnectionStatus={false} />        
+                    </Col>
+                    <Col md={5} className="mt-n1 text-left">
+                        <CreateChipSource 
+                            chipData={this.state.chosenSources} 
+                            handleDelete={this.handlerChosenSourceDelete}/>
+                    </Col>
+                    <Col md={2} className="text-right">
+                        {this.createButtonRequest()}
+                    </Col>
+                </Row>
+                <Row className="pt-2">
+                    <Col md={12}>
+                        {this.createCommonTelemetryInformation()}                   
+                        {this.createListSourceInformation()}
+                    </Col>
+                </Row>
+            </React.Fragment>
         );
     }
 }

@@ -38,15 +38,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowInfoConnectStatusSources: false,
         };
 
-        this.menuItem = {
-            "/network_interaction": { "num": 0, "label": "прогресс" },
-            "/network_interaction_page_file_download": { "num": 1, "label": "выгрузка файлов" },
-            "/network_interaction_page_search_tasks": { "num": 2, "label": "поиск" },
-            "/network_interaction_page_statistics_and_analytics": { "num": 3, "label": "аналитика" },
-            "/network_interaction_page_telemetry": { "num": 4, "label": "телеметрия" },
-            "/network_interaction_page_notification_log": { "num": 5, "label": "журнал событий" },
-        };
-
         this.userPermission = this.props.listItems.userPermissions;
 
         this.handlerShowModalWindowLanCalc = this.handlerShowModalWindowLanCalc.bind(this);
@@ -216,28 +207,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
     }
 
     handlerButtonSubmitWindowFilter(objTaskInfo){
-        /*let checkExistInputValue = () => {
-            let isEmpty = true;
-
-            done:
-            for(let et in objTaskInfo.inputValue){
-                for(let d in objTaskInfo.inputValue[et]){
-                    if(Array.isArray(objTaskInfo.inputValue[et][d]) && objTaskInfo.inputValue[et][d].length > 0){
-                        isEmpty = false;
-
-                        break done;  
-                    }
-                }
-            }
-
-            return isEmpty;
-        };
-
-        //проверяем наличие хотя бы одного параметра в inputValue
-        if(checkExistInputValue()){
-            return;
-        }*/
-
         this.props.socketIo.emit("network interaction: start new filtration task", {
             actionType: "add new task",
             arguments: {
@@ -250,8 +219,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 inputValue: objTaskInfo.inputValue,
             },
         });
-
-        //this.handlerCloseModalWindowFiltration();
     }
 
     showModuleConnectionError(){
@@ -288,65 +255,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         return (this.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
     }
 
-    createMenuItems(){
-        let list = [];
-        for(let item in this.menuItem){
-            /*if(item === "/network_interaction_page_telemetry"){
-                list.push(<Tab disabled href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            } else {
-                list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            }*/
-
-            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-        }
-
-        return (
-            <Row>
-                <Col md={12} className="mt-2">
-                    <Tabs
-                        value={this.getSelectedMenuItem.call(this)}
-                        indicatorColor="primary"                        
-                        centered >
-                        {list}
-                    </Tabs>
-                </Col>
-            </Row>
-        );
-    }
-
-    /**
-                        orientation="vertical"
-                        variant="scrollable"
-                        aria-label="Vertical tabs example"
-
- */
-
-    createMenuItemsVertical(){
-        let list = [];
-        for(let item in this.menuItem){
-            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-        }
-
-        return (
-            <Tabs
-                value={this.getSelectedMenuItem.call(this)}
-                indicatorColor="primary"
-                orientation="vertical"
-                variant="scrollable"
-                aria-label="Vertical tabs example" >
-                {list}
-            </Tabs>
-        );
-    }
-
-    getSelectedMenuItem(){
-        if((typeof this.menuItem[window.location.pathname] === "undefined") || (this.menuItem[window.location.pathname] === null)){           
-            return 3;
-        }
-
-        return (typeof this.menuItem[window.location.pathname].num !== "undefined") ? this.menuItem[window.location.pathname].num : 0;
-    }
-
     render(){
         return (
             <React.Fragment>
@@ -381,9 +289,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                         </Button>
                     </Col>
                 </Row>
-                {this.createMenuItems.call(this)}
-
-                {/*this.createMenuItemsVertical.call(this)*/}
 
                 <ModalWindowAddFilteringTask 
                     show={this.state.showModalWindowFiltration}
