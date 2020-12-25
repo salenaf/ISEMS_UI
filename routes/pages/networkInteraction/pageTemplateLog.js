@@ -60,7 +60,7 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
-        res.render("menu/network_interaction/page_source_telemetry", {
+        res.render("menu/network_interaction/page_template_log", {
             header: objHeader,
             listItems: {
                 connectionModules: {

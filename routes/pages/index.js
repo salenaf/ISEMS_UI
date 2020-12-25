@@ -15,6 +15,7 @@ exports.securityEventManagement = require("./securityEventManagement");
 exports.networkInteraction = require("./networkInteraction/index");
 exports.networkInteractionPageTelemetry = require("./networkInteraction/networkInteractionPageTelemetry");
 exports.networkInteractionPageSearchTasks = require("./networkInteraction/pageSearchTasks");
+exports.networkInteractionPageTemplateLog = require("./networkInteraction/pageTemplateLog");
 exports.networkInteractionPageFileDownload = require("./networkInteraction/pageFileDownload");
 exports.networkInteractionPageNotificationLog = require("./networkInteraction/pageNotificationLog");
 exports.networkInteractionPageStatisticsAndAnalytics = require("./networkInteraction/pageStatisticsAndAnalytics");

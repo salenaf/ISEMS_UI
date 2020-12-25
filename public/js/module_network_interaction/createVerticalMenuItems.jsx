@@ -11,8 +11,9 @@ class CreateMenuItemsVertical extends React.Component {
             "/network_interaction_page_file_download": { "num": 1, "label": "выгрузка файлов" },
             "/network_interaction_page_search_tasks": { "num": 2, "label": "поиск" },
             "/network_interaction_page_statistics_and_analytics": { "num": 3, "label": "аналитика" },
-            "/network_interaction_page_telemetry": { "num": 4, "label": "телеметрия" },
+            "/network_interaction_page_source_telemetry": { "num": 4, "label": "телеметрия" },
             "/network_interaction_page_notification_log": { "num": 5, "label": "журнал событий" },
+            "/network_interaction_page_template_log": { "num": 6, "label": "журнал шаблонов" },
         };
     }
 

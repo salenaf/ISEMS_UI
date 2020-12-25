@@ -43,13 +43,17 @@ module.exports = function(app) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionpageStatisticsAndAnalyticsDetalTask,
         },
-        "/network_interaction_page_telemetry": {
+        "/network_interaction_page_source_telemetry": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageTelemetry,
         },
         "/network_interaction_page_notification_log": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageNotificationLog,
+        },
+        "/network_interaction_page_template_log": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageTemplateLog,
         },
         "/setting_users": {
             access: "menuSettings.element_settings.submenu.setting_users.status",

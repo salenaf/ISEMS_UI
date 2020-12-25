@@ -162,7 +162,8 @@ export default function CreateCardSourceTelemetry(props) {
 
             listStorages.push(<TableRow key={`key_dir_name_${key}`}>
                 <TableCell>{key}</TableCell>
-                <TableCell><i>{formatter.format(storageTimeInterval[key].dateMin)} {formatter.format(storageTimeInterval[key].dateMax)}</i></TableCell>
+                <TableCell><i>{formatter.format(storageTimeInterval[key].dateMin)}</i></TableCell>
+                <TableCell><i>{formatter.format(storageTimeInterval[key].dateMax)}</i></TableCell>
                 <TableCell align="right">{timeStorage}</TableCell>
             </TableRow>);
         }
@@ -179,7 +180,8 @@ export default function CreateCardSourceTelemetry(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell><strong>директория</strong></TableCell>
-                            <TableCell><strong>диапазон</strong></TableCell>
+                            <TableCell><strong>время мин.</strong></TableCell>
+                            <TableCell><strong>время макс.</strong></TableCell>
                             <TableCell align="right" className="align-middle"><strong>сутки</strong></TableCell>
                         </TableRow>
                     </TableHead>
@@ -231,8 +233,8 @@ export default function CreateCardSourceTelemetry(props) {
         for(let ifname in loadNetwork){
             list.push(<Row key={`key_${ifname}`}>
                 <Col md={4} className="text-left"><Typography variant="body2">{ifname}</Typography></Col>
-                <Col md={4} className="text-left"><Typography variant="body2">RX: {numFormatter.format(loadNetwork[ifname].RX)} бит</Typography></Col>
-                <Col md={4} className="text-left"><Typography variant="body2">TX: {numFormatter.format(loadNetwork[ifname].TX)} бит</Typography></Col>
+                <Col md={4} className="text-left"><Typography variant="body2">RX: {numFormatter.format(loadNetwork[ifname].RX)} Кбит</Typography></Col>
+                <Col md={4} className="text-left"><Typography variant="body2">TX: {numFormatter.format(loadNetwork[ifname].TX)} Кбит</Typography></Col>
             </Row>);
         }
 
