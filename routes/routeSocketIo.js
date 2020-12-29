@@ -13,10 +13,10 @@ const writeLogFile = require("../libs/writeLogFile");
  * Маршруты для обработки информации передаваемой через протокол socket.io
  * Генератор событий (обрабатывает события от внешних источников, например API)
  *
+ * @param {*} eventEmiterTimerTick
  * @param {*} socketIo 
- * @param {*} object
  */
-module.exports.modulesEventGenerator = function(socketIo) {
+module.exports.modulesEventGenerator = function(eventEmiterTimerTick, socketIo) {
     if (!globalObject.hasData("descriptionAPI", "networkInteraction", "connection")) {
         return;
     }
@@ -369,9 +369,10 @@ module.exports.modulesEventGenerator = function(socketIo) {
  * Маршруты для обработки информации передаваемой через протокол socket.io
  * Обработчик событий поступающих от User Interface
  * 
+ * @param {*} eventEmiterTimerTick
  * @param {*} socketIo 
  **/
-module.exports.eventHandlingUserInterface = function(socketIo) {
+module.exports.eventHandlingUserInterface = function(eventEmiterTimerTick, socketIo) {
     /* --- УПРАВЛЕНИЕ ПАРОЛЯМИ ПО УМОЛЧАНИЮ --- */
     require("./route_handlers_socketio/handlerChangePassword")(socketIo);
 

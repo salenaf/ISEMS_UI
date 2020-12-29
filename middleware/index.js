@@ -80,6 +80,11 @@ module.exports = function(app, express, io) {
     app.use(passport.initialize());
     app.use(passport.session());
 
+    /**
+     * Timer temp task
+     */
+    const eventEmiterTimerTick = require("./handlerTimerTick")(10000);
+
     /*
      * Socket.io
      * */
@@ -89,7 +94,7 @@ module.exports = function(app, express, io) {
         //console.log(`socketIo CONNECTION with id: '${socket.id}'`);
 
         //обработчик событий User Interface
-        routeSocketIo.eventHandlingUserInterface(socket);
+        routeSocketIo.eventHandlingUserInterface(eventEmiterTimerTick, socket);
 
         socket.on("disconnect", () => {
             //console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
@@ -205,7 +210,7 @@ module.exports = function(app, express, io) {
     connectionWithModuleNetworkInteraction();
 
     //обработчик событий сторонних модулей через API
-    routeSocketIo.modulesEventGenerator(socketIo);
+    routeSocketIo.modulesEventGenerator(eventEmiterTimerTick, socketIo);
 
     /*
      * Setup passport
