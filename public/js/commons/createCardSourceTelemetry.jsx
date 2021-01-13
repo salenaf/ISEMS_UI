@@ -233,8 +233,8 @@ export default function CreateCardSourceTelemetry(props) {
         for(let ifname in loadNetwork){
             list.push(<Row key={`key_${ifname}`}>
                 <Col md={4} className="text-left"><Typography variant="body2">{ifname}</Typography></Col>
-                <Col md={4} className="text-left"><Typography variant="body2">RX: {numFormatter.format(loadNetwork[ifname].RX)} Кбит</Typography></Col>
-                <Col md={4} className="text-left"><Typography variant="body2">TX: {numFormatter.format(loadNetwork[ifname].TX)} Кбит</Typography></Col>
+                <Col md={4} className="text-left"><Typography variant="body2">RX: {numFormatter.format(loadNetwork[ifname].RX)} Кбит/сек.</Typography></Col>
+                <Col md={4} className="text-left"><Typography variant="body2">TX: {numFormatter.format(loadNetwork[ifname].TX)} Кбит/сек.</Typography></Col>
             </Row>);
         }
 

@@ -32,31 +32,47 @@ class TempTaskStorage {
                 });
             }
  */
+
+        /**
+         * {
+         *     "listDateTimeTrigger": [
+         *         {  
+         *             dateTimeTrigger: {
+         *                 weekday: [] //дни недели, перечисляются сокращенно (если пусто значит каждый день)
+         *                 hour: <час>,
+         *                 minutes: <минута>,           
+         *             },
+         *             taskType: "telemetry", //тип задачи ("telemetry", "filtration")
+         *             taskParameters: { //параметры задачи, зависит от типа
+         *                 listSourceID: [], //список источников для которых применима задача, если пусто то для всех
+         *             }
+         *         },
+         *     ],
+         * }
+         */
         this.obj = {
-            "telemetry": {},
-            "filtration": {},
+            "listDateTimeTrigger": [],
         };
     }
 
     /**
      * 
      * @param {*} myEmitter 
-     * @param {*} data { tempType: "", options: {} }
+     * @param {*} data { tempType: "", options: { dateTimeTrigger: {}, taskParameters: {} } }
      */
     setTempTask(myEmitter, data) {
         console.log("class 'TempTaskStorage', func 'setTempTask'");
         console.log(data);
 
-        if (data.tempType === "telemetry") {
-            this.data.telemetry[data.options.taskID] = {
-                "dateTimeTrigger": data.options.dateTimeTrigger,
-                "sourcesID": data.options.sourcesID
-            };
-        }
+        /*
+1. получаем параметры и выполняем валидацию
+2. проверяем наличие подобной задачи. Для "telemetry" попроще, если полное соответствие то
+ отклоняем задачу с вердиктом "подобная задача уже существует". Для "filtration" следует
+ учитывать частоту задач по фильтрации, они не должны быть сличком часто заданны,
+ так как может неуспеть закончится предидущая фильтрация как начнется следующая
+3. добавляем вновь сформированные задачи в "listDateTimeTrigger"
+ */
 
-        if (data.tempType === "filtration") {
-            /** пока заглушка */
-        }
     }
 
     getTempTask(myEmitter, data) {

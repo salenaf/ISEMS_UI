@@ -23,19 +23,40 @@ export default function CreateSteppersTemplateLog(props) {
     console.log("func 'createSteppersTemplateLog'");
     console.log(props);
 
-    const [activeStep, setActiveStep] = React.useState(0);
+    //    const [activeStep, setActiveStep] = React.useState(0);
+
+    if(!props.show){
+        return null;
+    }
 
     return (
-        <Stepper activeStep={activeStep} alternativeLabel>
-            {props.steppers.map((label) => (
-                <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                </Step>
-            ))}
+        <Stepper activeStep={props.activeStep} nonLinear alternativeLabel>
+            {props.steppers.map((label, key) => {
+                let stepProps = {};
+                let labelProps = {};
+
+                stepProps.completed = false;
+
+                if(props.stepsComplete.includes(key)) {
+                    stepProps.completed = true;
+                }
+
+                if(props.stepsError.includes(key)){
+                    labelProps.error = true;
+                }
+
+                return (<Step key={label} {...stepProps}>
+                    <StepLabel {...labelProps}>{label}</StepLabel>
+                </Step>);
+            })}
         </Stepper>
     );
 }
 
 CreateSteppersTemplateLog.propTypes = {
+    show: PropTypes.bool.isRequired,
     steppers: PropTypes.array.isRequired,
+    activeStep: PropTypes.number.isRequired,
+    stepsError: PropTypes.array.isRequired,
+    stepsComplete: PropTypes.array.isRequired,
 };
