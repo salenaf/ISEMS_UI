@@ -1,9 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row } from "react-bootstrap";
+import Radio from "@material-ui/core/Radio";
 import ButtonUI from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormGroup from "@material-ui/core/FormGroup";
 import FormLabel from "@material-ui/core/FormLabel";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import PropTypes from "prop-types";
 
 import CreateSteppersTemplateLog from "../commons/createSteppersTemplateLog.jsx";
@@ -21,12 +26,24 @@ class CreatePageTemplateLog extends React.Component {
             stepsError: [],
             templateParameters: {
                 templateType: "telemetry",
-
+                templateTime: {
+                    checkSelectedType: "no_days",
+                    listSelectedDays: {
+                        Mon: { checked: false, name: "понедельник" },
+                        Tue: { checked: false, name: "вторник" },
+                        Wed: { checked: false, name: "среда" },
+                        Thu: { checked: false, name: "четверг" },
+                        Fri: { checked: false, name: "пятница" },
+                        Sat: { checked: false, name: "суббота" },
+                        Sun: { checked: false, name: "воскресенье" },
+                    },
+                },
             },
         };
 
         this.handlerButtonBack = this.handlerButtonBack.bind(this);
         this.handlerButtonNext = this.handlerButtonNext.bind(this);   
+        this.handlerButtonCancel = this.handlerButtonCancel.bind(this);
         this.handlerButtonFinish = this.handlerButtonFinish.bind(this);
         this.handlerButtonAddTask = this.handlerButtonAddTask.bind(this);
     }
@@ -119,6 +136,10 @@ class CreatePageTemplateLog extends React.Component {
         }
     }
 
+    handlerButtonCancel(){
+        console.log("func 'handlerButtonCancel'");
+    }
+
     handlerCheckForm(){
         //тут делаем валидацию НЕКОТРЫХ форм
         //пока для теста выберем форму с временем
@@ -129,6 +150,84 @@ class CreatePageTemplateLog extends React.Component {
 
             this.setState({ stepsError: stepsError });
         }
+    }
+
+    handleChangeTemplateType(event){
+        let templateParameters = this.state.templateParameters;
+        templateParameters.templateType = event.target.value;
+
+        this.setState({ templateParameters: templateParameters });
+    }
+
+    handleChangeTemplateTimeRadioType(event){
+        const value = event.target.value;
+        let templateParameters = this.state.templateParameters;
+        let cleanAllChecked = () => {
+            for(let dayName in templateParameters.templateTime.listSelectedDays){
+                templateParameters.templateTime.listSelectedDays[dayName].checked = false;
+            }
+        };
+
+        templateParameters.templateTime.checkSelectedType = value;
+
+        switch(value){
+        case "no_days":
+            cleanAllChecked();
+
+            break;
+
+        case "every_day":
+            for(let dayName in templateParameters.templateTime.listSelectedDays){
+                templateParameters.templateTime.listSelectedDays[dayName].checked = true;
+            }
+
+            break;
+
+        case "working_days_only":
+            for(let dayName in templateParameters.templateTime.listSelectedDays){
+                if(dayName === "Sat" || dayName === "Sun"){
+                    templateParameters.templateTime.listSelectedDays[dayName].checked = false;
+                } else {
+                    templateParameters.templateTime.listSelectedDays[dayName].checked = true;
+                }
+            }    
+        
+            break;
+
+        case "weekends_only":
+            cleanAllChecked();
+
+            templateParameters.templateTime.listSelectedDays.Sat.checked = true;
+            templateParameters.templateTime.listSelectedDays.Sun.checked = true;
+
+            break;
+        }
+
+        this.setState({ templateParameters: templateParameters });
+    }
+
+    handleChangeCheckboxdayOfWeek(event){
+        console.log("func 'handleChangeCheckboxdayOfWeek', START...");
+        console.log(event.target.value);
+
+        /**
+templateParameters: {
+                templateType: "telemetry",
+                templateTime: {
+                    checkSelectedType: "every_day",
+                    listSelectedDays: {
+                        Mon: { checked: false, name: "понедельник" },
+                        Tue: { checked: false, name: "вторник" },
+                        Wed: { checked: false, name: "среда" },
+                        Thu: { checked: false, name: "четверг" },
+                        Fri: { checked: false, name: "пятница" },
+                        Sat: { checked: false, name: "суббота" },
+                        Sun: { checked: false, name: "воскресенье" },
+                    },
+                },
+            },
+ */
+
     }
 
     createTemplateList(){
@@ -172,6 +271,56 @@ class CreatePageTemplateLog extends React.Component {
         );
     }
 
+    createFormControlChangeTime(){
+        let createListDays = () => {
+            let listChecbox = [];
+            let listSelectedDays = this.state.templateParameters.templateTime.listSelectedDays;
+
+            for(let dayOfWeek in listSelectedDays){
+                let checkboxColor = (dayOfWeek === "Sat" || dayOfWeek === "Sun") ? "secondary": "primary";
+
+                listChecbox.push(<FormControlLabel
+                    key={`checkbox_${dayOfWeek}`}
+                    className="mb-n3"
+                    control={
+                        <Checkbox 
+                            checked={listSelectedDays[dayOfWeek].checked} 
+                            onChange={this.handleChangeCheckboxdayOfWeek} 
+                            name={dayOfWeek}
+                            color={checkboxColor} />
+                    }
+                    label={listSelectedDays[dayOfWeek].name} />);
+            }
+
+            return (
+                <FormGroup>{listChecbox}</FormGroup>
+            );
+        };
+
+        return (
+            <Row>
+                <Col md={4} className="ml-5">
+                    <RadioGroup 
+                        aria-label="gender" 
+                        name="templateTime" 
+                        value={this.state.templateParameters.templateTime.checkSelectedType} 
+                        onChange={this.handleChangeTemplateTimeRadioType.bind(this)}>
+                        <FormControlLabel className="mb-n3" value="no_days" control={<Radio color="primary" size="small" />} label="дни не выбраны" />
+                        <FormControlLabel className="mb-n3" value="every_day" control={<Radio color="primary" size="small" />} label="каждый день" />
+                        <FormControlLabel className="mb-n3" value="working_days_only" control={<Radio color="primary" size="small" />} label="только рабочие дни" />
+                        <FormControlLabel className="mb-n3" value="weekends_only" control={<Radio color="primary" size="small" />} label="только выходные" />
+                    </RadioGroup>
+                </Col>
+                <Col md={4}>
+                    {createListDays()}
+                </Col>
+                <Col md={4}>
+timer
+                </Col>
+            </Row>
+        );
+    }
+
     createForm(){
         if(!this.state.showForm){
             return;
@@ -180,17 +329,22 @@ class CreatePageTemplateLog extends React.Component {
         switch(this.state.numberSteppers){
         case 0:
             return (
-                <FormControl component="fieldset">
-                    <FormLabel component="legend">Тип шаблона</FormLabel>
-                </FormControl>
+                <Row>
+                    <Col md={12} className="text-center">
+                        <RadioGroup 
+                            aria-label="gender" 
+                            name="templateType" 
+                            value={this.state.templateParameters.templateType} 
+                            onChange={this.handleChangeTemplateType.bind(this)}>
+                            <FormControlLabel className="mb-n2" value="telemetry" control={<Radio color="primary" size="small" />} label="телеметрия" />
+                            <FormControlLabel value="filtration" disabled control={<Radio color="primary" size="small" />} label="фильтрация" />
+                        </RadioGroup>
+                    </Col>
+                </Row>
             );
 
         case 1:
-            return (
-                <FormControl component="fieldset">
-                    <FormLabel component="legend">Выбор времени</FormLabel>
-                </FormControl>
-            );
+            return this.createFormControlChangeTime.call(this);
 
         case 2:
             return (
@@ -254,7 +408,11 @@ class CreatePageTemplateLog extends React.Component {
                 <Col md={12} className="text-left">
                     {createButtonBack()}
                     {createButtonNext()}
-                    <ButtonUI>отменить</ButtonUI>
+                    <ButtonUI 
+                        color="secondary"
+                        onClick={this.handlerButtonCancel}>
+                        отменить
+                    </ButtonUI>
                 </Col>
             </Row>
         );
@@ -277,7 +435,7 @@ class CreatePageTemplateLog extends React.Component {
                     <Col md={12}>{this.createForm.call(this)}</Col>
                 </Row>
                 <Row>
-                    <Col md={12}>{this.createButtons.call(this)}</Col>
+                    <Col md={12} className="text-center">{this.createButtons.call(this)}</Col>
                 </Row>
                 {this.createBottonAddTask.call(this)}
                 {this.createTemplateList.call(this)}
