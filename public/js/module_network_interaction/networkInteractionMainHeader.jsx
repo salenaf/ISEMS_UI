@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row } from "react-bootstrap";
 import { Alert } from "material-ui-lab";
-import { Tab, Tabs, LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";

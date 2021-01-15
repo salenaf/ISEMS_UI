@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row } from "react-bootstrap";
+import { makeStyles } from "@material-ui/core/styles";
 import { blue } from "@material-ui/core/colors";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -13,9 +14,12 @@ import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { TimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
+import DateFnsUtils from "dateIoFnsUtils";
 import PropTypes from "prop-types";
 
 import CreateSteppersTemplateLog from "../commons/createSteppersTemplateLog.jsx";
+//import { propTypes } from "react-bootstrap/esm/Image";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,6 +39,40 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: -12,
     },
 }));
+
+/*function CreateCard(props){
+    const classes = useStyles();
+
+    return (
+        <Crad>
+            <CardContent>
+            </CardContent>
+        </Crad>
+    );
+}
+
+CreateCart.PropTypes = {
+
+};*/
+
+function CreateTimePicker(props){
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <TimePicker
+                clearable
+                ampm={false}
+                label="24 hours"
+                value={props.selectedDate}
+                onChange={props.handleDateChange}
+            />
+        </MuiPickersUtilsProvider>
+    );
+}
+
+CreateTimePicker.propTypes = {
+    selectedDate: PropTypes.object.isRequired,
+    handleDateChange: PropTypes.func.isRequired,
+};
 
 function CreateButtons(props){
     const classes = useStyles();
@@ -121,6 +159,7 @@ class CreatePageTemplateLog extends React.Component {
                 templateType: "telemetry",
                 templateTime: {
                     checkSelectedType: "no_days",
+                    timeTrigger: new Date,
                     listSelectedDays: {
                         Mon: { checked: false, name: "понедельник" },
                         Tue: { checked: false, name: "вторник" },
@@ -323,6 +362,15 @@ templateParameters: {
 
     }
 
+    handlerChangeTimeTrigger(date){
+        console.log("func 'handlerChangeTimeTrigger'");
+        console.log(date);
+
+        let objCopy = Object.assign({}, this.state.templateParameters);
+        objCopy.templateTime.timeTrigger = date;
+        this.setState({ templateParameters: objCopy });
+    }
+
     createTemplateList(){
         if(this.state.showForm){
             return;
@@ -392,7 +440,7 @@ templateParameters: {
 
         return (
             <Row>
-                <Col md={4} className="ml-5">
+                <Col md={4}>
                     <RadioGroup 
                         aria-label="gender" 
                         name="templateTime" 
@@ -408,7 +456,9 @@ templateParameters: {
                     {createListDays()}
                 </Col>
                 <Col md={4}>
-timer
+                    <CreateTimePicker
+                        selectedDate={this.state.templateParameters.templateTime.timeTrigger} 
+                        handleDateChange={this.handlerChangeTimeTrigger.bind(this)} />
                 </Col>
             </Row>
         );
@@ -523,22 +573,28 @@ timer
                             stepsComplete={this.state.stepsComplete} />
                     </Col>
                 </Row>
-                {(this.state.showForm) ?
-                    <Card>
-                        <CardContent>
-                            {this.createForm.call(this)}
-                        </CardContent>
-                        <CardActions>
-                            {/*this.createButtons.call(this)*/}
-                            <CreateButtons 
-                                numberSteppers={this.state.numberSteppers}
-                                templateParameters={this.state.templateParameters}
-                                handlerButtonBack={this.handlerButtonBack}
-                                handlerButtonNext={this.handlerButtonNext}
-                                handlerButtonCancel={this.handlerButtonCancel}
-                                handlerButtonFinish={this.handlerButtonFinish} />
-                        </CardActions>                
-                    </Card>: ""}
+                {(this.state.showForm) &&
+                    <Row>
+                        <Col md={1}></Col>
+                        <Col md={10}>
+                            <Card>
+                                <CardContent>
+                                    {this.createForm.call(this)}
+                                </CardContent>
+                                <CardActions>
+                                    {/*this.createButtons.call(this)*/}
+                                    <CreateButtons 
+                                        numberSteppers={this.state.numberSteppers}
+                                        templateParameters={this.state.templateParameters}
+                                        handlerButtonBack={this.handlerButtonBack}
+                                        handlerButtonNext={this.handlerButtonNext}
+                                        handlerButtonCancel={this.handlerButtonCancel}
+                                        handlerButtonFinish={this.handlerButtonFinish} />
+                                </CardActions>                
+                            </Card>
+                        </Col>
+                        <Col md={1}></Col>
+                    </Row>}
                 {this.createBottonAddTask.call(this)}
                 {this.createTemplateList.call(this)}
             </React.Fragment>
