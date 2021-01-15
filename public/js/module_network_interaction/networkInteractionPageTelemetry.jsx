@@ -167,7 +167,7 @@ class CreatePageTelemetry extends React.Component {
 
         return (
             <Row>
-                <Col>
+                <Col md={12}>
                     <Paper>Здесь будет общая информация о телеметри источников</Paper>
                 </Col>
             </Row> 

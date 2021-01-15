@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import { Button, Col, Form, Row, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
+import CreateButtonNextChunk from "./createButtonYet.jsx";
+
 class CreateSourceList extends React.Component {
     constructor(props){
         super(props);
@@ -205,28 +207,6 @@ class CreatePageNotificationLog extends React.Component {
         });
     }
 
-    createButtonNextChunk(){
-        if(this.state.countDocument <= this.props.listItems.maxChunkLimit){
-            return;
-        }
-
-        if(this.state.msgList.length >= this.state.countDocument){
-            return;
-        }
-
-        return (
-            <Row>
-                <Col md={12} className="text-right">
-                    <Button 
-                        size="sm" 
-                        variant="light" 
-                        onClick={this.handlerNextChunk}
-                        disabled={this.state.buttonNextChunkIsDisabled} >ещё...</Button>
-                </Col>
-            </Row>
-        );
-    }
-
     render(){
         let isDisabled = ((this.state.chosenSource === 0) && (this.state.notificationType === ""));
 
@@ -281,7 +261,17 @@ class CreatePageNotificationLog extends React.Component {
                         </Table>
                     </Col>
                 </Row>
-                {this.createButtonNextChunk.call(this)}
+                <Row>
+                    <Col md={11}></Col>
+                    <Col md={1}>
+                        <CreateButtonNextChunk
+                            countMsgList={this.state.msgList.length}
+                            countDocument={this.state.countDocument}
+                            maxChunkLimit={this.props.listItems.maxChunkLimit}
+                            handlerNextChunk={this.handlerNextChunk}
+                            buttonNextChunkIsDisabled={this.state.buttonNextChunkIsDisabled} />
+                    </Col>
+                </Row>
             </React.Fragment>
         );
     }

@@ -1,6 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row } from "react-bootstrap";
+import { blue } from "@material-ui/core/colors";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
 import Radio from "@material-ui/core/Radio";
 import ButtonUI from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -12,6 +16,95 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import PropTypes from "prop-types";
 
 import CreateSteppersTemplateLog from "../commons/createSteppersTemplateLog.jsx";
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: "flex",
+        alignItems: "center",
+    },
+    wrapper: {
+        margin: theme.spacing(1),
+        position: "relative",
+    },
+    buttonProgress: {
+        color: blue[500],
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        marginTop: -12,
+        marginLeft: -12,
+    },
+}));
+
+function CreateButtons(props){
+    const classes = useStyles();
+
+    let createButtonBack = () => {
+        return (
+            <ButtonUI 
+                onClick={props.handlerButtonBack} 
+                disabled={props.numberSteppers === 0}>
+                назад
+            </ButtonUI>
+        );
+    };
+
+    let createButtonNext = () => {
+        let isFinish = false;
+
+        if(props.templateParameters.templateType === "telemetry" && props.numberSteppers >= 3){
+            isFinish = true;
+        }
+
+        if(props.numberSteppers === 4){
+            isFinish = true;
+        }
+
+        if(isFinish){
+            return (
+                <ButtonUI 
+                    size="small"
+                    color="primary" 
+                    onClick={props.handlerButtonFinish}>
+                    завершить
+                </ButtonUI>
+            );
+        } else {
+            return (
+                <ButtonUI 
+                    size="small"
+                    color="primary" 
+                    onClick={props.handlerButtonNext}>
+                    вперед
+                </ButtonUI>
+            );
+        }
+    };
+
+    return (
+        <Row>
+            <Col md={12} className="text-left ml-1">
+                {createButtonBack()}
+                {createButtonNext()}
+                <ButtonUI 
+                    size="small"
+                    color="secondary"
+                    onClick={props.handlerButtonCancel}>
+                    отменить
+                </ButtonUI>
+            </Col>
+        </Row>
+    );
+}
+
+CreateButtons.propTypes = {
+    numberSteppers: PropTypes.number.isRequired,
+    templateParameters: PropTypes.object.isRequired,
+    handlerButtonBack: PropTypes.func.isRequired,
+    handlerButtonNext: PropTypes.func.isRequired,
+    handlerButtonCancel: PropTypes.func.isRequired,
+    handlerButtonFinish: PropTypes.func.isRequired,
+};
 
 class CreatePageTemplateLog extends React.Component {
     constructor(props){
@@ -321,11 +414,7 @@ timer
         );
     }
 
-    createForm(){
-        if(!this.state.showForm){
-            return;
-        }
-        
+    createForm(){       
         switch(this.state.numberSteppers){
         case 0:
             return (
@@ -363,16 +452,14 @@ timer
     }
 
     createButtons(){
-        if(!this.state.showForm){
-            return;
-        }
-
         let createButtonBack = () => {
-            return <ButtonUI 
-                onClick={this.handlerButtonBack} 
-                disabled={this.state.numberSteppers === 0}>
-            назад
-            </ButtonUI>;
+            return (
+                <ButtonUI 
+                    onClick={this.handlerButtonBack} 
+                    disabled={this.state.numberSteppers === 0}>
+                    назад
+                </ButtonUI>
+            );
         };
 
         let createButtonNext = () => {
@@ -387,28 +474,33 @@ timer
             }
 
             if(isFinish){
-                return <ButtonUI 
-                    color="primary" 
-                    onClick={this.handlerButtonFinish}>
-                завершить
-                </ButtonUI>;
+                return (
+                    <ButtonUI 
+                        size="small"
+                        color="primary" 
+                        onClick={this.handlerButtonFinish}>
+                        завершить
+                    </ButtonUI>
+                );
             } else {
-                return <ButtonUI 
-                    color="primary" 
-                    onClick={this.handlerButtonNext}>
-                вперед
-                </ButtonUI>;
+                return (
+                    <ButtonUI 
+                        size="small"
+                        color="primary" 
+                        onClick={this.handlerButtonNext}>
+                        вперед
+                    </ButtonUI>
+                );
             }
         };
 
-
-
         return (
             <Row>
-                <Col md={12} className="text-left">
+                <Col md={12} className="text-left ml-1">
                     {createButtonBack()}
                     {createButtonNext()}
                     <ButtonUI 
+                        size="small"
                         color="secondary"
                         onClick={this.handlerButtonCancel}>
                         отменить
@@ -431,12 +523,22 @@ timer
                             stepsComplete={this.state.stepsComplete} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={12}>{this.createForm.call(this)}</Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-center">{this.createButtons.call(this)}</Col>
-                </Row>
+                {(this.state.showForm) ?
+                    <Card>
+                        <CardContent>
+                            {this.createForm.call(this)}
+                        </CardContent>
+                        <CardActions>
+                            {/*this.createButtons.call(this)*/}
+                            <CreateButtons 
+                                numberSteppers={this.state.numberSteppers}
+                                templateParameters={this.state.templateParameters}
+                                handlerButtonBack={this.handlerButtonBack}
+                                handlerButtonNext={this.handlerButtonNext}
+                                handlerButtonCancel={this.handlerButtonCancel}
+                                handlerButtonFinish={this.handlerButtonFinish} />
+                        </CardActions>                
+                    </Card>: ""}
                 {this.createBottonAddTask.call(this)}
                 {this.createTemplateList.call(this)}
             </React.Fragment>
