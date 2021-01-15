@@ -28,11 +28,7 @@ class CreateMenuItemsVertical extends React.Component {
     createMenu(){
         let list = [];
         for(let item in this.menuItem){
-            if(item === "/network_interaction_page_template_log"){
-                list.push(<Tab href={item} disabled label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            } else {
-                list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            }
+            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
         }
 
         return (
