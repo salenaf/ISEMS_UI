@@ -1,9 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Form, Row, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Button, Col, Form, Row, Spinner, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
-
-import CreateButtonNextChunk from "./createButtonYet.jsx";
 
 class CreateSourceList extends React.Component {
     constructor(props){
@@ -207,6 +205,19 @@ class CreatePageNotificationLog extends React.Component {
         });
     }
 
+    createButtonNextChunk(){
+        return (
+            <Button 
+                size="sm" 
+                variant="outline-secondary" 
+                onClick={this.handlerNextChunk}
+                disabled={this.state.buttonNextChunkIsDisabled} >
+                {this.state.buttonNextChunkIsDisabled && <Spinner as="span" size="sm" role="status" aria-hidden="true" animation="border" variant="info" />}
+                &nbsp;Ещё...
+            </Button>
+        );
+    }
+
     render(){
         let isDisabled = ((this.state.chosenSource === 0) && (this.state.notificationType === ""));
 
@@ -262,14 +273,8 @@ class CreatePageNotificationLog extends React.Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col md={11}></Col>
-                    <Col md={1}>
-                        <CreateButtonNextChunk
-                            countMsgList={this.state.msgList.length}
-                            countDocument={this.state.countDocument}
-                            maxChunkLimit={this.props.listItems.maxChunkLimit}
-                            handlerNextChunk={this.handlerNextChunk}
-                            buttonNextChunkIsDisabled={this.state.buttonNextChunkIsDisabled} />
+                    <Col md={12} className="text-right">
+                        {this.createButtonNextChunk.call(this)}
                     </Col>
                 </Row>
             </React.Fragment>

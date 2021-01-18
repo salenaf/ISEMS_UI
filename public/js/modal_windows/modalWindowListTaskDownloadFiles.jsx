@@ -143,12 +143,12 @@ export default class ModalWindowListTaskDownloadFiles extends React.Component {
             <Row>
                 <Col md={12}>
                     <Button 
-                        className="mr-2"
-                        variant="light" 
-                        onClick={this.handlerNextChunkFileList} 
-                        disabled={this.state.disabledButtonNext}
-                        size="sm">
-                                ещё...
+                        size="sm" 
+                        variant="outline-secondary" 
+                        onClick={this.handlerNextChunkFileList}
+                        disabled={this.state.disabledButtonNext} >
+                        {this.state.disabledButtonNext && <Spinner as="span" size="sm" role="status" aria-hidden="true" animation="border" variant="info" />}
+                        &nbsp;Ещё...
                     </Button>
                 </Col>
             </Row>
