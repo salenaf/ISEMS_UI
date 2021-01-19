@@ -20,7 +20,6 @@ class CreatePageTelemetry extends React.Component {
     
         this.handlerEvents.call(this);
 
-
         this.compareNumeric = this.compareNumeric.bind(this);
         this.getShortSourceName = this.getShortSourceName.bind(this);
         this.createButtonRequest = this.createButtonRequest.bind(this);

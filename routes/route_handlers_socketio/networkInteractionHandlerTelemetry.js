@@ -34,12 +34,6 @@ function getTelemetryForListSource(socketIo, data) {
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
 
-            let filtrTaskParametr = authData.document.groupSettings.management_network_interaction.element_settings.management_tasks_filter.element_settings;
-            //может ли пользователь создавать задачи на фильтрацию
-            if (!filtrTaskParametr.create.status) {
-                throw new MyError("management auth", "Невозможно отправить запрос на фильтрацию. Недостаточно прав на выполнение данного действия.");
-            }
-
             if ((typeof data.arguments === "undefined") || (typeof data.arguments.listSource === "undefined") || (data.arguments.listSource.length === 0)) {
                 throw new MyError("management validation", "Приняты некорректные параметры запроса.");
             }
@@ -58,7 +52,7 @@ function getTelemetryForListSource(socketIo, data) {
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: `Задача по фильтрации отклонена. ${err.message}`,
+                    message: `Запрос на получение телеметрии отклонен. ${err.message}`,
                 });
             } else if (err.name === "management network interaction") {
                 //при отсутствии доступа к модулю сетевого взаимодействия
@@ -68,16 +62,10 @@ function getTelemetryForListSource(socketIo, data) {
                     message: err.message.toString()
                 });
             } else {
-                let msg = "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.";
-
-                if ((err.message.toString()).includes("duplicate key")) {
-                    msg = "Совпадение ключевых полей, запись в базу данных невозможен.";
-                }
-
                 showNotify({
                     socketIo: socketIo,
                     type: "danger",
-                    message: msg
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
             }
 

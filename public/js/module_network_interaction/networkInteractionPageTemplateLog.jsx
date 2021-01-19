@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Row } from "react-bootstrap";
+import { Badge, Button, Col, Row } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue, red } from "@material-ui/core/colors";
 import Card from "@material-ui/core/Card";
@@ -151,6 +151,7 @@ CreateTimePicker.propTypes = {
 
 function CreateForm(props){ 
     let daysOfWeek = [];
+    let textColor = "text-primary";
     
     switch(props.numberSteppers){
     case 0:
@@ -209,60 +210,77 @@ function CreateForm(props){
             </FormControl>
         );
 
-    case 4:       
-        /**
- * templateParameters: {
-                templateType: "telemetry",
-                templateTime: {
-                    checkSelectedType: "no_days",
-                    timeTrigger: new Date,
-                    listSelectedDays: {
-                        Mon: { checked: false, name: "понедельник" },
-                        Tue: { checked: false, name: "вторник" },
-                        Wed: { checked: false, name: "среда" },
-                        Thu: { checked: false, name: "четверг" },
-                        Fri: { checked: false, name: "пятница" },
-                        Sat: { checked: false, name: "суббота" },
-                        Sun: { checked: false, name: "воскресенье" },
-                    },
-                },
-                templateListSource: [],
-                templeteChosedSource: 0,
-            },
- */
-
+    case 4: 
         for(let day in props.templateParameters.templateTime.listSelectedDays){
             if(props.templateParameters.templateTime.listSelectedDays[day].checked){
                 daysOfWeek.push(props.templateParameters.templateTime.listSelectedDays[day].name);
             }
         }
 
-        /**
- * 
- * Дни недели можно подсветить синие - рабочие, красные - выходные
- */
-
         return (
             <React.Fragment>
                 <Row>
                     <Col md={12} className="text-left">
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="subtitle1" color="textSecondary">
                         Подготовлен шаблон со следующими параметрами:
                         </Typography>
                     </Col>
                 </Row>
                 <Row>
-                    <Col md={4} className="text-right">тип шаблона:</Col>
-                    <Col md={8} className="text-left"><i>{(props.templateParameters.templateType === "telemetry") ? "телеметрия": "фильтрация"}</i></Col>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
+                    </Col>
+                    <Col md={8} className="text-left">{(props.templateParameters.templateType === "telemetry") ? "телеметрия": "фильтрация"}</Col>
                 </Row>
                 <Row>
-                    <Col md={4} className="text-right">дни недели:</Col>
-                    <Col md={8} className="text-left"><i>{daysOfWeek.join()}</i></Col>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">дни недели:</Typography>
+                    </Col>
+                    <Col md={8} className="text-left">{(()=>{
+                        let i = 0;
+                        let num = daysOfWeek.length;
+                        let comma = ", ";
+                        
+                        return daysOfWeek.map((item) => {
+                            if(item === "суббота" || item === "воскресенье"){
+                                textColor = "text-danger";
+                            } else {
+                                textColor = "text-primary";
+                            }
+
+                            return (num > ++i) ? <span key={`key_day_of_week_${item}`} className={textColor}>{item+comma}</span> : <span key={`key_day_of_week_${item}`} className={textColor}>{item}</span>;
+                        });
+                    })()}</Col>
                 </Row>
-                <FormControl component="fieldset">
-                    <FormLabel component="legend">Завершение создания шаблона</FormLabel>
-                    {JSON.stringify(props.templateParameters)}
-                </FormControl>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">время выполнения:</Typography>                        
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {(() => {
+                            let hour = props.templateParameters.templateTime.timeTrigger.getHours();
+                            let minute = props.templateParameters.templateTime.timeTrigger.getMinutes();
+
+                            return ((hour < 10) ? "0"+hour : hour)+":"+((minute < 10) ? "0"+minute : minute);
+                        })()}
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">список источников для выполнения:</Typography>                        
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {(() => {
+                            if(props.templateParameters.templateListSource.length === 0){
+                                return "на всех источниках";
+                            }
+
+                            return props.templateParameters.templateListSource.map((item) => {
+                                return <Badge pill variant="secondary" className="mr-1" key={`key_sid_${item}`}>{item}</Badge>;
+                            });
+                        })()}
+                    </Col>
+                </Row>
             </React.Fragment>
         );
 
@@ -310,6 +328,7 @@ function CreateButtons(props){
         if(isFinish){
             return (
                 <ButtonUI 
+                    className={classes.colorPrimary}
                     size="small"
                     color="primary" 
                     onClick={props.handlerButtonFinish}>
@@ -432,7 +451,17 @@ class CreatePageTemplateLog extends React.Component {
             },
         };
 
+        this.handlerButtonCancel = this.handlerButtonCancel.bind(this);
         this.handlerButtonAddTask = this.handlerButtonAddTask.bind(this);
+
+        this.handlerEvents.call(this);
+    }
+
+    handlerEvents(){
+        this.props.socketIo.on("network interaction: response list new template", (data) => {
+            console.log("class 'CreatePageTemplateLog', func 'handlerEvents'");
+            console.log(data);
+        });
     }
 
     handlerButtonAddTask(){
@@ -509,15 +538,42 @@ class CreatePageTemplateLog extends React.Component {
     }
 
     handlerButtonFinish(){
-        console.log("func 'handlerButtonFinish', START");
-        console.log("выполняем обработку запроса на добавление шаблона");
-    
-        let numberSteppers = this.state.numberSteppers;
-        if(this.state.templateParameters.templateType === "telemetry" && numberSteppers === 2){
-            this.setState({ numberSteppers: 4 });
+        if(this.state.templateParameters.templateType === "telemetry"){
+            let listSelectedDays = (() => {
+                let selectedDays = {};
+                for(let day in this.state.templateParameters.templateTime.listSelectedDays){
+                    if(this.state.templateParameters.templateTime.listSelectedDays[day].checked){
+                        selectedDays[day] = this.state.templateParameters.templateTime.listSelectedDays[day].name;
+                    }
+                }
+
+                return selectedDays;
+            })();
+            
+            if(Object.keys(listSelectedDays).length === 0){
+                return;
+            }
+
+            this.props.socketIo.emit("network interaction: create new template", { 
+                arguments: {
+                    type: this.state.templateParameters.templateType,
+                    timeSettings: {
+                        timeTrigger: {
+                            hour: this.state.templateParameters.templateTime.timeTrigger.getHours(),
+                            minutes:this.state.templateParameters.templateTime.timeTrigger.getMinutes(),
+                        },
+                        listSelectedDays: listSelectedDays,
+                    },
+                    listSources: this.state.templateParameters.templateListSource,
+                } 
+            });
+
+            this.handlerButtonCancel();
 
             return;
         }
+
+        console.log("тип шаблона - фильтрация");
     }
 
     handlerButtonCancel(){
@@ -634,7 +690,7 @@ class CreatePageTemplateLog extends React.Component {
 
         for(let dayOfWeek in templateParameters.templateTime.listSelectedDays){
             if(dayOfWeek === value){
-                templateParameters.templateTime.listSelectedDays[dayOfWeek].checked = true;
+                templateParameters.templateTime.listSelectedDays[dayOfWeek].checked = !templateParameters.templateTime.listSelectedDays[dayOfWeek].checked;
     
                 break;
             }
@@ -744,7 +800,7 @@ class CreatePageTemplateLog extends React.Component {
                                 handlerButtonBack={this.handlerButtonBack.bind(this)}
                                 handlerButtonNext={this.handlerButtonNext.bind(this)}
                                 templateParameters={this.state.templateParameters}
-                                handlerButtonCancel={this.handlerButtonCancel.bind(this)}
+                                handlerButtonCancel={this.handlerButtonCancel}
                                 handlerButtonFinish={this.handlerButtonFinish.bind(this)}
                                 handlerChosenSource={this.handlerChosenSource.bind(this)}
                                 handlerDeleteSource={this.handlerDeleteSource.bind(this)}

@@ -43,12 +43,7 @@ function startNewTask(socketIo, data) {
         }).then((userInfo) => {
             let obj = (require("../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
 
-            console.log("--------- handlerActionsFiltrationTask, check validation START ---------");
-            console.log(obj);
-
             if (!obj.isValid) {
-                console.log("INVALID VALUE TO FILTRATION");
-
                 throw new MyError("management validation", obj.errorMsg);
             }
 

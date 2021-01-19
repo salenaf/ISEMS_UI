@@ -403,7 +403,7 @@ module.exports.eventHandlingUserInterface = function(eventEmiterTimerTick, socke
     /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ О ЗАДАЧАХ ВЫПОЛНЯЕМЫХ МОДУЛЕМ СЕТЕВОГО ВЗАИМОДЕЙСТВИЯ --- */
     require("./route_handlers_socketio/networkInteractionHandlerRequestShowTaskInfo").addHandlers(socketIo);
 
-    /* --- ОБРАБОТЧИК ДЕЙСТВИЙ ПРИ СКАЧИВАНИИ ФАЙЛОВ, В ТОМ ЧИСЛЕ ЗАПРОС СПИСКА ЗАДАЧ (пагинатор) --- */
+    /* --- ОБРАБОТЧИК ДЕЙСТВИЙ ПРИ СКАЧИВАНИИ ФАЙЛОВ,В ТОМ ЧИСЛЕ ЗАПРОС СПИСКА ЗАДАЧ (пагинатор) --- */
     require("./route_handlers_socketio/handlerActionsDownloadingTasks").addHandlers(socketIo);
 
     /* --- ОБРАБОТЧИК ДЕЙСТВИЙ СВЯЗАННЫХ С ЗАПРОСАМИ ТЕЛЕМЕТРИИ ИСТОЧНИКОВ --- */
@@ -411,4 +411,7 @@ module.exports.eventHandlingUserInterface = function(eventEmiterTimerTick, socke
 
     /* --- ПОЛУЧИТЬ ИНФОРМАЦИЮ ИЗ ЖУРНАЛА ИНФОРМАЦИОННЫХ СООБЩЕНИЙ --- */
     require("./route_handlers_socketio/networkInteractionHandlerNotificationLog").addHandlers(socketIo);
+
+    /* --- ОБРАБОТЧИК ДЕЙСТВИЙ СВЯЗАННЫХ С УПРАВЛЕНИЕМ ШАБЛОНАМИ ВЫПОЛНЯЕМЫХ ЗАДАЧ --- */
+    require("./route_handlers_socketio/networkInteractionHandlerTemplate").addHandlers(socketIo, eventEmiterTimerTick);
 };

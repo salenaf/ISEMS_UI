@@ -7,95 +7,95 @@ class MyEmitter extends EventEmitter {}
 class TempTaskStorage {
     constructor() {
         /**
-         * this.obj = {
-         *   "telemetry": {
-         *     "taskID": {
-         *       dateTimeTrigger: [""],
-         *       sourcesID: []
-         *     }
-         *   },
-         */
-
-        /* 
-        const globalObject = require("../configure/globalObject");
-            let socketIo = globalObject.getData("descriptionSocketIo", "userConnections", userSocketId);
-
-            let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
-
-            if (conn !== null) {
-                conn.sendMessage({
-                    msgType: "command",
-                    msgSection: "source control",
-                    msgInstruction: "performing an action",
-                    taskID: helpersFunc.getRandomHex(),
-                    options: { sl: list },
-                });
-            }
- */
-
-        /**
          * {
-         *     "listDateTimeTrigger": [
-         *         {  
+         *     "listDateTimeTrigger": {}
+         *         taskID: {  
          *             dateTimeTrigger: {
-         *                 weekday: [] //дни недели, перечисляются сокращенно (если пусто значит каждый день)
+         *                 weekday: {} //дни недели, key = сокращенное название на английском, value = полное название на русском
          *                 hour: <час>,
          *                 minutes: <минута>,           
          *             },
          *             taskType: "telemetry", //тип задачи ("telemetry", "filtration")
-         *             taskParameters: { //параметры задачи, зависит от типа
-         *                 listSourceID: [], //список источников для которых применима задача, если пусто то для всех
-         *             }
+         *             listSourceID: [], //список источников для которых применима задача, если пусто то для всех            
+         *             taskParameters: {} //параметры задачи, пока только для фильтрации
          *         },
-         *     ],
+         *     },
          * }
          */
         this.obj = {
-            "listDateTimeTrigger": [],
+            "listDateTimeTrigger": {},
         };
     }
 
     /**
+     * Добавляет новый шаблон
      * 
      * @param {*} myEmitter 
-     * @param {*} data { tempType: "", options: { dateTimeTrigger: {}, taskParameters: {} } }
+     * @param {*} data 
      */
     setTempTask(myEmitter, data) {
         console.log("class 'TempTaskStorage', func 'setTempTask'");
         console.log(data);
 
-        /*
-1. получаем параметры и выполняем валидацию
-2. проверяем наличие подобной задачи. Для "telemetry" попроще, если полное соответствие то
- отклоняем задачу с вердиктом "подобная задача уже существует". Для "filtration" следует
- учитывать частоту задач по фильтрации, они не должны быть сличком часто заданны,
- так как может неуспеть закончится предидущая фильтрация как начнется следующая
-3. добавляем вновь сформированные задачи в "listDateTimeTrigger"
- */
+        if (typeof this.obj.listDateTimeTrigger[data.taskID] !== "undefined") {
+            return;
+        }
 
+        this.obj.listDateTimeTrigger[data.taskID] = {
+            dateTimeTrigger: {
+                weekday: data.parameters.timeSettings.listSelectedDays,
+                hour: data.parameters.timeSettings.timeTrigger.hour,
+                minutes: data.parameters.timeSettings.timeTrigger.minutes,
+            },
+            taskType: "telemetry",
+            listSourceID: data.parameters.listSources,
+            taskParameters: {},
+        };
     }
 
+    /**
+     * Возвращает шаблон по его ID
+     * 
+     * @param {*} myEmitter 
+     * @param {*} data 
+     */
     getTempTask(myEmitter, data) {
         console.log("class 'TempTaskStorage', func 'getTempTask'");
         console.log(data);
+        console.log(`class 'TempTaskStorage', func 'getTempTask', task: '${this.obj.listDateTimeTrigger[data.taskID]}'`);
 
-        /** 
-         * надо вернуть информацию о задаче по ее типу и идентификатору 
-         * */
+        let result = null;
+        if (typeof this.obj.listDateTimeTrigger[data.taskID] !== "undefined") {
+            result = this.obj.listDateTimeTrigger[data.taskID];
+        }
+
+        myEmitter.emit("response get new temp task", result);
     }
 
+    /**
+     * Возвращает список всех шаблонов
+     * 
+     * @param {*} myEmitter 
+     * @param {*} data 
+     */
     getAllTempTask(myEmitter, data) {
         console.log("class 'TempTaskStorage', func 'getAllTempTask'");
         console.log(data);
 
-        /** 
-         * надо вернуть информацию о всех задачах по определенному типу 
-         * */
+        myEmitter.emit("response get all new temp task", this.obj.listDateTimeTrigger);
     }
 
+    /**
+     * Удаляет выбранный шаблон по его ID
+     * 
+     * @param {*} myEmitter 
+     * @param {*} data 
+     */
     delTempTask(myEmitter, data) {
         console.log("class 'TempTaskStorage', func 'delTempTask'");
         console.log(data);
+
+        delete this.obj.listDateTimeTrigger[data.taskID];
     }
 }
 
@@ -104,7 +104,6 @@ class TempTaskStorage {
  */
 module.exports = function(sec) {
     const myEmitter = new MyEmitter();
-
     let tempTaskStorage = new TempTaskStorage();
 
     setTimeout(() => {
@@ -117,26 +116,30 @@ module.exports = function(sec) {
 
     }, sec);
 
-    myEmitter.on("set new temp task", (myEmitter, data) => {
+    myEmitter.on("set new temp task", (data) => {
         console.log("func 'handlerTimerTick', received event 'set new temp task'");
+        console.log(data);
 
         tempTaskStorage.setTempTask(myEmitter, data);
     });
 
-    myEmitter.on("get new temp task", (myEmitter, data) => {
+    myEmitter.on("get new temp task", (data) => {
         console.log("func 'handlerTimerTick', received event 'get new temp task'");
+        console.log(data);
 
         tempTaskStorage.getTempTask(myEmitter, data);
     });
 
-    myEmitter.on("get all new temp task", (myEmitter, data) => {
+    myEmitter.on("get all new temp task", (data) => {
         console.log("func 'handlerTimerTick', received event 'get all new temp task'");
+        console.log(data);
 
         tempTaskStorage.getAllTempTask(myEmitter, data);
     });
 
-    myEmitter.on("del new temp task", (myEmitter, data) => {
+    myEmitter.on("del new temp task", (data) => {
         console.log("func 'handlerTimerTick', received event 'del new temp task'");
+        console.log(data);
 
         tempTaskStorage.delTempTask(myEmitter, data);
     });
