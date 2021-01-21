@@ -66,11 +66,11 @@ module.exports = function(templateInfo) {
 
             return resolve({ connect: conn, sourceList: approvedSourceList });
         });
-    }).then(({ connect, approvedSourceList }) => {
+    }).then(({ connect, sourceList }) => {
         console.log("func 'handlerAutomaticGenerationQueries', send requests");
-        console.log(approvedSourceList);
+        console.log(sourceList);
 
-        templateRequest[templateInfo.taskType]({ connection: connect, sourceList: approvedSourceList });
+        templateRequest[templateInfo.taskType]({ connection: connect, sourceList: sourceList });
 
         console.log("func 'handlerAutomaticGenerationQueries', ALL Promise were complete");
     }).catch((err) => {
