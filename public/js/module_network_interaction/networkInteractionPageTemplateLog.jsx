@@ -22,6 +22,7 @@ import PropTypes from "prop-types";
 import CreateChipSource from "../commons/createChipSource.jsx";
 import CreateSourceList from "../commons/createSourceList.jsx";
 import CreateSteppersTemplateLog from "../commons/createSteppersTemplateLog.jsx";
+import { ModalWindowConfirmMessage } from "../commons/modalWindowConfirmMessage.jsx";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
     cardHeight: {
         minHeight: 220,
-    }
+    },
 }));
 
 function CreateChangeTemplateType(props){
@@ -420,6 +421,111 @@ CreateCard.propTypes = {
     handlerChangeTemplateTimeRadioType: PropTypes.func.isRequired,
 };
 
+function CreateCardTaskTemplates(props){
+    const formatter = Intl.DateTimeFormat("ru-Ru", {
+        timeZone: "Europe/Moscow",
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+    });
+
+    let daysOfWeek = [];
+    let textColor = "text-primary";
+
+    for(let shortName in props.templatesInformation.dateTimeTrigger.weekday){
+        daysOfWeek.push(props.templatesInformation.dateTimeTrigger.weekday[shortName]);
+    }
+
+    return (
+        <Card>
+            <CardContent>
+                <Row>
+                    <Col md={12} className="text-left">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        Шаблон добавлен {formatter.format(props.templatesInformation.timeCreation)}, пользователем {props.templatesInformation.userName}.
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
+                    </Col>
+                    <Col md={8} className="text-left">{(props.templatesInformation.taskType === "telemetry") ? 
+                        <Badge variant="dark">{"телеметрия"}</Badge>
+                        : 
+                        <Badge variant="primary">{"фильтрация"}</Badge>}</Col>
+                </Row>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">дни недели:</Typography>
+                    </Col>
+                    <Col md={8} className="text-left">{(()=>{
+                        let i = 0;
+                        let num = daysOfWeek.length;
+                        let comma = ", ";
+                        
+                        return daysOfWeek.map((item) => {
+                            if(item === "суббота" || item === "воскресенье"){
+                                textColor = "text-danger";
+                            } else {
+                                textColor = "text-primary";
+                            }
+
+                            return (num > ++i) ? <span key={`key_day_of_week_${item}`} className={textColor}>{item+comma}</span> : <span key={`key_day_of_week_${item}`} className={textColor}>{item}</span>;
+                        });
+                    })()}</Col>
+                </Row>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">время выполнения:</Typography>                        
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {(() => {
+                            let hour = props.templatesInformation.dateTimeTrigger.hour;
+                            let minute = props.templatesInformation.dateTimeTrigger.minutes;
+
+                            return ((hour < 10) ? "0"+hour : hour)+":"+((minute < 10) ? "0"+minute : minute);
+                        })()}
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">список источников для выполнения:</Typography>                        
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {(() => {
+                            if(props.templatesInformation.listSourceID.length === 0){
+                                return <h5><Badge variant="light">{"на всех источниках"}</Badge></h5>;
+                            }
+
+                            return props.templatesInformation.listSourceID.map((item) => {
+                                return <Badge pill variant="secondary" className="mr-1" key={`key_sid_${item}`}>{item}</Badge>;
+                            });
+                        })()}
+                    </Col>
+                </Row>
+                {(Object.keys(props.templatesInformation.taskParameters).length > 0) ? <Row>
+                    <Col>{JSON.stringify(props.templatesInformation.taskParameters)}</Col>
+                </Row> : ""}
+            </CardContent>
+            <CardActions>
+                <ButtonUI 
+                    size="small"
+                    onClick={props.handlerDeteteCard}>
+                    удалить
+                </ButtonUI>
+            </CardActions>
+        </Card>
+    );
+}
+
+CreateCardTaskTemplates.propTypes = {
+    templatesInformation: PropTypes.object.isRequired,
+    handlerDeteteCard: PropTypes.func.isRequired,
+};
+
 class CreatePageTemplateLog extends React.Component {
     constructor(props){
         super(props);
@@ -427,6 +533,8 @@ class CreatePageTemplateLog extends React.Component {
         this.state = {
             showForm: false,
             showButtonAddTask: true,
+            showModalWindowDeleteTemplate: false,
+            idDeletedTemplate: "",
             steppers: ["тип задачи" , "время", "источники", "параметры фильтрации", "завершить"],
             numberSteppers: 0,
             stepsComplete: [],
@@ -449,19 +557,30 @@ class CreatePageTemplateLog extends React.Component {
                 templateListSource: [],
                 templeteChosedSource: 0,
             },
+            listTaskTemplates: {},
         };
 
         this.handlerButtonCancel = this.handlerButtonCancel.bind(this);
         this.handlerButtonAddTask = this.handlerButtonAddTask.bind(this);
 
         this.handlerEvents.call(this);
+        this.requestEmitter.call(this);
     }
 
     handlerEvents(){
         this.props.socketIo.on("network interaction: response list new template", (data) => {
-            console.log("class 'CreatePageTemplateLog', func 'handlerEvents'");
-            console.log(data);
+            this.setState({ listTaskTemplates: data.arguments });
         });
+
+        this.props.socketIo.on("network interaction: response del new temp task", (data) => {
+            let listTaskTemplates = Object.assign({}, this.state.listTaskTemplates);
+            delete listTaskTemplates[data.arguments.templateID];
+            this.setState({ listTaskTemplates: listTaskTemplates });
+        });
+    }
+
+    requestEmitter(){
+        this.props.socketIo.emit("network interaction: get all list template", {});
     }
 
     handlerButtonAddTask(){
@@ -700,9 +819,6 @@ class CreatePageTemplateLog extends React.Component {
     }
 
     handlerChangeTimeTrigger(date){
-        console.log("func 'handlerChangeTimeTrigger'");
-        console.log(date);
-
         let templateParameters = Object.assign({}, this.state.templateParameters);
         templateParameters.templateTime.timeTrigger = date;
         this.setState({ templateParameters: templateParameters });
@@ -728,7 +844,7 @@ class CreatePageTemplateLog extends React.Component {
 
     handlerDeleteSource(sourceID){
         if(!this.state.templateParameters.templateListSource.includes(sourceID)){
-            return;
+            return null;
         }
 
         let templateParameters = Object.assign({}, this.state.templateParameters);
@@ -736,25 +852,65 @@ class CreatePageTemplateLog extends React.Component {
         this.setState({ templateParameters: templateParameters });
     }
 
+    handlerDeleteCardTemplateInformation(){
+        this.props.socketIo.emit("network interaction: delete template", { arguments: { templateID: this.state.idDeletedTemplate } });
+
+        //после передачи через socketIo очищаем значение idDeletedTemplate
+        this.setState({ 
+            idDeletedTemplate: "",
+            showModalWindowDeleteTemplate: false,
+        });
+    }
+
+    handlerCloseModalWindowDeleteTemplate(){
+        this.setState({ showModalWindowDeleteTemplate: false });
+    }
+
+    handlerShowModalWindowDeleteTemplate(id){
+        this.setState({ 
+            idDeletedTemplate: id,
+            showModalWindowDeleteTemplate: true 
+        });
+    }
+
     createTemplateList(){
         if(this.state.showForm){
-            return;
+            return null;
         }
 
+        if(Object.keys(this.state.listTaskTemplates).length === 0){
+            return null;
+        }
+
+        let listTemplate = [];
+        for(let templateID in this.state.listTaskTemplates){
+            listTemplate.push({
+                id: templateID,
+                timeCreation: this.state.listTaskTemplates[templateID].timeCreation,
+            });    
+        }        
+
+        listTemplate.sort((a, b) => {
+            if(a.timeCreation > b.timeCreation) return 1;
+            if(a.timeCreation === b.timeCreation) return 0;
+            if(a.timeCreation < b.timeCreation) return -1;
+        });
+        listTemplate.reverse();
+
         return (
-            <Row>
-                <Col md={12}>
-        здесь будет список шаблонов
-        с кратким описанием, при этом
-        будет тип задачи (телеметрия, фильтрация)
-                    <ul>
-                        <li>Выбор типа шаблона</li>
-                        <li>Выбор времени и дней недели ( все, только будни, только выходные, перечисляем дни недели)</li>
-                        <li>сипоск источников или все</li>
-                        <li>для телеметрии все, для фильтрации еще параметры</li>
-                    </ul>
-                </Col>
-            </Row>
+            <React.Fragment>
+                {listTemplate.map((item) => {
+                    return (
+                        <Row key={`key_template_id_${item.id}`} className="mb-2">
+                            <Col md={12}>
+                                <CreateCardTaskTemplates
+                                    templatesInformation={this.state.listTaskTemplates[item.id]}
+                                    handlerDeteteCard={this.handlerShowModalWindowDeleteTemplate.bind(this, item.id)} />
+                            </Col>
+                        </Row>
+                    );
+                })}
+            </React.Fragment>
         );
     }
 
@@ -813,6 +969,14 @@ class CreatePageTemplateLog extends React.Component {
                     </Row>}
                 {this.createBottonAddTask.call(this)}
                 {this.createTemplateList.call(this)}
+
+                <ModalWindowConfirmMessage 
+                    show={this.state.showModalWindowDeleteTemplate}
+                    onHide={this.handlerCloseModalWindowDeleteTemplate.bind(this)}
+                    msgBody={"Вы действительно хотите удалить выбранный шаблон?"}
+                    msgTitle={"Удаление"}
+                    nameDel={""}
+                    handlerConfirm={this.handlerDeleteCardTemplateInformation.bind(this)} />
             </React.Fragment>
         );
     }

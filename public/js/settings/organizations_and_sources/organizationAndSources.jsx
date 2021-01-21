@@ -723,7 +723,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                 <ModalWindowConfirmMessage 
                     show={this.state.modalWindowSourceDel}
                     onHide={this.closeModalWindowSourceDel}
-                    msgBody={`Вы действительно хотите удалить ${(this.listSourceDelete.length > 1) ? "источники с номерами": "источник с номером"} ${this.listSourceDelete}`}
+                    msgBody={`Вы действительно хотите удалить ${(this.listSourceDelete.length > 1) ? "источники с номерами": "источник с номером"} ${this.listSourceDelete}?`}
                     msgTitle={"Удаление"}
                     nameDel={this.listSourceDelete.join()}
                     handlerConfirm={this.handlerSourceDelete} />

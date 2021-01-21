@@ -11,6 +11,8 @@ const connection = globalObject.getData("descriptionDB", "MongoDB", "connection"
 
 let templateActionSchema = new connection.Schema({
     template_id: { type: String, index: true, unique: true },
+    user_name: String,
+    time_creation: Number,
     date_time_trigger: {
         weekday: Object,
         hour: Number,

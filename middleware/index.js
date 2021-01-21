@@ -83,7 +83,7 @@ module.exports = function(app, express, io) {
     /**
      * Timer temp task
      */
-    const eventEmiterTimerTick = require("./handlerTimerTick")(10000);
+    const eventEmiterTimerTick = require("./handlerTimerTick")(5000);
 
     /*
      * Socket.io
@@ -211,6 +211,13 @@ module.exports = function(app, express, io) {
 
     //обработчик событий сторонних модулей через API
     routeSocketIo.modulesEventGenerator(eventEmiterTimerTick, socketIo);
+
+    /**
+     * Restoring information from a database
+     */
+    require("../libs/restoringInformationFromDatabase")(eventEmiterTimerTick).catch((err) => {
+        writeLogFile("error", err.toString() + " (restoringInformationFromDatabase.js)");
+    });
 
     /*
      * Setup passport
