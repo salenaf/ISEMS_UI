@@ -70,7 +70,7 @@ class CreatePageRulesSOASourse extends React.Component {
                     <div className="nav nav-tabs" id="nav-tab" role="tablist">
                         <a className="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#searchSid" role="tab" aria-controls="nav-home" aria-selected="true">Поиск по sid</a>
                         <a className={`nav-item nav-link ${this.state.disable.str}`} id="nav-profile-tab" data-toggle="tab" href="#addSid" role="tab" aria-controls="nav-profile" aria-selected="false" aria-disabled={`${this.state.disable.bool}`}>Загрузить sid из файлов</a>
-                        {/*<a className="nav-item nav-link" id="nav-body-tab"    data-toggle="tab" href="#primer" role="tab" aria-controls="nav-profile" aria-selected="false">Пример</a>*/} 
+                        <a className="nav-item nav-link" id="nav-body-tab"    data-toggle="tab" href="#primer" role="tab" aria-controls="nav-profile" aria-selected="false">Пример</a>{/**/} 
                     </div>
                 </nav>
            
@@ -82,7 +82,7 @@ class CreatePageRulesSOASourse extends React.Component {
                             socketIo={this.props.socketIo} 
                             listShortEntity={this.props.listShortEntity}                            
                             userPermissions={this.props.userPermissions}
-                            />
+                        />
                     </div>
                     <div className="tab-pane fade" id="addSid" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <CreateBodyAddFile   
@@ -105,7 +105,7 @@ CreatePageRulesSOASourse.propTypes ={
     ss: PropTypes.func.isRequired,
     socketIo:PropTypes.object.isRequired,
     listShortEntity: PropTypes.object.isRequired,
-   // userPermissionsSearch: PropTypes.object.isRequired,
+    // userPermissionsSearch: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
 };
 

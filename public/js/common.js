@@ -14,6 +14,12 @@ require("material-ui-pickers");
 require("dateIoFnsUtils");
 require("datatablesNetBs");
 require("reactCustomizeTokenInput");
+require("react-scrollbar");
+require("react-beautiful-dnd");
+
+
+//!
+
 
 require("lodash");
 require("moment");

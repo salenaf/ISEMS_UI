@@ -569,6 +569,7 @@ export default class CreateBodyManagementEntity extends React.Component {
                     </Col>
                 </Row>
                 <br/>
+
                 <ShowEntityInformation 
                     showInfo={this.state.showInfo}
                     handlerSave={this.handlerSave}

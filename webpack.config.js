@@ -37,6 +37,11 @@ module.exports = {
             "socket.io-stream",
             "react-circle",
             "quoted-printable",
+            "react-scrollbar",
+            "react-beautiful-dnd",
+
+
+            //!
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -114,6 +119,9 @@ module.exports = {
             "socket.io-stream": "socket.io-stream/socket.io-stream.js",
             "react-circle": "react-circle/dist/index.js",
             "quoted-printable": "quoted-printable/quoted-printable.js",
+            "react-scrollbar": "react-scrollbar",
+            "react-beautiful-dnd":"react-beautiful-dnd",
+            //!
         }
     },
 
@@ -173,47 +181,47 @@ module.exports = {
 
     module: {
         rules: [{
-                test: /\.(js|jsx)$/, // определяем тип файлов
-                exclude: /node_modules/, // исключаем из обработки папку node_modules
-                loader: "babel-loader", // определяем загрузчик
-                options: {
-                    presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
-                }
-            },
-            /*{
+            test: /\.(js|jsx)$/, // определяем тип файлов
+            exclude: /node_modules/, // исключаем из обработки папку node_modules
+            loader: "babel-loader", // определяем загрузчик
+            options: {
+                presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
+            }
+        },
+        /*{
                                                                                                              test: /\.(js|jsx)$/,
                                                                                                             test: /\.js$/,
                                                                                                             exclude: /node_modules/,
                                                                                                             use: ["babel-loader"] //, 'eslint-loader']
                                                                                                         },*/
-            {
-                test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: ["css-loader"]
-                })
-            }, {
-                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                include: /\/node_modules\//,
-                use: [{
-                    loader: "file-loader",
-                    options: {
-                        name: "[path][name].[ext]",
-                        publicPath: "dist/",
-                    },
-                }, ],
-            }, {
-                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                exclude: /\/node_modules\//,
-                use: [{
-                    loader: "file-loader",
-                    options: {
-                        name: "[path][name].[ext]",
-                        publicPath: "dist/",
-                    },
-                }, ],
-            },
-            /*{
+        {
+            test: /\.css$/,
+            use: ExtractTextPlugin.extract({
+                fallback: "style-loader",
+                use: ["css-loader"]
+            })
+        }, {
+            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+            include: /\/node_modules\//,
+            use: [{
+                loader: "file-loader",
+                options: {
+                    name: "[path][name].[ext]",
+                    publicPath: "dist/",
+                },
+            }, ],
+        }, {
+            test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
+            exclude: /\/node_modules\//,
+            use: [{
+                loader: "file-loader",
+                options: {
+                    name: "[path][name].[ext]",
+                    publicPath: "dist/",
+                },
+            }, ],
+        },
+        /*{
                                                                                                             test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
                                                                                                             loader: "imports-loader?this=>window&exports=>false&define=>false"
                                                                                                         },
@@ -227,10 +235,10 @@ module.exports = {
                                                                                                                                         exclude: /\/node_modules\//,
                                                                                                                                         loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
                                                                                                                                     },*/
-            {
-                test: /\.ejs$/,
-                loader: "ejs-loader"
-            }
+        {
+            test: /\.ejs$/,
+            loader: "ejs-loader"
+        }
         ]
     }
 };

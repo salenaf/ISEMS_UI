@@ -3,7 +3,7 @@ import { Col, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
 
 import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 import PropTypes from "prop-types";
-import ClearIcon from '@material-ui/icons/Clear';
+import ClearIcon from "@material-ui/icons/Clear";
 
 /* 
  * Search Sid
@@ -12,8 +12,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 export default class CreateBodySearchSid extends React.Component {
     constructor(props){
         super(props);
-        //,  this.props.listShortEntity.listSourceRuleSOA
-        
+       
         this.state = {
             "modalWindowStatus": false,
             listRule:  {}, 
@@ -38,29 +37,10 @@ export default class CreateBodySearchSid extends React.Component {
         };
         this.onBlurHandler = "";
         this.bodyForUpdate = ""; 
-        // this.inPut = React.createRef();
-        //this.resultS = "";
         this.contentEdit = "false";
 
-        /*  */ this.typeList =[        ];
-        // { size: 1,  nameType: "trojan-activity", },
-        // { size: 2,  nameType: "unsuccessful-user"},
-        // { size: 3,  nameType: "attempted-admin"},
-        // { size: 4,  nameType: "attempted-user"},
-        // { size: 5,  nameType: "attempted-dos"},
-        // { size: 6,  nameType: "protocol-command-decode"},
-        // { size: 7,  nameType: "misc-attack"},
-        // { size: 8,  nameType: "web-application-activity"},
-        // { size: 9,  nameType: "web-application-attack"},
-        // { size: 10, nameType: "successful-recon-limited" },
-        // { size: 11, nameType: "successful-admin" },  
-        // { size: 12, nameType: "successful-user" },
-        // { size: 13, nameType: "policy-violation"},
-
-
-
-        // console.log(this.props.socketIo);
-        
+        this.typeList =[        ];
+     
         this.resultSearch    = this.resultSearch.bind(this);
         this.handleSubmit    = this.handleSubmit.bind(this); 
         this.typeCount       = this.typeCount.bind(this);
@@ -77,16 +57,11 @@ export default class CreateBodySearchSid extends React.Component {
         this.handlerEvents   = this.handlerEvents.call(this);
 
         this.showModalWindow    = this.showModalWindow.bind(this);
-        //this.handlerSave        = this.handlerSave.bind(this);
         this.closeModalWindow   = this.closeModalWindow.bind(this);
         this.handlerSourceSave  = this.handlerSourceSave.bind(this);
-        //  this.findSid        = this.findSid.bind(this, this.valueInPut );
-        //   this.listenerSocketIoConn = this.listenerSocketIoConn.bind(this);
     }
 
     handlerEvents(){
-        console.log("func 'handlerEvents'");
-
         this.props.socketIo.on("result find SID", (data) => {
             this.setState({buffSidOut: data});
         });
@@ -105,7 +80,6 @@ export default class CreateBodySearchSid extends React.Component {
         value = value.replace(/^\s/, "");
         value = value.replace(/ {2}/, " ");
         value = value.replace(regexp, "");
-        //value = value.substr(0, 25);
         this.setState({
             filter_search: value
         });
@@ -119,14 +93,9 @@ export default class CreateBodySearchSid extends React.Component {
             };
 
         });
-        //listTmp.sort((prev, next) => prev.sid - next.sid);
-
         return listTmp;
-
     }
     createListSid(listShortEntity){
-        //console.log("createListOrganization START...");
-
         let listTmp = {};
 
         listTmp = listShortEntity.shortListRuleSOA.map((item) => {
@@ -142,8 +111,6 @@ export default class CreateBodySearchSid extends React.Component {
     }
     
     findSid(listShortEntity, valueInPut=26900){
-        //listShortEntity.inPutSid = valueInPut;
-        // console.log(valueInPut);
         listShortEntity.findSid.inPutFindSid = valueInPut;
 
         let a = listShortEntity.findSid.map((item) => {
@@ -154,18 +121,11 @@ export default class CreateBodySearchSid extends React.Component {
                 msg: item.msg,
             };
         }); 
-
-        // console.log("Рeзультат");
-        // console.log(a);
-
         return a;
     }
 
     handleSubmit(event) {
         let valueInPut = Number(this.state.filter_search);
-        // console.log(`______________`);
-        // console.log(`SID: ${valueInPut}`);
-        // console.log(this.state.filter_error);
         this.setState({
             filter_error: null,
         });
@@ -181,8 +141,6 @@ export default class CreateBodySearchSid extends React.Component {
             updateObj.color= "info";
         } 
         this.setState(updateObj);
-       
-        //this.state.contentEdit="true";
     }
 
     // Валидация редактируемых данных
@@ -227,55 +185,41 @@ export default class CreateBodySearchSid extends React.Component {
             classtype:  value.match(regexp.classtype)|| [],
         };
 
-
-        // console.log("------------------");
-        // console.log(result.sid);
-        // console.log(result.msg);
-        // проверка поля msg
         if(result.msg.length == 1){
-            //console.log(result.msg[0].match(regexp.space));
             if(result.msg[0].match(regexp.space).length != 1){
                 err.msg = "Не корректно введён msg. Возможно потеряна \";\". msg: \"...\";";
-                // console.log(err);
             } else {   // успех
                 msg = true;
             }
         }else{
             err.msg = "Не корректно введён msg. Возможно он отсутвует/дублируется или потеряно \":\". msg: \"...\";";
-            //console.log(err);
         }
 
         // проверка поля sid
         if(result.sid.length != 1){
             err.sid = "Не корректно введён sid. Возможно он отсутвует/дублируется, потеряно \":\" или потеряна \";\". sid: \/число\/";
-            //console.log(err);
-        }else{
-            //успех 
+        }else{          //успех 
             sid = true;
         }
 
         // проверка поля classType
         if(result.classtype.length == 1){
-            //console.log(result.classtype[0].match(regexp.space));
             if(result.classtype[0].match(regexp.space).length != 1){
                 err.classtype = "Не корректно введён classtype. Возможно потеряна \";\". classtype: ...;";
-                // console.log(err);
             } else {   // успех
                 classType = true;
             }
         }else{
             err.classtype = "Не корректно введён classtype. Возможно он отсутвует/дублируется или потеряно \":\". classtype: ...;";
-            //console.log(err);
         }
         let oldValue = this.state.buffSidOut.body;
-        // console.log(value);
-        // console.log(oldValue);
 
         if((value.indexOf(oldValue) !=-1 )){
             err.noChange = "Изменения не найдены";
         } else{
             noChange = true;
         }
+
         // Если есть нет ошибок, присваивается новое значение
         if(sid&msg&classType&noChange){
             this.bodyForUpdate = value;
@@ -286,11 +230,10 @@ export default class CreateBodySearchSid extends React.Component {
         this.setState({
             filter_error: err,
         });
-        // console.log(value);
     }
 
     deleteInfo(){
-        //if(this.bodyForUpdate != ""){
+        // eslint-disable-next-line react/no-direct-mutation-state
         this.state.saveOrNot = "delete";
         this.state.msgModWindow ={
             msgBody:    "Вы действительно хотите безвозвратно удалить выбранное правило?",
@@ -298,7 +241,7 @@ export default class CreateBodySearchSid extends React.Component {
             comandModWindow: "delete",
         };
         this.showModalWindow();
-        //} 
+        
     }
 
     notSaveInfo(){
@@ -365,7 +308,6 @@ export default class CreateBodySearchSid extends React.Component {
             });
             break;
         default:
-            console.log("Что-то пошло не так");
             break;
         }
         this.state.msgModWindow={
@@ -390,7 +332,7 @@ export default class CreateBodySearchSid extends React.Component {
         this.setState({ "modalWindowStatus": false });
     }
 
-    //this.props.userPermissionsSearch.edit.status
+    
     showIconSaveChange(disableEdit){
         if(this.state.contentEdit == "true"){
             return (
@@ -400,7 +342,6 @@ export default class CreateBodySearchSid extends React.Component {
                             <img className="clickable_icon" src="./images/icons-save-2.png" alt= "Сохранить изменения" ></img>
                         </a>
                     </OverlayTrigger> 
-                    {/*<pre><p> </p></pre>*/} 
                     <OverlayTrigger key="Not save" placement="top-end" overlay={<Tooltip>Не сохранять изменения</Tooltip>}>
                         <a className = "btn  btn-sm" onClick={this.notSaveInfo.bind(this)}>
                             <img className="clickable_icon" src="./images/icons8-delete-16.png" alt ="Не сохранять изменения" ></img>
@@ -417,12 +358,11 @@ export default class CreateBodySearchSid extends React.Component {
                         </a> 
                     </OverlayTrigger>
                 </React.Fragment>
-                );
+            );
         }
     }
 
     resultSearch(){
-        //const {  buffSidOut } = this.state;
         if(this.state.buffSidOut == null) {
             visPole = "unvisible"; 
             return;
@@ -432,9 +372,6 @@ export default class CreateBodySearchSid extends React.Component {
         let visPole = "visible";
         let color = this.state.color;
         
-        console.log("_______________");
-        console.log(this.props.userPermissions);
-
         let  disableEdit = {
             str: "disabled",
             bool: "true"
@@ -442,10 +379,10 @@ export default class CreateBodySearchSid extends React.Component {
         let disableDelete = {
             str: "disabled",
             bool: "true"
-        }
-        if(this.props.userPermissions.edit.status){
-     // if(this.props.userPermissions.create.status){    
         };
+        // if(this.props.userPermissions.create.status){
+        // Если понадобится создавать отдельно   
+        // }
         if(this.props.userPermissions.edit.status){
             disableEdit = {
                 str: "",
@@ -458,8 +395,6 @@ export default class CreateBodySearchSid extends React.Component {
                 bool: "false"
             };
         }
-
-        //icons8-delete-16.png
         return <React.Fragment>
             <div className={visPole}> 
                 <div className="text-left">     
@@ -478,9 +413,7 @@ export default class CreateBodySearchSid extends React.Component {
                                     <a className = {`btn btn-sm ${disableDelete.str}`} onClick={this.deleteInfo.bind(this)} aria-disabled = {`${disableDelete.bool}`}>
                                         <img className="clickable_icon" src="./images/trash-2x.png" alt="удалить"/>
                                     </a> 
-                                </OverlayTrigger>
-                                {/*<pre><p> </p></pre>*/} 
-                                     
+                                </OverlayTrigger>                                     
                             </div>
                             {this.state.messageInfo}
                         </h5>
@@ -506,13 +439,10 @@ export default class CreateBodySearchSid extends React.Component {
     }
     
     typeCount(){
-        let resultType = "";
-        /* {typeList.map(el => (   ))}*/
-                                   
+        let resultType = "";                             
         let typeInPut = [];
         let j = 0;
         let typeList = this.state.typeListBD;
-        console.log(typeList);
         let k = 0;
         let t1="",t2="",t3="",t4="";
         for(let i=0; i<typeList.length; i+=4){
@@ -533,14 +463,6 @@ export default class CreateBodySearchSid extends React.Component {
         }     
         let i = 0;
 
-        // resultType = <React.Fragment>
-        //     <ul class="list-inline">
-        //         {typeList.map(el => ( 
-        //            <li class="list-inline-item"> {`${el.typeName}: ${el.count}`} </li>
-        //         ))}
-        //     </ul>
-        // </React.Fragment>;
-
         resultType =    <React.Fragment>
             <div className="container text-left">
                 {typeInPut.map(el => ( 
@@ -553,7 +475,6 @@ export default class CreateBodySearchSid extends React.Component {
     }
 
     errorMsg(){
-        //console.log(this.state.filter_error);
         if(this.state.filter_error!=null){
             let msg = <div></div>;
             let sid = <div></div>;
@@ -586,7 +507,7 @@ export default class CreateBodySearchSid extends React.Component {
         } else {
             return <div> </div>;
         }
-    };
+    }
     handleKeyPress(event) {
         if(event.key == "Enter"){
             this.addPortNetworkIP();
@@ -594,14 +515,12 @@ export default class CreateBodySearchSid extends React.Component {
     }
     
     render(){
-        const {  filter_error } = this.state;
         let k = 0;
         let typeList = this.state.typeListBD;
         for(let j=0; j < typeList.length; j++){
             let object  = typeList[j];
             k+= object.count;
         }
-        let error = filter_error;
         return (
             <React.Fragment>
                 <div className="text-left">
@@ -615,8 +534,6 @@ export default class CreateBodySearchSid extends React.Component {
                     </div>
                 </div>
                 <br/>
-
-                {/*                <Form className= "form-inline">*/}
                 <Row>
                     <Col md={6}>
                         <input className="form-control mr-sm-2" placeholder="Введите sid" value = {this.state.filter_search} onChange = {this.onChangeSearch}  type="search" aria-label="Search"/>
@@ -626,7 +543,6 @@ export default class CreateBodySearchSid extends React.Component {
                         <button className="btn btn-outline-success my-2 my-sm-0"  onClick={this.handleSubmit.bind(this)} type="submit"> Поиск </button>  
                     </Col>
                 </Row>
-                {/*</Form>*/}
                 <br/>
 
                 <div className="col-md-8 text-left"> { this.resultS} </div>
@@ -641,19 +557,5 @@ CreateBodySearchSid.propTypes ={
     socketIo: PropTypes.object.isRequired,
     listShortEntity: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired, 
-       // listSourcesInformation: PropTypes.object.isRequired,
 };
 
-
-// <FormControl
-//                                 id="input_ip_network_port"
-//                                 aria-describedby="basic-addon2"
-//                                 onChange={this.onChangeSearch}
-//                                 onKeyPress={this.handleKeyPress.bind(this)}
-//                                 disabled={disabled}
-//                                 isValid={this.state.filter_search}
-//                                 isInvalid={this.state.inputFieldIsInvalid} 
-//                                 placeholder="введите sid, подсеть или сетевой порт" />
- //   userPermissionsSearch: PropTypes.object.isRequired, 
-    // listSourcesInformation: PropTypes.object.isRequired,
-//};
