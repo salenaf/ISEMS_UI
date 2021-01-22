@@ -13,7 +13,7 @@ exports.securityEventManagement = require("./securityEventManagement");
 
 //сетевые взаимодействия
 exports.networkInteraction = require("./networkInteraction/index");
-exports.networkInteractionPageTelemetry = require("./networkInteraction/networkInteractionPageTelemetry");
+exports.networkInteractionPageTelemetry = require("./networkInteraction/pageTelemetry");
 exports.networkInteractionPageSearchTasks = require("./networkInteraction/pageSearchTasks");
 exports.networkInteractionPageTemplateLog = require("./networkInteraction/pageTemplateLog");
 exports.networkInteractionPageFileDownload = require("./networkInteraction/pageFileDownload");

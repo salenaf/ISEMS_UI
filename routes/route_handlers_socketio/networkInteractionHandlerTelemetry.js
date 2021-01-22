@@ -2,6 +2,9 @@
 
 const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
+const helpersFunc = require("../../libs/helpers/helpersFunc");
+const globalObject = require("../../configure/globalObject");
+const getSessionId = require("../../libs/helpers/getSessionId");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
 
@@ -14,6 +17,7 @@ const checkUserAuthentication = require("../../libs/check/checkUserAuthenticatio
 module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "network interaction: get telemetry for list source": getTelemetryForListSource,
+        "network interaction: get list source with deviation parameters": getListSourceDeviationParameters,
     };
 
     for (let e in handlers) {
@@ -70,5 +74,61 @@ function getTelemetryForListSource(socketIo, data) {
             }
 
             writeLogFile("error", err.toString() + funcName);
+        });
+}
+
+function getListSourceDeviationParameters(socketIo) {
+
+    console.log("func 'getListSourceDeviationParameters', START...");
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            //получаем список источников у которых имеется откланение параметров
+            let listSourceDeviationParameters = [];
+            let telemetrySources = globalObject.getData("telemetrySources");
+            for (let sid in telemetrySources) {
+                if (!telemetrySources[sid].deviationParametersSource) {
+                    continue;
+                }
+
+                let sourceInfo = globalObject.getData("sources", sid);
+
+                listSourceDeviationParameters.push({
+                    sourceID: sid,
+                    shortSourceName: (sourceInfo === null) ? "" : sourceInfo.shortName,
+                    timeReceipt: telemetrySources[sid].timeReceipt,
+                    telemetryParameters: telemetrySources[sid].telemetryParameters,
+                });
+            }
+
+            console.log(helpersFunc.sendBroadcastSocketIo(
+                "module NI API", {
+                    "type": "telemetryDeviationParameters",
+                    "options": listSourceDeviationParameters,
+                }));
+
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                });
+            }
+
+            writeLogFile("error", err.toString() + " (func 'getListSourceDeviationParameters')");
         });
 }

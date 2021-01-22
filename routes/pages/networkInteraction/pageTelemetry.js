@@ -23,7 +23,24 @@ module.exports = function(req, res, objHeader) {
             });
         },
         mainInformation: (callback) => {
-            callback(null, {});
+            let listSourceDeviationParameters = [];
+            let telemetrySources = globalObject.getData("telemetrySources");
+            for (let sid in telemetrySources) {
+                if (!telemetrySources[sid].deviationParametersSource) {
+                    continue;
+                }
+
+                let sourceInfo = globalObject.getData("sources", sid);
+
+                listSourceDeviationParameters.push({
+                    sourceID: sid,
+                    shortSourceName: (sourceInfo === null) ? "" : sourceInfo.shortName,
+                    timeReceipt: telemetrySources[sid].timeReceipt,
+                    telemetryParameters: telemetrySources[sid].telemetryParameters,
+                });
+            }
+
+            callback(null, { listSourceDeviationParameters: listSourceDeviationParameters });
         },
         widgetsInformation: (callback) => {
             let numConnect = 0,

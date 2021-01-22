@@ -10,9 +10,6 @@ const globalObject = require("../configure/globalObject");
  * @param {*} templateInfo - шаблон с информацией, на основе которого выполняется генерация запроса
  */
 module.exports = function(templateInfo) {
-
-    console.log("func 'handlerAutomaticGenerationQueries', START");
-
     const templateRequest = {
         "telemetry": telemetryRequest,
         "filtration": filtrationRequest,
@@ -20,9 +17,6 @@ module.exports = function(templateInfo) {
 
     return new Promise((resolve, reject) => {
         process.nextTick(() => {
-
-            console.log("func 'handlerAutomaticGenerationQueries, get connection with module'");
-
             let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
             if (conn === null) {
                 return reject(new MyError("management network interaction", "Передача списка источников модулю сетевого взаимодействия невозможна, модуль не подключен."));
@@ -32,8 +26,6 @@ module.exports = function(templateInfo) {
         });
     }).then((conn) => {
         return new Promise((resolve, reject) => {
-            console.log("func 'handlerAutomaticGenerationQueries', get sources list");
-
             let allSourceList = globalObject.getData("sources");
             //нужно сравнить со списком в шаблоне и выбрать только подключенные
 
@@ -41,38 +33,28 @@ module.exports = function(templateInfo) {
             if (templateInfo.listSourceID.length === 0) {
                 for (let sid in allSourceList) {
                     if (allSourceList[sid].connectStatus) {
-                        approvedSourceList.push(sid);
+                        approvedSourceList.push(+sid);
                     }
                 }
             } else {
                 //здесь сравнить наличие источников и их доступность
-                approvedSourceList = templateInfo.listSourceID.filter((item) => {
-                    if (typeof allSourceList[item] !== "undefined") {
-                        return typeof allSourceList[item].connectStatus;
+                templateInfo.listSourceID.forEach((item) => {
+                    if ((typeof allSourceList[item] !== "undefined") && allSourceList[item].connectStatus) {
+                        approvedSourceList.push(+item);
                     }
 
                     return false;
                 });
             }
 
-            console.log("func 'handlerAutomaticGenerationQueries', ----------------");
-
             if (approvedSourceList.length === 0) {
-
-                console.log("DDDDDDDDDDDDDDDDDD");
-
                 return reject(new MyError("management sources connection", "Невозможно выполнить задачу, не один из источников не подключен."));
             }
 
             return resolve({ connect: conn, sourceList: approvedSourceList });
         });
     }).then(({ connect, sourceList }) => {
-        console.log("func 'handlerAutomaticGenerationQueries', send requests");
-        console.log(sourceList);
-
         templateRequest[templateInfo.taskType]({ connection: connect, sourceList: sourceList });
-
-        console.log("func 'handlerAutomaticGenerationQueries', ALL Promise were complete");
     }).catch((err) => {
         throw err;
     });
@@ -80,6 +62,7 @@ module.exports = function(templateInfo) {
 
 function telemetryRequest({ connection, sourceList, parameters = null }) {
     console.log("func 'telemetryRequest', START...");
+    console.log(sourceList);
 
     connection.sendMessage({
         msgType: "command",

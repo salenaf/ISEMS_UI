@@ -99,6 +99,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             numProcessFiltration: 0,
                             numTasksNotDownloadFiles: 0,
                             numUnresolvedTask: 0,
+                            numSourceTelemetryDeviationParameters: 0,
                         },
                         "listSources": objClone,
                     });

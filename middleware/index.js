@@ -83,7 +83,7 @@ module.exports = function(app, express, io) {
     /**
      * Timer temp task
      */
-    const eventEmiterTimerTick = require("./handlerTimerTick")(5000);
+    const eventEmiterTimerTick = require("./handlerTimerTick")(10000);
 
     /*
      * Socket.io

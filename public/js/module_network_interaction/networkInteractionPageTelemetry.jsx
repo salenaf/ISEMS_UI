@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row } from "react-bootstrap";
-import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
 
 import CreateChipSource from "../commons/createChipSource.jsx";
 import CreateSourceList from "../commons/createSourceList.jsx";
 import CreateCardSourceTelemetry from "../commons/createCardSourceTelemetry.jsx";
+import CreateCardSourceTelemetryProblemParameters from "../commons/createCardSourceTelemetryProblemParameters.jsx";
 
 class CreatePageTelemetry extends React.Component {
     constructor(props){
@@ -16,8 +16,11 @@ class CreatePageTelemetry extends React.Component {
             chosedSource: 0,
             chosenSources: [],
             informationSource: {},
+            telemetryDeviationParameters: this.props.listItems.mainInformation.listSourceDeviationParameters,
         };
     
+        console.log(this.props.listItems.mainInformation);
+
         this.handlerEvents.call(this);
 
         this.compareNumeric = this.compareNumeric.bind(this);
@@ -29,14 +32,6 @@ class CreatePageTelemetry extends React.Component {
         this.handlerButtonRequest = this.handlerButtonRequest.bind(this);
         this.handlerChosenSourceDelete = this.handlerChosenSourceDelete.bind(this);
         this.createListSourceInformation = this.createListSourceInformation.bind(this);
-
-        this.testRequest.call(this);
-    }
-
-    testRequest(){
-        this.props.socketIo.emit("network interaction: get telemetry for list source", { arguments: {
-            listSource: [ 1000, 1002 ],
-        }});
     }
 
     handlerEvents(){
@@ -80,6 +75,9 @@ class CreatePageTelemetry extends React.Component {
                 }
                 
                 this.setState(objCopy);
+            }
+            if(data.type === "telemetryDeviationParameters"){
+                this.setState({ telemetryDeviationParameters: data.options });
             }
         });
     }
@@ -164,12 +162,24 @@ class CreatePageTelemetry extends React.Component {
             return null;
         }
 
+        if(this.state.telemetryDeviationParameters.length === 0){
+            return null;
+        }
+
+        console.log(this.state.telemetryDeviationParameters);
+
         return (
-            <Row>
-                <Col md={12}>
-                    <Paper>Здесь будет общая информация о телеметри источников</Paper>
-                </Col>
-            </Row> 
+            <React.Fragment>
+                {this.state.telemetryDeviationParameters.map((item) => {
+                    return (
+                        <Row className="pt-2" key={`key_card_${item.sourceID}`}>
+                            <Col>
+                                <CreateCardSourceTelemetryProblemParameters sourceInfo={item}/>
+                            </Col>
+                        </Row>
+                    );
+                })}
+            </React.Fragment>
         );
     }
 

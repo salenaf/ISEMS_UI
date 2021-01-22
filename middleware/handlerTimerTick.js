@@ -118,19 +118,13 @@ class TempTaskStorage {
             let h = this.obj.listDateTimeTrigger[id].dateTimeTrigger.hour;
             let m = this.obj.listDateTimeTrigger[id].dateTimeTrigger.minutes;
 
-            console.log(`template id: ${id}, template hour: ${h} === hour: ${hour} and template minutes: ${m} === minutes: ${minutes}, day of week: ${days[dayOfWeek]}`);
-            console.log(this.obj.listDateTimeTrigger[id]);
+            //console.log(`template id: ${id}, template hour: ${h} === hour: ${hour} and template minutes: ${m} === minutes: ${minutes}, day of week: ${days[dayOfWeek]}`);
+            //console.log(this.obj.listDateTimeTrigger[id]);
 
-            // ----- ONLY TEST -----
-            //для тестирования не будем пока опиратся на время
             require("../libs/handlerAutomaticGenerationQueries")(this.obj.listDateTimeTrigger[id])
                 .catch((err) => {
-                    console.log("func 'readingListTempTaskForTimer', ERROR:");
-                    console.log(err);
-
                     writeLogFile("error", err.toString() + " (func 'readingListTempTaskForTimer')");
                 });
-            //----------------------
 
             if (h === hour && m === minutes) {
                 //dayOfWeek
@@ -140,9 +134,6 @@ class TempTaskStorage {
 
                         require("../libs/handlerAutomaticGenerationQueries")(this.obj.listDateTimeTrigger[id])
                             .catch((err) => {
-                                console.log("func 'readingListTempTaskForTimer', ERROR:");
-                                console.log(err);
-
                                 writeLogFile("error", err.toString() + " (func 'readingListTempTaskForTimer')");
                             });
                     }
@@ -159,6 +150,19 @@ module.exports = function(sec) {
     const myEmitter = new MyEmitter();
     let tempTaskStorage = new TempTaskStorage();
 
+    /** ЭТО ТОЛЬКО ДЛЯ ТЕСТОВ */
+    setTimeout(() => {
+        const newDate = new Date;
+        let hour = newDate.getHours();
+        let minutes = newDate.getMinutes();
+        let dayOfWeek = newDate.getDay();
+
+        tempTaskStorage.readingListTempTaskForTimer({ hour: hour, minutes: minutes, dayOfWeek: dayOfWeek });
+
+    }, 15000);
+
+    /*
+    ---- ЭТО ДЛЯ БОЕВОГО ИСПОЛЬЗОВАНИЯ ----
     setInterval(() => {
         const newDate = new Date;
         let hour = newDate.getHours();
@@ -170,6 +174,7 @@ module.exports = function(sec) {
 
         tempTaskStorage.readingListTempTaskForTimer({ hour: hour, minutes: minutes, dayOfWeek: dayOfWeek });
     }, sec);
+    */
 
     myEmitter.on("set new temp task", (data) => {
         //console.log("func 'handlerTimerTick', received event 'set new temp task'");

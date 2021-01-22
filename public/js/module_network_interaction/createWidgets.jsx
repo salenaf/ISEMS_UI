@@ -9,13 +9,20 @@ export default class CreatingWidgets extends React.Component {
         this.state = {
             filtration: new Set(),
             download: new Set(),
+            telemetryDeviationParameters: 0,
         };
 
         this.handlerEvents.call(this);
+        this.requestEmitter.call(this);
 
         this.handlerClickOnWidgetProcessingTask = this.handlerClickOnWidgetProcessingTask.bind(this);
         this.handlerClickOnWidgetUnresolvedTask = this.handlerClickOnWidgetUnresolvedTask.bind(this);
         this.handlerClickOnWidgetNotDownloadTask = this.handlerClickOnWidgetNotDownloadTask.bind(this);
+        this.handlerClickOnWidgetTelemetryDeviation = this.handlerClickOnWidgetTelemetryDeviation.bind(this);
+    }
+
+    requestEmitter(){
+        this.props.socketIo.emit("network interaction: get list source with deviation parameters", {});
     }
 
     handlerEvents(){
@@ -36,11 +43,6 @@ export default class CreatingWidgets extends React.Component {
                 let objCopy = Object.assign({}, this.state);
 
                 if((msg.options.status === "complete") || (msg.options.status === "refused")){
-                    
-                    console.log("func 'createWidgets'");
-                    console.log(`download status '${msg.options.status}, deleting task id: ${msg.options.taskID}'`);
-                    
-                    
                     objCopy.download.delete(msg.options.taskID);
                 
                     //если выгрузка файлов завершена успешно
@@ -52,6 +54,10 @@ export default class CreatingWidgets extends React.Component {
                 }                                                                                                                                                                                                                                                                                                                                                                                                                   
 
                 this.setState(objCopy);
+            }
+
+            if(msg.type === "telemetryDeviationParameters"){
+                this.setState({ telemetryDeviationParameters: msg.options.length });
             }
         });
     }
@@ -66,6 +72,10 @@ export default class CreatingWidgets extends React.Component {
 
     handlerClickOnWidgetNotDownloadTask(){
         window.location.href = "/network_interaction_page_file_download";
+    }
+
+    handlerClickOnWidgetTelemetryDeviation(){
+        window.location.href = "/network_interaction_page_source_telemetry";
     }
 
     render(){
@@ -107,6 +117,15 @@ export default class CreatingWidgets extends React.Component {
                     <small>выгруженные файлы</small>
                     <span className="my-n2 text-info">{this.props.widgets.numUnresolvedTask}</span>
                     <small className="text-muted">не рассмотренны</small>
+                </Card>
+                <Card 
+                    onClick={this.handlerClickOnWidgetTelemetryDeviation}
+                    className="ml-3 clicabe_cursor" 
+                    border="danger" 
+                    style={{ width: "12rem" }}>
+                    <small>телеметрия источников</small>
+                    <span className="my-n2 text-danger">{this.state.telemetryDeviationParameters}</span>
+                    <small className="text-muted">требуют внимание</small>
                 </Card>
             </div>
         );

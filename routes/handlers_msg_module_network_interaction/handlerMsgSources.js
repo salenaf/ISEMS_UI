@@ -158,18 +158,80 @@ function giveInformationAboutStateSource(msg) {
     console.log("func 'giveInformationAboutStateSource', START...");
     console.log(msg);
 
+    //проверяем отклонение локального времени источника
+    let checkingDeviationLocalTime = () => {
+        //если локальное время источника отличается больше чем на 59 мин. 
+        return ((msg.options.i.currentDateTime < (+new Date - 3540000)) || (msg.options.i.currentDateTime > (+new Date + 59000)));
+    };
+
+    //проверяем время последнего записанного файла
+    let checkingTimeLastRecordedFile = () => {
+        let storageTimeInterval = msg.options.i.timeInterval;
+        let dateMin = 0;
+        let dateMax = 0;
+
+        for (let key in storageTimeInterval) {
+            if (dateMin === 0 || dateMin > storageTimeInterval[key].dateMin) {
+                dateMin = storageTimeInterval[key].dateMin;
+            }
+
+            if (dateMax < storageTimeInterval[key].dateMax) {
+                dateMax = storageTimeInterval[key].dateMax;
+            }
+        }
+
+        let behindCurrentTime = ((+new Date) <= dateMax) ? 0.0 : (+new Date - dateMax) / 3600000;
+
+        return behindCurrentTime > 12;
+    };
+
+    let sourceInfo = globalObject.getData("sources", msg.options.id);
+
+    //    console.log(`func 'giveInformationAboutStateSource', source ID: ${msg.options.id}, short name: ${sourceInfo.shortName}`);
+    //    console.log(sourceInfo);
+
+    //обрабатываем информацию о телеметрии
+    globalObject.setData("telemetrySources", msg.options.id, {
+        "timeReceipt": +new Date,
+        "deviationParametersSource": (checkingDeviationLocalTime() || checkingTimeLastRecordedFile()),
+        "shortSourceName": (sourceInfo === null) ? "" : sourceInfo.shortName,
+        telemetryParameters: msg.options.i,
+    });
+
+    //получаем список источников у которых имеется откланение параметров
+    let listSourceDeviationParameters = [];
+    let telemetrySources = globalObject.getData("telemetrySources");
+    for (let sid in telemetrySources) {
+        if (!telemetrySources[sid].deviationParametersSource) {
+            continue;
+        }
+
+        listSourceDeviationParameters.push({
+            sourceID: sid,
+            shortSourceName: (sourceInfo === null) ? "" : sourceInfo.shortName,
+            timeReceipt: telemetrySources[sid].timeReceipt,
+            telemetryParameters: telemetrySources[sid].telemetryParameters,
+        });
+    }
+
+    //отправляем информацию о телеметрии для виджета
+    helpersFunc.sendBroadcastSocketIo("module NI API", {
+        "type": "telemetryDeviationParameters",
+        "options": listSourceDeviationParameters,
+    });
+
+    console.log("func 'giveInformationAboutStateSource', AFTER");
+    console.log(telemetrySources);
+
     if (!globalObject.hasData("tasks", msg.taskID)) {
         helpersFunc.sendBroadcastSocketIo("module NI API", msg);
     }
 
     let taskInfo = globalObject.getData("tasks", msg.taskID);
-    if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "module NI API", msg)) {
+
+    if (!helpersFunc.sendMessageByUserSocketIo(((taskInfo !== null) ? taskInfo.socketId : null), "module NI API", msg)) {
         helpersFunc.sendBroadcastSocketIo("module NI API", msg);
     }
-
-    console.log(taskInfo);
-
-
 }
 
 /**
