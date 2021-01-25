@@ -26,10 +26,10 @@ module.exports = function(templateInfo) {
         });
     }).then((conn) => {
         return new Promise((resolve, reject) => {
-            let allSourceList = globalObject.getData("sources");
             //нужно сравнить со списком в шаблоне и выбрать только подключенные
-
+            let allSourceList = globalObject.getData("sources");
             let approvedSourceList = [];
+
             if (templateInfo.listSourceID.length === 0) {
                 for (let sid in allSourceList) {
                     if (allSourceList[sid].connectStatus) {

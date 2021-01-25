@@ -13,6 +13,8 @@ import WarningIcon from "@material-ui/icons/Warning";
 import { yellow } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
+import { helpers } from "../common_helpers/helpers.js";
+
 const useStyles = makeStyles({
     root: {
         minWidth: 275,
@@ -38,9 +40,6 @@ const useStyles = makeStyles({
 
 export default function CreateCardSourceTelemetryProblemParameters(props) {
     const classes = useStyles();
-
-    console.log("CreateCardSourceTelemetryProblemParameters");
-
     const formatter = Intl.DateTimeFormat("ru-Ru", {
         timeZone: "Europe/Moscow",
         day: "numeric",
@@ -49,109 +48,128 @@ export default function CreateCardSourceTelemetryProblemParameters(props) {
         hour: "numeric",
         minute: "numeric",
     });
-    /*
-    const commonStoragesSpace = () => {
-        let storageTimeInterval = props.sourceInfo.informationTelemetry.timeInterval;
-        let dateMin = 0;
-        let dateMax = 0;
 
-        for(let key in storageTimeInterval){
-            if(dateMin === 0 || dateMin > storageTimeInterval[key].dateMin){
-                dateMin = storageTimeInterval[key].dateMin;
-            }
+    const getLevelColor = (int) => {
+        if(int <= 25){
+            return <span className="text-success">{int}</span>;
+        } else if(int > 25 && int <= 50){
+            return <span className="text-info">{int}</span>;
+        } else if(int > 50 && int < 75){
+            return <span className="text-warning">{int}</span>;
+        } else {
+            return <span className="text-danger">{int}</span>;
+        }
+    };
 
-            if(dateMax < storageTimeInterval[key].dateMax){
-                dateMax = storageTimeInterval[key].dateMax;
-            }
+    let tele = props.sourceInfo.telemetryParameters,
+        memTotal = helpers.changeByteSize(+tele.randomAccessMemory.total*1000),
+        memUsed = helpers.changeByteSize(+tele.randomAccessMemory.used*1000),
+        memFree = helpers.changeByteSize(+tele.randomAccessMemory.free*1000),
+        dateMin = 0,
+        dateMax = 0,
+        listStorages = [];
+
+    for(let key in tele.timeInterval){
+        if(dateMin === 0 || dateMin > tele.timeInterval[key].dateMin){
+            dateMin = tele.timeInterval[key].dateMin;
         }
 
-        let dateTimeBegin = formatter.format(dateMin);
-        let dateTimeEnd = formatter.format(dateMax);
-        let timeStorageFiles = ((dateMax - dateMin) / 86400000).toFixed(1);
-        let behindCurrentTime = ((+new Date) <= dateMax) ? 0.0: (+new Date - dateMax) / 3600000;
-
-        let iconWarning = "";
-        let behindCurrentTimeColor = ""; 
-        
-        if(behindCurrentTime > 12) {
-            iconWarning = <WarningIcon className="mt-n1" style={{ color: yellow[700] }} fontSize="small" />;
-            behindCurrentTimeColor = "text-danger";
+        if(dateMax < tele.timeInterval[key].dateMax){
+            dateMax = tele.timeInterval[key].dateMax;
         }
 
-        return (
-            <React.Fragment>
+        let timeStorage = ((tele.timeInterval[key].dateMax - tele.timeInterval[key].dateMin) / 86400000).toFixed(1);
+        let classMax = "";
+        if(((+new Date - dateMax) / 3600000) > 12){
+            classMax = "text-danger";
+        }
+
+        listStorages.push(<TableRow key={`key_dir_name_${key}`}>
+            <TableCell>{key}</TableCell>
+            <TableCell><i>{formatter.format(tele.timeInterval[key].dateMin)}</i></TableCell>
+            <TableCell>
+                <span className={classMax}>
+                    <i>{formatter.format(tele.timeInterval[key].dateMax)}</i>
+                </span>
+            </TableCell>
+            <TableCell align="right">{timeStorage}</TableCell>
+        </TableRow>);
+    }
+
+    let dateTimeBegin = formatter.format(dateMin),
+        dateTimeEnd = formatter.format(dateMax),
+        timeStorageFiles = ((dateMax - dateMin) / 86400000).toFixed(1),
+        behindCurrentTime = ((+new Date) <= dateMax) ? 0.0: (+new Date - dateMax) / 3600000;
+
+    return (       
+        <Card className={classes.root}>
+            <CardContent>
                 <Row>
-                    <Col md={12} className="text-left mt-2">
-                        <Typography variant="body2" component="p">
-                            временной диапазон хранящихся файлов: с <i>{dateTimeBegin}</i> по <i>{dateTimeEnd}</i>
+                    <Col md={12}>
+                        <Typography className={classes.title} color="textSecondary" gutterBottom>
+                            {`Источник №${props.sourceInfo.sourceID} (${props.sourceInfo.shortSourceName})`}
+                            <WarningIcon className="mt-n1" style={{ color: yellow[700] }} fontSize="small" />
                         </Typography>
                     </Col>
                 </Row>
                 <Row>
-                    <Col md={12} className="text-left">
+                    <Col md={12} className="text-left mt-2">
+                        <Typography variant="body2" component="p">
+                            информация с источника была получена: <i>{formatter.format(props.sourceInfo.timeReceipt)}</i>
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={5} className="text-left">
+                        <Typography variant="body2" component="p">
+                            диапазон хранящихся файлов: <i>{dateTimeBegin}</i> - <i>{dateTimeEnd}</i>
+                        </Typography>
+                    </Col>
+                    <Col md={7} className="text-right">
+                        <Typography variant="body2" component="p">
+                            локальное время источника: <i>{formatter.format(tele.currentDateTime)}</i>
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={5} className="text-left">
                         <Typography variant="body2" component="p">
                             среднее время хранящихся файлов: <strong>{timeStorageFiles}</strong> сут.
                         </Typography>
                     </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-left  mb-2">
+                    <Col md={7} className="text-right">
                         <Typography variant="body2" component="p">
-                            отставание от текущего времени: <strong className={behindCurrentTimeColor}>{behindCurrentTime.toFixed(1)}</strong> ч. {iconWarning}
+                            загрузка центрального процессора: {getLevelColor(+tele.loadCPU)} %
                         </Typography>
                     </Col>
                 </Row>
-            </React.Fragment>
-        );
-    };
-
-    const createStoragesDiskSpace = () => {
-        let storageTimeInterval = props.sourceInfo.informationTelemetry.timeInterval;
-        let dateMin = 0;
-        let dateMax = 0;
-        let listStorages = [];
-
-        for(let key in storageTimeInterval){
-            if(dateMin === 0 || dateMin > storageTimeInterval[key].dateMin){
-                dateMin = storageTimeInterval[key].dateMin;
-            }
-
-            if(dateMax < storageTimeInterval[key].dateMax){
-                dateMax = storageTimeInterval[key].dateMax;
-            }
-
-            let timeStorage = ((storageTimeInterval[key].dateMax - storageTimeInterval[key].dateMin) / 86400000).toFixed(1);
-
-            listStorages.push(<TableRow key={`key_dir_name_${key}`}>
-                <TableCell>{key}</TableCell>
-                <TableCell><i>{formatter.format(storageTimeInterval[key].dateMin)}</i></TableCell>
-                <TableCell><i>{formatter.format(storageTimeInterval[key].dateMax)}</i></TableCell>
-                <TableCell align="right">{timeStorage}</TableCell>
-            </TableRow>);
-        }
-        
-        return (
-            <Table size="small" aria-label="a dense table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell><strong>директория</strong></TableCell>
-                        <TableCell><strong>время мин.</strong></TableCell>
-                        <TableCell><strong>время макс.</strong></TableCell>
-                        <TableCell align="right" className="align-middle"><strong>сутки</strong></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>{listStorages}</TableBody>
-            </Table>
-        );
-    };
-*/
-    return (       
-        <Card className={classes.root}>
-            <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    {`Источник №${props.sourceInfo.sourceID} (${props.sourceInfo.shortSourceName})`}
-                    <strong>Это доделать!! Кроме того для тестов я выключил setInterval в handlerTimerTick, позже необходимо включить</strong>
-                </Typography>
+                <Row>
+                    <Col md={5} className="text-left">
+                        <Typography variant="body2" component="p">
+                            отставание файлов от текущего времени: <strong className="text-danger">{behindCurrentTime.toFixed(1)}</strong> ч.
+                        </Typography>
+                    </Col>
+                    <Col md={7} className="text-right">
+                        <Typography variant="body2" component="p">
+                            оперативная память, всего: <strong>{memTotal.size}</strong> {memTotal.name}, используется: <strong>{memUsed.size}</strong> {memUsed.name}, свободно: <strong>{memFree.size}</strong> {memFree.name}
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        <Table size="small" aria-label="a dense table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell><strong>директория</strong></TableCell>
+                                    <TableCell><strong>время мин.</strong></TableCell>
+                                    <TableCell><strong>время макс.</strong></TableCell>
+                                    <TableCell align="right" className="align-middle"><strong>сутки</strong></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>{listStorages}</TableBody>
+                        </Table>
+                    </Col>
+                </Row>
             </CardContent>
         </Card>
     );

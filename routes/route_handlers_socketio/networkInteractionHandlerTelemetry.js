@@ -4,7 +4,6 @@ const MyError = require("../../libs/helpers/myError");
 const showNotify = require("../../libs/showNotify");
 const helpersFunc = require("../../libs/helpers/helpersFunc");
 const globalObject = require("../../configure/globalObject");
-const getSessionId = require("../../libs/helpers/getSessionId");
 const writeLogFile = require("../../libs/writeLogFile");
 const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
 

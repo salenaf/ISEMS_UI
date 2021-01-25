@@ -11,6 +11,10 @@ const writeLogFile = require("../../libs/writeLogFile");
  * @param {*} msg - сообщение от модуля сетевого взаимодействия
  */
 module.exports = function(msg) {
+
+    //console.log("func 'handlerMsgSources', START...");
+    // console.log(msg);
+
     let objHandlerMsgInstraction = {
         "send version app": sendVersionApp,
         "change status source": changeStatusSource,
@@ -155,13 +159,10 @@ function sendCurrentSourceList(msg) {
  * @param {*} msg 
  */
 function giveInformationAboutStateSource(msg) {
-    console.log("func 'giveInformationAboutStateSource', START...");
-    console.log(msg);
-
     //проверяем отклонение локального времени источника
     let checkingDeviationLocalTime = () => {
         //если локальное время источника отличается больше чем на 59 мин. 
-        return ((msg.options.i.currentDateTime < (+new Date - 3540000)) || (msg.options.i.currentDateTime > (+new Date + 59000)));
+        return ((msg.options.i.currentDateTime < (+new Date - 3540000)) || (msg.options.i.currentDateTime > (+new Date + 3540000)));
     };
 
     //проверяем время последнего записанного файла
@@ -187,9 +188,6 @@ function giveInformationAboutStateSource(msg) {
 
     let sourceInfo = globalObject.getData("sources", msg.options.id);
 
-    //    console.log(`func 'giveInformationAboutStateSource', source ID: ${msg.options.id}, short name: ${sourceInfo.shortName}`);
-    //    console.log(sourceInfo);
-
     //обрабатываем информацию о телеметрии
     globalObject.setData("telemetrySources", msg.options.id, {
         "timeReceipt": +new Date,
@@ -198,7 +196,7 @@ function giveInformationAboutStateSource(msg) {
         telemetryParameters: msg.options.i,
     });
 
-    //получаем список источников у которых имеется откланение параметров
+    //получаем список источников у которых имеется отклонение параметров
     let listSourceDeviationParameters = [];
     let telemetrySources = globalObject.getData("telemetrySources");
     for (let sid in telemetrySources) {
@@ -220,8 +218,8 @@ function giveInformationAboutStateSource(msg) {
         "options": listSourceDeviationParameters,
     });
 
-    console.log("func 'giveInformationAboutStateSource', AFTER");
-    console.log(telemetrySources);
+    //    console.log("func 'giveInformationAboutStateSource', AFTER");
+    //    console.log(telemetrySources);
 
     if (!globalObject.hasData("tasks", msg.taskID)) {
         helpersFunc.sendBroadcastSocketIo("module NI API", msg);
@@ -241,8 +239,17 @@ function giveInformationAboutStateSource(msg) {
  * @param {*} msg 
  */
 function rejectGiveInformationAboutStateSource(msg) {
-    console.log("func 'rejectGiveInformationAboutStateSource', START...");
-    console.log(msg);
+    let listSourceDeviationParameters = globalObject.getData("telemetrySources");
+    for (let num = 0; num < msg.options.sl.length; num++) {
+        for (let sourceID in listSourceDeviationParameters) {
+            if (+msg.options.sl[num].id !== +sourceID) {
+                continue;
+            }
+
+            msg.options.sl[num].timeReceipt = listSourceDeviationParameters[sourceID].timeReceipt;
+            msg.options.sl[num].telemetryParameters = listSourceDeviationParameters[sourceID].telemetryParameters;
+        }
+    }
 
     if (!globalObject.hasData("tasks", msg.taskID)) {
         helpersFunc.sendBroadcastSocketIo("module NI API", msg);

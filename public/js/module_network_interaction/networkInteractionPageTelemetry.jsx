@@ -18,8 +18,6 @@ class CreatePageTelemetry extends React.Component {
             informationSource: {},
             telemetryDeviationParameters: this.props.listItems.mainInformation.listSourceDeviationParameters,
         };
-    
-        console.log(this.props.listItems.mainInformation);
 
         this.handlerEvents.call(this);
 
@@ -50,6 +48,11 @@ class CreatePageTelemetry extends React.Component {
                                 connectionStatus: false,
                                 informationTelemetry: null,
                             };
+
+                            if((typeof item.timeReceipt !== "undefined") && (typeof item.telemetryParameters !== "undefined")){
+                                objCopy.informationSource[item.id].timeReceipt = item.timeReceipt;
+                                objCopy.informationSource[item.id].informationTelemetry = item.telemetryParameters;
+                            }
                         }
                     }
                 });
@@ -59,7 +62,7 @@ class CreatePageTelemetry extends React.Component {
                 }
             }
 
-            if(data.instruction === "give information about state of source"){
+            if(data.instruction === "give information about state of source"){              
                 if(!this.state.chosenSources.includes(data.options.id)){
                     return;
                 }

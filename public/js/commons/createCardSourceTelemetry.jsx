@@ -19,7 +19,7 @@ import WarningIcon from "@material-ui/icons/Warning";
 import { yellow } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-import {helpers} from "../common_helpers/helpers.js";
+import { helpers } from "../common_helpers/helpers.js";
 
 const useStyles = makeStyles({
     root: {
@@ -46,7 +46,6 @@ const useStyles = makeStyles({
 
 export default function CreateCardSourceTelemetry(props) {
     const classes = useStyles();
-
     const formatter = Intl.DateTimeFormat("ru-Ru", {
         timeZone: "Europe/Moscow",
         day: "numeric",
@@ -55,7 +54,6 @@ export default function CreateCardSourceTelemetry(props) {
         hour: "numeric",
         minute: "numeric",
     });
-
     const numFormatter = new Intl.NumberFormat("ru");
 
     const handleClose = function(sid, e) {
@@ -65,6 +63,16 @@ export default function CreateCardSourceTelemetry(props) {
     const createSourceLocatTime = () => {
         if(props.sourceInfo.informationTelemetry === null){
             return <Col md={6}></Col>;
+        }
+
+        if(typeof props.sourceInfo.timeReceipt !== "undefined"){
+            return (
+                <Col md={6} className="text-right">
+                    <Typography variant="body2" component="p">
+                        время последнего сетевого соединения: <i>{formatter.format(props.sourceInfo.timeReceipt)}</i>
+                    </Typography>
+                </Col>
+            );    
         }
 
         return (
@@ -135,7 +143,7 @@ export default function CreateCardSourceTelemetry(props) {
                 <Row>
                     <Col md={12} className="text-left  mb-2">
                         <Typography variant="body2" component="p">
-                            отставание от текущего времени: <strong className={behindCurrentTimeColor}>{behindCurrentTime.toFixed(1)}</strong> ч. {iconWarning}
+                            отставание файлов от текущего времени: <strong className={behindCurrentTimeColor}>{behindCurrentTime.toFixed(1)}</strong> ч. {iconWarning}
                         </Typography>
                     </Col>
                 </Row>
@@ -289,6 +297,26 @@ export default function CreateCardSourceTelemetry(props) {
         );
     };
 
+    const lastTimeConnect = () => {
+
+        console.log("func 'lastTimeConnect', START...");
+        console.log(props.sourceInfo.timeReceipt);
+
+        if(typeof props.sourceInfo.timeReceipt === "undefined"){
+            return;
+        }
+
+        return (
+            <Row>
+                <Col md={12} className="text-left">
+                    <Typography variant="body2" component="p">
+                    время последнего сетевого соединения: {formatter.format(props.sourceInfo.timeReceipt)}
+                    </Typography>
+                </Col>
+            </Row>
+        );
+    };
+
     return (
         <Card className={classes.root}>
             <CardContent>
@@ -302,11 +330,12 @@ export default function CreateCardSourceTelemetry(props) {
                         <Row>
                             <Col md={6} className="text-left">
                                 <Typography variant="body2" component="p">
-                                    статус сетевого соединения: {(props.sourceInfo.connectionStatus) ? <Badge variant="success">подключен</Badge>: <Badge variant="danger">соединение отсутствует</Badge>}
+                                    статус сетевого соединения: {(props.sourceInfo.connectionStatus) ? <Badge variant="success">соединение установлено</Badge>: <Badge variant="danger">соединение отсутствует</Badge>}
                                 </Typography>
                             </Col>
                             {createSourceLocatTime()}
                         </Row>
+                        {/*lastTimeConnect()*/}
                         {createCardBody()}
                     </React.Fragment>}
             </CardContent>
