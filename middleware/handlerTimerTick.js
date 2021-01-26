@@ -112,6 +112,17 @@ class TempTaskStorage {
         console.log("func 'readingListTempTaskForTimer', START");
         console.log(`func 'readingListTempTaskForTimer', hour: ${hour}, minutes: ${minutes}`);
 
+        /**
+         * 
+         * 1. Надо сделать автоматическое, по таймеру, удаление информации
+         * из журнала событий (ВРОДЕ СДЕЛАЛ, надо потестировать на боевом)
+         * 
+         * 2. Доделать формирование шаблона для создания шаблона задачи 
+         * выполнения автоматической фильтрации сетевого трафика
+         * 
+         * 
+         */
+
         let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
         for (let id in this.obj.listDateTimeTrigger) {
@@ -133,6 +144,38 @@ class TempTaskStorage {
                         });
                 }
             }
+        }
+    }
+
+    //здесь выполняются регулярные внутренние процессы
+    regularActionsInternalProcesses({ hour, minutes }) {
+        let listFunc = {
+            //для автоматического удаления устаревших записей из журнала событий
+            "deleteOldRecords": () => {
+                return new Promise((resolve, reject) => {
+                    (require("./mongodbQueryProcessor")).queryDelete(
+                        require("../controllers/models").modelNotificationLogISEMSNIH, {
+                            isMany: true,
+                            query: {
+                                date_register: { $lt: (+new Date - 3888000000) }
+                            },
+                        }, (err, countDeleted) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve(countDeleted);
+                            }
+                        });
+                });
+            },
+        };
+
+        if (hour === 1 && minutes === 31) {
+            (listFunc.deleteOldRecords)().then((deletedResult) => {
+                writeLogFile("info", `${deletedResult.deletedCount} items were removed from the collection 'notification_log_isems.nih'  (func 'regularActionsInternalProcesses')`);
+            }).catch((err) => {
+                writeLogFile("error", err.toString() + " (func 'regularActionsInternalProcesses')");
+            });
         }
     }
 }
@@ -164,8 +207,7 @@ module.exports = function(sec) {
         let minutes = newDate.getMinutes();
         let dayOfWeek = newDate.getDay();
 
-        //        console.log(`func 'handlerTimerTick', Get timer: ${new Date}, Hour: ${hour}, Minutes: ${minutes}`);
-        //        console.log("func 'handlerTimerTick', send get list tempTaskStorage");
+        tempTaskStorage.regularActionsInternalProcesses({ hour: hour, minutes: minutes });
 
         tempTaskStorage.readingListTempTaskForTimer({ hour: hour, minutes: minutes, dayOfWeek: dayOfWeek });
     }, sec);

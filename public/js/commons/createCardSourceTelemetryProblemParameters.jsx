@@ -115,7 +115,7 @@ export default function CreateCardSourceTelemetryProblemParameters(props) {
                 <Row>
                     <Col md={12} className="text-left mt-2">
                         <Typography variant="body2" component="p">
-                            информация с источника была получена: <i>{formatter.format(props.sourceInfo.timeReceipt)}</i>
+                            информация с источника была получена: <i><strong>{formatter.format(props.sourceInfo.timeReceipt)}</strong></i>
                         </Typography>
                     </Col>
                 </Row>
