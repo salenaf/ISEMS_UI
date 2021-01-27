@@ -109,13 +109,7 @@ class TempTaskStorage {
     }
 
     readingListTempTaskForTimer({ hour, minutes, dayOfWeek }) {
-        console.log("func 'readingListTempTaskForTimer', START");
-        console.log(`func 'readingListTempTaskForTimer', hour: ${hour}, minutes: ${minutes}`);
-
         /**
-         * 
-         * 1. Надо сделать автоматическое, по таймеру, удаление информации
-         * из журнала событий (ВРОДЕ СДЕЛАЛ, надо потестировать на боевом)
          * 
          * 2. Доделать формирование шаблона для создания шаблона задачи 
          * выполнения автоматической фильтрации сетевого трафика
@@ -135,8 +129,6 @@ class TempTaskStorage {
                     if (day !== days[dayOfWeek]) {
                         continue;
                     }
-
-                    console.log("func 'readingListTempTaskForTimer', Begining processing");
 
                     require("../libs/handlerAutomaticGenerationQueries")(this.obj.listDateTimeTrigger[id])
                         .catch((err) => {
@@ -207,8 +199,10 @@ module.exports = function(sec) {
         let minutes = newDate.getMinutes();
         let dayOfWeek = newDate.getDay();
 
+        //регулярное выполнение внутренних процессов приложения
         tempTaskStorage.regularActionsInternalProcesses({ hour: hour, minutes: minutes });
 
+        //обработка шаблонов задач
         tempTaskStorage.readingListTempTaskForTimer({ hour: hour, minutes: minutes, dayOfWeek: dayOfWeek });
     }, sec);
 

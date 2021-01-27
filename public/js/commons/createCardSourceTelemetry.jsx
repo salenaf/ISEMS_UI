@@ -3,10 +3,10 @@ import { Badge, Col, Row, } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
+import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -276,7 +276,7 @@ export default function CreateCardSourceTelemetry(props) {
                 <Row>
                     <Col className="text-left" md={2}>
                         <Typography variant="body2" component="p">
-                            ЦП: {getLevelColor(+tele.loadCPU)} %
+                            загрузка ЦП: {getLevelColor(+tele.loadCPU)} %
                         </Typography>
                     </Col>
                     <Col className="text-right" md={10}>
@@ -294,26 +294,6 @@ export default function CreateCardSourceTelemetry(props) {
                     <Col md={5}>{createNetworkIntarface()}</Col>
                 </Row>
             </React.Fragment>
-        );
-    };
-
-    const lastTimeConnect = () => {
-
-        console.log("func 'lastTimeConnect', START...");
-        console.log(props.sourceInfo.timeReceipt);
-
-        if(typeof props.sourceInfo.timeReceipt === "undefined"){
-            return;
-        }
-
-        return (
-            <Row>
-                <Col md={12} className="text-left">
-                    <Typography variant="body2" component="p">
-                    время последнего сетевого соединения: {formatter.format(props.sourceInfo.timeReceipt)}
-                    </Typography>
-                </Col>
-            </Row>
         );
     };
 
@@ -335,7 +315,6 @@ export default function CreateCardSourceTelemetry(props) {
                             </Col>
                             {createSourceLocatTime()}
                         </Row>
-                        {/*lastTimeConnect()*/}
                         {createCardBody()}
                     </React.Fragment>}
             </CardContent>

@@ -29,6 +29,7 @@ class CreatePageTelemetry extends React.Component {
         this.handlerChosenSource = this.handlerChosenSource.bind(this);
         this.handlerButtonRequest = this.handlerButtonRequest.bind(this);
         this.handlerChosenSourceDelete = this.handlerChosenSourceDelete.bind(this);
+        this.handleDeleteCardProblemParameters = this.handleDeleteCardProblemParameters.bind(this);
         this.createListSourceInformation = this.createListSourceInformation.bind(this);
     }
 
@@ -79,8 +80,27 @@ class CreatePageTelemetry extends React.Component {
                 
                 this.setState(objCopy);
             }
+
             if(data.type === "telemetryDeviationParameters"){
                 this.setState({ telemetryDeviationParameters: data.options });
+            }
+
+            if(data.type === "deletedTelemetryDeviationParameters"){
+                let sourceID = +data.options.sourceID;
+                if(isNaN(sourceID)){
+                    return;
+                }
+
+                let tmpList = this.state.telemetryDeviationParameters;
+                for(let num = 0; num < tmpList.length; num++){
+                    if(+tmpList[num].sourceID === sourceID){
+                        tmpList.splice(num, 1);    
+
+                        break;
+                    }
+                }
+
+                this.setState({ telemetryDeviationParameters: tmpList });
             }
         });
     }
@@ -139,6 +159,23 @@ class CreatePageTelemetry extends React.Component {
         this.setState( objCopy );
     }
 
+    handleDeleteCardProblemParameters(sourceID){
+        this.props.socketIo.emit("network interaction: delete information problem patameters", { arguments: {
+            sourceID: sourceID,
+        }});
+
+        /*let tmpList = this.state.telemetryDeviationParameters;
+        for(let num = 0; num < tmpList.length; num++){
+            if(tmpList[num].sourceID === sourceID){
+                tmpList.splice(num, 1);    
+
+                break;
+            }
+        }
+
+        this.setState({ telemetryDeviationParameters: tmpList });*/
+    }
+
     compareNumeric(a, b) {
         if (a > b) return 1;
         if (a == b) return 0;
@@ -169,15 +206,15 @@ class CreatePageTelemetry extends React.Component {
             return null;
         }
 
-        console.log(this.state.telemetryDeviationParameters);
-
         return (
             <React.Fragment>
                 {this.state.telemetryDeviationParameters.map((item) => {
                     return (
                         <Row className="pt-2" key={`key_card_${item.sourceID}`}>
                             <Col>
-                                <CreateCardSourceTelemetryProblemParameters sourceInfo={item}/>
+                                <CreateCardSourceTelemetryProblemParameters 
+                                    sourceInfo={item}
+                                    handleDeleteCard={this.handleDeleteCardProblemParameters} />
                             </Col>
                         </Row>
                     );

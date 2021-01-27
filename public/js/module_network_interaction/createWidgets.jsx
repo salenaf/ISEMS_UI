@@ -59,6 +59,15 @@ export default class CreatingWidgets extends React.Component {
             if(msg.type === "telemetryDeviationParameters"){
                 this.setState({ telemetryDeviationParameters: msg.options.length });
             }
+
+            if(msg.type === "deletedTelemetryDeviationParameters"){
+                let countItem = this.state.telemetryDeviationParameters;
+                if(countItem === 0){
+                    return;
+                }
+
+                this.setState({ telemetryDeviationParameters: --countItem });
+            }
         });
     }
 

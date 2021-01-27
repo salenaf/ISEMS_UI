@@ -17,6 +17,7 @@ module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "network interaction: get telemetry for list source": getTelemetryForListSource,
         "network interaction: get list source with deviation parameters": getListSourceDeviationParameters,
+        "network interaction: delete information problem patameters": deleteInformationProblemPatameters,
     };
 
     for (let e in handlers) {
@@ -26,9 +27,6 @@ module.exports.addHandlers = function(socketIo) {
 
 function getTelemetryForListSource(socketIo, data) {
     let funcName = " (func 'getTelemetryForListSource')";
-
-    console.log("func 'getTelemetryForListSource'");
-    console.log(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -77,9 +75,6 @@ function getTelemetryForListSource(socketIo, data) {
 }
 
 function getListSourceDeviationParameters(socketIo) {
-
-    console.log("func 'getListSourceDeviationParameters', START...");
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -89,7 +84,7 @@ function getListSourceDeviationParameters(socketIo) {
 
             return;
         }).then(() => {
-            //получаем список источников у которых имеется откланение параметров
+            //получаем список источников у которых имеется отклонение параметров
             let listSourceDeviationParameters = [];
             let telemetrySources = globalObject.getData("telemetrySources");
             for (let sid in telemetrySources) {
@@ -107,12 +102,11 @@ function getListSourceDeviationParameters(socketIo) {
                 });
             }
 
-            console.log(helpersFunc.sendBroadcastSocketIo(
+            helpersFunc.sendBroadcastSocketIo(
                 "module NI API", {
                     "type": "telemetryDeviationParameters",
                     "options": listSourceDeviationParameters,
-                }));
-
+                });
         }).catch((err) => {
             if (err.name === "management auth") {
                 showNotify({
@@ -129,5 +123,62 @@ function getListSourceDeviationParameters(socketIo) {
             }
 
             writeLogFile("error", err.toString() + " (func 'getListSourceDeviationParameters')");
+        });
+}
+
+function deleteInformationProblemPatameters(socketIo, data) {
+    console.log("func 'deleteInformationProblemPatameters', START...");
+    console.log(data);
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+
+            console.log("func 'deleteInformationProblemPatameters', processing...");
+
+            if ((typeof data.arguments === "undefined") || (typeof data.arguments.sourceID === "undefined") || (isNaN(data.arguments.sourceID))) {
+                throw new MyError("management validation", "Приняты некорректные параметры запроса.");
+            }
+
+            let sourceID = +data.arguments.sourceID;
+
+            if (globalObject.deleteData("telemetrySources", sourceID)) {
+
+                console.log("func 'deleteInformationProblemPatameters', deleted is OK!!!");
+
+                helpersFunc.sendBroadcastSocketIo(
+                    "module NI API", {
+                        "type": "deletedTelemetryDeviationParameters",
+                        "options": { sourceID: sourceID },
+                    });
+            }
+        }).catch((err) => {
+            if (err.name === "management auth") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else if (err.name === "management validation") {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: `Запрос на удаление информации отклонен. ${err.message}`,
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                });
+            }
+
+            writeLogFile("error", err.toString() + " (func 'deleteInformationProblemPatameters')");
         });
 }

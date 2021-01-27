@@ -49,9 +49,9 @@ class CreateNotificationTypeList extends React.Component {
     getListNotificationType(){
         let list = [ 
             { t: "info", n: "информационное" },
+            { t: "danger", n: "критичное" },
             { t: "success", n: "успешное" },
             { t: "warning", n: "требует внимания" },
-            { t: "danger", n: "критичное" },
         ];
 
         return list.map((item) => {

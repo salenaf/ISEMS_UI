@@ -1,7 +1,9 @@
 import React from "react";
 import { Col, Row, } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -80,7 +82,7 @@ export default function CreateCardSourceTelemetryProblemParameters(props) {
 
         let timeStorage = ((tele.timeInterval[key].dateMax - tele.timeInterval[key].dateMin) / 86400000).toFixed(1);
         let classMax = "";
-        if(((+new Date - dateMax) / 3600000) > 12){
+        if(((props.sourceInfo.timeReceipt - dateMax) / 3600000) > 12){
             classMax = "text-danger";
         }
 
@@ -99,7 +101,7 @@ export default function CreateCardSourceTelemetryProblemParameters(props) {
     let dateTimeBegin = formatter.format(dateMin),
         dateTimeEnd = formatter.format(dateMax),
         timeStorageFiles = ((dateMax - dateMin) / 86400000).toFixed(1),
-        behindCurrentTime = ((+new Date) <= dateMax) ? 0.0: (+new Date - dateMax) / 3600000;
+        behindCurrentTime = ((props.sourceInfo.timeReceipt) <= dateMax) ? 0.0: (props.sourceInfo.timeReceipt - dateMax) / 3600000;
 
     return (       
         <Card className={classes.root}>
@@ -171,10 +173,18 @@ export default function CreateCardSourceTelemetryProblemParameters(props) {
                     </Col>
                 </Row>
             </CardContent>
+            <CardActions>
+                <Button 
+                    size="small"
+                    onClick={props.handleDeleteCard.bind(null, props.sourceInfo.sourceID)}>
+                    удалить
+                </Button>
+            </CardActions>
         </Card>
     );
 }
 
 CreateCardSourceTelemetryProblemParameters.propTypes = {
     sourceInfo: PropTypes.object.isRequired,
+    handleDeleteCard: PropTypes.func.isRequired,
 };
