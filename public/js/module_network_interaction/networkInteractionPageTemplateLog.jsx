@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Badge, Button, Col, Row } from "react-bootstrap";
+import { Badge, Button, Col, Row, Form, InputGroup } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue, red } from "@material-ui/core/colors";
 import Card from "@material-ui/core/Card";
@@ -11,7 +11,6 @@ import Radio from "@material-ui/core/Radio";
 import ButtonUI from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormGroup from "@material-ui/core/FormGroup";
-import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -21,6 +20,7 @@ import PropTypes from "prop-types";
 
 import CreateChipSource from "../commons/createChipSource.jsx";
 import CreateSourceList from "../commons/createSourceList.jsx";
+import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
 import CreateSteppersTemplateLog from "../commons/createSteppersTemplateLog.jsx";
 import { ModalWindowConfirmMessage } from "../commons/modalWindowConfirmMessage.jsx";
 
@@ -60,7 +60,7 @@ function CreateChangeTemplateType(props){
             value={props.templateType} 
             onChange={props.handlerChangeTemplateType}>
             <FormControlLabel className="mb-n2" value="telemetry" control={<Radio color="primary" size="small" />} label="телеметрия" />
-            <FormControlLabel value="filtration" disabled control={<Radio color="primary" size="small" />} label="фильтрация" />
+            <FormControlLabel value="filtration" control={<Radio color="primary" size="small" />} label="фильтрация" />
         </RadioGroup>
     );
 }
@@ -150,6 +150,134 @@ CreateTimePicker.propTypes = {
     handleDateChange: PropTypes.func.isRequired,
 };
 
+function CreateProtocolList(props){
+    const np = [
+        {t:"any", n:"любой"},
+        {t:"tcp", n:"tcp"},
+        {t:"udp", n:"udp"},
+    ];
+
+    return (
+        <select 
+            defaultValue={props.defaultNetworkProtocol}
+            className="custom-select custom-select-sm" 
+            onChange={props.handlerChosen} 
+            id="protocol_list">
+            {np.map((item) => {
+                return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
+            })}
+        </select>
+    );
+}
+
+CreateProtocolList.propTypes = {
+    handlerChosen: PropTypes.func.isRequired,
+    defaultNetworkProtocol: PropTypes.string.isRequired,
+};
+
+function ListInputValue(props){
+    let isEmpty = true;
+
+    done: 
+    for(let et in props.inputValue){
+        for(let d in props.inputValue[et]){
+            if(props.inputValue[et][d].length > 0){
+                isEmpty = false;
+
+                break done;
+            }
+        }
+    }
+
+    if(isEmpty){
+        return <React.Fragment></React.Fragment>;
+    }
+
+    let getList = (type) => {
+        let getListDirection = (d) => {
+            if(props.inputValue[type][d].length === 0){
+                return { value: "", success: false };
+            }
+
+            let result = props.inputValue[type][d].map((item) => {
+                if(d === "src"){
+                    return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
+                        <small className="text-info">{d}&#8592; </small>{item}
+                            &nbsp;<a onClick={props.hendlerDeleteAddedElem.bind(this, {
+                            type: type,
+                            direction: d,
+                            value: item
+                        })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
+                    </div>; 
+                }
+                if(d === "dst"){
+                    return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
+                        <small className="text-info">{d}&#8594; </small>{item}
+                            &nbsp;<a onClick={props.hendlerDeleteAddedElem.bind(this, {
+                            type: type,
+                            direction: d,
+                            value: item
+                        })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
+                    </div>; 
+                }
+
+                return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
+                    <small className="text-info">{d}&#8596; </small>{item}
+                        &nbsp;<a onClick={props.hendlerDeleteAddedElem.bind(this, {
+                        type: type,
+                        direction: d,
+                        value: item
+                    })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
+                </div>; 
+            });
+
+            return { value: result, success: true };
+        };
+
+        let resultAny = getListDirection("any");
+        let resultSrc = getListDirection("src");
+        let resultDst = getListDirection("dst");
+
+        return (
+            <React.Fragment>
+                <div>{resultAny.value}</div>
+                {(resultAny.success && (resultSrc.success || resultDst.success)) ? <div className="text-danger text-center">&laquo;ИЛИ&raquo;</div> : <div></div>}                   
+                <div>{resultSrc.value}</div>
+                {(resultSrc.success && resultDst.success) ? <div className="text-danger text-center">&laquo;И&raquo;</div> : <div></div>}                   
+                <div>{resultDst.value}</div>
+            </React.Fragment>
+        );
+    };
+
+    return (
+        <React.Fragment>
+            <Row>
+                <Col sm="3" className="text-center">
+                    <Badge variant="dark">ip адрес</Badge>
+                </Col>
+                <Col sm="1" className="text-danger text-center">&laquo;ИЛИ&raquo;</Col>
+                <Col sm="3" className="text-center">
+                    <Badge variant="dark">сеть</Badge>
+                </Col>
+                <Col sm="1" className="text-danger text-center">&laquo;И&raquo;</Col>
+                <Col sm="4" className="text-center">
+                    <Badge  variant="dark">сетевой порт</Badge>
+                </Col>
+            </Row>
+            <Row>
+                <Col sm="4">{getList("ip")}</Col>
+                <Col sm="4">{getList("nw")}</Col>
+                <Col sm="4">{getList("pt")}</Col>
+            </Row>
+        </React.Fragment>
+    );
+}
+
+ListInputValue.propTypes = {
+    inputValue: PropTypes.string.isRequired,
+    hendlerDeleteAddedElem: PropTypes.func.isRequired,
+};
+
 function CreateForm(props){ 
     let daysOfWeek = [];
     let textColor = "text-primary";
@@ -206,9 +334,53 @@ function CreateForm(props){
 
     case 3:
         return (
-            <FormControl component="fieldset">
-                <FormLabel component="legend">Выбор параметров</FormLabel>
-            </FormControl>
+            <React.Fragment>
+                <Row className="mt-2">
+                    <Col sm="3" className="text-right">
+                        <small className="mr-1 text-muted">сетевой протокол</small>
+                        <CreateProtocolList 
+                            defaultNetworkProtocol={props.parametersFiltration.networkProtocol} 
+                            handlerChosen={props.handlerChosenNetworkProtocol} />
+                    </Col>
+                    <Col sm="1"></Col>
+                    <Col sm="8" className="mt-2">
+                        <CreateDateTimePicker 
+                            currentDateTimeStart={props.parametersFiltration.dateTime.currentDateTimeStart}
+                            currentDateTimeEnd={props.parametersFiltration.dateTime.currentDateTimeEnd}
+                            handlerChangeDateTimeStart={props.handlerChangeDateTimeStart}
+                            handlerChangeDateTimeEnd={props.handlerChangeDateTimeEnd} />
+                    </Col>
+                </Row>
+                <Row className="mt-3">
+                    <Col className="text-center" sm="4">
+                        <Form inline>
+                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
+                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
+                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
+                        </Form>
+                    </Col>
+                    <Col sm="8"> 
+                        <InputGroup className="mb-3" size="sm">
+                            <FormControl
+                                id="input_ip_network_port"
+                                aria-describedby="basic-addon2"
+                                onChange={props.handlerInput}
+                                onKeyPress={props.handleKeyPress}
+                                isValid={props.parametersFiltration.inputFieldIsValid}
+                                isInvalid={props.parametersFiltration.inputFieldIsInvalid} 
+                                placeholder="введите ip адрес, подсеть или сетевой порт" />
+                            <InputGroup.Append>
+                                <Button onClick={props.handlerAddPortNetworkIP} variant="outline-secondary">
+                                    добавить
+                                </Button>
+                            </InputGroup.Append>
+                        </InputGroup>
+                    </Col>
+                </Row>
+                <ListInputValue 
+                    inputValue={props.parametersFiltration.inputValue}
+                    hendlerDeleteAddedElem={props.hendlerDeleteAddedElem} />
+            </React.Fragment>
         );
 
     case 4: 
@@ -294,10 +466,19 @@ CreateForm.propTypes = {
     listSources: PropTypes.object.isRequired,
     numberSteppers: PropTypes.number.isRequired,
     templateParameters: PropTypes.object.isRequired,
+    parametersFiltration: PropTypes.object.isRequired,
+    handlerInput: PropTypes.func.isRequired,
+    handleKeyPress: PropTypes.func.isRequired,
+    handlerAddPortNetworkIP: PropTypes.func.isRequired,
+    handlerChangeDateTimeStart: PropTypes.func.isRequired,
+    handlerChangeDateTimeEnd: PropTypes.func.isRequired,
+    handlerCheckRadioInput: PropTypes.func.isRequired,
+    hendlerDeleteAddedElem: PropTypes.func.isRequired,
     handlerChosenSource: PropTypes.func.isRequired,
     handlerDeleteSource: PropTypes.func.isRequired,
     handlerChangeTimeTrigger: PropTypes.func.isRequired,
     handlerChangeTemplateType: PropTypes.func.isRequired,
+    handlerChosenNetworkProtocol: PropTypes.func.isRequired,
     handlerChangeCheckboxDayOfWeek: PropTypes.func.isRequired,
     handlerChangeTemplateTimeRadioType: PropTypes.func.isRequired,
 };
@@ -385,10 +566,19 @@ function CreateCard(props){
                     listSources={props.listSources} 
                     numberSteppers={props.numberSteppers}
                     templateParameters={props.templateParameters}
+                    parametersFiltration={props.parametersFiltration}
+                    handlerInput={props.handlerInput}
+                    handleKeyPress={props.handleKeyPress}
+                    handlerAddPortNetworkIP={props.handlerAddPortNetworkIP}
+                    handlerChangeDateTimeStart={props.handlerChangeDateTimeStart}
+                    handlerChangeDateTimeEnd={props.handlerChangeDateTimeEnd}
+                    handlerCheckRadioInput={props.handlerCheckRadioInput}
+                    hendlerDeleteAddedElem={props.hendlerDeleteAddedElem}
                     handlerChosenSource={props.handlerChosenSource}
                     handlerDeleteSource={props.handlerDeleteSource}
                     handlerChangeTemplateType={props.handlerChangeTemplateType}
                     handlerChangeTimeTrigger={props.handlerChangeTimeTrigger}
+                    handlerChosenNetworkProtocol={props.handlerChosenNetworkProtocol}
                     handlerChangeCheckboxDayOfWeek={props.handlerChangeCheckboxDayOfWeek}
                     handlerChangeTemplateTimeRadioType={props.handlerChangeTemplateTimeRadioType} />
             </CardContent>
@@ -411,12 +601,21 @@ CreateCard.propTypes = {
     handlerButtonBack: PropTypes.func.isRequired,
     handlerButtonNext: PropTypes.func.isRequired,
     templateParameters: PropTypes.object.isRequired,
+    parametersFiltration: PropTypes.object.isRequired,
+    handlerInput: PropTypes.func.isRequired,
+    handleKeyPress: PropTypes.func.isRequired,
+    handlerAddPortNetworkIP: PropTypes.func.isRequired,
+    handlerChangeDateTimeStart: PropTypes.func.isRequired,
+    handlerChangeDateTimeEnd: PropTypes.func.isRequired,
+    handlerCheckRadioInput: PropTypes.func.isRequired,
+    hendlerDeleteAddedElem: PropTypes.func.isRequired,
     handlerButtonCancel: PropTypes.func.isRequired,
     handlerButtonFinish: PropTypes.func.isRequired,
     handlerChosenSource:PropTypes.func.isRequired,
     handlerDeleteSource:PropTypes.func.isRequired,
     handlerChangeTimeTrigger: PropTypes.func.isRequired,
     handlerChangeTemplateType: PropTypes.func.isRequired,
+    handlerChosenNetworkProtocol: PropTypes.func.isRequired,
     handlerChangeCheckboxDayOfWeek: PropTypes.func.isRequired,
     handlerChangeTemplateTimeRadioType: PropTypes.func.isRequired,
 };
@@ -558,6 +757,17 @@ class CreatePageTemplateLog extends React.Component {
                 templeteChosedSource: 0,
             },
             listTaskTemplates: {},
+            parametersFiltration: {
+                networkProtocol: "tcp",
+                inputRadioType: "any",
+                dateTime: {
+                    currentDateTimeStart: new Date,
+                    currentDateTimeEnd: new Date,
+                },
+                inputFieldIsValid: false,
+                inputFieldIsInvalid: false,
+                inputValue: "",
+            },
         };
 
         this.handlerButtonCancel = this.handlerButtonCancel.bind(this);
@@ -873,6 +1083,44 @@ class CreatePageTemplateLog extends React.Component {
         });
     }
 
+    handlerChosenNetworkProtocol(proto){
+        console.log("func 'handlerChosenNetworkProtocol', START...");
+        console.log(proto);
+    }
+
+    handlerChangeDateTimeStart(dateTime){
+        console.log("func 'handlerChangeDateTimeStart', START...");
+        console.log(dateTime);
+    }
+    
+    handlerChangeDateTimeEnd(dateTime){
+        console.log("func 'handlerChangeDateTimeEnd', START...");
+        console.log(dateTime);
+    }
+
+    handlerCheckRadioInput(data){
+        console.log("func 'handlerCheckRadioInput', START...");
+        console.log(data);
+    }
+
+    handlerInput(element){
+        console.log("func 'handlerInput', START...");
+        console.log(element);
+    }
+
+    handleKeyPress(){
+        console.log("func 'handleKeyPress', START...");
+    }
+
+    handlerAddPortNetworkIP(){
+        console.log("func 'handlerAddPortNetworkIP', START...");
+    }
+
+    hendlerDeleteAddedElem(data){
+        console.log("func 'hendlerDeleteAddedElem', START...");
+        console.log(data);
+    }
+
     createTemplateList(){
         if(this.state.showForm){
             return null;
@@ -956,12 +1204,21 @@ class CreatePageTemplateLog extends React.Component {
                                 handlerButtonBack={this.handlerButtonBack.bind(this)}
                                 handlerButtonNext={this.handlerButtonNext.bind(this)}
                                 templateParameters={this.state.templateParameters}
+                                parametersFiltration={this.state.parametersFiltration}
+                                handlerInput={this.handlerInput.bind(this)}
+                                handleKeyPress={this.handleKeyPress.bind(this)}
+                                handlerAddPortNetworkIP={this.handlerAddPortNetworkIP.bind(this)}
+                                handlerChangeDateTimeStart={this.handlerChangeDateTimeStart.bind(this)}
+                                handlerChangeDateTimeEnd={this.handlerChangeDateTimeEnd.bind(this)}
+                                handlerCheckRadioInput={this.handlerCheckRadioInput.bind(this)}
+                                hendlerDeleteAddedElem={this.hendlerDeleteAddedElem.bind(this)}
                                 handlerButtonCancel={this.handlerButtonCancel}
                                 handlerButtonFinish={this.handlerButtonFinish.bind(this)}
                                 handlerChosenSource={this.handlerChosenSource.bind(this)}
                                 handlerDeleteSource={this.handlerDeleteSource.bind(this)}
                                 handlerChangeTimeTrigger={this.handlerChangeTimeTrigger.bind(this)}
                                 handlerChangeTemplateType={this.handlerChangeTemplateType.bind(this)}
+                                handlerChosenNetworkProtocol={this.handlerChosenNetworkProtocol.bind(this)}
                                 handlerChangeCheckboxDayOfWeek={this.handlerChangeCheckboxDayOfWeek.bind(this)}
                                 handlerChangeTemplateTimeRadioType={this.handlerChangeTemplateTimeRadioType.bind(this)} />
                         </Col>

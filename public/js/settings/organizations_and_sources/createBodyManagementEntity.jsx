@@ -155,7 +155,7 @@ ShowEntityInformation.propTypes = {
     handlerInputChange: PropTypes.func.isRequired,
 };
 
-class CreateListEntity extends React.Component {
+export class CreateListEntity extends React.Component {
     constructor(props){
         super(props);
 
@@ -164,6 +164,8 @@ class CreateListEntity extends React.Component {
         this.listOrganization = this.listOrganization.bind(this);
 
         this.handlerChoose = this.handlerChoose.bind(this);
+
+        console.log(this.props.listShortEntity);
     }
 
     handlerDropDown(){

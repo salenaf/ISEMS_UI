@@ -30,7 +30,6 @@ class CreateProtocolList extends React.Component {
                 {np.map((item) => {
                     return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
                 })}
-
             </select>
         );
     }

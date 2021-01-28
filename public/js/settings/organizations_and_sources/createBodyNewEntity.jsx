@@ -63,6 +63,7 @@ export default class CreateBodyNewEntity extends React.Component {
             placeholder: "добавить организацию",
             maximumInputLength: 30,
         });
+
         this.elOrg.on("change", this.selectedOrganization.bind(this));
     }
 
@@ -74,11 +75,6 @@ export default class CreateBodyNewEntity extends React.Component {
         } else if(this.state.chosenOrganizationID !== null && this.state.chosenDivisionID === null){
             typeEntity = "division";
         }
-
-        console.log("func 'handelrButtonAdd'");
-        console.log(`organization ID: ${this.state.chosenOrganizationID}`);
-        console.log(`division ID: ${this.state.chosenDivisionID}`);
-        console.log(typeEntity);
 
         this.showModalWindow.call(this, typeEntity);
     }
@@ -96,10 +92,6 @@ export default class CreateBodyNewEntity extends React.Component {
             },
         };
 
-
-        console.log("func 'showModalWindow'");
-        console.log(typeEntity);
-
         this.resultBody = this.resultBody.bind(this);
         this.sendInfoNewEntity = this.sendInfoNewEntity.bind(this);
 
@@ -113,10 +105,7 @@ export default class CreateBodyNewEntity extends React.Component {
         this.setState({ showModalWindow: false });
     }
 
-    selectedOrganization(e){
-
-        console.log("func selectedOrganization");
-        
+    selectedOrganization(e){      
         let v = (e.target.value === "all") ? null: e.target.value;
 
         this.setState({ 
@@ -126,10 +115,6 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     selectedDivision(e){
-
-        console.log("func 'selectedDivision'");
-        console.log(e);
-
         let oid = null;
         let v = (e.target.value === "all") ? null: e.target.value;
         this.setState({ chosenDivisionID: v });
@@ -141,9 +126,6 @@ export default class CreateBodyNewEntity extends React.Component {
                 break;
             }
         }                
-        
-        console.log(`state chosen org. id: ${this.state.chosenOrganizationID}`);
-        console.log(oid);
 
         if(this.state.chosenOrganizationID === null){
             this.setState({ chosenOrganizationID: oid });
@@ -154,6 +136,7 @@ export default class CreateBodyNewEntity extends React.Component {
         let listOrg = listShortEntity.shortListOrganization.map((item) => {
             return { name: item.name, id: item.id };
         });
+
         listOrg.sort((a, b) => {
             if(a.name > b.name) return 1;
             if(a.name === b.name) return 0;
@@ -302,6 +285,7 @@ export default class CreateBodyNewEntity extends React.Component {
             did: options.id,
             oid: options.parentID,
         };
+        
         this.setState({ listDivisionName: updateDiviName });
 
         let listNewEntity = this.state.listNewEntity;
@@ -538,8 +522,6 @@ export default class CreateBodyNewEntity extends React.Component {
             arguments: this.state.listNewEntity,
         });
 
-        console.log(`func 'sendInfoNewEntity', BEFORE chosenOrganizationID: '${this.state.chosenOrganizationID}'`);
-
         //убираем кнопку 'сохранить'
         this.setState({ 
             listNewEntity: [],
@@ -547,8 +529,6 @@ export default class CreateBodyNewEntity extends React.Component {
             chosenDivisionID: null,
             chosenOrganizationID: null,
         });
-
-        console.log(`func 'sendInfoNewEntity', AFTER chosenOrganizationID: '${this.state.chosenOrganizationID}'`);
     }
 
     listenerSocketIoConn(){

@@ -163,17 +163,6 @@ class CreatePageTelemetry extends React.Component {
         this.props.socketIo.emit("network interaction: delete information problem patameters", { arguments: {
             sourceID: sourceID,
         }});
-
-        /*let tmpList = this.state.telemetryDeviationParameters;
-        for(let num = 0; num < tmpList.length; num++){
-            if(tmpList[num].sourceID === sourceID){
-                tmpList.splice(num, 1);    
-
-                break;
-            }
-        }
-
-        this.setState({ telemetryDeviationParameters: tmpList });*/
     }
 
     compareNumeric(a, b) {
