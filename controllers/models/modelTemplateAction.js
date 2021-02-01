@@ -20,7 +20,18 @@ let templateActionSchema = new connection.Schema({
     },
     type: String,
     list_source_id: [Number],
-    task_parameters: Object,
+    task_parameters: {
+        filtration: {
+            network_protocol: String,
+            start_date: Number,
+            end_date: Number,
+            input_value: {
+                ip: Array,
+                pt: Array,
+                nw: Array,
+            }
+        },
+    },
 });
 
 module.exports = connection.model("template_actions", templateActionSchema);

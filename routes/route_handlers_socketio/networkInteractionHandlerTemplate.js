@@ -88,21 +88,41 @@ function createNewTemplate(socketIo, eventEmiterTimerTick, data) {
                     eventEmiterTimerTick.emit("set new temp task", { taskID: result.taskID, parameters: data.arguments });
                 },
                 (callback) => {
+
+                    console.log("func 'createNewTemplate'");
+                    console.log(data.arguments);
+
+                    let doc = {
+                        template_id: result.taskID,
+                        user_name: result.userName,
+                        time_creation: +new Date,
+                        date_time_trigger: {
+                            weekday: data.arguments.timeSettings.listSelectedDays,
+                            hour: data.arguments.timeSettings.timeTrigger.hour,
+                            minutes: data.arguments.timeSettings.timeTrigger.minutes,
+                        },
+                        type: data.arguments.type,
+                        list_source_id: data.arguments.listSources,
+                    };
+
+                    if (data.arguments.type === "filtration") {
+                        doc.task_parameters = {
+                            filtration: {
+                                network_protocol: data.arguments.parametersFiltration.networkProtocol,
+                                start_date: data.arguments.parametersFiltration.startDate,
+                                end_date: data.arguments.parametersFiltration.endDate,
+                                input_value: {
+                                    ip: data.arguments.parametersFiltration.inputValue.ip,
+                                    pt: data.arguments.parametersFiltration.inputValue.pt,
+                                    nw: data.arguments.parametersFiltration.inputValue.nw,
+                                }
+                            }
+                        };
+                    }
+
                     //добавляем задачу в БД
                     mongodbQueryProcessor.queryCreate(models.modelTemplateAction, {
-                        document: {
-                            template_id: result.taskID,
-                            user_name: result.userName,
-                            time_creation: +new Date,
-                            date_time_trigger: {
-                                weekday: data.arguments.timeSettings.listSelectedDays,
-                                hour: data.arguments.timeSettings.timeTrigger.hour,
-                                minutes: data.arguments.timeSettings.timeTrigger.minutes,
-                            },
-                            type: data.arguments.type,
-                            list_source_id: data.arguments.listSources,
-                            task_parameters: {},
-                        }
+                        document: doc
                     }, (err) => {
                         if (err) {
                             return callback(err);
@@ -296,8 +316,85 @@ function checkTemplateParameters(templateParameters) {
         }
     }
 
-    //проверяем параметры фильтрации
-    //let obj = (require("../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
+    console.log("func 'checkTemplateParameters', START...");
+    console.log(templateParameters);
+
+    if (templateParameters.type === "telemetry") {
+        return true;
+    }
+
+    //проверяем время
+    if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.parametersFiltration.startDate })) {
+
+        console.log("func 'checkTemplateParameters', ERROR time start");
+
+        return false;
+    }
+    if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.parametersFiltration.endDate })) {
+
+        console.log("func 'checkTemplateParameters', ERROR time end");
+
+        return false;
+    }
+    if (+templateParameters.parametersFiltration.startDate > +templateParameters.parametersFiltration.endDate) {
+
+        console.log("func 'checkTemplateParameters', ERROR time start and end");
+        console.log(`+templateParameters.parametersFiltration.startDate (${+templateParameters.parametersFiltration.startDate}) > (${+templateParameters.parametersFiltration.endDate}) +templateParameters.parametersFiltration.endDate`);
+
+        return false;
+    }
+
+    let checkNetworkPortIP = (section, type) => {
+        let validInput = {
+            any: [],
+            src: [],
+            dst: [],
+        };
+
+        for (let d in templateParameters.parametersFiltration.inputValue[section]) {
+            validInput[d] = templateParameters.parametersFiltration.inputValue[section][d].filter((item) => {
+                return helpersFunc.checkInputValidation({
+                    name: type,
+                    value: item,
+                });
+            });
+        }
+
+        return validInput;
+    };
+
+    let newInputValue = {
+        ip: checkNetworkPortIP("ip", "ipaddress"),
+        nw: checkNetworkPortIP("nw", "network"),
+        pt: checkNetworkPortIP("pt", "port"),
+    };
+
+    let checkExistInputValue = (inputValue) => {
+        let isEmpty = true;
+
+        done:
+            for (let et in inputValue) {
+                for (let d in inputValue[et]) {
+                    if (Array.isArray(inputValue[et][d]) && inputValue[et][d].length > 0) {
+                        isEmpty = false;
+
+                        break done;
+                    }
+                }
+            }
+
+        return isEmpty;
+    };
+
+    //проверяем наличие хотя бы одного параметра в inputValue
+    if (checkExistInputValue(newInputValue)) {
+
+        console.log("func 'checkTemplateParameters', ERROR input value");
+
+        return false;
+    }
+
+    console.log("======================");
 
     return true;
 }

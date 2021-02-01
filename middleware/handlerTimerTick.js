@@ -21,7 +21,9 @@ class TempTaskStorage {
          *             },
          *             taskType: "telemetry", //тип задачи ("telemetry", "filtration")
          *             listSourceID: [], //список источников для которых применима задача, если пусто то для всех            
-         *             taskParameters: {} //параметры задачи, пока только для фильтрации
+         *             taskParameters: { //параметры задачи, пока только для фильтрации
+         *                 filtration: {} 
+         *             }
          *         },
          *     },
          * }
@@ -51,11 +53,13 @@ class TempTaskStorage {
                 hour: data.parameters.timeSettings.timeTrigger.hour,
                 minutes: data.parameters.timeSettings.timeTrigger.minutes,
             },
-            taskType: "telemetry",
+            taskType: data.parameters.type,
             listSourceID: data.parameters.listSources,
             timeCreation: data.parameters.timeCreation,
             userName: data.parameters.userName,
-            taskParameters: {},
+            taskParameters: {
+                filtration: data.parameters.parametersFiltration,
+            },
         };
 
         myEmitter.emit("response set new temp task", {});

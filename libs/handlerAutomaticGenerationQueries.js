@@ -79,6 +79,7 @@ function telemetryRequest({ connection, sourceList, parameters = null }) {
 function filtrationRequest({ connection, sourceList, parameters }) {
     console.log("func 'filtrationRequest', START...");
 
+
     /**
      *         return Promise.all(approvedSourceList.map((item) => {
             return templateRequest[templateInfo.taskType]({ connection: connect, sourceList: approvedSourceList });

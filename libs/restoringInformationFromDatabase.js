@@ -28,6 +28,10 @@ function restoreTempTaskStorage(eventEmiterTempTaskStorage) {
     }).then((listTemplateActions) => {
         //восстанавливаем список шаблонов для хранилище TempTaskStorage
         listTemplateActions.forEach((element) => {
+
+            console.log("func 'restoreTempTaskStorage'");
+            console.log(element);
+
             eventEmiterTempTaskStorage.emit("set new temp task", {
                 taskID: element.template_id,
                 parameters: {
@@ -42,6 +46,7 @@ function restoreTempTaskStorage(eventEmiterTempTaskStorage) {
                         },
                         listSelectedDays: element.date_time_trigger.weekday,
                     },
+                    parametersFiltration: element.task_parameters.filtration,
                 },
             });
         });

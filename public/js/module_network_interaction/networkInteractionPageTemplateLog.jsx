@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Badge, Button, Col, Row, Form, InputGroup } from "react-bootstrap";
+import { Badge, Button, Col, Row, Form, FormControl, InputGroup } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue, red } from "@material-ui/core/colors";
 import Card from "@material-ui/core/Card";
@@ -12,12 +12,12 @@ import ButtonUI from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormGroup from "@material-ui/core/FormGroup";
 import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControlLabelUI from "@material-ui/core/FormControlLabel";
 import { TimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import DateFnsUtils from "dateIoFnsUtils";
 import PropTypes from "prop-types";
 
+import { helpers } from "../common_helpers/helpers.js";
 import CreateChipSource from "../commons/createChipSource.jsx";
 import CreateSourceList from "../commons/createSourceList.jsx";
 import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
@@ -59,8 +59,8 @@ function CreateChangeTemplateType(props){
             name="templateType" 
             value={props.templateType} 
             onChange={props.handlerChangeTemplateType}>
-            <FormControlLabel className="mb-n2" value="telemetry" control={<Radio color="primary" size="small" />} label="телеметрия" />
-            <FormControlLabel value="filtration" control={<Radio color="primary" size="small" />} label="фильтрация" />
+            <FormControlLabelUI className="mb-n2" value="telemetry" control={<Radio color="primary" size="small" />} label="телеметрия" />
+            <FormControlLabelUI value="filtration" control={<Radio color="primary" size="small" />} label="фильтрация" />
         </RadioGroup>
     );
 }
@@ -77,7 +77,7 @@ function CreateFormControlChangeTime(props){
         for(let dayOfWeek in props.listSelectedDays){
             let checkboxColor = (dayOfWeek === "Sat" || dayOfWeek === "Sun") ? "secondary": "primary";
 
-            listChecbox.push(<FormControlLabel
+            listChecbox.push(<FormControlLabelUI
                 key={`checkbox_${dayOfWeek}`}
                 className="mb-n3"
                 value={dayOfWeek}
@@ -104,10 +104,10 @@ function CreateFormControlChangeTime(props){
                     name="templateTime" 
                     value={props.checkSelectedType} 
                     onChange={props.handlerChangeTemplateTimeRadioType}>
-                    <FormControlLabel className="mb-n3" value="no_days" control={<Radio color="primary" size="small" />} label="дни не выбраны" />
-                    <FormControlLabel className="mb-n3" value="every_day" control={<Radio color="primary" size="small" />} label="каждый день" />
-                    <FormControlLabel className="mb-n3" value="working_days_only" control={<Radio color="primary" size="small" />} label="только рабочие дни" />
-                    <FormControlLabel className="mb-n3" value="weekends_only" control={<Radio color="primary" size="small" />} label="только выходные" />
+                    <FormControlLabelUI className="mb-n3" value="no_days" control={<Radio color="primary" size="small" />} label="дни не выбраны" />
+                    <FormControlLabelUI className="mb-n3" value="every_day" control={<Radio color="primary" size="small" />} label="каждый день" />
+                    <FormControlLabelUI className="mb-n3" value="working_days_only" control={<Radio color="primary" size="small" />} label="только рабочие дни" />
+                    <FormControlLabelUI className="mb-n3" value="weekends_only" control={<Radio color="primary" size="small" />} label="только выходные" />
                 </RadioGroup>
             </Col>
             <Col md={4}>
@@ -274,14 +274,151 @@ function ListInputValue(props){
 }
 
 ListInputValue.propTypes = {
-    inputValue: PropTypes.string.isRequired,
+    inputValue: PropTypes.object.isRequired,
     hendlerDeleteAddedElem: PropTypes.func.isRequired,
 };
 
 function CreateForm(props){ 
     let daysOfWeek = [];
     let textColor = "text-primary";
-    
+    let formatter = Intl.DateTimeFormat("ru-Ru", {
+        timeZone: "Europe/Moscow",
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+    });
+
+    let getListNetworkParameters = (type) => {
+        let getListDirection = (d) => {
+            if((props.parametersFiltration.inputs.inputValue[type][d] === null) || (props.parametersFiltration.inputs.inputValue[type][d].length === 0)){
+                return { value: "", success: false };
+            }
+
+            let result = props.parametersFiltration.inputs.inputValue[type][d].map((item) => {
+                if(d === "src"){
+                    return item; 
+                }
+                
+                if(d === "dst"){
+                    return item; 
+                }
+
+                return item; 
+            });
+
+            return { value: result, success: true };
+        };
+
+        let resultAny = getListDirection("any");
+        let resultSrc = getListDirection("src");
+        let resultDst = getListDirection("dst");
+
+        let valueString = (valueList) => {
+            let s = "";
+            let count = valueList.length;
+
+            for(let i = 0; i < count; i++){
+                if(i < count - 1){
+                    s += `${valueList[i]}, `;
+                } else {
+                    s += valueList[i];
+                }
+            }
+
+            return s;
+        };
+
+        return (
+            <React.Fragment>
+                <div>{(resultAny.value.length > 0) ? <span className="text-info">any &#8596; {valueString(resultAny.value)}</span> : ""}</div>
+                {(resultAny.success && (resultSrc.success || resultDst.success)) ? <span className="text-danger">&laquo;<small>ИЛИ</small>&raquo;</span> : ""}                   
+                <div>{(resultSrc.value.length > 0) ? <span className="text-info">src &#8592; {valueString(resultSrc.value)}</span> : ""}</div>
+                {(resultSrc.success && resultDst.success) ? <span className="text-danger">&laquo;<small>И</small>&raquo;</span> : ""}                   
+                <div>{(resultDst.value.length > 0) ? <span className="text-info">dst &#8594; {valueString(resultDst.value)}</span> : ""}</div>
+            </React.Fragment>
+        );
+    };
+
+    let showParametersFiltration = () => {
+        if(props.templateParameters.templateType !== "filtration"){
+            return;
+        }
+
+        return (
+            <React.Fragment>
+                <Row>
+                    <Col md={12} className="text-left">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        Опции для фильтрации:
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        время начало:
+                        </Typography>
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {formatter.format(props.parametersFiltration.dateTime.currentDateTimeStart)}
+                    </Col>
+                </Row>                
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        время окончания:
+                        </Typography>
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {formatter.format(props.parametersFiltration.dateTime.currentDateTimeEnd)}
+                    </Col>
+                </Row>                
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        сетевой протокол:
+                        </Typography>
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {(props.parametersFiltration.networkProtocol) ? "любой" : props.parametersFiltration.networkProtocol}
+                    </Col>
+                </Row>                
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        ip адреса:
+                        </Typography>
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {getListNetworkParameters("ip")}
+                    </Col>
+                </Row>                
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        сети:
+                        </Typography>
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {getListNetworkParameters("nw")}
+                    </Col>
+                </Row>       
+                <Row>
+                    <Col md={4} className="text-right">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        сетевые порты:
+                        </Typography>
+                    </Col>
+                    <Col md={8} className="text-left">
+                        {getListNetworkParameters("pt")}
+                    </Col>
+                </Row>
+            </React.Fragment>
+        );
+    };
+
     switch(props.numberSteppers){
     case 0:
         return (
@@ -360,14 +497,14 @@ function CreateForm(props){
                         </Form>
                     </Col>
                     <Col sm="8"> 
-                        <InputGroup className="mb-3" size="sm">
+                        <InputGroup className="mb-3" size="sm">                           
                             <FormControl
                                 id="input_ip_network_port"
                                 aria-describedby="basic-addon2"
                                 onChange={props.handlerInput}
                                 onKeyPress={props.handleKeyPress}
-                                isValid={props.parametersFiltration.inputFieldIsValid}
-                                isInvalid={props.parametersFiltration.inputFieldIsInvalid} 
+                                isValid={props.parametersFiltration.inputs.inputFieldIsValid}
+                                isInvalid={props.parametersFiltration.inputs.inputFieldIsInvalid} 
                                 placeholder="введите ip адрес, подсеть или сетевой порт" />
                             <InputGroup.Append>
                                 <Button onClick={props.handlerAddPortNetworkIP} variant="outline-secondary">
@@ -378,7 +515,7 @@ function CreateForm(props){
                     </Col>
                 </Row>
                 <ListInputValue 
-                    inputValue={props.parametersFiltration.inputValue}
+                    inputValue={props.parametersFiltration.inputs.inputValue}
                     hendlerDeleteAddedElem={props.hendlerDeleteAddedElem} />
             </React.Fragment>
         );
@@ -454,6 +591,7 @@ function CreateForm(props){
                         })()}
                     </Col>
                 </Row>
+                {showParametersFiltration()}
             </React.Fragment>
         );
 
@@ -637,6 +775,45 @@ function CreateCardTaskTemplates(props){
         daysOfWeek.push(props.templatesInformation.dateTimeTrigger.weekday[shortName]);
     }
 
+    let showParametersFiltration = () => {
+        if(props.templatesInformation.taskType === "telemetry"){
+            return null;
+        }
+
+        let netProto = (props.templatesInformation.taskParameters.filtration.networkProtocol === "any") ? "любой" : props.templatesInformation.taskParameters.filtration.networkProtocol;
+
+        return (
+            <React.Fragment>
+                <Row>
+                    <Col md={12} className="text-left">
+                        <Typography variant="subtitle1" color="textSecondary">
+                        Опции для фильтрации:
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12} className="text-left">
+                        <Typography variant="subtitle1" color="textSecondary">
+                            время начала:&nbsp; 
+                            {formatter.format(props.templatesInformation.taskParameters.filtration.start_date)}
+                            , окончания:&nbsp; 
+                            {formatter.format(props.templatesInformation.taskParameters.filtration.end_date)}
+                            , сетевой протокол:&nbsp; 
+                            {netProto}
+                        </Typography>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        {JSON.stringify(props.templatesInformation.taskParameters.filtration)}
+                    </Col>
+                </Row>
+            </React.Fragment>
+        );
+    };
+
+    console.log(props.templatesInformation);
+
     return (
         <Card>
             <CardContent>
@@ -705,9 +882,7 @@ function CreateCardTaskTemplates(props){
                         })()}
                     </Col>
                 </Row>
-                {(Object.keys(props.templatesInformation.taskParameters).length > 0) ? <Row>
-                    <Col>{JSON.stringify(props.templatesInformation.taskParameters)}</Col>
-                </Row> : ""}
+                {showParametersFiltration()}
             </CardContent>
             <CardActions>
                 <ButtonUI 
@@ -758,15 +933,23 @@ class CreatePageTemplateLog extends React.Component {
             },
             listTaskTemplates: {},
             parametersFiltration: {
-                networkProtocol: "tcp",
+                networkProtocol: "any",
                 inputRadioType: "any",
                 dateTime: {
                     currentDateTimeStart: new Date,
                     currentDateTimeEnd: new Date,
                 },
-                inputFieldIsValid: false,
-                inputFieldIsInvalid: false,
-                inputValue: "",
+                inputs: {
+                    inputFieldIsValid: false,
+                    inputFieldIsInvalid: false,
+                    inputValue: {
+                        ip: { any: [], src: [], dst: [] },
+                        pt: { any: [], src: [], dst: [] },
+                        nw: { any: [], src: [], dst: [] },
+                    },
+                    currentInputValue: "",
+                    typeCurrentInputValue: "none"
+                },
             },
         };
 
@@ -867,42 +1050,48 @@ class CreatePageTemplateLog extends React.Component {
     }
 
     handlerButtonFinish(){
-        if(this.state.templateParameters.templateType === "telemetry"){
-            let listSelectedDays = (() => {
-                let selectedDays = {};
-                for(let day in this.state.templateParameters.templateTime.listSelectedDays){
-                    if(this.state.templateParameters.templateTime.listSelectedDays[day].checked){
-                        selectedDays[day] = this.state.templateParameters.templateTime.listSelectedDays[day].name;
-                    }
+        let listSelectedDays = (() => {
+            let selectedDays = {};
+            for(let day in this.state.templateParameters.templateTime.listSelectedDays){
+                if(this.state.templateParameters.templateTime.listSelectedDays[day].checked){
+                    selectedDays[day] = this.state.templateParameters.templateTime.listSelectedDays[day].name;
                 }
-
-                return selectedDays;
-            })();
-            
-            if(Object.keys(listSelectedDays).length === 0){
-                return;
             }
 
-            this.props.socketIo.emit("network interaction: create new template", { 
-                arguments: {
-                    type: this.state.templateParameters.templateType,
-                    timeSettings: {
-                        timeTrigger: {
-                            hour: this.state.templateParameters.templateTime.timeTrigger.getHours(),
-                            minutes:this.state.templateParameters.templateTime.timeTrigger.getMinutes(),
-                        },
-                        listSelectedDays: listSelectedDays,
-                    },
-                    listSources: this.state.templateParameters.templateListSource,
-                } 
-            });
-
-            this.handlerButtonCancel();
-
+            return selectedDays;
+        })();
+        
+        if(Object.keys(listSelectedDays).length === 0){
             return;
         }
+        
+        let objData = {
+            type: this.state.templateParameters.templateType,
+            timeSettings: {
+                timeTrigger: {
+                    hour: this.state.templateParameters.templateTime.timeTrigger.getHours(),
+                    minutes:this.state.templateParameters.templateTime.timeTrigger.getMinutes(),
+                },
+                listSelectedDays: listSelectedDays,
+            },
+            listSources: this.state.templateParameters.templateListSource,
+            parametersFiltration: {},
+        };
+        
+        if(this.state.templateParameters.templateType === "filtration"){
+            console.log("тип шаблона - фильтрация");
 
-        console.log("тип шаблона - фильтрация");
+            objData.parametersFiltration = {
+                networkProtocol: this.state.parametersFiltration.networkProtocol,
+                startDate: +new Date(this.state.parametersFiltration.dateTime.currentDateTimeStart),
+                endDate: +new Date(this.state.parametersFiltration.dateTime.currentDateTimeEnd),
+                inputValue: this.state.parametersFiltration.inputs.inputValue,
+            };
+        }
+
+        this.props.socketIo.emit("network interaction: create new template", { arguments: objData });
+
+        this.handlerButtonCancel();
     }
 
     handlerButtonCancel(){
@@ -950,6 +1139,40 @@ class CreatePageTemplateLog extends React.Component {
                 stepsError.push(1);
             } else {
                 let foundIndex = this.state.stepsError.indexOf(1);
+                if(foundIndex !== -1){
+                    stepsError.splice(foundIndex - 1, 1);       
+                }
+            }
+
+            this.setState({ stepsError: stepsError });
+        }
+
+        //проверяем форму с параметрами фильтрации
+        if(this.state.numberSteppers === 3 && this.state.templateParameters.templateType === "filtration"){
+            let checkExistInputValue = () => {
+                let isEmpty = true;
+    
+                done:
+                for(let et in this.state.parametersFiltration.inputs.inputValue){
+                    for(let d in this.state.parametersFiltration.inputs.inputValue[et]){
+                        if(Array.isArray(this.state.parametersFiltration.inputs.inputValue[et][d]) && this.state.parametersFiltration.inputs.inputValue[et][d].length > 0){
+                            isEmpty = false;
+    
+                            break done;  
+                        }
+                    }
+                }
+    
+                return isEmpty;
+            };
+
+            let stepsError = this.state.stepsError;
+
+            //проверяем наличие хотя бы одного параметра в inputValue
+            if(checkExistInputValue()){
+                stepsError.push(3);
+            } else {
+                let foundIndex = this.state.stepsError.indexOf(3);
                 if(foundIndex !== -1){
                     stepsError.splice(foundIndex - 1, 1);       
                 }
@@ -1083,42 +1306,121 @@ class CreatePageTemplateLog extends React.Component {
         });
     }
 
-    handlerChosenNetworkProtocol(proto){
-        console.log("func 'handlerChosenNetworkProtocol', START...");
-        console.log(proto);
+    handlerChosenNetworkProtocol(e){
+        let objTmp = Object.assign({}, this.state.parametersFiltration);
+        objTmp.networkProtocol = e.target.value;
+        this.setState({ parametersFiltration: objTmp });
     }
 
-    handlerChangeDateTimeStart(dateTime){
-        console.log("func 'handlerChangeDateTimeStart', START...");
-        console.log(dateTime);
+    handlerChangeDateTimeStart(date){
+        let objTmp = Object.assign({}, this.state.parametersFiltration);
+        objTmp.dateTime.currentDateTimeStart = date;
+        this.setState({ parametersFiltration: objTmp });
     }
     
-    handlerChangeDateTimeEnd(dateTime){
-        console.log("func 'handlerChangeDateTimeEnd', START...");
-        console.log(dateTime);
+    handlerChangeDateTimeEnd(date){
+        let objTmp = Object.assign({}, this.state.parametersFiltration);
+        objTmp.dateTime.currentDateTimeEnd = date;
+        this.setState({ parametersFiltration: objTmp });
     }
 
-    handlerCheckRadioInput(data){
-        console.log("func 'handlerCheckRadioInput', START...");
-        console.log(data);
+    handlerCheckRadioInput(e){
+        let objTmp = Object.assign({}, this.state.parametersFiltration);
+        objTmp.inputRadioType = e.target.value;
+        this.setState({ parametersFiltration: objTmp });
     }
 
-    handlerInput(element){
-        console.log("func 'handlerInput', START...");
-        console.log(element);
-    }
+    handlerInput(e){
+        let value = e.target.value.replace(/,/g, ".");      
+        let objTmp = Object.assign({}, this.state.parametersFiltration);
+        if(value.includes(".")){
+            if(value.includes("/")){
+                if(helpers.checkInputValidation({
+                    "name": "network", 
+                    "value": value, 
+                })){
+                    objTmp.inputs.inputFieldIsValid = true;
+                    objTmp.inputs.inputFieldIsInvalid = false;
+                    objTmp.inputs.currentInputValue = value;
+                    objTmp.inputs.typeCurrentInputValue = "nw";
+                } else {  
+                    objTmp.inputs.inputFieldIsValid = false;
+                    objTmp.inputs.inputFieldIsInvalid = true;
+                    objTmp.inputs.currentInputValue = "";
+                    objTmp.inputs.typeCurrentInputValue = "none";
+                }
+            } else {
+                if(helpers.checkInputValidation({
+                    "name": "ipaddress", 
+                    "value": value, 
+                })){                  
+                    objTmp.inputs.inputFieldIsValid = true;
+                    objTmp.inputs.inputFieldIsInvalid = false;
+                    objTmp.inputs.currentInputValue = value;
+                    objTmp.inputs.typeCurrentInputValue = "ip";
+                } else {  
+                    objTmp.inputs.inputFieldIsValid = false;
+                    objTmp.inputs.inputFieldIsInvalid = true;
+                    objTmp.inputs.currentInputValue = "";
+                    objTmp.inputs.typeCurrentInputValue = "none";
+                }
+            }
+        } else {
+            if(helpers.checkInputValidation({
+                "name": "port", 
+                "value": value, 
+            })){
+                objTmp.inputs.inputFieldIsValid = true;
+                objTmp.inputs.inputFieldIsInvalid = false;
+                objTmp.inputs.currentInputValue = value;
+                objTmp.inputs.typeCurrentInputValue = "pt";
+            } else {
+                objTmp.inputs.inputFieldIsValid = false;
+                objTmp.inputs.inputFieldIsInvalid = true;
+                objTmp.inputs.currentInputValue = "";
+                objTmp.inputs.typeCurrentInputValue=  "none";
+            }
+        }
 
-    handleKeyPress(){
-        console.log("func 'handleKeyPress', START...");
+        this.setState({ parametersFiltration: objTmp });
     }
 
     handlerAddPortNetworkIP(){
-        console.log("func 'handlerAddPortNetworkIP', START...");
+        if(this.state.parametersFiltration.inputs.typeValueInput === "none"){
+            return;
+        }
+
+        let typeInput = this.state.parametersFiltration.inputs.typeCurrentInputValue;
+        let typeRadio = this.state.parametersFiltration.inputRadioType;
+
+        let objUpdate = Object.assign({}, this.state.parametersFiltration);
+        if(Array.isArray(objUpdate.inputs.inputValue[typeInput][typeRadio])){
+            if(objUpdate.inputs.inputValue[typeInput][typeRadio].includes(this.state.parametersFiltration.inputs.currentInputValue)){
+                return;
+            }
+
+            objUpdate.inputs.inputValue[typeInput][typeRadio].push(this.state.parametersFiltration.inputs.currentInputValue);
+
+            this.setState({ parametersFiltration: objUpdate });
+        }
+
+        document.getElementById("input_ip_network_port").value = "";
     }
 
     hendlerDeleteAddedElem(data){
-        console.log("func 'hendlerDeleteAddedElem', START...");
-        console.log(data);
+        let objUpdate = Object.assign({}, this.state.parametersFiltration);
+        if(Array.isArray(objUpdate.inputs.inputValue[data.type][data.direction])){
+            let list = objUpdate.inputs.inputValue[data.type][data.direction];
+            objUpdate.inputs.inputValue[data.type][data.direction] = list.filter((item) => (item !== data.value));
+
+            this.setState({ parametersFiltration: objUpdate });
+        }
+    }
+
+    handleKeyPress(event){
+        if(event.key == "Enter"){
+            this.handlerAddPortNetworkIP();
+        }
     }
 
     createTemplateList(){
