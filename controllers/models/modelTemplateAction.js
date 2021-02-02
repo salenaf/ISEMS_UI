@@ -26,9 +26,9 @@ let templateActionSchema = new connection.Schema({
             start_date: Number,
             end_date: Number,
             input_value: {
-                ip: Array,
-                pt: Array,
-                nw: Array,
+                ip: Object,
+                pt: Object,
+                nw: Object,
             }
         },
     },

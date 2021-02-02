@@ -1,26 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Badge, Button, Col, Row, Form, FormControl, InputGroup } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue, red } from "@material-ui/core/colors";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Radio from "@material-ui/core/Radio";
 import ButtonUI from "@material-ui/core/Button";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormGroup from "@material-ui/core/FormGroup";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabelUI from "@material-ui/core/FormControlLabel";
-import { TimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import DateFnsUtils from "dateIoFnsUtils";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers.js";
-import CreateChipSource from "../commons/createChipSource.jsx";
-import CreateSourceList from "../commons/createSourceList.jsx";
-import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
+import CreateForm from "./pageTemplateLogElements/createForm.jsx";
+import CreateCardTaskTemplates from "./pageTemplateLogElements/createCardTaskTemplates.jsx";
 import CreateSteppersTemplateLog from "../commons/createSteppersTemplateLog.jsx";
 import { ModalWindowConfirmMessage } from "../commons/modalWindowConfirmMessage.jsx";
 
@@ -51,575 +42,6 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 220,
     },
 }));
-
-function CreateChangeTemplateType(props){
-    return (
-        <RadioGroup 
-            aria-label="gender" 
-            name="templateType" 
-            value={props.templateType} 
-            onChange={props.handlerChangeTemplateType}>
-            <FormControlLabelUI className="mb-n2" value="telemetry" control={<Radio color="primary" size="small" />} label="телеметрия" />
-            <FormControlLabelUI value="filtration" control={<Radio color="primary" size="small" />} label="фильтрация" />
-        </RadioGroup>
-    );
-}
-
-CreateChangeTemplateType.propTypes = {
-    templateType: PropTypes.string.isRequired,
-    handlerChangeTemplateType: PropTypes.func.isRequired,
-};
-
-function CreateFormControlChangeTime(props){
-    let createListDays = () => {
-        let listChecbox = [];
-
-        for(let dayOfWeek in props.listSelectedDays){
-            let checkboxColor = (dayOfWeek === "Sat" || dayOfWeek === "Sun") ? "secondary": "primary";
-
-            listChecbox.push(<FormControlLabelUI
-                key={`checkbox_${dayOfWeek}`}
-                className="mb-n3"
-                value={dayOfWeek}
-                control={
-                    <Checkbox 
-                        checked={props.listSelectedDays[dayOfWeek].checked} 
-                        onChange={props.handlerChangeCheckboxDayOfWeek} 
-                        name={dayOfWeek}
-                        color={checkboxColor} />
-                }
-                label={props.listSelectedDays[dayOfWeek].name} />);
-        }
-
-        return (
-            <FormGroup>{listChecbox}</FormGroup>
-        );
-    };
-
-    return (
-        <Row>
-            <Col md={4}>
-                <RadioGroup 
-                    aria-label="gender" 
-                    name="templateTime" 
-                    value={props.checkSelectedType} 
-                    onChange={props.handlerChangeTemplateTimeRadioType}>
-                    <FormControlLabelUI className="mb-n3" value="no_days" control={<Radio color="primary" size="small" />} label="дни не выбраны" />
-                    <FormControlLabelUI className="mb-n3" value="every_day" control={<Radio color="primary" size="small" />} label="каждый день" />
-                    <FormControlLabelUI className="mb-n3" value="working_days_only" control={<Radio color="primary" size="small" />} label="только рабочие дни" />
-                    <FormControlLabelUI className="mb-n3" value="weekends_only" control={<Radio color="primary" size="small" />} label="только выходные" />
-                </RadioGroup>
-            </Col>
-            <Col md={4}>
-                {createListDays()}
-            </Col>
-            <Col md={4}>
-                <CreateTimePicker
-                    selectedDate={props.timeTrigger} 
-                    handleDateChange={props.handlerChangeTimeTrigger} />
-            </Col>
-        </Row>
-    );
-}
-
-CreateFormControlChangeTime.propTypes = {
-    timeTrigger: PropTypes.object.isRequired,
-    listSelectedDays: PropTypes.object.isRequired,
-    checkSelectedType: PropTypes.string.isRequired,
-    handlerChangeTimeTrigger: PropTypes.func.isRequired,
-    handlerChangeCheckboxDayOfWeek: PropTypes.func.isRequired,
-    handlerChangeTemplateTimeRadioType: PropTypes.func.isRequired,
-};
-
-function CreateTimePicker(props){
-    return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <TimePicker
-                clearable
-                ampm={false}
-                label="24 hours"
-                value={props.selectedDate}
-                onChange={props.handleDateChange}
-            />
-        </MuiPickersUtilsProvider>
-    );
-}
-
-CreateTimePicker.propTypes = {
-    selectedDate: PropTypes.object.isRequired,
-    handleDateChange: PropTypes.func.isRequired,
-};
-
-function CreateProtocolList(props){
-    const np = [
-        {t:"any", n:"любой"},
-        {t:"tcp", n:"tcp"},
-        {t:"udp", n:"udp"},
-    ];
-
-    return (
-        <select 
-            defaultValue={props.defaultNetworkProtocol}
-            className="custom-select custom-select-sm" 
-            onChange={props.handlerChosen} 
-            id="protocol_list">
-            {np.map((item) => {
-                return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
-            })}
-        </select>
-    );
-}
-
-CreateProtocolList.propTypes = {
-    handlerChosen: PropTypes.func.isRequired,
-    defaultNetworkProtocol: PropTypes.string.isRequired,
-};
-
-function ListInputValue(props){
-    let isEmpty = true;
-
-    done: 
-    for(let et in props.inputValue){
-        for(let d in props.inputValue[et]){
-            if(props.inputValue[et][d].length > 0){
-                isEmpty = false;
-
-                break done;
-            }
-        }
-    }
-
-    if(isEmpty){
-        return <React.Fragment></React.Fragment>;
-    }
-
-    let getList = (type) => {
-        let getListDirection = (d) => {
-            if(props.inputValue[type][d].length === 0){
-                return { value: "", success: false };
-            }
-
-            let result = props.inputValue[type][d].map((item) => {
-                if(d === "src"){
-                    return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                        <small className="text-info">{d}&#8592; </small>{item}
-                            &nbsp;<a onClick={props.hendlerDeleteAddedElem.bind(this, {
-                            type: type,
-                            direction: d,
-                            value: item
-                        })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
-                    </div>; 
-                }
-                if(d === "dst"){
-                    return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                        <small className="text-info">{d}&#8594; </small>{item}
-                            &nbsp;<a onClick={props.hendlerDeleteAddedElem.bind(this, {
-                            type: type,
-                            direction: d,
-                            value: item
-                        })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
-                    </div>; 
-                }
-
-                return <div className="ml-4" key={`elem_${type}_${d}_${item}`}>
-                    <small className="text-info">{d}&#8596; </small>{item}
-                        &nbsp;<a onClick={props.hendlerDeleteAddedElem.bind(this, {
-                        type: type,
-                        direction: d,
-                        value: item
-                    })} className="clickable_icon" href="#"><img src="../images/icons8-delete-16.png"></img></a>
-                </div>; 
-            });
-
-            return { value: result, success: true };
-        };
-
-        let resultAny = getListDirection("any");
-        let resultSrc = getListDirection("src");
-        let resultDst = getListDirection("dst");
-
-        return (
-            <React.Fragment>
-                <div>{resultAny.value}</div>
-                {(resultAny.success && (resultSrc.success || resultDst.success)) ? <div className="text-danger text-center">&laquo;ИЛИ&raquo;</div> : <div></div>}                   
-                <div>{resultSrc.value}</div>
-                {(resultSrc.success && resultDst.success) ? <div className="text-danger text-center">&laquo;И&raquo;</div> : <div></div>}                   
-                <div>{resultDst.value}</div>
-            </React.Fragment>
-        );
-    };
-
-    return (
-        <React.Fragment>
-            <Row>
-                <Col sm="3" className="text-center">
-                    <Badge variant="dark">ip адрес</Badge>
-                </Col>
-                <Col sm="1" className="text-danger text-center">&laquo;ИЛИ&raquo;</Col>
-                <Col sm="3" className="text-center">
-                    <Badge variant="dark">сеть</Badge>
-                </Col>
-                <Col sm="1" className="text-danger text-center">&laquo;И&raquo;</Col>
-                <Col sm="4" className="text-center">
-                    <Badge  variant="dark">сетевой порт</Badge>
-                </Col>
-            </Row>
-            <Row>
-                <Col sm="4">{getList("ip")}</Col>
-                <Col sm="4">{getList("nw")}</Col>
-                <Col sm="4">{getList("pt")}</Col>
-            </Row>
-        </React.Fragment>
-    );
-}
-
-ListInputValue.propTypes = {
-    inputValue: PropTypes.object.isRequired,
-    hendlerDeleteAddedElem: PropTypes.func.isRequired,
-};
-
-function CreateForm(props){ 
-    let daysOfWeek = [];
-    let textColor = "text-primary";
-    let formatter = Intl.DateTimeFormat("ru-Ru", {
-        timeZone: "Europe/Moscow",
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-    });
-
-    let getListNetworkParameters = (type) => {
-        let getListDirection = (d) => {
-            if((props.parametersFiltration.inputs.inputValue[type][d] === null) || (props.parametersFiltration.inputs.inputValue[type][d].length === 0)){
-                return { value: "", success: false };
-            }
-
-            let result = props.parametersFiltration.inputs.inputValue[type][d].map((item) => {
-                if(d === "src"){
-                    return item; 
-                }
-                
-                if(d === "dst"){
-                    return item; 
-                }
-
-                return item; 
-            });
-
-            return { value: result, success: true };
-        };
-
-        let resultAny = getListDirection("any");
-        let resultSrc = getListDirection("src");
-        let resultDst = getListDirection("dst");
-
-        let valueString = (valueList) => {
-            let s = "";
-            let count = valueList.length;
-
-            for(let i = 0; i < count; i++){
-                if(i < count - 1){
-                    s += `${valueList[i]}, `;
-                } else {
-                    s += valueList[i];
-                }
-            }
-
-            return s;
-        };
-
-        return (
-            <React.Fragment>
-                <div>{(resultAny.value.length > 0) ? <span className="text-info">any &#8596; {valueString(resultAny.value)}</span> : ""}</div>
-                {(resultAny.success && (resultSrc.success || resultDst.success)) ? <span className="text-danger">&laquo;<small>ИЛИ</small>&raquo;</span> : ""}                   
-                <div>{(resultSrc.value.length > 0) ? <span className="text-info">src &#8592; {valueString(resultSrc.value)}</span> : ""}</div>
-                {(resultSrc.success && resultDst.success) ? <span className="text-danger">&laquo;<small>И</small>&raquo;</span> : ""}                   
-                <div>{(resultDst.value.length > 0) ? <span className="text-info">dst &#8594; {valueString(resultDst.value)}</span> : ""}</div>
-            </React.Fragment>
-        );
-    };
-
-    let showParametersFiltration = () => {
-        if(props.templateParameters.templateType !== "filtration"){
-            return;
-        }
-
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        Опции для фильтрации:
-                        </Typography>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        время начало:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {formatter.format(props.parametersFiltration.dateTime.currentDateTimeStart)}
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        время окончания:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {formatter.format(props.parametersFiltration.dateTime.currentDateTimeEnd)}
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        сетевой протокол:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(props.parametersFiltration.networkProtocol) ? "любой" : props.parametersFiltration.networkProtocol}
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        ip адреса:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {getListNetworkParameters("ip")}
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        сети:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {getListNetworkParameters("nw")}
-                    </Col>
-                </Row>       
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        сетевые порты:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {getListNetworkParameters("pt")}
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
-    };
-
-    switch(props.numberSteppers){
-    case 0:
-        return (
-            <Row>
-                <Col md={12} className="text-center">
-                    <CreateChangeTemplateType 
-                        templateType={props.templateParameters.templateType}
-                        handlerChangeTemplateType={props.handlerChangeTemplateType} />
-                </Col>
-            </Row>
-        );
-
-    case 1:
-        return <CreateFormControlChangeTime
-            timeTrigger={props.templateParameters.templateTime.timeTrigger}
-            listSelectedDays={props.templateParameters.templateTime.listSelectedDays}
-            checkSelectedType={props.templateParameters.templateTime.checkSelectedType}
-            handlerChangeTimeTrigger={props.handlerChangeTimeTrigger}
-            handlerChangeCheckboxDayOfWeek={props.handlerChangeCheckboxDayOfWeek}
-            handlerChangeTemplateTimeRadioType={props.handlerChangeTemplateTimeRadioType} />;
-
-    case 2:
-        return (
-            <React.Fragment>
-                <Row className="pt-3">
-                    <Col md={5} className="text-left">
-                        <CreateSourceList 
-                            typeModal={"новая"}
-                            hiddenFields={false}
-                            listSources={props.listSources}
-                            currentSource={props.templateParameters.templeteChosedSource}
-                            handlerChosen={props.handlerChosenSource}
-                            swithCheckConnectionStatus={false} />        
-                    </Col>
-                    <Col md={7} className="mt-n1 text-left">
-                        <CreateChipSource 
-                            chipData={props.templateParameters.templateListSource} 
-                            handleDelete={props.handlerDeleteSource}/>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-left mt-n2">
-                        <Typography variant="body2" color="textSecondary">
-                            {"* если в поле \"выберите источник\" не выбран ни один из источников, то тогда считается что шаблон распространяется на все источники"}
-                        </Typography>
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );                           
-
-    case 3:
-        return (
-            <React.Fragment>
-                <Row className="mt-2">
-                    <Col sm="3" className="text-right">
-                        <small className="mr-1 text-muted">сетевой протокол</small>
-                        <CreateProtocolList 
-                            defaultNetworkProtocol={props.parametersFiltration.networkProtocol} 
-                            handlerChosen={props.handlerChosenNetworkProtocol} />
-                    </Col>
-                    <Col sm="1"></Col>
-                    <Col sm="8" className="mt-2">
-                        <CreateDateTimePicker 
-                            currentDateTimeStart={props.parametersFiltration.dateTime.currentDateTimeStart}
-                            currentDateTimeEnd={props.parametersFiltration.dateTime.currentDateTimeEnd}
-                            handlerChangeDateTimeStart={props.handlerChangeDateTimeStart}
-                            handlerChangeDateTimeEnd={props.handlerChangeDateTimeEnd} />
-                    </Col>
-                </Row>
-                <Row className="mt-3">
-                    <Col className="text-center" sm="4">
-                        <Form inline>
-                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
-                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
-                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
-                        </Form>
-                    </Col>
-                    <Col sm="8"> 
-                        <InputGroup className="mb-3" size="sm">                           
-                            <FormControl
-                                id="input_ip_network_port"
-                                aria-describedby="basic-addon2"
-                                onChange={props.handlerInput}
-                                onKeyPress={props.handleKeyPress}
-                                isValid={props.parametersFiltration.inputs.inputFieldIsValid}
-                                isInvalid={props.parametersFiltration.inputs.inputFieldIsInvalid} 
-                                placeholder="введите ip адрес, подсеть или сетевой порт" />
-                            <InputGroup.Append>
-                                <Button onClick={props.handlerAddPortNetworkIP} variant="outline-secondary">
-                                    добавить
-                                </Button>
-                            </InputGroup.Append>
-                        </InputGroup>
-                    </Col>
-                </Row>
-                <ListInputValue 
-                    inputValue={props.parametersFiltration.inputs.inputValue}
-                    hendlerDeleteAddedElem={props.hendlerDeleteAddedElem} />
-            </React.Fragment>
-        );
-
-    case 4: 
-        for(let day in props.templateParameters.templateTime.listSelectedDays){
-            if(props.templateParameters.templateTime.listSelectedDays[day].checked){
-                daysOfWeek.push(props.templateParameters.templateTime.listSelectedDays[day].name);
-            }
-        }
-
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        Подготовлен шаблон со следующими параметрами:
-                        </Typography>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
-                    </Col>
-                    <Col md={8} className="text-left">{(props.templateParameters.templateType === "telemetry") ? "телеметрия": "фильтрация"}</Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">дни недели:</Typography>
-                    </Col>
-                    <Col md={8} className="text-left">{(()=>{
-                        let i = 0;
-                        let num = daysOfWeek.length;
-                        let comma = ", ";
-                        
-                        return daysOfWeek.map((item) => {
-                            if(item === "суббота" || item === "воскресенье"){
-                                textColor = "text-danger";
-                            } else {
-                                textColor = "text-primary";
-                            }
-
-                            return (num > ++i) ? <span key={`key_day_of_week_${item}`} className={textColor}>{item+comma}</span> : <span key={`key_day_of_week_${item}`} className={textColor}>{item}</span>;
-                        });
-                    })()}</Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">время выполнения:</Typography>                        
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(() => {
-                            let hour = props.templateParameters.templateTime.timeTrigger.getHours();
-                            let minute = props.templateParameters.templateTime.timeTrigger.getMinutes();
-
-                            return ((hour < 10) ? "0"+hour : hour)+":"+((minute < 10) ? "0"+minute : minute);
-                        })()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">список источников для выполнения:</Typography>                        
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(() => {
-                            if(props.templateParameters.templateListSource.length === 0){
-                                return "на всех источниках";
-                            }
-
-                            return props.templateParameters.templateListSource.map((item) => {
-                                return <Badge pill variant="secondary" className="mr-1" key={`key_sid_${item}`}>{item}</Badge>;
-                            });
-                        })()}
-                    </Col>
-                </Row>
-                {showParametersFiltration()}
-            </React.Fragment>
-        );
-
-    default:
-        return <Row><Col md={12}>Ошибка!!!</Col></Row>;
-    }
-}
-
-CreateForm.propTypes = {
-    listSources: PropTypes.object.isRequired,
-    numberSteppers: PropTypes.number.isRequired,
-    templateParameters: PropTypes.object.isRequired,
-    parametersFiltration: PropTypes.object.isRequired,
-    handlerInput: PropTypes.func.isRequired,
-    handleKeyPress: PropTypes.func.isRequired,
-    handlerAddPortNetworkIP: PropTypes.func.isRequired,
-    handlerChangeDateTimeStart: PropTypes.func.isRequired,
-    handlerChangeDateTimeEnd: PropTypes.func.isRequired,
-    handlerCheckRadioInput: PropTypes.func.isRequired,
-    hendlerDeleteAddedElem: PropTypes.func.isRequired,
-    handlerChosenSource: PropTypes.func.isRequired,
-    handlerDeleteSource: PropTypes.func.isRequired,
-    handlerChangeTimeTrigger: PropTypes.func.isRequired,
-    handlerChangeTemplateType: PropTypes.func.isRequired,
-    handlerChosenNetworkProtocol: PropTypes.func.isRequired,
-    handlerChangeCheckboxDayOfWeek: PropTypes.func.isRequired,
-    handlerChangeTemplateTimeRadioType: PropTypes.func.isRequired,
-};
 
 function CreateButtons(props){
     const classes = useStyles();
@@ -714,6 +136,7 @@ function CreateCard(props){
                     hendlerDeleteAddedElem={props.hendlerDeleteAddedElem}
                     handlerChosenSource={props.handlerChosenSource}
                     handlerDeleteSource={props.handlerDeleteSource}
+                    handlerChangeRangeSlider={props.handlerChangeRangeSlider}
                     handlerChangeTemplateType={props.handlerChangeTemplateType}
                     handlerChangeTimeTrigger={props.handlerChangeTimeTrigger}
                     handlerChosenNetworkProtocol={props.handlerChosenNetworkProtocol}
@@ -751,153 +174,12 @@ CreateCard.propTypes = {
     handlerButtonFinish: PropTypes.func.isRequired,
     handlerChosenSource:PropTypes.func.isRequired,
     handlerDeleteSource:PropTypes.func.isRequired,
+    handlerChangeRangeSlider: PropTypes.func.isRequired,
     handlerChangeTimeTrigger: PropTypes.func.isRequired,
     handlerChangeTemplateType: PropTypes.func.isRequired,
     handlerChosenNetworkProtocol: PropTypes.func.isRequired,
     handlerChangeCheckboxDayOfWeek: PropTypes.func.isRequired,
     handlerChangeTemplateTimeRadioType: PropTypes.func.isRequired,
-};
-
-function CreateCardTaskTemplates(props){
-    const formatter = Intl.DateTimeFormat("ru-Ru", {
-        timeZone: "Europe/Moscow",
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-    });
-
-    let daysOfWeek = [];
-    let textColor = "text-primary";
-
-    for(let shortName in props.templatesInformation.dateTimeTrigger.weekday){
-        daysOfWeek.push(props.templatesInformation.dateTimeTrigger.weekday[shortName]);
-    }
-
-    let showParametersFiltration = () => {
-        if(props.templatesInformation.taskType === "telemetry"){
-            return null;
-        }
-
-        let netProto = (props.templatesInformation.taskParameters.filtration.networkProtocol === "any") ? "любой" : props.templatesInformation.taskParameters.filtration.networkProtocol;
-
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        Опции для фильтрации:
-                        </Typography>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-left">
-                        <Typography variant="subtitle1" color="textSecondary">
-                            время начала:&nbsp; 
-                            {formatter.format(props.templatesInformation.taskParameters.filtration.start_date)}
-                            , окончания:&nbsp; 
-                            {formatter.format(props.templatesInformation.taskParameters.filtration.end_date)}
-                            , сетевой протокол:&nbsp; 
-                            {netProto}
-                        </Typography>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12}>
-                        {JSON.stringify(props.templatesInformation.taskParameters.filtration)}
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
-    };
-
-    console.log(props.templatesInformation);
-
-    return (
-        <Card>
-            <CardContent>
-                <Row>
-                    <Col md={12} className="text-left">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        Шаблон добавлен {formatter.format(props.templatesInformation.timeCreation)}, пользователем {props.templatesInformation.userName}.
-                        </Typography>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
-                    </Col>
-                    <Col md={8} className="text-left">{(props.templatesInformation.taskType === "telemetry") ? 
-                        <Badge variant="dark">{"телеметрия"}</Badge>
-                        : 
-                        <Badge variant="primary">{"фильтрация"}</Badge>}</Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">дни недели:</Typography>
-                    </Col>
-                    <Col md={8} className="text-left">{(()=>{
-                        let i = 0;
-                        let num = daysOfWeek.length;
-                        let comma = ", ";
-                        
-                        return daysOfWeek.map((item) => {
-                            if(item === "суббота" || item === "воскресенье"){
-                                textColor = "text-danger";
-                            } else {
-                                textColor = "text-primary";
-                            }
-
-                            return (num > ++i) ? <span key={`key_day_of_week_${item}`} className={textColor}>{item+comma}</span> : <span key={`key_day_of_week_${item}`} className={textColor}>{item}</span>;
-                        });
-                    })()}</Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">время выполнения:</Typography>                        
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(() => {
-                            let hour = props.templatesInformation.dateTimeTrigger.hour;
-                            let minute = props.templatesInformation.dateTimeTrigger.minutes;
-
-                            return ((hour < 10) ? "0"+hour : hour)+":"+((minute < 10) ? "0"+minute : minute);
-                        })()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">список источников для выполнения:</Typography>                        
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(() => {
-                            if(props.templatesInformation.listSourceID.length === 0){
-                                return <h5><Badge variant="light">{"на всех источниках"}</Badge></h5>;
-                            }
-
-                            return props.templatesInformation.listSourceID.map((item) => {
-                                return <Badge pill variant="secondary" className="mr-1" key={`key_sid_${item}`}>{item}</Badge>;
-                            });
-                        })()}
-                    </Col>
-                </Row>
-                {showParametersFiltration()}
-            </CardContent>
-            <CardActions>
-                <ButtonUI 
-                    size="small"
-                    onClick={props.handlerDeteteCard}>
-                    удалить
-                </ButtonUI>
-            </CardActions>
-        </Card>
-    );
-}
-
-CreateCardTaskTemplates.propTypes = {
-    templatesInformation: PropTypes.object.isRequired,
-    handlerDeteteCard: PropTypes.func.isRequired,
 };
 
 class CreatePageTemplateLog extends React.Component {
@@ -938,6 +220,8 @@ class CreatePageTemplateLog extends React.Component {
                 dateTime: {
                     currentDateTimeStart: new Date,
                     currentDateTimeEnd: new Date,
+                    minHour: 3,
+                    maxHour: 4,
                 },
                 inputs: {
                     inputFieldIsValid: false,
@@ -1060,11 +344,7 @@ class CreatePageTemplateLog extends React.Component {
 
             return selectedDays;
         })();
-        
-        if(Object.keys(listSelectedDays).length === 0){
-            return;
-        }
-        
+               
         let objData = {
             type: this.state.templateParameters.templateType,
             timeSettings: {
@@ -1079,14 +359,17 @@ class CreatePageTemplateLog extends React.Component {
         };
         
         if(this.state.templateParameters.templateType === "filtration"){
-            console.log("тип шаблона - фильтрация");
-
             objData.parametersFiltration = {
                 networkProtocol: this.state.parametersFiltration.networkProtocol,
                 startDate: +new Date(this.state.parametersFiltration.dateTime.currentDateTimeStart),
                 endDate: +new Date(this.state.parametersFiltration.dateTime.currentDateTimeEnd),
                 inputValue: this.state.parametersFiltration.inputs.inputValue,
             };
+        }
+
+        //проверяем на наличие незаполненных полей в ключевых шагах 
+        if(this.state.stepsError.length > 0){
+            return;
         }
 
         this.props.socketIo.emit("network interaction: create new template", { arguments: objData });
@@ -1118,7 +401,29 @@ class CreatePageTemplateLog extends React.Component {
                 },
                 templateListSource: [],
                 templeteChosedSource: 0,
-            },    
+            },
+            listTaskTemplates: {},
+            parametersFiltration: {
+                networkProtocol: "any",
+                inputRadioType: "any",
+                dateTime: {
+                    currentDateTimeStart: new Date,
+                    currentDateTimeEnd: new Date,
+                    minHour: 3,
+                    maxHour: 4,
+                },
+                inputs: {
+                    inputFieldIsValid: false,
+                    inputFieldIsInvalid: false,
+                    inputValue: {
+                        ip: { any: [], src: [], dst: [] },
+                        pt: { any: [], src: [], dst: [] },
+                        nw: { any: [], src: [], dst: [] },
+                    },
+                    currentInputValue: "",
+                    typeCurrentInputValue: "none"
+                },
+            },
         });
     }
 
@@ -1423,6 +728,13 @@ class CreatePageTemplateLog extends React.Component {
         }
     }
 
+    handlerChangeRangeSlider(e, [ min, max ]){
+        let objUpdate = Object.assign({}, this.state.parametersFiltration);
+        objUpdate.dateTime.minHour = min;
+        objUpdate.dateTime.maxHour = max;
+        this.setState({ parametersFiltration: objUpdate });
+    }
+
     createTemplateList(){
         if(this.state.showForm){
             return null;
@@ -1518,6 +830,7 @@ class CreatePageTemplateLog extends React.Component {
                                 handlerButtonFinish={this.handlerButtonFinish.bind(this)}
                                 handlerChosenSource={this.handlerChosenSource.bind(this)}
                                 handlerDeleteSource={this.handlerDeleteSource.bind(this)}
+                                handlerChangeRangeSlider={this.handlerChangeRangeSlider.bind(this)}
                                 handlerChangeTimeTrigger={this.handlerChangeTimeTrigger.bind(this)}
                                 handlerChangeTemplateType={this.handlerChangeTemplateType.bind(this)}
                                 handlerChosenNetworkProtocol={this.handlerChosenNetworkProtocol.bind(this)}

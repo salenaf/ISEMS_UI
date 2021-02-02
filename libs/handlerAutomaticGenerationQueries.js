@@ -81,6 +81,9 @@ function filtrationRequest({ connection, sourceList, parameters }) {
 
 
     /**
+     *  Надо сделать обработчик
+     * 
+     * 
      *         return Promise.all(approvedSourceList.map((item) => {
             return templateRequest[templateInfo.taskType]({ connection: connect, sourceList: approvedSourceList });
         }));

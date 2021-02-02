@@ -316,31 +316,18 @@ function checkTemplateParameters(templateParameters) {
         }
     }
 
-    console.log("func 'checkTemplateParameters', START...");
-    console.log(templateParameters);
-
     if (templateParameters.type === "telemetry") {
         return true;
     }
 
     //проверяем время
     if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.parametersFiltration.startDate })) {
-
-        console.log("func 'checkTemplateParameters', ERROR time start");
-
         return false;
     }
     if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.parametersFiltration.endDate })) {
-
-        console.log("func 'checkTemplateParameters', ERROR time end");
-
         return false;
     }
     if (+templateParameters.parametersFiltration.startDate > +templateParameters.parametersFiltration.endDate) {
-
-        console.log("func 'checkTemplateParameters', ERROR time start and end");
-        console.log(`+templateParameters.parametersFiltration.startDate (${+templateParameters.parametersFiltration.startDate}) > (${+templateParameters.parametersFiltration.endDate}) +templateParameters.parametersFiltration.endDate`);
-
         return false;
     }
 
@@ -388,13 +375,8 @@ function checkTemplateParameters(templateParameters) {
 
     //проверяем наличие хотя бы одного параметра в inputValue
     if (checkExistInputValue(newInputValue)) {
-
-        console.log("func 'checkTemplateParameters', ERROR input value");
-
         return false;
     }
-
-    console.log("======================");
 
     return true;
 }

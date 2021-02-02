@@ -46,7 +46,12 @@ function restoreTempTaskStorage(eventEmiterTempTaskStorage) {
                         },
                         listSelectedDays: element.date_time_trigger.weekday,
                     },
-                    parametersFiltration: element.task_parameters.filtration,
+                    parametersFiltration: {
+                        networkProtocol: element.task_parameters.filtration.network_protocol,
+                        startDate: element.task_parameters.filtration.start_date,
+                        endDate: element.task_parameters.filtration.end_date,
+                        inputValue: element.task_parameters.filtration.input_value,
+                    },
                 },
             });
         });
