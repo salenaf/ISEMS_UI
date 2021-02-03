@@ -89,8 +89,8 @@ function filtrationRequest({ connection, sourceList, parameters }) {
                     id: sid,
                     un: "",
                     dt: {
-                        s: timeBegin,
-                        e: timeEnd,
+                        s: (timeBegin / 1000),
+                        e: (timeEnd / 1000),
                     },
                     p: parameters.taskParameters.filtration.networkProtocol,
                     f: parameters.taskParameters.filtration.inputValue,
