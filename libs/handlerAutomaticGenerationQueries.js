@@ -79,6 +79,8 @@ function filtrationRequest({ connection, sourceList, parameters }) {
             timeBegin = parameters.dateTimeTrigger.full - ((parameters.taskParameters.filtration.minHour + currentTime) * 3600000),
             timeEnd = parameters.dateTimeTrigger.full - (parameters.taskParameters.filtration.minHour * 3600000);
 
+        console.log(`timeBegin: '${timeBegin}' (${Math.trunc(timeBegin / 1000)})`);
+
         if (connection !== null) {
             connection.sendMessage({
                 msgType: "command",
@@ -89,8 +91,8 @@ function filtrationRequest({ connection, sourceList, parameters }) {
                     id: sid,
                     un: "",
                     dt: {
-                        s: (timeBegin / 1000),
-                        e: (timeEnd / 1000),
+                        s: Math.trunc(timeBegin / 1000),
+                        e: Math.trunc(timeEnd / 1000),
                     },
                     p: parameters.taskParameters.filtration.networkProtocol,
                     f: parameters.taskParameters.filtration.inputValue,
