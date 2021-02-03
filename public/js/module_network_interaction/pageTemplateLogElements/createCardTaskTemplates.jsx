@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
 
 import CreateListNetworkParameters from "./createListNetworkParameters.jsx";
+import CreateInformationTimeFiltrationInterval from "./createInformationTimeFiltrationInterval.jsx";
 
 export default function CreateCardTaskTemplates(props){
     const formatter = Intl.DateTimeFormat("ru-Ru", {
@@ -36,21 +37,20 @@ export default function CreateCardTaskTemplates(props){
         return (
             <React.Fragment>
                 <Row>
-                    <Col md={12} className="text-left">
+                    <Col md={12} className="text-left mt-2">
                         <Typography variant="subtitle1" color="textSecondary">
-                        Опции для фильтрации:
+                        Опции для фильтрации файлов сетевого трафика.
                         </Typography>
                     </Col>
                 </Row>
+                <CreateInformationTimeFiltrationInterval
+                    minHour={props.templatesInformation.taskParameters.filtration.minHour}
+                    maxHour={props.templatesInformation.taskParameters.filtration.maxHour}
+                    timeTrigger={new Date(props.templatesInformation.dateTimeTrigger.full)} />                
                 <Row>
                     <Col md={12} className="text-left">
                         <Typography variant="subtitle1" color="textSecondary">
-                            время начала:&nbsp; 
-                            <strong>{formatter.format(props.templatesInformation.taskParameters.filtration.start_date)}</strong>
-                            , окончания:&nbsp; 
-                            <strong>{formatter.format(props.templatesInformation.taskParameters.filtration.end_date)}</strong>
-                            , сетевой протокол:&nbsp; 
-                            <strong>{netProto}</strong>
+                            сетевой протокол:&nbsp;<strong>{netProto}</strong>
                         </Typography>
                     </Col>
                 </Row>

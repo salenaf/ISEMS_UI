@@ -79,7 +79,7 @@ export default function ListInputValue(props){
 
     return (
         <React.Fragment>
-            <Row>
+            <Row className="mt-2">
                 <Col sm="3" className="text-center">
                     <Badge variant="dark">ip адрес</Badge>
                 </Col>

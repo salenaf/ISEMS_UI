@@ -54,16 +54,13 @@ module.exports = function(templateInfo) {
             return resolve({ connect: conn, sourceList: approvedSourceList });
         });
     }).then(({ connect, sourceList }) => {
-        templateRequest[templateInfo.taskType]({ connection: connect, sourceList: sourceList });
+        templateRequest[templateInfo.taskType]({ connection: connect, sourceList: sourceList, parameters: templateInfo });
     }).catch((err) => {
         throw err;
     });
 };
 
 function telemetryRequest({ connection, sourceList, parameters = null }) {
-    console.log("func 'telemetryRequest', START...");
-    console.log(sourceList);
-
     connection.sendMessage({
         msgType: "command",
         msgSection: "source control",
@@ -77,15 +74,28 @@ function telemetryRequest({ connection, sourceList, parameters = null }) {
 }
 
 function filtrationRequest({ connection, sourceList, parameters }) {
-    console.log("func 'filtrationRequest', START...");
+    sourceList.forEach((sid) => {
+        let currentTime = parameters.taskParameters.filtration.maxHour - parameters.taskParameters.filtration.minHour,
+            timeBegin = parameters.dateTimeTrigger.full - ((parameters.taskParameters.filtration.minHour + currentTime) * 3600000),
+            timeEnd = parameters.dateTimeTrigger.full - (parameters.taskParameters.filtration.minHour * 3600000);
 
-
-    /**
-     *  Надо сделать обработчик
-     * 
-     * 
-     *         return Promise.all(approvedSourceList.map((item) => {
-            return templateRequest[templateInfo.taskType]({ connection: connect, sourceList: approvedSourceList });
-        }));
-     */
+        if (connection !== null) {
+            connection.sendMessage({
+                msgType: "command",
+                msgSection: "filtration control",
+                msgInstruction: "to start filtering",
+                taskID: helpersFunc.getRandomHex(),
+                options: {
+                    id: sid,
+                    un: "",
+                    dt: {
+                        s: timeBegin,
+                        e: timeEnd,
+                    },
+                    p: parameters.taskParameters.filtration.networkProtocol,
+                    f: parameters.taskParameters.filtration.inputValue,
+                },
+            });
+        }
+    });
 }

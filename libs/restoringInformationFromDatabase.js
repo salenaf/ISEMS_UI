@@ -43,13 +43,14 @@ function restoreTempTaskStorage(eventEmiterTempTaskStorage) {
                         timeTrigger: {
                             hour: element.date_time_trigger.hour,
                             minutes: element.date_time_trigger.minutes,
+                            full: element.date_time_trigger.full,
                         },
                         listSelectedDays: element.date_time_trigger.weekday,
                     },
                     parametersFiltration: {
                         networkProtocol: element.task_parameters.filtration.network_protocol,
-                        startDate: element.task_parameters.filtration.start_date,
-                        endDate: element.task_parameters.filtration.end_date,
+                        minHour: element.task_parameters.filtration.min_hour,
+                        maxHour: element.task_parameters.filtration.max_hour,
                         inputValue: element.task_parameters.filtration.input_value,
                     },
                 },

@@ -17,14 +17,15 @@ let templateActionSchema = new connection.Schema({
         weekday: Object,
         hour: Number,
         minutes: Number,
+        full: Number,
     },
     type: String,
     list_source_id: [Number],
     task_parameters: {
         filtration: {
             network_protocol: String,
-            start_date: Number,
-            end_date: Number,
+            min_hour: Number,
+            max_hour: Number,
             input_value: {
                 ip: Object,
                 pt: Object,

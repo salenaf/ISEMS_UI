@@ -130,8 +130,6 @@ function CreateCard(props){
                     handlerInput={props.handlerInput}
                     handleKeyPress={props.handleKeyPress}
                     handlerAddPortNetworkIP={props.handlerAddPortNetworkIP}
-                    handlerChangeDateTimeStart={props.handlerChangeDateTimeStart}
-                    handlerChangeDateTimeEnd={props.handlerChangeDateTimeEnd}
                     handlerCheckRadioInput={props.handlerCheckRadioInput}
                     hendlerDeleteAddedElem={props.hendlerDeleteAddedElem}
                     handlerChosenSource={props.handlerChosenSource}
@@ -166,8 +164,6 @@ CreateCard.propTypes = {
     handlerInput: PropTypes.func.isRequired,
     handleKeyPress: PropTypes.func.isRequired,
     handlerAddPortNetworkIP: PropTypes.func.isRequired,
-    handlerChangeDateTimeStart: PropTypes.func.isRequired,
-    handlerChangeDateTimeEnd: PropTypes.func.isRequired,
     handlerCheckRadioInput: PropTypes.func.isRequired,
     hendlerDeleteAddedElem: PropTypes.func.isRequired,
     handlerButtonCancel: PropTypes.func.isRequired,
@@ -218,8 +214,6 @@ class CreatePageTemplateLog extends React.Component {
                 networkProtocol: "any",
                 inputRadioType: "any",
                 dateTime: {
-                    currentDateTimeStart: new Date,
-                    currentDateTimeEnd: new Date,
                     minHour: 3,
                     maxHour: 4,
                 },
@@ -351,6 +345,7 @@ class CreatePageTemplateLog extends React.Component {
                 timeTrigger: {
                     hour: this.state.templateParameters.templateTime.timeTrigger.getHours(),
                     minutes:this.state.templateParameters.templateTime.timeTrigger.getMinutes(),
+                    full: +this.state.templateParameters.templateTime.timeTrigger,
                 },
                 listSelectedDays: listSelectedDays,
             },
@@ -361,8 +356,8 @@ class CreatePageTemplateLog extends React.Component {
         if(this.state.templateParameters.templateType === "filtration"){
             objData.parametersFiltration = {
                 networkProtocol: this.state.parametersFiltration.networkProtocol,
-                startDate: +new Date(this.state.parametersFiltration.dateTime.currentDateTimeStart),
-                endDate: +new Date(this.state.parametersFiltration.dateTime.currentDateTimeEnd),
+                minHour: this.state.parametersFiltration.dateTime.minHour,
+                maxHour: this.state.parametersFiltration.dateTime.maxHour,               
                 inputValue: this.state.parametersFiltration.inputs.inputValue,
             };
         }
@@ -407,8 +402,6 @@ class CreatePageTemplateLog extends React.Component {
                 networkProtocol: "any",
                 inputRadioType: "any",
                 dateTime: {
-                    currentDateTimeStart: new Date,
-                    currentDateTimeEnd: new Date,
                     minHour: 3,
                     maxHour: 4,
                 },
@@ -471,12 +464,16 @@ class CreatePageTemplateLog extends React.Component {
                 return isEmpty;
             };
 
-            let stepsError = this.state.stepsError;
+            let stepsError = this.state.stepsError,
+                valueInputIsInvalide = checkExistInputValue(),
+                isEqual = this.state.parametersFiltration.dateTime.minHour === this.state.parametersFiltration.dateTime.maxHour;
 
             //проверяем наличие хотя бы одного параметра в inputValue
-            if(checkExistInputValue()){
+            if(isEqual || valueInputIsInvalide){
                 stepsError.push(3);
-            } else {
+            } 
+            
+            if(!isEqual && !valueInputIsInvalide){
                 let foundIndex = this.state.stepsError.indexOf(3);
                 if(foundIndex !== -1){
                     stepsError.splice(foundIndex - 1, 1);       
@@ -614,18 +611,6 @@ class CreatePageTemplateLog extends React.Component {
     handlerChosenNetworkProtocol(e){
         let objTmp = Object.assign({}, this.state.parametersFiltration);
         objTmp.networkProtocol = e.target.value;
-        this.setState({ parametersFiltration: objTmp });
-    }
-
-    handlerChangeDateTimeStart(date){
-        let objTmp = Object.assign({}, this.state.parametersFiltration);
-        objTmp.dateTime.currentDateTimeStart = date;
-        this.setState({ parametersFiltration: objTmp });
-    }
-    
-    handlerChangeDateTimeEnd(date){
-        let objTmp = Object.assign({}, this.state.parametersFiltration);
-        objTmp.dateTime.currentDateTimeEnd = date;
         this.setState({ parametersFiltration: objTmp });
     }
 
@@ -822,8 +807,6 @@ class CreatePageTemplateLog extends React.Component {
                                 handlerInput={this.handlerInput.bind(this)}
                                 handleKeyPress={this.handleKeyPress.bind(this)}
                                 handlerAddPortNetworkIP={this.handlerAddPortNetworkIP.bind(this)}
-                                handlerChangeDateTimeStart={this.handlerChangeDateTimeStart.bind(this)}
-                                handlerChangeDateTimeEnd={this.handlerChangeDateTimeEnd.bind(this)}
                                 handlerCheckRadioInput={this.handlerCheckRadioInput.bind(this)}
                                 hendlerDeleteAddedElem={this.hendlerDeleteAddedElem.bind(this)}
                                 handlerButtonCancel={this.handlerButtonCancel}

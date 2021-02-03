@@ -40,9 +40,6 @@ class TempTaskStorage {
      * @param {*} data 
      */
     setTempTask(myEmitter, data) {
-        //console.log("class 'TempTaskStorage', func 'setTempTask'");
-        //console.log(data);
-
         if (typeof this.obj.listDateTimeTrigger[data.taskID] !== "undefined") {
             return;
         }
@@ -52,6 +49,7 @@ class TempTaskStorage {
                 weekday: data.parameters.timeSettings.listSelectedDays,
                 hour: data.parameters.timeSettings.timeTrigger.hour,
                 minutes: data.parameters.timeSettings.timeTrigger.minutes,
+                full: data.parameters.timeSettings.timeTrigger.full,
             },
             taskType: data.parameters.type,
             listSourceID: data.parameters.listSources,
@@ -72,10 +70,6 @@ class TempTaskStorage {
      * @param {*} data 
      */
     getTempTask(myEmitter, data) {
-        //console.log("class 'TempTaskStorage', func 'getTempTask'");
-        //console.log(data);
-        //console.log(`class 'TempTaskStorage', func 'getTempTask', task: '${this.obj.listDateTimeTrigger[data.taskID]}'`);
-
         let result = null;
         if (typeof this.obj.listDateTimeTrigger[data.taskID] !== "undefined") {
             result = this.obj.listDateTimeTrigger[data.taskID];
@@ -91,9 +85,6 @@ class TempTaskStorage {
      * @param {*} data 
      */
     getAllTempTask(myEmitter, data) {
-        //console.log("class 'TempTaskStorage', func 'getAllTempTask'");
-        //console.log(data);
-
         myEmitter.emit("response get all new temp task", this.obj.listDateTimeTrigger);
     }
 
@@ -104,23 +95,12 @@ class TempTaskStorage {
      * @param {*} data 
      */
     delTempTask(myEmitter, data) {
-        //console.log("class 'TempTaskStorage', func 'delTempTask'");
-        //console.log(data);
-
         delete this.obj.listDateTimeTrigger[data.taskID];
 
         myEmitter.emit("response del new temp task", data.taskID);
     }
 
     readingListTempTaskForTimer({ hour, minutes, dayOfWeek }) {
-        /**
-         * 
-         * 2. Доделать формирование шаблона для создания шаблона задачи 
-         * выполнения автоматической фильтрации сетевого трафика
-         * 
-         * 
-         */
-
         let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
         for (let id in this.obj.listDateTimeTrigger) {
@@ -183,20 +163,6 @@ module.exports = function(sec) {
     const myEmitter = new MyEmitter();
     let tempTaskStorage = new TempTaskStorage();
 
-    /** ЭТО ТОЛЬКО ДЛЯ ТЕСТОВ */
-    /*    setTimeout(() => {
-        const newDate = new Date;
-        let hour = newDate.getHours();
-        let minutes = newDate.getMinutes();
-        let dayOfWeek = newDate.getDay();
-
-        tempTaskStorage.readingListTempTaskForTimer({ hour: hour, minutes: minutes, dayOfWeek: dayOfWeek });
-
-    }, 15000);*/
-
-    /*
-    ---- ЭТО ДЛЯ БОЕВОГО ИСПОЛЬЗОВАНИЯ ----
-    */
     setInterval(() => {
         const newDate = new Date;
         let hour = newDate.getHours();
@@ -211,30 +177,18 @@ module.exports = function(sec) {
     }, sec);
 
     myEmitter.on("set new temp task", (data) => {
-        //console.log("func 'handlerTimerTick', received event 'set new temp task'");
-        //console.log(data);
-
         tempTaskStorage.setTempTask(myEmitter, data);
     });
 
     myEmitter.on("get new temp task", (data) => {
-        //console.log("func 'handlerTimerTick', received event 'get new temp task'");
-        //console.log(data);
-
         tempTaskStorage.getTempTask(myEmitter, data);
     });
 
     myEmitter.on("get all new temp task", (data) => {
-        //console.log("func 'handlerTimerTick', received event 'get all new temp task'");
-        //console.log(data);
-
         tempTaskStorage.getAllTempTask(myEmitter, data);
     });
 
     myEmitter.on("del new temp task", (data) => {
-        //console.log("func 'handlerTimerTick', received event 'del new temp task'");
-        //console.log(data);
-
         tempTaskStorage.delTempTask(myEmitter, data);
     });
 

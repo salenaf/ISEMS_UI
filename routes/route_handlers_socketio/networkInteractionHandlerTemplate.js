@@ -100,6 +100,7 @@ function createNewTemplate(socketIo, eventEmiterTimerTick, data) {
                             weekday: data.arguments.timeSettings.listSelectedDays,
                             hour: data.arguments.timeSettings.timeTrigger.hour,
                             minutes: data.arguments.timeSettings.timeTrigger.minutes,
+                            full: data.arguments.timeSettings.timeTrigger.full,
                         },
                         type: data.arguments.type,
                         list_source_id: data.arguments.listSources,
@@ -109,8 +110,8 @@ function createNewTemplate(socketIo, eventEmiterTimerTick, data) {
                         doc.task_parameters = {
                             filtration: {
                                 network_protocol: data.arguments.parametersFiltration.networkProtocol,
-                                start_date: data.arguments.parametersFiltration.startDate,
-                                end_date: data.arguments.parametersFiltration.endDate,
+                                min_hour: data.arguments.parametersFiltration.minHour,
+                                max_hour: data.arguments.parametersFiltration.maxHour,
                                 input_value: {
                                     ip: data.arguments.parametersFiltration.inputValue.ip,
                                     pt: data.arguments.parametersFiltration.inputValue.pt,
@@ -320,14 +321,15 @@ function checkTemplateParameters(templateParameters) {
         return true;
     }
 
+    let minHour = templateParameters.parametersFiltration.minHour,
+        maxHour = templateParameters.parametersFiltration.maxHour;
+
+    if (minHour >= maxHour || (minHour > 24) || (maxHour > 24)) {
+        return false;
+    }
+
     //проверяем время
-    if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.parametersFiltration.startDate })) {
-        return false;
-    }
-    if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.parametersFiltration.endDate })) {
-        return false;
-    }
-    if (+templateParameters.parametersFiltration.startDate > +templateParameters.parametersFiltration.endDate) {
+    if (!helpersFunc.checkInputValidation({ name: "intervalTransmission", value: templateParameters.timeSettings.timeTrigger.full })) {
         return false;
     }
 

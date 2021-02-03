@@ -70,10 +70,10 @@ export default function CreateFormControlChangeTime(props){
                     name="templateTime" 
                     value={props.checkSelectedType} 
                     onChange={props.handlerChangeTemplateTimeRadioType}>
-                    <FormControlLabelUI className="mb-n3" value="no_days" control={<Radio color="primary" size="small" />} label="дни не выбраны" />
-                    <FormControlLabelUI className="mb-n3" value="every_day" control={<Radio color="primary" size="small" />} label="каждый день" />
-                    <FormControlLabelUI className="mb-n3" value="working_days_only" control={<Radio color="primary" size="small" />} label="только рабочие дни" />
-                    <FormControlLabelUI className="mb-n3" value="weekends_only" control={<Radio color="primary" size="small" />} label="только выходные" />
+                    <FormControlLabelUI className="mb-n1" value="no_days" control={<Radio color="primary" size="small" />} label="дни не выбраны" />
+                    <FormControlLabelUI className="mb-n1" value="every_day" control={<Radio color="primary" size="small" />} label="каждый день" />
+                    <FormControlLabelUI className="mb-n1" value="working_days_only" control={<Radio color="primary" size="small" />} label="только рабочие дни" />
+                    <FormControlLabelUI className="mb-n1" value="weekends_only" control={<Radio color="primary" size="small" />} label="только выходные" />
                 </RadioGroup>
             </Col>
             <Col md={4}>

@@ -7,7 +7,6 @@ import CreateChipSource from "../../commons/createChipSource.jsx";
 import CreateSourceList from "../../commons/createSourceList.jsx";
 import CreateRangeSlider from "./createRangeSlider.jsx";
 import CreateListInputValue from "./createListInputValue.jsx";
-import CreateDateTimePicker from "../../commons/createDateTimePicker.jsx";
 import CreateChangeTemplateType from "./createChangeTemplateType.jsx";
 import CreateFormControlChangeTime from "./createFormControlChangeTime.jsx";
 import CreateListNetworkParameters from "./createListNetworkParameters.jsx";
@@ -16,14 +15,6 @@ import CreateInformationTimeFiltrationInterval from "./createInformationTimeFilt
 export default function CreateForm(props){ 
     let daysOfWeek = [];
     let textColor = "text-primary";
-    let formatter = Intl.DateTimeFormat("ru-Ru", {
-        timeZone: "Europe/Moscow",
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-    });
 
     let showParametersFiltration = () => {
         if(props.templateParameters.templateType !== "filtration"){
@@ -33,32 +24,16 @@ export default function CreateForm(props){
         return (
             <React.Fragment>
                 <Row>
-                    <Col md={12} className="text-left">
+                    <Col md={12} className="text-left mt-2">
                         <Typography variant="subtitle1" color="textSecondary">
-                        Опции для фильтрации:
+                        Опции для фильтрации файлов сетевого трафика.
                         </Typography>
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        время начала:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {formatter.format(props.parametersFiltration.dateTime.currentDateTimeStart)}
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        время окончания:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {formatter.format(props.parametersFiltration.dateTime.currentDateTimeEnd)}
-                    </Col>
-                </Row>                
+                <CreateInformationTimeFiltrationInterval
+                    minHour={props.parametersFiltration.dateTime.minHour}
+                    maxHour={props.parametersFiltration.dateTime.maxHour}
+                    timeTrigger={props.templateParameters.templateTime.timeTrigger} />                
                 <Row>
                     <Col md={4} className="text-right">
                         <Typography variant="subtitle1" color="textSecondary">
@@ -165,8 +140,9 @@ export default function CreateForm(props){
                 <Row>
                     <Col sm="12" className="text-left">
                         <CreateInformationTimeFiltrationInterval
-                            templateParameters={props.templateParameters}
-                            parametersFiltration={props.parametersFiltration} />
+                            minHour={props.parametersFiltration.dateTime.minHour}
+                            maxHour={props.parametersFiltration.dateTime.maxHour}
+                            timeTrigger={props.templateParameters.templateTime.timeTrigger} />                
                         <CreateRangeSlider 
                             minHour={props.parametersFiltration.dateTime.minHour}
                             maxHour={props.parametersFiltration.dateTime.maxHour}
@@ -206,19 +182,6 @@ export default function CreateForm(props){
                         </InputGroup>
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={12}>
-                        <CreateDateTimePicker 
-                            currentDateTimeStart={props.parametersFiltration.dateTime.currentDateTimeStart}
-                            currentDateTimeEnd={props.parametersFiltration.dateTime.currentDateTimeEnd}
-                            handlerChangeDateTimeStart={props.handlerChangeDateTimeStart}
-                            handlerChangeDateTimeEnd={props.handlerChangeDateTimeEnd} />
-        
-
-
-
-                    </Col>
-                </Row>
                 <CreateListInputValue 
                     inputValue={props.parametersFiltration.inputs.inputValue}
                     hendlerDeleteAddedElem={props.hendlerDeleteAddedElem} />
@@ -234,13 +197,6 @@ export default function CreateForm(props){
 
         return (
             <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left">
-                        <Typography variant="subtitle1" color="textSecondary">
-                        Подготовлен шаблон со следующими параметрами:
-                        </Typography>
-                    </Col>
-                </Row>
                 <Row>
                     <Col md={4} className="text-right">
                         <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
@@ -313,8 +269,6 @@ CreateForm.propTypes = {
     handlerInput: PropTypes.func.isRequired,
     handleKeyPress: PropTypes.func.isRequired,
     handlerAddPortNetworkIP: PropTypes.func.isRequired,
-    handlerChangeDateTimeStart: PropTypes.func.isRequired,
-    handlerChangeDateTimeEnd: PropTypes.func.isRequired,
     handlerCheckRadioInput: PropTypes.func.isRequired,
     hendlerDeleteAddedElem: PropTypes.func.isRequired,
     handlerChosenSource: PropTypes.func.isRequired,
