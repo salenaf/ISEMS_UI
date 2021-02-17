@@ -19,6 +19,7 @@ const writeLogFile = require("./libs/writeLogFile");
 const connectMongoDB = require("./controllers/connectMongoDB");
 const createSchemasMongoDB = require("./controllers/createSchemasMongoDB");
 const networkInteractionHandlerAPI = require("./middleware/networkInteractionHandlerAPI");
+const managingRecordsStructuredInformationAboutComputerThreatsAPI = require("./middleware/managingRecordsStructuredInformationAboutComputerThreatsAPI");
 
 const server = https.createServer({
     key: fs.readFileSync(config.get("httpServer:keysPath:privateKey")),
@@ -86,9 +87,9 @@ new Promise((resolve, reject) => {
          *       соединение с модулем ISEMS-NIH (модуль сетевого взаимодействия с источниками)
          */
         (callback) => {
-            console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to the network interface module");
+            console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to ISEMS-NIH module");
 
-            //настраиваем дескриптор соединения с модулем
+            //настраиваем дескриптор соединения с API модуля networkInteractionHandler 
             globalObject.setData(
                 "descriptionAPI",
                 "networkInteraction", {
@@ -101,12 +102,25 @@ new Promise((resolve, reject) => {
                     "previousConnectionStatus": false,
                 });
 
-            //настраиваем хранилище задач выполняемые модулем
-            //globalObject.setData("tasks", {});
-            //устанавливаем временное хранилище для информации о задачах фильтрации
-            // и выгрузки фалов полученных из модуля сет. взаимодействия. 
-            // Доступ к хранилищу по sessionId пользователя
-            //globalObject.setData("tmpModuleNetworkInteraction", {});
+            callback(null);
+        },
+        /**
+         *       соединение с модулем ISEMS-MRSICT (модуль управления записями структурированной информации о компьютерных угрозах)
+         */
+        (callback) => {
+            console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to ISEMS-MRSICT module");
+
+            globalObject.setData(
+                "descriptionAPI",
+                "managingRecordsStructuredInformationAboutComputerThreats", {
+                    "connection": managingRecordsStructuredInformationAboutComputerThreatsAPI({
+                        ip: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:host"),
+                        port: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:port"),
+                        token: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:token")
+                    }),
+                    "connectionEstablished": false,
+                    "previousConnectionStatus": false,
+                });
 
             callback(null);
         },

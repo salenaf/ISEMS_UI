@@ -21,6 +21,11 @@
             "host": "127.0.0.1",
             "port": "13314",
             "token": "udu8e88388eg8d88s8f88w838f3"
+        },
+        "managingRecordsStructuredInformationAboutComputerThreats": {
+            "host": "192.168.13.3",
+            "port": "13000",
+            "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
         }
     },
     "appSettings": {

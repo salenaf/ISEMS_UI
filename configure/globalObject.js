@@ -106,6 +106,10 @@ class SocketioEventResponse extends EventEmitter {}
  *               connection: object,
  *               connectionEstablished: bool,
  *               previousConnectionStatus: bool }},
+ *           managingRecordsStructuredInformationAboutComputerThreats: {
+ *               connection: object,
+ *               connectionEstablished: bool,
+ *               previousConnectionStatus: bool }},
  *       дескрипторы соединения по протоколу socketIo
  *       descriptionSocketIo: {
  *          majorConnect: <основное socketIo соединение (

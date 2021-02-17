@@ -28,10 +28,6 @@ function restoreTempTaskStorage(eventEmiterTempTaskStorage) {
     }).then((listTemplateActions) => {
         //восстанавливаем список шаблонов для хранилище TempTaskStorage
         listTemplateActions.forEach((element) => {
-
-            console.log("func 'restoreTempTaskStorage'");
-            console.log(element);
-
             eventEmiterTempTaskStorage.emit("set new temp task", {
                 taskID: element.template_id,
                 parameters: {

@@ -117,13 +117,10 @@ module.exports = function(app, express, io) {
     routes(app);
 
     /* 
-     * Module network interaction 
+     * Module Network Interaction Handler (ISEMS-NIH) 
      * */
-    let connectionWithModuleNetworkInteraction = () => {
+    (() => {
         const TIME_INTERVAL = 7000;
-
-        //        console.log("func 'connectionWithModuleNetworkInteraction'");
-        //        console.log(`connectionEstablished status: ${globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
 
         if (globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             return;
@@ -133,8 +130,6 @@ module.exports = function(app, express, io) {
         connection.createAPIConnection()
             .on("connect", () => {
                 writeLogFile("info", `Connection with module network interaction ${funcName}`);
-
-                console.log("func 'connectionWithModuleNetworkInteraction', Connection with module network interaction");
 
                 helpersFunc.sendBroadcastSocketIo("module NI API", {
                     type: "connectModuleNI",
@@ -146,8 +141,6 @@ module.exports = function(app, express, io) {
             })
             .on("connectFailed", (err) => {
                 writeLogFile("error", err.toString() + funcName);
-
-                console.log(err);
             })
             .on("error message", (msg) => {
                 writeLogFile("error", msg.toString() + funcName);
@@ -155,16 +148,10 @@ module.exports = function(app, express, io) {
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
 
-                console.log("func 'connectionWithModuleNetworkInteraction'");
-                console.log("EVENT: close");
-                console.log(msg);
-
                 helpersFunc.sendBroadcastSocketIo("module NI API", {
                     type: "connectModuleNI",
                     options: { connectionStatus: false },
                 });
-                //                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
-                //                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
                 globalObject.modifyData("descriptionAPI", "networkInteraction", [
                     ["connectionEstablished", false],
@@ -172,14 +159,8 @@ module.exports = function(app, express, io) {
                 ]);
 
                 setTimeout((() => {
-
-                    console.log("------> request new connection");
-                    console.log(`connectionEstablished: ${globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
-
                     if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
-
-                        console.log("New connection from close");
                     }
                 }), TIME_INTERVAL);
             })
@@ -194,23 +175,100 @@ module.exports = function(app, express, io) {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
                 globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
-                console.log("func 'connectionWithModuleNetworkInteraction'");
-                console.log("EVENT: error");
-                console.log(err);
-
                 setTimeout((() => {
                     if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
-
-                        console.log("New connection from err");
                     }
                 }), TIME_INTERVAL);
             });
-    };
-    connectionWithModuleNetworkInteraction();
+    })();
+
+    /* 
+     * Module Managing Records of Structured Information About Computer Threats (ISEMS-MRSICT)
+     * */
+    (() => {
+        const TIME_INTERVAL = 7000;
+
+        if (globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+            return;
+        }
+
+        let connection = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
+        connection.createAPIConnection()
+            .on("connect", () => {
+                console.log("func 'middleware', CONNECTION to module 'ISEMS-MRSICT'");
+
+                /* 
+                writeLogFile("info", `Connection with module network interaction ${funcName}`);
+
+                helpersFunc.sendBroadcastSocketIo("module NI API", {
+                    type: "connectModuleNI",
+                    options: { connectionStatus: true },
+                });
+
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
+                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", true);
+                */
+            })
+            .on("connectFailed", (err) => {
+                console.log("func 'middleware', CONNECT FAILED, module 'ISEMS-MRSICT'");
+                console.log(err);
+                //writeLogFile("error", err.toString() + funcName);
+            })
+            .on("error message", (msg) => {
+                console.log("func 'middleware', ERROR MESSAGE, module 'ISEMS-MRSICT'");
+                console.log(msg);
+                //writeLogFile("error", msg.toString() + funcName);
+            })
+            .on("close", (msg) => {
+                console.log("func 'middleware', CONNECTION CLOSE with module 'ISEMS-MRSICT'");
+                console.log(msg);
+                /*                
+                writeLogFile("info", msg.toString() + funcName);
+
+                helpersFunc.sendBroadcastSocketIo("module NI API", {
+                    type: "connectModuleNI",
+                    options: { connectionStatus: false },
+                });
+
+                globalObject.modifyData("descriptionAPI", "networkInteraction", [
+                    ["connectionEstablished", false],
+                    ["previousConnectionStatus", false]
+                ]);
+                */
+
+                setTimeout((() => {
+                    if (!globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
+                }), TIME_INTERVAL);
+            })
+            .on("error", (err) => {
+                console.log("func 'middleware', ERROR, module 'ISEMS-MRSICT'");
+                console.log(err);
+                /*
+                writeLogFile("error", err.toString() + funcName);
+
+                helpersFunc.sendBroadcastSocketIo("module NI API", {
+                    type: "connectModuleNI",
+                    options: { connectionStatus: false },
+                });
+
+                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
+                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
+                */
+
+                setTimeout((() => {
+                    if (!globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
+                }), TIME_INTERVAL);
+            });
+    })();
 
     //обработчик событий сторонних модулей через API
-    routeSocketIo.modulesEventGenerator(eventEmiterTimerTick, socketIo);
+    require("../routes/routeModulesEvent").modulesEventGenerator(socketIo);
+    //routeSocketIo.modulesEventGenerator(eventEmiterTimerTick, socketIo);
 
     /**
      * Restoring information from a database

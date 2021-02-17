@@ -42,8 +42,6 @@ class CreateHeaderMenu extends React.Component {
         this.props.socketIo.on("notify information", data => {
             let msg = JSON.parse(data.notify);
 
-            console.log("event: notify information");
-
             this.setState({ 
                 notifyMsg: msg,
                 showNotifyMsg: true 

@@ -4,11 +4,11 @@ const https = require("https");
 const EventEmitter = require("events").EventEmitter;
 const webSocketClient = require("websocket").client;
 
-class MyEventEmitter extends EventEmitter {
+class MyEventEmitterConnAPI extends EventEmitter {
     constructor(cs) {
         super();
 
-        this.msgType = {
+        /*this.msgType = {
             "information": {
                 "source control": "information source control",
                 "filtration control": "information filtration control",
@@ -22,7 +22,7 @@ class MyEventEmitter extends EventEmitter {
                 "download control": "command download control",
                 "information search control": "command information search control"
             }
-        };
+        };*/
 
         this.configSettings = cs;
         this.connection;
@@ -30,7 +30,7 @@ class MyEventEmitter extends EventEmitter {
 
     createAPIConnection(isDebug = false) {
 
-        console.log("Create API connection to module ISEMS-NIH...");
+        console.log("Create API connection to module ISEMS-MRSICT...");
 
         let websocketTmp = new webSocketClient({
             closeTimeout: 3000,
@@ -64,7 +64,11 @@ class MyEventEmitter extends EventEmitter {
             });
 
             connection.on("message", (msg) => {
-                if (msg.type !== "utf8") {
+                console.log("func 'managingRecordsStructuredInformationAboutComputerThreatsAPI', EVENT: 'message'");
+                console.log(`type: ${msg.type}`);
+                console.log(msg);
+
+                /*if (msg.type !== "utf8") {
                     this.emit("error message", new Error("Incorrect message format is accepted, binary data may be accepted"));
 
                     return;
@@ -90,7 +94,7 @@ class MyEventEmitter extends EventEmitter {
                     });
                 } catch (err) {
                     this.emit("error message", err);
-                }
+                }*/
             });
         });
 
@@ -208,5 +212,5 @@ class MyEventEmitter extends EventEmitter {
  * @param {*} configSettings { ip:"", port:"", tokent:"" } 
  */
 module.exports = (configSettings) => {
-    return new MyEventEmitter(configSettings);
+    return new MyEventEmitterConnAPI(configSettings);
 };
