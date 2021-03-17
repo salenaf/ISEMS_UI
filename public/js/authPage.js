@@ -10,8 +10,12 @@ const md5js = require("md5js");
         displayError();
     });
 
+
     //вывод ошибки при неверной аутентификации
     function displayError() {
+
+        console.log("Authentification error");
+
         let parametersString = window.location.search.substring(1);
         let parametrs = parametersString.split("&");
         for (let i = 0; i < parametrs.length; i++) {

@@ -22,9 +22,10 @@ const routeSocketIo = require("../routes/routeSocketIo");
 const AuthenticateStrategy = require("./authenticateStrategy");
 
 module.exports = function(app, express, io) {
-    //срок окончания хранения постоянных cookie 14 суток
-    let expiresDate = new Date(Date.now() + ((60 * 60 * 24 * 14) * 1000));
+    //срок окончания хранения постоянных cookie 7 суток
+    let ttl = (60 * 60 * 24 * 7);
     let funcName = " (middleware/index.js)";
+
 
     /**
      * помогает защитить приложение от некоторых широко известных веб-уязвимостей путем соответствующей настройки заголовков HTTP
@@ -58,11 +59,11 @@ module.exports = function(app, express, io) {
         secret: "isems_ui_app",
         name: "sessionId",
         resave: false,
-        saveUninitialized: false, //true,
-        maxAge: 259200000,
+        saveUninitialized: false, //Не помещать в БД пустые сессии
+        maxAge: ttl * 1000,
         store: new MongoStore({ //хранилище сеансов (сессий) основанное на connect-mongo
             mongooseConnection: mongoose.connection,
-            ttl: 14 * 24 * 60 * 60, // = 14 суток. Default
+            ttl: ttl,
             autoRemove: "native" //Default
         }),
         cookie: {
@@ -70,7 +71,6 @@ module.exports = function(app, express, io) {
             httpOnly: true, //обеспечивает отправку cookie только с использованием протокола HTTP(S), а не клиентского JavaScript, что способствует защите от атак межсайтового скриптинга.
             //domain - указывает домен cookie; используется для сравнения с доменом сервера, на котором запрашивается данный URL. В случае совпадения выполняется проверка следующего атрибута - пути.
             //path - указывает путь cookie; используется для сравнения с путем запроса. Если путь и домен совпадают, выполняется отправка cookie в запросе.
-            expires: expiresDate, //используется для настройки даты окончания срока хранения для постоянных cookie.
         },
     }));
 
@@ -188,6 +188,8 @@ module.exports = function(app, express, io) {
      * */
     (() => {
         const TIME_INTERVAL = 7000;
+
+        return;
 
         if (globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
             return;

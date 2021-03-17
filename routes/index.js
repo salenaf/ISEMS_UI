@@ -101,12 +101,15 @@ module.exports = function(app) {
                         res.render("500", {});
                     });
             } else {
+                req.logOut();
+                req.session.destroy();
+
                 res.render("auth", {});
             }
         })
         .post(passport.authenticate("local", {
             successRedirect: "/",
-            failureRedirect: "/auth?username=error"
+            failureRedirect: "/auth?username=error",
         }));
 
     app.get("/", isAuthenticated, (req, res) => {
