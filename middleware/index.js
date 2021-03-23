@@ -190,7 +190,7 @@ module.exports = function(app, express, io) {
         const TIME_INTERVAL = 7000;
 
         return;
-
+        //    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
         if (globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
             return;
         }

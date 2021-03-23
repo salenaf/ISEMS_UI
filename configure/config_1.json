@@ -18,7 +18,7 @@
     },
     "modules": {
         "networkInteraction": {
-            "host": "127.0.0.1",
+            "host": "192.168.13.201",
             "port": "13314",
             "token": "udu8e88388eg8d88s8f88w838f3"
         },

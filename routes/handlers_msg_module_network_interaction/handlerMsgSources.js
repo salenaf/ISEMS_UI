@@ -1,5 +1,7 @@
 "use strict";
 
+const debug = require("debug")("handlerMsgSources");
+
 const helpersFunc = require("../../libs/helpers/helpersFunc");
 const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
@@ -12,8 +14,8 @@ const writeLogFile = require("../../libs/writeLogFile");
  */
 module.exports = function(msg) {
 
-    //console.log("func 'handlerMsgSources', START...");
-    // console.log(msg);
+    console.log("func 'handlerMsgSources', START...");
+    //console.log(msg);
 
     let objHandlerMsgInstraction = {
         "send version app": sendVersionApp,
@@ -70,6 +72,9 @@ function changeStatusSource(msg) {
     }
 
     msg.options.sl.forEach((item) => {
+
+        debug(`Change status source ID ${item.id}, status: '${item.connectStatus}'`);
+
         globalObject.modifyData("sources", item.id, [
             ["connectStatus", (item.s === "connect")],
             ["connectTime", +(new Date())]
@@ -116,6 +121,11 @@ function sendCurrentSourceList(msg) {
     let listSourceId = [];
     msg.options.sl.forEach((item) => {
         listSourceId.push(+item.id);
+
+        if(item.id === 1000){
+            debug(`Current status source ID ${item.id} = '${item.connectStatus}'`);
+            debug(item);
+        }
 
         const modifyIsSuccess = globalObject.modifyData("sources", item.id, [
             ["connectStatus", item.cs],

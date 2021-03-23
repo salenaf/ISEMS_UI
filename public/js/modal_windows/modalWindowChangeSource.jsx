@@ -119,7 +119,7 @@ class CreateBodySource extends React.Component {
                             as="select" 
                             defaultValue={this.props.storageInput.networkChannel.value}>
                             <option value="ip">ip/vlan</option>
-                            <option value="pppoe">pppoe</option>
+                            <option value="pppoe">ip/pppoe</option>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col} lg={9}>
@@ -290,9 +290,9 @@ export default class ModalWindowChangeSource extends React.Component {
                             as="select" 
                             defaultValue={this.props.storageInput.networkChannel.value}>
                             <option value="ip">ip/vlan</option>
-                            <option value="pppoe">pppoe</option>
-                            <option value="vlan + pppoe">vlan + pppoe</option>
-                            <option value="pppoe + vlan">pppoe + vlan</option>
+                            <option value="pppoe">ip/pppoe</option>
+                            <option value="pppoe/vlan">сначало pppoe, затем vlan</option>
+                            <option value="vlan/pppoe">сначало vlan, затем pppoe</option>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col} lg={9}>
