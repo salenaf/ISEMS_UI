@@ -543,7 +543,7 @@ function changeSourceInfo(socketIo, data) {
             obj.source_settings.maximum_number_simultaneous_filtering_processes = 5;
         }
 
-        let tclp = new Set(["ip", "pppoe", "pppoe/vlan", "vlan/pppoe"]);
+        let tclp = new Set(["ip", "pppoe", "vlan/pppoe"]);
         if (typeof obj.source_settings.type_channel_layer_protocol === "undefined") {
             obj.source_settings.type_channel_layer_protocol = "ip";
         }

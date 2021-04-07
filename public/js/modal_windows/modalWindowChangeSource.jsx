@@ -289,10 +289,9 @@ export default class ModalWindowChangeSource extends React.Component {
                             id="source_network_channel"
                             as="select" 
                             defaultValue={this.props.storageInput.networkChannel.value}>
-                            <option value="ip">ip/vlan</option>
-                            <option value="pppoe">ip/pppoe</option>
-                            <option value="pppoe/vlan">сначало pppoe, затем vlan</option>
-                            <option value="vlan/pppoe">сначало vlan, затем pppoe</option>
+                            <option value="ip">vlan/ip</option>
+                            <option value="pppoe">pppoe/ip</option>
+                            <option value="vlan/pppoe">vlan/pppoe/ip</option>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col} lg={9}>
