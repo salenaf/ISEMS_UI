@@ -13,7 +13,7 @@ const changeAdministratorPassword = require("../libs/changeAdministratorPassword
  * 
  * @param {*} app 
  */
-module.exports = function(app) {
+module.exports = function (app) {
     const listCustomPages = {
         "/analysis_sip": {
             access: "menuSettings.analysis_sip.status",
@@ -21,7 +21,7 @@ module.exports = function(app) {
         },
         "/security_event_management": {
             access: "menuSettings.security_event_management.status",
-            handler: pages.securityEventManagement,
+            handler: pages.managementRecordsStructInfo,
         },
         "/network_interaction": {
             access: "menuSettings.network_interaction.status",

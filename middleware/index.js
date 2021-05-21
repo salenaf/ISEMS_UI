@@ -21,7 +21,7 @@ const writeLogFile = require("../libs/writeLogFile");
 const routeSocketIo = require("../routes/routeSocketIo");
 const AuthenticateStrategy = require("./authenticateStrategy");
 
-module.exports = function(app, express, io) {
+module.exports = function (app, express, io) {
     //срок окончания хранения постоянных cookie 7 суток
     let ttl = (60 * 60 * 24 * 7);
     let funcName = " (middleware/index.js)";
@@ -88,16 +88,16 @@ module.exports = function(app, express, io) {
     /*
      * Socket.io
      * */
-    let socketIo = io.sockets.on("connection", function(socket) {
+    let socketIo = io.sockets.on("connection", function (socket) {
         globalObject.setData("descriptionSocketIo", "userConnections", socket.id, socket);
 
-        //console.log(`socketIo CONNECTION with id: '${socket.id}'`);
+        console.log(`socketIo CONNECTION with id: '${socket.id}'`);
 
         //обработчик событий User Interface
         routeSocketIo.eventHandlingUserInterface(eventEmiterTimerTick, socket);
 
         socket.on("disconnect", () => {
-            //console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
+            console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
 
             globalObject.deleteData("descriptionSocketIo", "userConnections", socket.id);
         });
@@ -129,7 +129,7 @@ module.exports = function(app, express, io) {
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
             .on("connect", () => {
-                writeLogFile("info", `Connection with module network interaction ${funcName}`);
+                writeLogFile("info", `Connection with module 'Network Interaction Handler' ${funcName}`);
 
                 helpersFunc.sendBroadcastSocketIo("module NI API", {
                     type: "connectModuleNI",
@@ -189,8 +189,6 @@ module.exports = function(app, express, io) {
     (() => {
         const TIME_INTERVAL = 7000;
 
-        return;
-        //    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
         if (globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
             return;
         }
@@ -200,44 +198,45 @@ module.exports = function(app, express, io) {
             .on("connect", () => {
                 console.log("func 'middleware', CONNECTION to module 'ISEMS-MRSICT'");
 
-                /* 
-                writeLogFile("info", `Connection with module network interaction ${funcName}`);
+                writeLogFile("info", `Connection with module 'Managing Records Structured Information About Computer Threats' ${funcName}`);
 
-                helpersFunc.sendBroadcastSocketIo("module NI API", {
-                    type: "connectModuleNI",
+                helpersFunc.sendBroadcastSocketIo("module_MRSICT-API", {
+                    type: "connectModuleMRSICT",
                     options: { connectionStatus: true },
                 });
 
-                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", true);
-                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", true);
-                */
+                globalObject.modifyData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", [
+                    ["connectionEstablished", true],
+                    ["previousConnectionStatus", true]
+                ]);
             })
             .on("connectFailed", (err) => {
                 console.log("func 'middleware', CONNECT FAILED, module 'ISEMS-MRSICT'");
                 console.log(err);
-                //writeLogFile("error", err.toString() + funcName);
+
+                writeLogFile("error", err.toString() + funcName);
             })
             .on("error message", (msg) => {
                 console.log("func 'middleware', ERROR MESSAGE, module 'ISEMS-MRSICT'");
                 console.log(msg);
-                //writeLogFile("error", msg.toString() + funcName);
+
+                writeLogFile("error", msg.toString() + funcName);
             })
             .on("close", (msg) => {
                 console.log("func 'middleware', CONNECTION CLOSE with module 'ISEMS-MRSICT'");
                 console.log(msg);
-                /*                
+
                 writeLogFile("info", msg.toString() + funcName);
 
-                helpersFunc.sendBroadcastSocketIo("module NI API", {
-                    type: "connectModuleNI",
+                helpersFunc.sendBroadcastSocketIo("module_MRSICT-API", {
+                    type: "connectModuleMRSICT",
                     options: { connectionStatus: false },
                 });
 
-                globalObject.modifyData("descriptionAPI", "networkInteraction", [
+                globalObject.modifyData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", [
                     ["connectionEstablished", false],
                     ["previousConnectionStatus", false]
                 ]);
-                */
 
                 setTimeout((() => {
                     if (!globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
@@ -248,17 +247,18 @@ module.exports = function(app, express, io) {
             .on("error", (err) => {
                 console.log("func 'middleware', ERROR, module 'ISEMS-MRSICT'");
                 console.log(err);
-                /*
+
                 writeLogFile("error", err.toString() + funcName);
 
-                helpersFunc.sendBroadcastSocketIo("module NI API", {
-                    type: "connectModuleNI",
+                helpersFunc.sendBroadcastSocketIo("module_MRSICT-API", {
+                    type: "connectModuleMRSICT",
                     options: { connectionStatus: false },
                 });
 
-                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
-                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
-                */
+                globalObject.modifyData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", [
+                    ["connectionEstablished", false],
+                    ["previousConnectionStatus", false]
+                ]);
 
                 setTimeout((() => {
                     if (!globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
