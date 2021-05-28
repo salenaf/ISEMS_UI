@@ -20,10 +20,6 @@ class CreatePageManagingmanagingRecordsStractInfo extends React.Component {
     }
 
     connectModuleMRSICT() {
-
-        console.log("func 'connectModuleMRSICT'");
-        console.log(this.props.listItems);
-
         return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleMRSICT : false;
     }
 
@@ -44,9 +40,6 @@ class CreatePageManagingmanagingRecordsStractInfo extends React.Component {
     }
 
     handlerEvents() {
-
-        console.log("func 'handlerEvents', START...");
-
         this.props.socketIo.on("module_MRSICT-API", (data) => {
 
             console.log(`func 'handlerEvents', Event: 'module_MRSICT-API' ${data.options.connectionStatus}`);
@@ -86,8 +79,6 @@ class CreatePageManagingmanagingRecordsStractInfo extends React.Component {
                 }
             }
         });
-
-        console.log(this.props.socketIo);
 
         /*
         this.props.socketIo.on("module-ni:change sources connection", (data) => {

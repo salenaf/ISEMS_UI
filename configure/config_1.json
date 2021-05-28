@@ -9,7 +9,7 @@
     },
     "mongoDB": {
         "socket": false,
-        "host": "127.0.0.1",
+        "host": "192.168.13.200",
         "port": "27017",
         "user": "module-isems-ui",
         "password": "jkdds7dfm0",
@@ -23,7 +23,7 @@
             "token": "udu8e88388eg8d88s8f88w838f3"
         },
         "managingRecordsStructuredInformationAboutComputerThreats": {
-            "host": "127.0.0.1",
+            "host": "192.168.13.201",
             "port": "13000",
             "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
         }

@@ -62,29 +62,37 @@ module.exports = function(req) {
                 }
             };
 
+            let resolveObject = {
+                login: "",
+                userName: "",
+                isPasswordDefaultAdministrator: false,
+                connectionModules: {
+                    moduleHAI: globalObject.getData("descriptionAPI",
+                        "analyticalInformationManagement",
+                        "connectionEstablished"), //модуль управления аналитической информацией
+                    moduleMRSICT: globalObject.getData("descriptionAPI",
+                        "managingRecordsStructuredInformationAboutComputerThreats",
+                        "connectionEstablished"), //модуль управления записями структуированной информации о компьютерных угрозах
+                    moduleNI: globalObject.getData(
+                        "descriptionAPI", 
+                        "networkInteraction", 
+                        "connectionEstablished") //модуль сетевого взаимодействия
+                },
+                menuSettings: {}
+            };
+
             try {
                 let menuItems = result.getSessionInfo.group_settings.menu_items;
                 createList(objMenuSettings, menuItems);
 
-                resolve({
-                    login: result.getSessionInfo.login,
-                    userName: result.getSessionInfo.user_name,
-                    isPasswordDefaultAdministrator: result.getPasswordInfo.is_admin_password_default,
-                    connectionModules: {
-                        moduleNI: globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")
-                    },
-                    menuSettings: objMenuSettings
-                });
+                resolveObject.login = result.getSessionInfo.login;
+                resolveObject.userName = result.getSessionInfo.user_name;
+                resolveObject.isPasswordDefaultAdministrator = result.getPasswordInfo.is_admin_password_default;
+                resolveObject.menuSettings = objMenuSettings;
+
+                resolve(resolveObject);
             } catch (err) {
-                resolve({
-                    login: "",
-                    userName: "",
-                    isPasswordDefaultAdministrator: false,
-                    connectionModules: {
-                        moduleNI: globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")
-                    },
-                    menuSettings: {}
-                });
+                resolve(resolveObject);
             }
         });
     });

@@ -27,7 +27,7 @@ const server = https.createServer({
 }, app);
 
 const options = {};
-const io = require("socket.io").listen(server, options);
+const io = require("socket.io")(server, options);
 
 new Promise((resolve, reject) => {
     figlet.text("ISEMS-UI", (err, title) => {
@@ -118,6 +118,28 @@ new Promise((resolve, reject) => {
                         port: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:port"),
                         token: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:token")
                     }),
+                    "connectionEstablished": false,
+                    "previousConnectionStatus": false,
+                });
+
+            callback(null);
+        },
+        /**
+         * соединение с модулем ISEMS-AIM (модуль управление аналитической информацией) 
+         * 
+         * !!! пока как заглушка, подобного модуля нет !!! 
+         */
+        (callback) => {
+            //console.log("\x1b[32m%s\x1b[0m", "Debug:", "Initializing the connection to ISEMS-MRSICT module");
+
+            globalObject.setData(
+                "descriptionAPI",
+                "analyticalInformationManagement", {
+                    "connection": {}, /*managingRecordsStructuredInformationAboutComputerThreatsAPI({
+                        ip: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:host"),
+                        port: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:port"),
+                        token: config.get("modules:managingRecordsStructuredInformationAboutComputerThreats:token")
+                    })*/
                     "connectionEstablished": false,
                     "previousConnectionStatus": false,
                 });

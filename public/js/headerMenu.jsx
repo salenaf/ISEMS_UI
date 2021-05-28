@@ -13,6 +13,8 @@ class CreateHeaderMenu extends React.Component {
         this.listItems = this.props.listItems;
 
         this.state = {
+            connectionModuleAna: this.connModuleAna.call(this),
+            connectionModuleAcc: this.connModuleAcc.call(this),
             connectionModuleNI: this.connModuleNI.call(this),
             showNotifyMsg: true,
             notifyMsg: {},
@@ -23,6 +25,14 @@ class CreateHeaderMenu extends React.Component {
         this.statusConnectModules = this.statusConnectModules.bind(this);
 
         this.handlerEvents.call(this);
+    }
+
+    connModuleAna() {
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleAna : false;        
+    }
+
+    connModuleAcc() {
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleMRSICT : false;        
     }
 
     connModuleNI() {
@@ -39,6 +49,17 @@ class CreateHeaderMenu extends React.Component {
                 }
             }
         });
+
+        this.props.socketIo.on("module_MRSICT-API", (data) => {
+            if (data.type === "connectModuleMRSICT") {
+                if (data.options.connectModuleMRSICT){
+                    this.setState({"connectionModuleAcc": true});
+                } else {
+                    this.setState({"connectionModuleAcc": false});
+                }
+            }
+        });
+
         this.props.socketIo.on("notify information", data => {
             let msg = JSON.parse(data.notify);
 
@@ -50,14 +71,30 @@ class CreateHeaderMenu extends React.Component {
     }
 
     statusConnectModules() {
-        let imgIcon = (this.state.connectionModuleNI) ? "network_green.png" : "network_red.png";
-
+        let imgAnaIcon = (this.state.connectionModuleAna) ? "icon_analytic_green.png" : "icon_analytic_red.png";
+        let imgAccIcon = (this.state.connectionModuleAcc) ? "icon_accounting_green.png" : "icon_accounting_red.png";
+        let imgNetIcon = (this.state.connectionModuleNI) ? "icon_net_green.png" : "icon_net_red.png";
+        
         return (
-            <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
-                <img src={"/images/" + imgIcon} width="30" height="30" />
-            </OverlayTrigger>
+            <React.Fragment>
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>модуль аналитики</Tooltip>}>
+                    <img src={"/images/" + imgAnaIcon} width="30" height="30" />
+                </OverlayTrigger>
+                &nbsp;
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>модуль управления структурированной информации</Tooltip>}>
+                    <img src={"/images/" + imgAccIcon} width="30" height="30" />
+                </OverlayTrigger>
+                &nbsp;
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
+                    <img src={"/images/" + imgNetIcon} width="30" height="30" />
+                </OverlayTrigger>
+            </React.Fragment>
         );
     }
 

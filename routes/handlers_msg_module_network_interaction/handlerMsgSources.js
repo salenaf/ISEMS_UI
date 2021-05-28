@@ -14,8 +14,8 @@ const writeLogFile = require("../../libs/writeLogFile");
  */
 module.exports = function(msg) {
 
-    console.log("func 'handlerMsgSources', START...");
-    //console.log(msg);
+    debug("func 'handlerMsgSources', START...");
+    //debug(msg);
 
     let objHandlerMsgInstraction = {
         "send version app": sendVersionApp,
@@ -71,9 +71,11 @@ function changeStatusSource(msg) {
         return;
     }
 
+    debug(msg.options.sl);
+
     msg.options.sl.forEach((item) => {
 
-        debug(`Change status source ID ${item.id}, status: '${item.connectStatus}'`);
+        debug(`Change status source ID ${item.id}, status: '${item.s}'`);
 
         globalObject.modifyData("sources", item.id, [
             ["connectStatus", (item.s === "connect")],
@@ -82,6 +84,9 @@ function changeStatusSource(msg) {
 
         const sourceInfo = globalObject.getData("sources", item.id);
         if (sourceInfo !== null) {
+
+            debug(`broadcast message: ID ${item.id}, connection status: ${sourceInfo.connectStatus}`);
+
             //отправить всем
             helpersFunc.sendBroadcastSocketIo("module-ni:change status source", {
                 options: {
@@ -123,7 +128,7 @@ function sendCurrentSourceList(msg) {
         listSourceId.push(+item.id);
 
         if(item.id === 1000){
-            debug(`Current status source ID ${item.id} = '${item.connectStatus}'`);
+            debug(`Current status source ID ${item.id} = '${item.cs}'`);
             debug(item);
         }
 
