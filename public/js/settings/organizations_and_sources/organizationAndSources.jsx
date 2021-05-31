@@ -4,11 +4,14 @@ import { Button, Col, Row, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import CreateTableSources from "./createTableSources.jsx";
+import CreateBody from "./createBody.jsx";
+
 import CreateBodyNewEntity from "./createBodyNewEntity.jsx";
 import CreateBodyManagementEntity from "./createBodyManagementEntity.jsx";
 import ModalWindowSourceInfo from "../../modal_windows/modalWindowSourceInfo.jsx";
 import ModalWindowChangeSource from "../../modal_windows/modalWindowChangeSource.jsx";
 import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
+
 
 import { helpers } from "../../common_helpers/helpers.js";
 
@@ -691,10 +694,10 @@ class CreatePageOrganizationAndSources extends React.Component {
                             handlerSourceReconnect={this.handlerSourceReconnect} />
                     </Tab>
                     <Tab eventKey="organization" title="организации / подразделения">
-                        <CreateBodyManagementEntity
+                        {/* <CreateBodyManagementEntity
                             socketIo={this.props.socketIo}
                             listShortEntity={this.state.listShortEntity}
-                            listFieldActivity={this.props.listFieldActivity} />
+                            listFieldActivity={this.props.listFieldActivity} /> */}
                     </Tab>
                     <Tab eventKey="addElement" title="новая сущность">
                         <CreateBodyNewEntity
@@ -702,6 +705,11 @@ class CreatePageOrganizationAndSources extends React.Component {
                             userPermissions={this.props.userPermissions}
                             listFieldActivity={this.props.listFieldActivity}
                             listShortEntity={this.state.listShortEntity} />
+                    </Tab>
+                    <Tab eventKey="editElement" title="редактирование сущностей"> 
+                        <CreateBody  
+                            listShortEntity={this.state.listShortEntity}
+                            socketIo={this.props.socketIo}  /> 
                     </Tab>
                 </Tabs>
                 <ModalWindowSourceInfo 
@@ -727,6 +735,7 @@ class CreatePageOrganizationAndSources extends React.Component {
                     msgTitle={"Удаление"}
                     nameDel={this.listSourceDelete.join()}
                     handlerConfirm={this.handlerSourceDelete} />
+                
             </React.Fragment>
         );
     }

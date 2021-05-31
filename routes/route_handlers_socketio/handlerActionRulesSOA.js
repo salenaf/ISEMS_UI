@@ -52,7 +52,7 @@ function findRuleToSID(socketIo, data){
                             console.log("---------------------------------");
                             console.log(resultData);
 
-                        //проверить на пустоту если пустой 
+                            //проверить на пустоту если пустой 
                             if(resultData == null){
                                 showNotify({
                                     socketIo: socketIo,
