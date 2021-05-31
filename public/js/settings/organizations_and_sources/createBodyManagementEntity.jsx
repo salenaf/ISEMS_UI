@@ -164,6 +164,8 @@ export class CreateListEntity extends React.Component {
         this.listOrganization = this.listOrganization.bind(this);
 
         this.handlerChoose = this.handlerChoose.bind(this);
+
+        console.log(this.props.listShortEntity);
     }
 
     handlerDropDown(){

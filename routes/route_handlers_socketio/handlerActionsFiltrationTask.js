@@ -42,12 +42,22 @@ function startNewTask(socketIo, data) {
             return { login: authData.document.userLogin, name: authData.document.userName };
         }).then((userInfo) => {
             let obj = (require("../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
+
             if (!obj.isValid) {
                 throw new MyError("management validation", obj.errorMsg);
             }
 
             return { userInfo: userInfo, filterParam: obj.filteringParameters };
         }).then((parameters) => {
+            //отправляем параметры задачи для обновления списка задач в разделе 'поиск'
+            // но только если это была не повторная фильтрация
+            if (data.actionType !== "add repeat task") {
+                socketIo.emit("handler isems-ui", {
+                    "type": "update list found tasks",
+                    "options": data.arguments,
+                });
+            }
+
             //отправляем задачу модулю сетевого взаимодействия
             return sendCommandsModuleNetworkInteraction.managementTaskFilteringStart(parameters.filterParam, parameters.userInfo.login, parameters.userInfo.name);
         }).then(() => {

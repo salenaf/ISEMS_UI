@@ -174,6 +174,8 @@ export default class ModalWindowShowInformationTask extends React.Component {
         }
 
         let numFormatter = new Intl.NumberFormat("ru");
+        let sfmfp = helpers.changeByteSize(this.state.filteringStatus.sfmfp);
+        let sffrf = helpers.changeByteSize(this.state.filteringStatus.sffrf);
 
         return (
             <React.Fragment>
@@ -194,7 +196,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={5}><small>общим размером:</small></Col>
-                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{helpers.changeByteSize(this.state.filteringStatus.sfmfp)}</strong>)</small></Col>
+                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{sfmfp.size}</strong> {sfmfp.name})</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно:</small></Col>
@@ -210,7 +212,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={5}><small>общим размером:</small></Col>
-                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{helpers.changeByteSize(this.state.filteringStatus.sffrf)}</strong>)</small></Col>
+                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{sffrf.size}</strong> {sffrf.name})</small></Col>
                                         </Row>
                                         <Row>
                                             <Col md={6}><small>фильтруемых директорий:</small></Col>

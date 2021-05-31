@@ -1,5 +1,6 @@
 "use strict";
 
+const debug = require("debug")("getSessionId");
 const globalObject = require("../../configure/globalObject");
 
 /**
@@ -12,7 +13,7 @@ const globalObject = require("../../configure/globalObject");
 module.exports = function(typeSession, objectSession, callback) {
     let objTypeSession = {
         //"http": getSessionForHttp,
-        "socketIo": getSessionForSocketIo
+        "socketIo": getSessionForSocketIo 
     };
 
     if (typeof objTypeSession[typeSession] === "undefined") return callback(new Error("uncertain type the name of the session"));
@@ -32,6 +33,8 @@ function getSessionForSocketIo(objectSession, callback) {
 
     let sessionId = "";
     let listSessionId = globalObject.getData("users");
+
+    debug(listSessionId);
 
     for (let id in listSessionId) {
         if(id.length === 0){

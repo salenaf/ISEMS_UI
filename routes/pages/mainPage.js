@@ -8,7 +8,6 @@
 
 const async = require("async");
 
-const globalObject = require("../../configure/globalObject");
 const writeLogFile = require("../../libs/writeLogFile");
 
 module.exports = function(req, res, objHeader) {

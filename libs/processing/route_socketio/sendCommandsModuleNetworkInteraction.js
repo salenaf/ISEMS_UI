@@ -284,7 +284,7 @@ module.exports.managementTaskFilteringStart = function(filteringParameters, user
                 return reject(new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен."));
             }
 
-            //проверяем существо   вание источника и статус его соединения
+            //проверяем существование источника и статус его соединения
             let sourceInfo = globalObject.getData("sources", filteringParameters.source);
             if (sourceInfo === null) {
                 return reject(new MyError("management network interaction", `Источник с идентификатором ${filteringParameters.source} не найден.`));
@@ -743,5 +743,58 @@ module.exports.managementRequestMarkTaskCompleted = function({ taskID = null, us
 
             resolve();
         });
+    });
+};
+
+/** ---  УПРАВЛЕНИЕ ЗАДАЧАМИ СВЯЗАННЫМИ С ПОЛУЧЕНИЕМ ТЕЛЕМЕТРИИ ИСТОЧНИКОВ --- **/
+
+/**  
+ * Обработчик для модуля сетевого взаимодействия осуществляющий
+ * управление задачами по получению телеметрии с источников.
+ *   
+ * Осуществляет запрос телеметрии с источника или группы источников. 
+ *  
+ * @param {*} sourceList - список источников
+ */
+module.exports.managementTaskGetTelemetry = function(socketIo, sourceList) {
+
+    console.log("func 'managementTaskGetTelemetry'");
+    console.log(sourceList);
+
+    return new Promise((resolve, reject) => {
+        //получаем сессию пользователя что бы потом с помощью нее хранить и искать 
+        // временную информацию в globalObject.tmp
+        getSessionId("socketIo", socketIo, (err, sessionId) => {
+            if (err) reject(err);
+            else resolve(sessionId);
+        });
+    }).then((sessionId) => {
+        if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
+            throw new MyError("management network interaction", "Передача задачи модулю сетевого взаимодействия невозможна, модуль не подключен.");
+        }
+
+        let conn = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
+        if (conn !== null) {
+            let hex = helpersFunc.getRandomHex();
+
+            globalObject.setData("tasks", hex, {
+                eventName: "give information about state of source",
+                eventForWidgets: false,
+                userSessionID: sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                msgType: "command",
+                msgSection: "source control",
+                msgInstruction: "give information about state of source",
+                taskID: hex,
+                options: {
+                    lsid: sourceList,
+                    ga: false,
+                },
+            });
+        }
     });
 };

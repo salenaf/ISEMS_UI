@@ -76,6 +76,36 @@ class CreatePageSearchTasks extends React.Component {
     }
 
     handlerEvents(){
+        this.props.socketIo.on("handler isems-ui", (data) => {
+            if(data.type === "update list found tasks"){
+                //добавляем новую задачу в список задач
+                let tmpCopy = Object.assign(this.state.listTasksFound);
+                let newTaskList = [{
+                    ctid: "new task client id",
+                    fdts: "not executed",
+                    fts: "wait",
+                    nfd: 0,
+                    nffarf: 0,
+                    pf: {
+                        dt: {
+                            s: data.options.dateTime.start/1000,
+                            e: data.options.dateTime.end/1000,
+                        },
+                        f: data.options.inputValue,
+                        p: data.options.networkProtocol,
+                    },
+                    sid: data.options.source,
+                    sn: "",
+                    stte: (+new Date())/1000,
+                    tid: "new task id",
+                    tsffarf: ""
+                }].concat(tmpCopy.slft);
+                tmpCopy.slft = newTaskList;
+                tmpCopy.tntf = tmpCopy.tntf+1;
+                this.setState({ listTasksFound: tmpCopy });
+            }
+        });   
+
         this.props.socketIo.on("module NI API", (data) => {
             if(data.type === "send a list of found tasks"){               
                 let tmpCopy = Object.assign(this.state.listTasksFound);
@@ -88,8 +118,6 @@ class CreatePageSearchTasks extends React.Component {
                     showSpinner: false,
                     listTasksFound: tmpCopy 
                 });
-
-                console.log(tmpCopy);
             }
 
             if(data.type === "deleteAllInformationAboutTask"){
@@ -100,30 +128,37 @@ class CreatePageSearchTasks extends React.Component {
                 this.props.socketIo.emit("network interaction: get list all tasks", { arguments: {} });
             }
 
-            if((data.type === "filtrationProcessing") || (data.type === "downloadProcessing")){
-                let isComplete = data.options.status === "complete";
-                let isRefused = data.options.status === "refused";
-                let isStop = data.options.status === "stop";
-                if(isComplete || isRefused || isStop){
-                    console.log(`'${data.type}' processing, status: '${data.options.status}'`);
-                
-                    let tmpCopy = Object.assign(this.state.listTasksFound);
-                    for(let i = 0; i < tmpCopy.slft; i++){
-                        if(tmpCopy.slft[i].ctid === data.options.taskID){
-                            console.log(`Search Task ID '${tmpCopy.slft[i].ctid}'`);    
-                            console.log(tmpCopy.slft[i]);
+            if((data.type === "filtrationProcessing") || (data.type === "downloadProcessing")){               
+                let tmpCopy = Object.assign(this.state.listTasksFound);
+                    
+                for(let i = 0; i < tmpCopy.slft.length; i++){
+                    if(tmpCopy.slft[i].ctid === "new task client id" && tmpCopy.slft[i].sid === data.options.sourceID){
+                        tmpCopy.slft[i].ctid = data.options.taskID;
+                        tmpCopy.slft[i].tid = data.options.taskIDModuleNI;
+                        tmpCopy.slft[i].sn = data.options.name;
+                    }
 
-                            if(data.type === "filtrationProcessing"){
-                                tmpCopy.slft[i].fts = data.options.status;
-                            }
+                    if(tmpCopy.slft[i].ctid === data.options.taskID){
+                        if(data.type === "filtrationProcessing"){                           
+                            tmpCopy.slft[i].fts = data.options.status;
+                            tmpCopy.slft[i].nffarf = data.options.parameters.numFindFiles;
+                            tmpCopy.slft[i].tsffarf = data.options.parameters.sizeFindFiles;
+                        }
 
-                            if(data.type === "downloadProcessing"){
-                                tmpCopy.slft[i].fdts = data.options.status;
-                            }
+                        if(data.type === "downloadProcessing"){
+                            tmpCopy.slft[i].fdts = data.options.status;
+                            tmpCopy.slft[i].nfd = data.options.parameters.numberFilesDownloaded;
                         }
                     }
-                    this.setState({ listTasksFound: tmpCopy });
+
+                    if(tmpCopy.slft[i].ctid === "new task client id" && tmpCopy.slft[i].sid === data.options.sourceID){
+                        tmpCopy.slft[i].ctid = data.options.taskID;
+                        tmpCopy.slft[i].tid = data.options.taskIDModuleNI;
+                        tmpCopy.slft[i].sn = data.options.name;
+                    }
                 }
+
+                this.setState({ listTasksFound: tmpCopy });
             }
         });
     }
@@ -232,7 +267,7 @@ class CreatePageSearchTasks extends React.Component {
         }
 
         this.props.socketIo.emit("network interaction: start new filtration task", {
-            actionType: "add new task",
+            actionType: "add repeat task",
             arguments: {
                 source: objTaskInfo.source,
                 dateTime: {
@@ -243,6 +278,29 @@ class CreatePageSearchTasks extends React.Component {
                 inputValue: objTaskInfo.inputValue,
             },
         });
+
+        //добавляем новую задачу в список задач
+        let tmpCopy = Object.assign(this.state.listTasksFound);
+        let newTaskList = [{
+            ctid: "new task client id",
+            fdts: "not executed",
+            fts: "wait",
+            nfd: 0,
+            nffarf: 0,
+            pf: {
+                dt: this.state.currentFilteringParameters.dt,
+                f: this.state.currentFilteringParameters.f,
+                p: this.state.currentFilteringParameters.p,
+            },
+            sid: this.state.currentFilteringParameters.sid,
+            sn: "",
+            stte: (+new Date())/1000,
+            tid: "new task id",
+            tsffarf: ""
+        }].concat(tmpCopy.slft);
+        tmpCopy.slft = newTaskList;
+        tmpCopy.tntf = tmpCopy.tntf+1;
+        this.setState({ listTasksFound: tmpCopy });
 
         this.handlerCloseModalWindowFiltration();
     }
@@ -326,10 +384,10 @@ class CreatePageSearchTasks extends React.Component {
                 minute: "numeric",
             });
 
-            this.state.listTasksFound.slft.forEach((item, index) => {
+            this.state.listTasksFound.slft.forEach((item, index) => {  
                 let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn, index: index };
                 let StatusDownload = <small><GetStatusDownload status={item.fdts} numDownloadFiles={item.nffarf} /></small>;
-                if(item.nffarf === 0){
+                if((item.nffarf === 0) && (item.fts !== "refused") && (item.fts !== "execute") && (item.fts !== "wait")){
                     StatusDownload = (<React.Fragment>
                         <Row>
                             <Col>
@@ -519,11 +577,17 @@ class CreatePageSearchTasks extends React.Component {
         return (
             <React.Fragment>
                 <Row className="pt-3">
-                    <Col md={12}>
+                    <Col md={1}></Col>
+                    <Col md={10}>
                         <CreateBodySearchTask 
                             socketIo={this.props.socketIo} 
                             listSources={this.props.listItems.listSources}
                             handlerButtonSearch={this.handlerButtonSearch} />
+                    </Col>
+                    <Col md={1}></Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
                         {this.createTableListDownloadFile.call(this)}
                         {this.createPaginationMUI.call(this)}
                     </Col>

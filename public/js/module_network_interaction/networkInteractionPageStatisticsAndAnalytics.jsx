@@ -186,6 +186,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
 
             this.state.listTasksFound.slft.forEach((item) => {
                 let dataInfo = { taskID: item.tid, sourceID: item.sid, sourceName: item.sn };
+                let tsffarf = helpers.changeByteSize(item.tsffarf);
 
                 tableBody.push(<tr key={`tr_${item.tid}`}>
                     <td className="align-middle clicabe_cursor" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_num`}>
@@ -217,7 +218,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
                         <small>{`${formaterInt.format(item.nffarf)} / ${formaterInt.format(item.nfd)}`}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "info")} key={`tr_${item.tid}_file_size`}>
-                        <small>{helpers.changeByteSize(item.tsffarf)}</small>
+                        <small>{tsffarf.size} {tsffarf.name}</small>
                     </td>
                     <td className="align-middle" onClick={this.headerClickTable.bind(this, dataInfo, "processed")}>
                         <a 
@@ -315,7 +316,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
     render(){
         return (
             <React.Fragment>
-                <Row>
+                <Row className="pt-3">
                     <Col md={12} className="text-right text-muted">
                         всего задач: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>

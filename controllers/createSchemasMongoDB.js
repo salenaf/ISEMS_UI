@@ -464,22 +464,6 @@ function createModelGroups(modelGroup, next) {
     });
 }
 
-/*
-function createModelAdditionalPassportInformation(modelAdditionalPassportInformation, next) {
-
-}
-
-//создание модели хранения данных об источнике
-function createModelSource(modelSource, next) {
-
-    debug("find source model");
-
-    modelSource.find(err => {
-        if (err) next(err);
-        else next(null);
-    });
-}
-*/
 //создание модели хранения правил СОА
 function createModelRulesIDS(modelSOARules, next) {
 

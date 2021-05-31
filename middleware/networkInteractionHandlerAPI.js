@@ -30,7 +30,7 @@ class MyEventEmitter extends EventEmitter {
 
     createAPIConnection(isDebug = false) {
 
-        console.log("Create API connection...");
+        console.log("Create API connection to module ISEMS-NIH...");
 
         let websocketTmp = new webSocketClient({
             closeTimeout: 3000,
@@ -108,7 +108,7 @@ class MyEventEmitter extends EventEmitter {
             headers: {
                 "Content-Type": "text/plain;charset=utf-8",
                 "Accept-Language": "en",
-                "User-Agent": "Mozilla/5.0 (Flashlight)",
+                "User-Agent": "Mozilla/5.0 (isems-ui)",
                 "Token": this.configSettings.token
             }
         };
@@ -205,11 +205,7 @@ class MyEventEmitter extends EventEmitter {
 }
 
 /**
- * @param {*} configSettings {
- *  ip:
- *  port:
- *  tokent:
- * } 
+ * @param {*} configSettings { ip:"", port:"", tokent:"" } 
  */
 module.exports = (configSettings) => {
     return new MyEventEmitter(configSettings);

@@ -2,13 +2,13 @@
 
 const async = require("async");
 
-const globalObject = require("../../configure/globalObject");
-const writeLogFile = require("../../libs/writeLogFile");
-const checkAccessRightsPage = require("../../libs/check/checkAccessRightsPage");
+const globalObject = require("../../../configure/globalObject");
+const writeLogFile = require("../../../libs/writeLogFile");
+const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 
 /**
- * Модуль формирующий страницу на которой реализовано управление
- * модулем сетевого взаимодействия
+ * Модуль формирующий страницу с информацией о уже выполненных
+ * задачах по фильтрации файлы по которым выгружены не были
  * 
  * @param {*} req
  * @param {*} res
@@ -23,9 +23,7 @@ module.exports = function(req, res, objHeader) {
             });
         },
         mainInformation: (callback) => {
-
             callback(null, {});
-
         },
         widgetsInformation: (callback) => {
             let numConnect = 0,
@@ -62,7 +60,7 @@ module.exports = function(req, res, objHeader) {
 
         if (readStatus === false) return res.render("403");
 
-        res.render("menu/network_interaction", {
+        res.render("menu/network_interaction/page_template_log", {
             header: objHeader,
             listItems: {
                 connectionModules: {

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Button, Col, Row } from "react-bootstrap";
 import { Alert } from "material-ui-lab";
-import { Tab, Tabs, LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 import CreatingWidgets from "./createWidgets.jsx";
@@ -12,7 +12,7 @@ import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilterin
 import ModalWindowShowInformationConnectionStatusSources from "../modal_windows/modalWindowShowInformationConnectionStatusSources.jsx";
 
 class CreatePageManagingNetworkInteractions extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -26,8 +26,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 numUnresolvedTask: 0,
             },
             listSources: this.props.listItems.listSources,
-            shortTaskInformation: { 
-                sourceID: 0, 
+            shortTaskInformation: {
+                sourceID: 0,
                 sourceName: "",
                 taskID: "",
             },
@@ -36,15 +36,6 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             showModalWindowEncodeDecoder: false,
             showModalWindowShowTaskInformation: false,
             showModalWindowInfoConnectStatusSources: false,
-        };
-
-        this.menuItem = {
-            "/network_interaction": { "num": 0, "label": "прогресс" },
-            "/network_interaction_page_file_download": { "num": 1, "label": "выгрузка файлов" },
-            "/network_interaction_page_search_tasks": { "num": 2, "label": "поиск" },
-            "/network_interaction_page_statistics_and_analytics": { "num": 3, "label": "аналитика" },
-            "/network_interaction_page_telemetry": { "num": 4, "label": "телеметрия" },
-            "/network_interaction_page_notification_log": { "num": 5, "label": "журнал событий" },
         };
 
         this.userPermission = this.props.listItems.userPermissions;
@@ -64,33 +55,42 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.requestEmitter.call(this);
     }
 
-    connModuleNI(){
-        return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleNI: false;
+    connModuleNI() {
+        return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleNI : false;
     }
 
-    requestEmitter(){
-        if(!this.state.connectionModuleNI){
+    requestEmitter() {
+        if (!this.state.connectionModuleNI) {
             return;
         }
 
-        if(window.location.pathname !== "/network_interaction_page_file_download"){
-            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });            
+        if (window.location.pathname !== "/network_interaction_page_file_download") {
+            this.props.socketIo.emit("network interaction: get list tasks to download files", { arguments: { forWidgets: true } });
         }
 
-        if(window.location.pathname !== "/network_interaction_page_statistics_and_analytics"){
-            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: true } });               
+        if (window.location.pathname !== "/network_interaction_page_statistics_and_analytics") {
+            this.props.socketIo.emit("network interaction: get list of unresolved tasks", { arguments: { forWidgets: true } });
         }
     }
 
-    handlerEvents(){
+    handlerEvents() {
         this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "connectModuleNI"){
-                if(data.options.connectionStatus){
+            if (data.type === "connectModuleNI") {
+                if (data.options.connectionStatus) {
                     this.setState({ "connectionModuleNI": true });
 
                     location.reload();
                 } else {
-                    this.setState({ 
+                    if (!this.state.connectionModuleNI) {
+                        return;
+                    }
+
+                    let objClone = Object.assign({}, this.state.listSources);
+                    for (let sid in objClone) {
+                        objClone[sid].connectStatus = false;
+                    }
+
+                    this.setState({
                         "connectionModuleNI": false,
                         "widgets": {
                             numConnect: 0,
@@ -99,21 +99,23 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             numProcessFiltration: 0,
                             numTasksNotDownloadFiles: 0,
                             numUnresolvedTask: 0,
+                            numSourceTelemetryDeviationParameters: 0,
                         },
+                        "listSources": objClone,
                     });
                 }
             }
-                
+
             //для списка задач трафик по которым не выгружался
-            if(data.type === "get list tasks files not downloaded for widget" || data.type === "get list tasks files not downloaded"){
+            if (data.type === "get list tasks files not downloaded for widget" || data.type === "get list tasks files not downloaded") {
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numTasksNotDownloadFiles = data.options.tntf;
                 this.setState({ widgets: tmpCopy });
             }
-    
+
             //для списка задач не отмеченных пользователем как завершеные
-            if(data.type === "get list unresolved task for widget" || data.type === "get list unresolved task"){
+            if (data.type === "get list unresolved task for widget" || data.type === "get list unresolved task") {
                 //для виджета
                 let tmpCopy = Object.assign(this.state.widgets);
                 tmpCopy.numUnresolvedTask = data.options.tntf;
@@ -132,8 +134,8 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.props.socketIo.on("module-ni:change status source", (data) => {
             let objCopy = Object.assign({}, this.state);
 
-            for(let source in objCopy.listSources){
-                if(+data.options.sourceID === +source){
+            for (let source in objCopy.listSources) {
+                if (+data.options.sourceID === +source) {
                     objCopy.listSources[source].appVersion = data.options.appVersion;
                     objCopy.listSources[source].connectTime = data.options.connectTime;
                     objCopy.listSources[source].connectStatus = data.options.connectStatus;
@@ -150,12 +152,12 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         this.props.socketIo.on("module-ni:send version app", (data) => {
             let objCopy = Object.assign({}, this.state);
 
-            for(let source in objCopy.listSources){
-                if(+data.options.sourceID === +source){
+            for (let source in objCopy.listSources) {
+                if (+data.options.sourceID === +source) {
                     objCopy.listSources[source].appVersion = data.options.appVersion,
-                    objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate,
+                        objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate,
 
-                    this.setState(objCopy);
+                        this.setState(objCopy);
 
                     break;
                 }
@@ -163,71 +165,49 @@ class CreatePageManagingNetworkInteractions extends React.Component {
         });
     }
 
-    handlerShowModalWindowFiltration(){
+    handlerShowModalWindowFiltration() {
         this.props.socketIo.emit("give me new short source list", {});
 
         this.setState({ showModalWindowFiltration: true });
     }
 
-    handlerCloseModalWindowFiltration(){
+    handlerCloseModalWindowFiltration() {
         this.setState({ showModalWindowFiltration: false });
     }
 
-    handlerShowModalWindowShowTaskInformation(){
+    handlerShowModalWindowShowTaskInformation() {
         this.setState({ showModalWindowShowTaskInformation: true });
     }
 
-    handlerCloseModalWindowShowTaskInformation(){
+    handlerCloseModalWindowShowTaskInformation() {
         this.setState({ showModalWindowShowTaskInformation: false });
     }
 
-    handlerShowModalWindowLanCalc(){
-        this.setState({ showModalWindowLanCalc: true });        
+    handlerShowModalWindowLanCalc() {
+        this.setState({ showModalWindowLanCalc: true });
     }
 
-    handlerCloseModalWindowLanCalc(){
+    handlerCloseModalWindowLanCalc() {
         this.setState({ showModalWindowLanCalc: false });
     }
 
-    handlerShowModalWindowEncodeDecoder(){
+    handlerShowModalWindowEncodeDecoder() {
         this.setState({ showModalWindowEncodeDecoder: true });
     }
 
-    handlerCloseModalWindowEncodeDecoder(){
+    handlerCloseModalWindowEncodeDecoder() {
         this.setState({ showModalWindowEncodeDecoder: false });
     }
 
-    handlerShowModalWindowInfoConnectStatusSources(){
-        this.setState({ showModalWindowInfoConnectStatusSources: true });        
+    handlerShowModalWindowInfoConnectStatusSources() {
+        this.setState({ showModalWindowInfoConnectStatusSources: true });
     }
 
-    handlerCloseModalWindowInfoConnectStatusSources(){
+    handlerCloseModalWindowInfoConnectStatusSources() {
         this.setState({ showModalWindowInfoConnectStatusSources: false });
     }
 
-    handlerButtonSubmitWindowFilter(objTaskInfo){
-        let checkExistInputValue = () => {
-            let isEmpty = true;
-
-            done:
-            for(let et in objTaskInfo.inputValue){
-                for(let d in objTaskInfo.inputValue[et]){
-                    if(Array.isArray(objTaskInfo.inputValue[et][d]) && objTaskInfo.inputValue[et][d].length > 0){
-                        isEmpty = false;
-
-                        break done;  
-                    }
-                }
-            }
-
-            return isEmpty;
-        };
-
-        //проверяем наличие хотя бы одного параметра в inputValue
-        if(checkExistInputValue()){
-            return;
-        }
-
+    handlerButtonSubmitWindowFilter(objTaskInfo) {
         this.props.socketIo.emit("network interaction: start new filtration task", {
             actionType: "add new task",
             arguments: {
@@ -240,13 +220,11 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                 inputValue: objTaskInfo.inputValue,
             },
         });
-
-        this.handlerCloseModalWindowFiltration();
     }
 
-    showModuleConnectionError(){
-        if(!this.state.connectionModuleNI){
-            return (                
+    showModuleConnectionError() {
+        if (!this.state.connectionModuleNI) {
+            return (
                 <React.Fragment>
                     <Row className="mt-2">
                         <Col md={12}>
@@ -259,61 +237,31 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                         <Col md={12}>
                             <LinearProgress color="secondary" />
                         </Col>
-                    </Row>                   
+                    </Row>
                 </React.Fragment>
             );
         }
     }
 
-    isDisabledFiltering(){
+    isDisabledFiltering() {
         //если нет соединения с модулем сетевого взаимодействия
-        if(!this.state.connectionModuleNI){
+        if (!this.state.connectionModuleNI) {
             return "disabled";
         }
 
-        if(!this.userPermission.management_tasks_filter.element_settings.create.status){
+        if (!this.userPermission.management_tasks_filter.element_settings.create.status) {
             return "disabled";
-        }      
+        }
 
         return (this.userPermission.management_tasks_filter.element_settings.create.status) ? "" : "disabled";
     }
 
-    createMenuItems(){
-        let list = [];
-        for(let item in this.menuItem){
-            if(item === "/network_interaction_page_telemetry"){
-                list.push(<Tab disabled href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            } else {
-                list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
-            }
-        }
-
-        return (
-            <Row>
-                <Col md={12} className="mt-2">
-                    <Tabs
-                        value={this.getSelectedMenuItem.call(this)}
-                        indicatorColor="primary"
-                        centered >
-                        {list}
-                    </Tabs>
-                </Col>
-            </Row>
-        );
-    }
-
-    getSelectedMenuItem(){
-        let numMenuItem = this.menuItem[window.location.pathname].num;
-
-        return (typeof numMenuItem !== "undefined") ? numMenuItem : 0;
-    }
-
-    render(){
+    render() {
         return (
             <React.Fragment>
-                <CreatingWidgets 
-                    widgets={this.state.widgets} 
-                    socketIo={this.props.socketIo} 
+                <CreatingWidgets
+                    widgets={this.state.widgets}
+                    socketIo={this.props.socketIo}
                     handlerShowModalWindowInfoConnectStatusSources={this.handlerShowModalWindowInfoConnectStatusSources} />
                 {this.showModuleConnectionError.call(this)}
                 <Row className="pt-4">
@@ -321,30 +269,29 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                         <Button
                             className="mx-1"
                             size="sm"
-                            variant="outline-danger"                            
+                            variant="outline-danger"
                             disabled={this.isDisabledFiltering.call(this)}
                             onClick={this.handlerShowModalWindowFiltration} >
                             фильтрация
                         </Button>
-                        <Button 
+                        <Button
                             className="mx-1"
                             size="sm"
-                            variant="outline-dark" 
-                            onClick={this.handlerShowModalWindowLanCalc} >                           
+                            variant="outline-dark"
+                            onClick={this.handlerShowModalWindowLanCalc} >
                             сетевой калькулятор
                         </Button>
                         <Button
                             className="mx-1"
                             size="sm"
                             variant="outline-dark"
-                            onClick={this.handlerShowModalWindowEncodeDecoder} >                           
+                            onClick={this.handlerShowModalWindowEncodeDecoder} >
                             декодер
                         </Button>
                     </Col>
                 </Row>
-                {this.createMenuItems.call(this)}
 
-                <ModalWindowAddFilteringTask 
+                <ModalWindowAddFilteringTask
                     show={this.state.showModalWindowFiltration}
                     onHide={this.handlerCloseModalWindowFiltration}
                     listSources={this.state.listSources}
@@ -352,7 +299,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                         dt: { s: +new Date, e: +new Date },
                         sid: 0,
                         p: "any",
-                        f: { 
+                        f: {
                             ip: { any: [], src: [], dst: [] },
                             pt: { any: [], src: [], dst: [] },
                             nw: { any: [], src: [], dst: [] },
@@ -363,11 +310,11 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     show={this.state.showModalWindowLanCalc}
                     onHide={this.handlerCloseModalWindowLanCalc} />
                 <ModalWindowEncodeDecoder
-                    show={this.state.showModalWindowEncodeDecoder} 
+                    show={this.state.showModalWindowEncodeDecoder}
                     onHide={this.handlerCloseModalWindowEncodeDecoder} />
-                <ModalWindowShowInformationConnectionStatusSources 
+                <ModalWindowShowInformationConnectionStatusSources
                     sourceList={this.state.listSources}
-                    show={this.state.showModalWindowInfoConnectStatusSources} 
+                    show={this.state.showModalWindowInfoConnectStatusSources}
                     onHide={this.handlerCloseModalWindowInfoConnectStatusSources} />
             </React.Fragment>
         );
@@ -377,7 +324,7 @@ class CreatePageManagingNetworkInteractions extends React.Component {
 CreatePageManagingNetworkInteractions.propTypes = {
     socketIo: PropTypes.object.isRequired,
     listItems: PropTypes.object.isRequired,
-}; 
+};
 
 ReactDOM.render(<CreatePageManagingNetworkInteractions
     socketIo={socket}

@@ -5,6 +5,7 @@ import {  Badge, Button, Col, Row, InputGroup, Form, FormControl, Modal } from "
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers.js";
+import CreateSourceList from "../commons/createSourceList.jsx";
 import CreateDateTimePicker from "../commons/createDateTimePicker.jsx";
 
 class CreateProtocolList extends React.Component {
@@ -29,7 +30,6 @@ class CreateProtocolList extends React.Component {
                 {np.map((item) => {
                     return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
                 })}
-
             </select>
         );
     }
@@ -38,63 +38,6 @@ class CreateProtocolList extends React.Component {
 CreateProtocolList.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     networkProtocol: PropTypes.string.isRequired,
-    handlerChosen: PropTypes.func.isRequired,
-};
-
-class CreateSourceList extends React.Component {
-    constructor(props){
-        super(props);
-
-        this.getListSource = this.getListSource.bind(this);
-    }
-
-    getListSource(){
-        return Object.keys(this.props.listSources).sort((a, b) => a < b).map((sourceID, num) => {
-            let isDisabled = !(this.props.listSources[sourceID].connectStatus);          
-
-            return (
-                <option 
-                    key={`key_source_${num}_${this.props.listSources[sourceID].id}`} 
-                    value={sourceID} 
-                    disabled={isDisabled} >
-                    {`${sourceID} ${this.props.listSources[sourceID].shortName}`}
-                </option>
-            );
-        });
-    }
-
-    render(){
-        let disabled = false;
-        if(this.props.typeModal === "повторная"){
-            if(this.props.hiddenFields){
-                disabled = true;
-            } else {              
-                disabled = false;
-            }
-        }
-
-        return (
-            <Form.Group>
-                <Form.Control 
-                    disabled={disabled} 
-                    onChange={this.props.handlerChosen} 
-                    defaultValue={this.props.currentSource} 
-                    as="select" 
-                    size="sm" 
-                    id="dropdown_list_sources" >
-                    <option></option>
-                    {this.getListSource()}
-                </Form.Control>
-            </Form.Group>
-        );
-    }
-}
-
-CreateSourceList.propTypes = {
-    typeModal: PropTypes.string.isRequired,
-    hiddenFields: PropTypes.bool.isRequired,
-    listSources: PropTypes.object.isRequired,
-    currentSource: PropTypes.number.isRequired,
     handlerChosen: PropTypes.func.isRequired,
 };
 
@@ -491,6 +434,28 @@ export default class ModalWindowAddFilteringTask extends React.Component {
     }
 
     handlerButtonSubmit(){
+        let checkExistInputValue = () => {
+            let isEmpty = true;
+
+            done:
+            for(let et in this.state.inputValue){
+                for(let d in this.state.inputValue[et]){
+                    if(Array.isArray(this.state.inputValue[et][d]) && this.state.inputValue[et][d].length > 0){
+                        isEmpty = false;
+
+                        break done;  
+                    }
+                }
+            }
+
+            return isEmpty;
+        };
+
+        //проверяем наличие хотя бы одного параметра в inputValue
+        if(checkExistInputValue()){
+            return;
+        }
+
         this.props.handlerButtonSubmit({
             source: this.state.source,
             startDate: this.state.startDate,
@@ -587,7 +552,8 @@ export default class ModalWindowAddFilteringTask extends React.Component {
                         hiddenFields={this.state.hiddenFields}
                         listSources={this.props.listSources}
                         currentSource={this.props.currentFilteringParameters.sid}
-                        handlerChosen={this.handlerChosenSource} />
+                        handlerChosen={this.handlerChosenSource}
+                        swithCheckConnectionStatus={true} />
                     <CreateMainFields
                         typeModal={tm}
                         hiddenFields={this.state.hiddenFields}

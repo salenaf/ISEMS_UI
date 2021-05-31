@@ -89,6 +89,9 @@ export default class CreateBodyDynamics extends React.Component {
 
             let progress = <div className="pl-2 pr-2"><ProgressBar now={percent} label={`${numProcessedFiles} / ${numAllFiles}`}/></div>;
 
+            let sff = helpers.changeByteSize(sizeFindFiles);
+            let saf = helpers.changeByteSize(sizeAllFiles);
+
             if(this.state.filtration[pf].status === "complete"){
                 progress = <div className="text-success mt-n1 mb-n1">фильтрация сетевого трафика завершена</div>;
             }
@@ -113,7 +116,7 @@ export default class CreateBodyDynamics extends React.Component {
                                 onClick={this.showModalWindow.bind(this, objInfo)} >
                                 <small className="mb-n2">{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
                                 <div className="pl-2 pr-2 mb-n2">{msg}</div>
-                                <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${helpers.changeByteSize(sizeFindFiles)}) / всего: ${formatter.format(sizeAllFiles)} байт, (${helpers.changeByteSize(sizeAllFiles)})`}</small>
+                                <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${sff.size} ${sff.name}) / всего: ${formatter.format(sizeAllFiles)} байт, (${saf.size} ${saf.name})`}</small>
                             </Card>
                         </Col>
                     </Row>
@@ -136,7 +139,7 @@ export default class CreateBodyDynamics extends React.Component {
                             onClick={this.showModalWindow.bind(this, objInfo)} >
                             <small>{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
                             {progress}
-                            <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${helpers.changeByteSize(sizeFindFiles)}) / всего: ${formatter.format(sizeAllFiles)} байт, (${helpers.changeByteSize(sizeAllFiles)})`}</small>
+                            <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${sff.size} ${sff.name}) / всего: ${formatter.format(sizeAllFiles)} байт, (${saf.size} ${saf.name})`}</small>
                         </Card>
                     </Col>
                 </Row>

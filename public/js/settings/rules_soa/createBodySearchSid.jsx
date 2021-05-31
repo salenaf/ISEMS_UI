@@ -380,10 +380,10 @@ export default class CreateBodySearchSid extends React.Component {
             str: "disabled",
             bool: "true"
         };
-        // if(this.props.userPermissions.create.status){
-        // Если понадобится создавать отдельно   
-        // }
         if(this.props.userPermissions.edit.status){
+            // if(this.props.userPermissions.create.status){    
+        }
+        if(this.props.userPermissionsSearch.edit.status){
             disableEdit = {
                 str: "",
                 bool: "false"
@@ -558,4 +558,3 @@ CreateBodySearchSid.propTypes ={
     listShortEntity: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired, 
 };
-

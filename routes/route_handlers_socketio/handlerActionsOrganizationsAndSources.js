@@ -167,222 +167,222 @@ function getEntityInformation(socketIo, data) {
     let funcName = " (func 'getEntityInformation')";
 
     switch (data.actionType) {
-        //информация только по источнику
-        case "get info only source":
-            checkUserAuthentication(socketIo)
-                .then((authData) => {
-                    //авторизован ли пользователь
-                    if (!authData.isAuthentication) {
-                        throw new MyError("organization and source management", "Пользователь не авторизован.");
-                    }
-                }).then(() => {
-                    //проверяем параметры полученные от пользователя
-                    if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.sourceID)) {
-                        throw new MyError("organization and source management", "Невозможно получить информацию по источнику. Один или более заданных параметров некорректен.");
-                    }
-                }).then(() => {
-                    //запрос информации к БД
-                    return new Promise((resolve, reject) => {
-                        mongodbQueryProcessor.querySelect(
-                            models.modelSourcesParameter, {
-                                query: { id: data.arguments.entityId },
-                                select: { _id: 0, __v: 0, information_about_app: 0, id_division: 0 },
-                            }, (err, list) => {
-                                if (err) reject(err);
-                                else resolve(list);
-                            });
-                    });
-                }).then((objInfo) => {
-                    socketIo.emit("entity: set info only source", {
-                        arguments: objInfo,
-                    });
-                }).catch((err) => {
-                    if (err.name === "organization and source management") {
-                        return showNotify({
-                            socketIo: socketIo,
-                            type: "danger",
-                            message: err.message
+    //информация только по источнику
+    case "get info only source":
+        checkUserAuthentication(socketIo)
+            .then((authData) => {
+                //авторизован ли пользователь
+                if (!authData.isAuthentication) {
+                    throw new MyError("organization and source management", "Пользователь не авторизован.");
+                }
+            }).then(() => {
+                //проверяем параметры полученные от пользователя
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.sourceID)) {
+                    throw new MyError("organization and source management", "Невозможно получить информацию по источнику. Один или более заданных параметров некорректен.");
+                }
+            }).then(() => {
+                //запрос информации к БД
+                return new Promise((resolve, reject) => {
+                    mongodbQueryProcessor.querySelect(
+                        models.modelSourcesParameter, {
+                            query: { id: data.arguments.entityId },
+                            select: { _id: 0, __v: 0, information_about_app: 0, id_division: 0 },
+                        }, (err, list) => {
+                            if (err) reject(err);
+                            else resolve(list);
                         });
-                    }
-
-                    showNotify({
+                });
+            }).then((objInfo) => {
+                socketIo.emit("entity: set info only source", {
+                    arguments: objInfo,
+                });
+            }).catch((err) => {
+                if (err.name === "organization and source management") {
+                    return showNotify({
                         socketIo: socketIo,
                         type: "danger",
-                        message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                        message: err.message
                     });
+                }
 
-                    writeLogFile("error", err.toString() + funcName);
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
 
-            break;
+                writeLogFile("error", err.toString() + funcName);
+            });
 
-            //полная информация организация, подразделение и источник
-            // поиск по источнику
-        case "get info about source":
-            checkUserAuthentication(socketIo)
-                .then((authData) => {
-                    //авторизован ли пользователь
-                    if (!authData.isAuthentication) {
-                        throw new MyError("organization and source management", "Пользователь не авторизован.");
-                    }
-                }).then(() => {
-                    //проверяем параметры полученные от пользователя
-                    if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.sourceID)) {
-                        throw new MyError("organization and source management", "Невозможно получить информацию по источнику. Один или более заданных параметров некорректен.");
-                    }
-                }).then(() => {
-                    //запрос информации к БД
+        break;
+
+        //полная информация организация, подразделение и источник
+        // поиск по источнику
+    case "get info about source":
+        checkUserAuthentication(socketIo)
+            .then((authData) => {
+                //авторизован ли пользователь
+                if (!authData.isAuthentication) {
+                    throw new MyError("organization and source management", "Пользователь не авторизован.");
+                }
+            }).then(() => {
+                //проверяем параметры полученные от пользователя
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.sourceID)) {
+                    throw new MyError("organization and source management", "Невозможно получить информацию по источнику. Один или более заданных параметров некорректен.");
+                }
+            }).then(() => {
+                //запрос информации к БД
+                return new Promise((resolve, reject) => {
+                    mongodbQueryProcessor.querySelect(
+                        models.modelSourcesParameter, {
+                            query: { id: data.arguments.entityId },
+                            select: { _id: 0, __v: 0 },
+                        }, (err, list) => {
+                            if (err) reject(err);
+                            else resolve(list);
+                        });
+                }).then((sourceInfo) => {
                     return new Promise((resolve, reject) => {
                         mongodbQueryProcessor.querySelect(
-                            models.modelSourcesParameter, {
-                                query: { id: data.arguments.entityId },
+                            models.modelDivisionBranchName, {
+                                query: { id: sourceInfo.id_division },
                                 select: { _id: 0, __v: 0 },
                             }, (err, list) => {
                                 if (err) reject(err);
-                                else resolve(list);
+                                else resolve({ source: sourceInfo, division: list });
                             });
-                    }).then((sourceInfo) => {
-                        return new Promise((resolve, reject) => {
-                            mongodbQueryProcessor.querySelect(
-                                models.modelDivisionBranchName, {
-                                    query: { id: sourceInfo.id_division },
-                                    select: { _id: 0, __v: 0 },
-                                }, (err, list) => {
-                                    if (err) reject(err);
-                                    else resolve({ source: sourceInfo, division: list });
-                                });
-                        });
-                    }).then((objInfo) => {
-                        return new Promise((resolve, reject) => {
-                            mongodbQueryProcessor.querySelect(
-                                models.modelOrganizationName, {
-                                    query: { id: objInfo.division.id_organization },
-                                    select: { _id: 0, __v: 0 },
-                                }, (err, list) => {
-                                    if (err) reject(err);
-
-                                    objInfo.organization = list;
-                                    resolve(objInfo);
-                                });
-                        });
                     });
                 }).then((objInfo) => {
-                    socketIo.emit("entity: set info about source", {
-                        arguments: objInfo,
-                    });
-                }).catch((err) => {
-                    if (err.name === "organization and source management") {
-                        return showNotify({
-                            socketIo: socketIo,
-                            type: "danger",
-                            message: err.message
-                        });
-                    }
+                    return new Promise((resolve, reject) => {
+                        mongodbQueryProcessor.querySelect(
+                            models.modelOrganizationName, {
+                                query: { id: objInfo.division.id_organization },
+                                select: { _id: 0, __v: 0 },
+                            }, (err, list) => {
+                                if (err) reject(err);
 
-                    showNotify({
+                                objInfo.organization = list;
+                                resolve(objInfo);
+                            });
+                    });
+                });
+            }).then((objInfo) => {
+                socketIo.emit("entity: set info about source", {
+                    arguments: objInfo,
+                });
+            }).catch((err) => {
+                if (err.name === "organization and source management") {
+                    return showNotify({
                         socketIo: socketIo,
                         type: "danger",
-                        message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                        message: err.message
                     });
+                }
 
-                    writeLogFile("error", err.toString() + funcName);
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
 
-            break;
+                writeLogFile("error", err.toString() + funcName);
+            });
 
-            //информация по организации и подразделению
-            // поиск по любому ID: организации, подразделению или источнику
-        case "get info about organization or division":
-            checkUserAuthentication(socketIo)
-                .then((authData) => {
-                    //авторизован ли пользователь
-                    if (!authData.isAuthentication) {
-                        throw new MyError("organization and source management", "Пользователь не авторизован.");
-                    }
-                }).then(() => {
-                    //проверяем параметры полученные от пользователя
-                    if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.value)) {
-                        throw new MyError("organization and source management", "Невозможно получить информацию. Один или более заданных параметров некорректен.");
-                    }
-                }).then(() => {
-                    switch (data.arguments.type) {
-                        case "organization":
-                            return getInformationAboutOrganizationID(data.arguments.value)
-                                .then((result) => {
-                                    socketIo.emit("entity: set info about organization and division", {
-                                        arguments: result
-                                    });
-                                }).catch((err) => {
-                                    throw err;
+        break;
+
+        //информация по организации и подразделению
+        // поиск по любому ID: организации, подразделению или источнику
+    case "get info about organization or division":
+        checkUserAuthentication(socketIo)
+            .then((authData) => {
+                //авторизован ли пользователь
+                if (!authData.isAuthentication) {
+                    throw new MyError("organization and source management", "Пользователь не авторизован.");
+                }
+            }).then(() => {
+                //проверяем параметры полученные от пользователя
+                if (!(commons.getRegularExpression("stringAlphaNumEng")).test(data.arguments.value)) {
+                    throw new MyError("organization and source management", "Невозможно получить информацию. Один или более заданных параметров некорректен.");
+                }
+            }).then(() => {
+                switch (data.arguments.type) {
+                case "organization":
+                    return getInformationAboutOrganizationID(data.arguments.value)
+                        .then((result) => {
+                            socketIo.emit("entity: set info about organization and division", {
+                                arguments: result
+                            });
+                        }).catch((err) => {
+                            throw err;
+                        });
+
+                case "division":
+                    return new Promise((resolve, reject) => {
+                        mongodbQueryProcessor.querySelect(
+                            models.modelDivisionBranchName, {
+                                query: { id: data.arguments.value },
+                                select: { id_organization: 1 },
+                            }, (err, organizationInfo) => {
+                                if (err) reject(err);
+                                else resolve(organizationInfo.id_organization);
+                            });
+
+                    }).then((organizationId) => {
+                        return getInformationAboutOrganizationID(organizationId)
+                            .then((result) => {
+                                socketIo.emit("entity: set info about organization and division", {
+                                    arguments: result
                                 });
-
-                        case "division":
-                            return new Promise((resolve, reject) => {
-                                mongodbQueryProcessor.querySelect(
-                                    models.modelDivisionBranchName, {
-                                        query: { id: data.arguments.value },
-                                        select: { id_organization: 1 },
-                                    }, (err, organizationInfo) => {
-                                        if (err) reject(err);
-                                        else resolve(organizationInfo.id_organization);
-                                    });
-
-                            }).then((organizationId) => {
-                                return getInformationAboutOrganizationID(organizationId)
-                                    .then((result) => {
-                                        socketIo.emit("entity: set info about organization and division", {
-                                            arguments: result
-                                        });
-                                    }).catch((err) => {
-                                        throw err;
-                                    });
                             }).catch((err) => {
                                 throw err;
                             });
-
-                        case "source":
-                            return new Promise((resolve, reject) => {
-                                mongodbQueryProcessor.querySelect(
-                                    models.modelDivisionBranchName, {
-                                        query: { source_list: data.arguments.value },
-                                        select: { id_organization: 1 },
-                                    }, (err, organizationInfo) => {
-                                        if (err) reject(err);
-                                        else resolve(organizationInfo.id_organization);
-                                    });
-
-                            }).then((organizationId) => {
-                                return getInformationAboutOrganizationID(organizationId)
-                                    .then((result) => {
-                                        socketIo.emit("entity: set info about organization and division", {
-                                            arguments: result
-                                        });
-                                    }).catch((err) => {
-                                        throw err;
-                                    });
-                            }).catch((err) => {
-                                throw err;
-                            });
-                    }
-                }).catch((err) => {
-                    if (err.name === "organization and source management") {
-                        return showNotify({
-                            socketIo: socketIo,
-                            type: "danger",
-                            message: err.message
-                        });
-                    }
-
-                    showNotify({
-                        socketIo: socketIo,
-                        type: "danger",
-                        message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
+                    }).catch((err) => {
+                        throw err;
                     });
 
-                    writeLogFile("error", err.toString() + funcName);
+                case "source":
+                    return new Promise((resolve, reject) => {
+                        mongodbQueryProcessor.querySelect(
+                            models.modelDivisionBranchName, {
+                                query: { source_list: data.arguments.value },
+                                select: { id_organization: 1 },
+                            }, (err, organizationInfo) => {
+                                if (err) reject(err);
+                                else resolve(organizationInfo.id_organization);
+                            });
+
+                    }).then((organizationId) => {
+                        return getInformationAboutOrganizationID(organizationId)
+                            .then((result) => {
+                                socketIo.emit("entity: set info about organization and division", {
+                                    arguments: result
+                                });
+                            }).catch((err) => {
+                                throw err;
+                            });
+                    }).catch((err) => {
+                        throw err;
+                    });
+                }
+            }).catch((err) => {
+                if (err.name === "organization and source management") {
+                    return showNotify({
+                        socketIo: socketIo,
+                        type: "danger",
+                        message: err.message
+                    });
+                }
+
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору."
                 });
 
-            break;
+                writeLogFile("error", err.toString() + funcName);
+            });
+
+        break;
     }
 }
 
@@ -504,9 +504,9 @@ function changeSourceInfo(socketIo, data) {
             }
 
             if (!helpersFunc.checkInputValidation({
-                    name: commonPattern[elemName].namePattern,
-                    value: obj[elemName],
-                })) {
+                name: commonPattern[elemName].namePattern,
+                value: obj[elemName],
+            })) {
                 return callback(commonPattern[elemName].messageError);
             }
         }
@@ -518,9 +518,9 @@ function changeSourceInfo(socketIo, data) {
             }
 
             if (!helpersFunc.checkInputValidation({
-                    name: networkPattern[elemName].namePattern,
-                    value: obj.network_settings[elemName]
-                })) {
+                name: networkPattern[elemName].namePattern,
+                value: obj.network_settings[elemName]
+            })) {
                 return callback(networkPattern[elemName].messageError);
             }
         }
@@ -543,7 +543,7 @@ function changeSourceInfo(socketIo, data) {
             obj.source_settings.maximum_number_simultaneous_filtering_processes = 5;
         }
 
-        let tclp = new Set(["ip", "pppoe", "vlan + pppoe", "pppoe + vlan"]);
+        let tclp = new Set(["ip", "pppoe", "vlan/pppoe"]);
         if (typeof obj.source_settings.type_channel_layer_protocol === "undefined") {
             obj.source_settings.type_channel_layer_protocol = "ip";
         }
@@ -565,9 +565,9 @@ function changeSourceInfo(socketIo, data) {
 
         //проверяем поле description
         if (!helpersFunc.checkInputValidation({
-                name: "inputDescription",
-                value: obj.description,
-            })) {
+            name: "inputDescription",
+            value: obj.description,
+        })) {
             obj.description = "";
         }
 
@@ -794,9 +794,9 @@ function changeDivisionInfo(socketIo, data) {
                     }
 
                     if (!helpersFunc.checkInputValidation({
-                            name: commonPattern[elem].namePattern,
-                            value: data.arguments[elem],
-                        })) {
+                        name: commonPattern[elem].namePattern,
+                        value: data.arguments[elem],
+                    })) {
                         reject(new MyError("organization and source management", commonPattern[elem].messageError));
                     }
                 }
@@ -989,9 +989,9 @@ function changeOrganizationInfo(socketIo, data) {
 
                 for (let elem in commonPattern) {
                     if (!helpersFunc.checkInputValidation({
-                            name: commonPattern[elem].namePattern,
-                            value: data.arguments[elem],
-                        })) {
+                        name: commonPattern[elem].namePattern,
+                        value: data.arguments[elem],
+                    })) {
                         reject(new MyError("organization and source management", commonPattern[elem].messageError));
                     }
                 }

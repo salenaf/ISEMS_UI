@@ -52,10 +52,15 @@ let helpers = {
 
     //пересчет в Кбайты, Мбайты и Гбайты
     changeByteSize(byte) {
-        if (byte < 1000) return byte + " байт";
-        else if ((byte >= 1000) && (byte <= 1000000)) return (byte / 1000).toFixed(2) + " Кбайт";
-        else if ((byte >= 1000000) && (byte <= 1000000000)) return (byte / 1000000).toFixed(2) + " Мбайт";
-        else return (byte / 1000000000).toFixed(2) + " Гбайт";
+        if (byte < 1000) {
+            return { size: byte, name: "байт" };
+        } else if ((byte >= 1000) && (byte <= 1000000)) {
+            return { size: (byte / 1000).toFixed(2), name: "Кбайт" };
+        } else if ((byte >= 1000000) && (byte <= 1000000000)) {
+            return { size: (byte / 1000000).toFixed(2), name: "Мбайт" };
+        } else {
+            return { size: (byte / 1000000000).toFixed(2), name: "Гбайт" };
+        }
     },
 
     //конвертирование даты и вермени

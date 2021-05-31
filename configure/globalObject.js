@@ -81,33 +81,43 @@ class SocketioEventResponse extends EventEmitter {}
  *              description: описание,
  *              connectStatus: статус соединения,
  *              connectTime: время соединения,
- *              appVersion: версия ПО  модуля ISEMS-NIH-slave,
+ *              appVersion: версия ПО модуля ISEMS-NIH-slave,
  *              appReleaseDate: версия даты релиза  модуля ISEMS-NIH-slave,
  *              id: id источника,
  *          },
  *       },
- * 
+ *       параметры телеметрии источников
+ *       telemetrySources: 
+ *           <source>: {
+ *              timeReceipt: время обновления информации,
+ *              deviationParametersSource: <true/false> отклонение параметров на источнике
+ *              telemetryParameters: {} //пораметры телеметрии
+ *       }
+ *       дескрипторы соединения с БД
  *       descriptionDB: {
  *          MongoDB: {
  *              connection: 
  *              connectionTimestamp: 
  *              userName: 
  *       },
- * 
  *       дескрипторы соединения с API
  *       descriptionAPI: {
  *           networkInteraction: {
  *               connection: object,
  *               connectionEstablished: bool,
- *               previousConnectionStatus: bool }}
- *       
+ *               previousConnectionStatus: bool }},
+ *           managingRecordsStructuredInformationAboutComputerThreats: {
+ *               connection: object,
+ *               connectionEstablished: bool,
+ *               previousConnectionStatus: bool }},
+ *       дескрипторы соединения по протоколу socketIo
  *       descriptionSocketIo: {
  *          majorConnect: <основное socketIo соединение (
  *            получаемое через require("socket.io").listen(server, {}))>
  *          userConnections: { 
  *              <socketIo user id>: <description>
  *          }
- *       }
+ *       },
  *   } 
  */
 class GlobalObject {
@@ -116,6 +126,7 @@ class GlobalObject {
             "tasks": {},
             "users": {},
             "sources": {},
+            "telemetrySources": {},
             "commonSettings": {},
             "descriptionDB": {},
             "descriptionAPI": {},

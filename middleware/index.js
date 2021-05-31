@@ -21,10 +21,11 @@ const writeLogFile = require("../libs/writeLogFile");
 const routeSocketIo = require("../routes/routeSocketIo");
 const AuthenticateStrategy = require("./authenticateStrategy");
 
-module.exports = function(app, express, io) {
-    //срок окончания хранения постоянных cookie 14 суток
-    let expiresDate = new Date(Date.now() + ((60 * 60 * 24 * 14) * 1000));
+module.exports = function (app, express, io) {
+    //срок окончания хранения постоянных cookie 7 суток
+    let ttl = (60 * 60 * 24 * 7);
     let funcName = " (middleware/index.js)";
+
 
     /**
      * помогает защитить приложение от некоторых широко известных веб-уязвимостей путем соответствующей настройки заголовков HTTP
@@ -58,11 +59,11 @@ module.exports = function(app, express, io) {
         secret: "isems_ui_app",
         name: "sessionId",
         resave: false,
-        saveUninitialized: false, //true,
-        maxAge: 259200000,
+        saveUninitialized: false, //Не помещать в БД пустые сессии
+        maxAge: ttl * 1000,
         store: new MongoStore({ //хранилище сеансов (сессий) основанное на connect-mongo
             mongooseConnection: mongoose.connection,
-            ttl: 14 * 24 * 60 * 60, // = 14 суток. Default
+            ttl: ttl,
             autoRemove: "native" //Default
         }),
         cookie: {
@@ -70,7 +71,6 @@ module.exports = function(app, express, io) {
             httpOnly: true, //обеспечивает отправку cookie только с использованием протокола HTTP(S), а не клиентского JavaScript, что способствует защите от атак межсайтового скриптинга.
             //domain - указывает домен cookie; используется для сравнения с доменом сервера, на котором запрашивается данный URL. В случае совпадения выполняется проверка следующего атрибута - пути.
             //path - указывает путь cookie; используется для сравнения с путем запроса. Если путь и домен совпадают, выполняется отправка cookie в запросе.
-            expires: expiresDate, //используется для настройки даты окончания срока хранения для постоянных cookie.
         },
     }));
 
@@ -80,19 +80,24 @@ module.exports = function(app, express, io) {
     app.use(passport.initialize());
     app.use(passport.session());
 
+    /**
+     * Timer temp task
+     */
+    const eventEmiterTimerTick = require("./handlerTimerTick")(60000);
+
     /*
      * Socket.io
      * */
-    let socketIo = io.sockets.on("connection", function(socket) {
+    let socketIo = io.sockets.on("connection", function (socket) {
         globalObject.setData("descriptionSocketIo", "userConnections", socket.id, socket);
 
-        //console.log(`socketIo CONNECTION with id: '${socket.id}'`);
+        console.log(`socketIo CONNECTION with id: '${socket.id}'`);
 
         //обработчик событий User Interface
-        routeSocketIo.eventHandlingUserInterface(socket);
+        routeSocketIo.eventHandlingUserInterface(eventEmiterTimerTick, socket);
 
         socket.on("disconnect", () => {
-            //console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
+            console.log(`socketIo DISCONNECT with id: '${socket.id}'`);
 
             globalObject.deleteData("descriptionSocketIo", "userConnections", socket.id);
         });
@@ -112,13 +117,10 @@ module.exports = function(app, express, io) {
     routes(app);
 
     /* 
-     * Module network interaction 
+     * Module Network Interaction Handler (ISEMS-NIH) 
      * */
-    let connectionWithModuleNetworkInteraction = () => {
+    (() => {
         const TIME_INTERVAL = 7000;
-
-        //        console.log("func 'connectionWithModuleNetworkInteraction'");
-        //        console.log(`connectionEstablished status: ${globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
 
         if (globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
             return;
@@ -127,9 +129,7 @@ module.exports = function(app, express, io) {
         let connection = globalObject.getData("descriptionAPI", "networkInteraction", "connection");
         connection.createAPIConnection()
             .on("connect", () => {
-                writeLogFile("info", `Connection with module network interaction ${funcName}`);
-
-                console.log("func 'connectionWithModuleNetworkInteraction', Connection with module network interaction");
+                writeLogFile("info", `Connection with module 'Network Interaction Handler' ${funcName}`);
 
                 helpersFunc.sendBroadcastSocketIo("module NI API", {
                     type: "connectModuleNI",
@@ -141,8 +141,6 @@ module.exports = function(app, express, io) {
             })
             .on("connectFailed", (err) => {
                 writeLogFile("error", err.toString() + funcName);
-
-                console.log(err);
             })
             .on("error message", (msg) => {
                 writeLogFile("error", msg.toString() + funcName);
@@ -150,16 +148,10 @@ module.exports = function(app, express, io) {
             .on("close", (msg) => {
                 writeLogFile("info", msg.toString() + funcName);
 
-                console.log("func 'connectionWithModuleNetworkInteraction'");
-                console.log("EVENT: close");
-                console.log(msg);
-
                 helpersFunc.sendBroadcastSocketIo("module NI API", {
                     type: "connectModuleNI",
                     options: { connectionStatus: false },
                 });
-                //                globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
-                //                globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
                 globalObject.modifyData("descriptionAPI", "networkInteraction", [
                     ["connectionEstablished", false],
@@ -167,14 +159,8 @@ module.exports = function(app, express, io) {
                 ]);
 
                 setTimeout((() => {
-
-                    console.log("------> request new connection");
-                    console.log(`connectionEstablished: ${globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished")}`);
-
                     if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
-
-                        console.log("New connection from close");
                     }
                 }), TIME_INTERVAL);
             })
@@ -189,23 +175,109 @@ module.exports = function(app, express, io) {
                 globalObject.setData("descriptionAPI", "networkInteraction", "connectionEstablished", false);
                 globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
 
-                console.log("func 'connectionWithModuleNetworkInteraction'");
-                console.log("EVENT: error");
-                console.log(err);
-
                 setTimeout((() => {
                     if (!globalObject.getData("descriptionAPI", "networkInteraction", "connectionEstablished")) {
                         connection.createAPIConnection();
-
-                        console.log("New connection from err");
                     }
                 }), TIME_INTERVAL);
             });
-    };
-    connectionWithModuleNetworkInteraction();
+    })();
+
+    /* 
+     * Module Managing Records of Structured Information About Computer Threats (ISEMS-MRSICT)
+     * */
+    (() => {
+        const TIME_INTERVAL = 7000;
+
+        if (globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+            return;
+        }
+
+        let connection = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
+        connection.createAPIConnection()
+            .on("connect", () => {
+                console.log("func 'middleware', CONNECTION to module 'ISEMS-MRSICT'");
+
+                writeLogFile("info", `Connection with module 'Managing Records Structured Information About Computer Threats' ${funcName}`);
+
+                helpersFunc.sendBroadcastSocketIo("module_MRSICT-API", {
+                    type: "connectModuleMRSICT",
+                    options: { connectionStatus: true },
+                });
+
+                globalObject.modifyData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", [
+                    ["connectionEstablished", true],
+                    ["previousConnectionStatus", true]
+                ]);
+            })
+            .on("connectFailed", (err) => {
+                console.log("func 'middleware', CONNECT FAILED, module 'ISEMS-MRSICT'");
+                console.log(err);
+
+                writeLogFile("error", err.toString() + funcName);
+            })
+            .on("error message", (msg) => {
+                console.log("func 'middleware', ERROR MESSAGE, module 'ISEMS-MRSICT'");
+                console.log(msg);
+
+                writeLogFile("error", msg.toString() + funcName);
+            })
+            .on("close", (msg) => {
+                console.log("func 'middleware', CONNECTION CLOSE with module 'ISEMS-MRSICT'");
+                console.log(msg);
+
+                writeLogFile("info", msg.toString() + funcName);
+
+                helpersFunc.sendBroadcastSocketIo("module_MRSICT-API", {
+                    type: "connectModuleMRSICT",
+                    options: { connectionStatus: false },
+                });
+
+                globalObject.modifyData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", [
+                    ["connectionEstablished", false],
+                    ["previousConnectionStatus", false]
+                ]);
+
+                setTimeout((() => {
+                    if (!globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
+                }), TIME_INTERVAL);
+            })
+            .on("error", (err) => {
+                console.log("func 'middleware', ERROR, module 'ISEMS-MRSICT'");
+                console.log(err);
+
+                writeLogFile("error", err.toString() + funcName);
+
+                helpersFunc.sendBroadcastSocketIo("module_MRSICT-API", {
+                    type: "connectModuleMRSICT",
+                    options: { connectionStatus: false },
+                });
+
+                globalObject.modifyData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", [
+                    ["connectionEstablished", false],
+                    ["previousConnectionStatus", false]
+                ]);
+
+                setTimeout((() => {
+                    if (!globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        connection.createAPIConnection();
+                    }
+                }), TIME_INTERVAL);
+            });
+    })();
 
     //обработчик событий сторонних модулей через API
-    routeSocketIo.modulesEventGenerator(socketIo);
+    require("../routes/routeModulesEvent").modulesEventGenerator(socketIo);
+    //routeSocketIo.modulesEventGenerator(eventEmiterTimerTick, socketIo);
+
+    /**
+     * Restoring information from a database
+     */
+    require("../libs/restoringInformationFromDatabase")(eventEmiterTimerTick).catch((err) => {
+        writeLogFile("error", err.toString() + " (restoringInformationFromDatabase.js)");
+    });
 
     /*
      * Setup passport

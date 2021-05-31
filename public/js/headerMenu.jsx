@@ -7,12 +7,14 @@ import { ModalWindowChangeAdminPasswd } from "./commons/modalWindowChangeAdminPa
 import { DrawingAlertMessage } from "./drawingAlertsMessage.jsx";
 
 class CreateHeaderMenu extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.listItems = this.props.listItems;
 
         this.state = {
+            connectionModuleAna: this.connModuleAna.call(this),
+            connectionModuleAcc: this.connModuleAcc.call(this),
             connectionModuleNI: this.connModuleNI.call(this),
             showNotifyMsg: true,
             notifyMsg: {},
@@ -25,55 +27,88 @@ class CreateHeaderMenu extends React.Component {
         this.handlerEvents.call(this);
     }
 
-    connModuleNI(){
-        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleNI: false;
+    connModuleAna() {
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleAna : false;        
     }
 
-    handlerEvents(){
+    connModuleAcc() {
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleMRSICT : false;        
+    }
+
+    connModuleNI() {
+        return (typeof this.listItems !== "undefined") ? this.listItems.connectionModules.moduleNI : false;
+    }
+
+    handlerEvents() {
         this.props.socketIo.on("module NI API", (data) => {
-            if(data.type === "connectModuleNI"){
-                if(data.options.connectionStatus){
+            if (data.type === "connectModuleNI") {
+                if (data.options.connectionStatus) {
                     this.setState({ "connectionModuleNI": true });
                 } else {
                     this.setState({ "connectionModuleNI": false });
                 }
             }
         });
+
+        this.props.socketIo.on("module_MRSICT-API", (data) => {
+            if (data.type === "connectModuleMRSICT") {
+                if (data.options.connectModuleMRSICT){
+                    this.setState({"connectionModuleAcc": true});
+                } else {
+                    this.setState({"connectionModuleAcc": false});
+                }
+            }
+        });
+
         this.props.socketIo.on("notify information", data => {
             let msg = JSON.parse(data.notify);
 
-            console.log("event: notify information");
-
-            this.setState({ 
+            this.setState({
                 notifyMsg: msg,
-                showNotifyMsg: true 
+                showNotifyMsg: true
             });
         });
     }
 
-    statusConnectModules(){
-        let imgIcon = (this.state.connectionModuleNI) ? "network_green.png" : "network_red.png";
+    statusConnectModules() {
+        let imgAnaIcon = (this.state.connectionModuleAna) ? "icon_analytic_green.png" : "icon_analytic_red.png";
+        let imgAccIcon = (this.state.connectionModuleAcc) ? "icon_accounting_green.png" : "icon_accounting_red.png";
+        let imgNetIcon = (this.state.connectionModuleNI) ? "icon_net_green.png" : "icon_net_red.png";
         
         return (
-            <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
-                <img src={"/images/"+imgIcon} width="30" height="30"/>
-            </OverlayTrigger>
+            <React.Fragment>
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>модуль аналитики</Tooltip>}>
+                    <img src={"/images/" + imgAnaIcon} width="30" height="30" />
+                </OverlayTrigger>
+                &nbsp;
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>модуль управления структурированной информации</Tooltip>}>
+                    <img src={"/images/" + imgAccIcon} width="30" height="30" />
+                </OverlayTrigger>
+                &nbsp;
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>модуль сетевого взаимодействия</Tooltip>}>
+                    <img src={"/images/" + imgNetIcon} width="30" height="30" />
+                </OverlayTrigger>
+            </React.Fragment>
         );
     }
 
-    createSubmenu(listDropDown){
+    createSubmenu(listDropDown) {
         let list = [];
 
-        for(let item in listDropDown){
+        for (let item in listDropDown) {
             let linkElemIsDisabled = "";
             let classElemIsDisable = "";
             if ((typeof listDropDown[item].status !== "undefined") && (!listDropDown[item].status)) {
                 linkElemIsDisabled = "true";
                 classElemIsDisable = " disabled";
             }
-        
+
             /**
  *      !!!!!!!!!
  * Временно выключаем доступ к некоторым пунктам
@@ -81,15 +116,15 @@ class CreateHeaderMenu extends React.Component {
  *      !!!!!!!!!
  */
 
-            if(item === "setting_geoip" || item === "setting_search_rules" || item === "setting_reputational_lists"){
+            if (item === "setting_geoip" || item === "setting_search_rules" || item === "setting_reputational_lists") {
                 linkElemIsDisabled = "true";
                 classElemIsDisable = " disabled";
             }
 
-            list.push((<NavDropdown.Item 
-                className={classElemIsDisable} 
-                href={item} 
-                key={`${item}_key`} 
+            list.push((<NavDropdown.Item
+                className={classElemIsDisable}
+                href={item}
+                key={`${item}_key`}
                 aria-disabled={linkElemIsDisabled}>
                 {listDropDown[item].name.toLowerCase()}
             </NavDropdown.Item>));
@@ -100,19 +135,19 @@ class CreateHeaderMenu extends React.Component {
 
     firstIconIsBig(str) {
         if (!str) return str;
-      
+
         return str[0].toUpperCase() + str.slice(1);
     }
-    
-    createMenu(){
+
+    createMenu() {
         let list = [];
         list.push(<Nav.Link href="/" key="main_key">Главная</Nav.Link>);
 
         let linkElemIsDisabled = "";
         let classElemIsDisable = "";
         let menuSettings = this.listItems.menuSettings;
-        
-        for(let key in menuSettings){
+
+        for (let key in menuSettings) {
             let submenuIsNotExist = (typeof menuSettings[key].submenu === "undefined");
 
             if ((typeof menuSettings[key].status !== "undefined") && (!menuSettings[key].status)) {
@@ -126,7 +161,7 @@ class CreateHeaderMenu extends React.Component {
                 * временно выключаю доступ к некоторым элементам меню
                 *       !!!!!!!!!!!
                 */
-                if(key === "analysis_sip" || key === "security_event_management"){
+                if (key === "analysis_sip"/*|| key === "security_event_management"*/) {
                     linkElemIsDisabled = "true";
                     classElemIsDisable = " disabled";
                 }
@@ -149,12 +184,12 @@ class CreateHeaderMenu extends React.Component {
         return list;
     }
 
-    render(){
+    render() {
         return (
             <Container>
                 <Navbar bg="dark" variant="dark" fixed="top">
                     <Navbar.Brand href="/">
-                        <img src="/images/logo1.png" width="200" height="60"/>
+                        <img src="/images/logo1.png" width="200" height="60" />
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav className="mr-auto">{this.createMenu()}</Nav>
@@ -167,14 +202,14 @@ class CreateHeaderMenu extends React.Component {
                     </Navbar.Collapse>
                 </Navbar>
 
-                <ModalWindowChangeAdminPasswd 
-                    login={this.listItems.login} 
+                <ModalWindowChangeAdminPasswd
+                    login={this.listItems.login}
                     passIsDefault={this.listItems.isPasswordDefaultAdministrator}
-                    socketIo={this.props.socketIo}/>
+                    socketIo={this.props.socketIo} />
 
                 <DrawingAlertMessage
                     notiyMsg={this.state.notifyMsg}
-                    socketIo={this.props.socketIo}/>
+                    socketIo={this.props.socketIo} />
             </Container>);
     }
 }
@@ -184,6 +219,6 @@ CreateHeaderMenu.protoTypes = {
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreateHeaderMenu 
+ReactDOM.render(<CreateHeaderMenu
     socketIo={socket}
     listItems={resivedFromServer} />, document.getElementById("menu-top"));

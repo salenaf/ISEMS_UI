@@ -9,11 +9,20 @@ export default class CreatingWidgets extends React.Component {
         this.state = {
             filtration: new Set(),
             download: new Set(),
+            telemetryDeviationParameters: 0,
         };
 
         this.handlerEvents.call(this);
+        this.requestEmitter.call(this);
 
-        this.handlerClickTonWidgetUnresolvedTask = this.handlerClickTonWidgetUnresolvedTask.bind(this);
+        this.handlerClickOnWidgetProcessingTask = this.handlerClickOnWidgetProcessingTask.bind(this);
+        this.handlerClickOnWidgetUnresolvedTask = this.handlerClickOnWidgetUnresolvedTask.bind(this);
+        this.handlerClickOnWidgetNotDownloadTask = this.handlerClickOnWidgetNotDownloadTask.bind(this);
+        this.handlerClickOnWidgetTelemetryDeviation = this.handlerClickOnWidgetTelemetryDeviation.bind(this);
+    }
+
+    requestEmitter(){
+        this.props.socketIo.emit("network interaction: get list source with deviation parameters", {});
     }
 
     handlerEvents(){
@@ -46,11 +55,36 @@ export default class CreatingWidgets extends React.Component {
 
                 this.setState(objCopy);
             }
+
+            if(msg.type === "telemetryDeviationParameters"){
+                this.setState({ telemetryDeviationParameters: msg.options.length });
+            }
+
+            if(msg.type === "deletedTelemetryDeviationParameters"){
+                let countItem = this.state.telemetryDeviationParameters;
+                if(countItem === 0){
+                    return;
+                }
+
+                this.setState({ telemetryDeviationParameters: --countItem });
+            }
         });
     }
 
-    handlerClickTonWidgetUnresolvedTask(){
+    handlerClickOnWidgetProcessingTask(){
+        window.location.href = "/network_interaction";
+    }
+
+    handlerClickOnWidgetUnresolvedTask(){
         window.location.href = "/network_interaction_page_statistics_and_analytics";
+    }
+
+    handlerClickOnWidgetNotDownloadTask(){
+        window.location.href = "/network_interaction_page_file_download";
+    }
+
+    handlerClickOnWidgetTelemetryDeviation(){
+        window.location.href = "/network_interaction_page_source_telemetry";
     }
 
     render(){
@@ -66,24 +100,41 @@ export default class CreatingWidgets extends React.Component {
                     <span className="my-n2 text-danger">{this.props.widgets.numDisconnect}</span>
                     <small className="text-muted">не доступно</small>
                 </Card>
-                <Card className="ml-3" border="dark" style={{ width: "10rem" }}>
+                <Card 
+                    onClick={this.handlerClickOnWidgetProcessingTask}
+                    className="ml-3 clicabe_cursor" 
+                    border="dark" 
+                    style={{ width: "10rem" }}>
                     <small>фильтрация</small>
                     <span className="my-n2">{this.state.filtration.size}</span>
                     <small className="text-muted">выполняется</small>
                 </Card>
-                <Card className="ml-3" border="info" style={{ width: "13rem" }}>
+                <Card 
+                    onClick={this.handlerClickOnWidgetNotDownloadTask}
+                    className="ml-3 clicabe_cursor" 
+                    border="info" 
+                    style={{ width: "13rem" }}>
                     <small>выгрузка файлов</small>
                     <span className="my-n2 text-info">{this.state.download.size} / {this.props.widgets.numTasksNotDownloadFiles}</span>
                     <small className="text-muted"> выполняется / доступна</small>
                 </Card>
                 <Card 
-                    onClick={this.handlerClickTonWidgetUnresolvedTask}
+                    onClick={this.handlerClickOnWidgetUnresolvedTask}
                     className="ml-3 clicabe_cursor" 
                     border="info" 
                     style={{ width: "13rem" }}>
                     <small>выгруженные файлы</small>
                     <span className="my-n2 text-info">{this.props.widgets.numUnresolvedTask}</span>
                     <small className="text-muted">не рассмотренны</small>
+                </Card>
+                <Card 
+                    onClick={this.handlerClickOnWidgetTelemetryDeviation}
+                    className="ml-3 clicabe_cursor" 
+                    border="danger" 
+                    style={{ width: "12rem" }}>
+                    <small>телеметрия источников</small>
+                    <span className="my-n2 text-danger">{this.state.telemetryDeviationParameters}</span>
+                    <small className="text-muted">требуют внимание</small>
                 </Card>
             </div>
         );

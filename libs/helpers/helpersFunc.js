@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const commons = require("./commons");
 const globalObject = require("../../configure/globalObject");
 
-module.exports.checkUserSettingsManagementUsers = function(userSettings) {
+module.exports.checkUserSettingsManagementUsers = function (userSettings) {
     const checkObj = {
         "user_name": "stringAlphaRu",
         "user_login": "stringAlphaNumEng",
@@ -102,7 +102,6 @@ module.exports.modifyListFoundTasks = (oldList) => {
 
 module.exports.sendMessageByUserSocketIo = (userSocketId, e, msg) => {
     let socketIo = globalObject.getData("descriptionSocketIo", "userConnections", userSocketId);
-
     if (socketIo !== null) {
         socketIo.emit(e, msg);
 

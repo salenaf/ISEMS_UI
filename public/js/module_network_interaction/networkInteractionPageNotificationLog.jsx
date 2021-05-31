@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Button, Col, Form, Row, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Button, Col, Form, Row, Spinner, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 class CreateSourceList extends React.Component {
@@ -49,9 +49,9 @@ class CreateNotificationTypeList extends React.Component {
     getListNotificationType(){
         let list = [ 
             { t: "info", n: "информационное" },
+            { t: "danger", n: "критичное" },
             { t: "success", n: "успешное" },
             { t: "warning", n: "требует внимания" },
-            { t: "danger", n: "критичное" },
         ];
 
         return list.map((item) => {
@@ -206,24 +206,15 @@ class CreatePageNotificationLog extends React.Component {
     }
 
     createButtonNextChunk(){
-        if(this.state.countDocument <= this.props.listItems.maxChunkLimit){
-            return;
-        }
-
-        if(this.state.msgList.length >= this.state.countDocument){
-            return;
-        }
-
         return (
-            <Row>
-                <Col md={12} className="text-right">
-                    <Button 
-                        size="sm" 
-                        variant="light" 
-                        onClick={this.handlerNextChunk}
-                        disabled={this.state.buttonNextChunkIsDisabled} >ещё...</Button>
-                </Col>
-            </Row>
+            <Button 
+                size="sm" 
+                variant="outline-secondary" 
+                onClick={this.handlerNextChunk}
+                disabled={this.state.buttonNextChunkIsDisabled} >
+                {this.state.buttonNextChunkIsDisabled && <Spinner as="span" size="sm" role="status" aria-hidden="true" animation="border" variant="info" />}
+                &nbsp;Ещё...
+            </Button>
         );
     }
 
@@ -281,7 +272,11 @@ class CreatePageNotificationLog extends React.Component {
                         </Table>
                     </Col>
                 </Row>
-                {this.createButtonNextChunk.call(this)}
+                <Row>
+                    <Col md={12} className="text-right">
+                        {this.createButtonNextChunk.call(this)}
+                    </Col>
+                </Row>
             </React.Fragment>
         );
     }

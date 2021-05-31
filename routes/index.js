@@ -13,7 +13,7 @@ const changeAdministratorPassword = require("../libs/changeAdministratorPassword
  * 
  * @param {*} app 
  */
-module.exports = function(app) {
+module.exports = function (app) {
     const listCustomPages = {
         "/analysis_sip": {
             access: "menuSettings.analysis_sip.status",
@@ -21,7 +21,7 @@ module.exports = function(app) {
         },
         "/security_event_management": {
             access: "menuSettings.security_event_management.status",
-            handler: pages.securityEventManagement,
+            handler: pages.managementRecordsStructInfo,
         },
         "/network_interaction": {
             access: "menuSettings.network_interaction.status",
@@ -43,9 +43,17 @@ module.exports = function(app) {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionpageStatisticsAndAnalyticsDetalTask,
         },
+        "/network_interaction_page_source_telemetry": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageTelemetry,
+        },
         "/network_interaction_page_notification_log": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteractionPageNotificationLog,
+        },
+        "/network_interaction_page_template_log": {
+            access: "menuSettings.network_interaction.status",
+            handler: pages.networkInteractionPageTemplateLog,
         },
         "/setting_users": {
             access: "menuSettings.element_settings.submenu.setting_users.status",
@@ -93,12 +101,15 @@ module.exports = function(app) {
                         res.render("500", {});
                     });
             } else {
+                req.logOut();
+                req.session.destroy();
+
                 res.render("auth", {});
             }
         })
         .post(passport.authenticate("local", {
             successRedirect: "/",
-            failureRedirect: "/auth?username=error"
+            failureRedirect: "/auth?username=error",
         }));
 
     app.get("/", isAuthenticated, (req, res) => {
